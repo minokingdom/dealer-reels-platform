@@ -209,64 +209,56 @@
             </select>
           </div>
 
-          <!-- 4가지 영상 연출 포맷 선택 탭 -->
+          <!-- ★ 고정 템플릿 4종 제거 → AI 씬 디렉터 & 무한 생성형 레이아웃 엔진 -->
           <div class="glass-sub p-4 rounded-xl space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-1">
-              <span class="text-xs font-bold text-slate-200">연출 레이아웃 포맷 (4종)</span>
-              <span id="activeFormatLabel" class="px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold">컷별 풀스크린 임팩트형</span>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <button type="button" id="fmtBtn_impact" onclick="selectVideoFormat('impact')" class="p-3 rounded-xl border border-indigo-500 bg-indigo-500/15 text-left transition cursor-pointer">
-                <div class="text-xs font-bold text-white">01. 컷별 임팩트</div>
-                <div class="text-[11px] text-slate-300 mt-1 leading-snug">2초마다 자막·구도가 전환되는 다이나믹 릴스</div>
-              </button>
-              <button type="button" id="fmtBtn_kakao" onclick="selectVideoFormat('kakao')" class="p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-left transition cursor-pointer">
-                <div class="text-xs font-bold text-slate-200">02. 카톡 상담형</div>
-                <div class="text-[11px] text-slate-400 mt-1 leading-snug">실제 고객 질문과 딜러 답변 말풍선 대화</div>
-              </button>
-              <button type="button" id="fmtBtn_compare" onclick="selectVideoFormat('compare')" class="p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-left transition cursor-pointer">
-                <div class="text-xs font-bold text-slate-200">03. 금융 3단 비교</div>
-                <div class="text-[11px] text-slate-400 mt-1 leading-snug">신차 할부 vs 장기렌트 vs 법인 리스 비교표</div>
-              </button>
-              <button type="button" id="fmtBtn_catalog" onclick="selectVideoFormat('catalog')" class="p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-left transition cursor-pointer">
-                <div class="text-xs font-bold text-slate-200">04. 공식 요약 카드</div>
-                <div class="text-[11px] text-slate-400 mt-1 leading-snug">현대·기아 화이트&네이비 정석 견적서</div>
-              </button>
-            </div>
-          </div>
-
-          <!-- 한 줄 상황 입력 → AI 4컷 대본 & 카톡 대화 자동 생성기 -->
-          <div class="glass-sub p-4 rounded-xl space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-1.5">
+            <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-xs font-bold text-slate-200">AI 한 줄 상황 대본 생성기</span>
-                <span id="aiEngineStatusBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-medium">중앙 AI 엔진 활성</span>
+                <span class="text-xs font-bold text-white">AI 씬 디렉터 & 무한 레이아웃 생성기</span>
+                <span id="aiEngineStatusBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-medium">중앙 AI 디렉터 활성</span>
+                <span id="activeSceneRecipeBadge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold">테마: 로얄골드 · 4컷 동적 조합</span>
               </div>
-              <span class="text-[11px] text-slate-400">생성 후 각 컷 자막을 직접 다듬을 수 있습니다</span>
+              <button type="button" onclick="proceduralRestyleCurrentScene()" class="px-3 py-1 rounded-lg text-[11px] font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15 transition cursor-pointer">
+                🎨 화면 디자인·색감·위젯 즉시 재조립 (무료)
+              </button>
             </div>
+
             <div class="flex flex-col sm:flex-row gap-2">
               <input id="aiPromptInput" type="text" placeholder="예: 30대 워킹맘 그랜저 하브 취소차 1대 선점, 내일 부산 캐리어 탁송 출발" class="flex-1 px-3.5 py-2.5 rounded-xl text-xs bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500" />
               <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="px-4 py-2.5 rounded-xl text-xs font-bold btn-primary-glow text-white transition cursor-pointer shrink-0">
-                AI 4컷 대본 · 카톡대화 생성
+                ✨ AI 새 연출 · 레이아웃 · 대본 생성
               </button>
             </div>
             <p id="aiGenNotice" class="hidden text-xs font-medium text-indigo-300"></p>
+
+            <!-- 현재 1~4컷에 조립된 동적 위젯 요약 칩 & 자막 에디터 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-400 mb-1">CUT 1 (0~2초 · 오프닝 훅)</label>
-                <input id="cutSub0" type="text" oninput="updateCustomCutCaptions()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="font-semibold text-slate-300">CUT 1 (0~2초)</span>
+                  <span id="cutWidgetBadge0" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">속보 티커</span>
+                </div>
+                <input id="cutSub0" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
               </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-400 mb-1">CUT 2 (2~4초 · 실내·핵심 포인트)</label>
-                <input id="cutSub1" type="text" oninput="updateCustomCutCaptions()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="font-semibold text-slate-300">CUT 2 (2~4초)</span>
+                  <span id="cutWidgetBadge1" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">카톡 대화</span>
+                </div>
+                <input id="cutSub1" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
               </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-400 mb-1">CUT 3 (4~6초 · 할인·월 납입 조건)</label>
-                <input id="cutSub2" type="text" oninput="updateCustomCutCaptions()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="font-semibold text-slate-300">CUT 3 (4~6초)</span>
+                  <span id="cutWidgetBadge2" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">할인 영수증</span>
+                </div>
+                <input id="cutSub2" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
               </div>
-              <div>
-                <label class="block text-[11px] font-semibold text-slate-400 mb-1">CUT 4 (6~8초 · 출고 인도 & 댓글 유도)</label>
-                <input id="cutSub3" type="text" oninput="updateCustomCutCaptions()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="font-semibold text-slate-300">CUT 4 (6~8초)</span>
+                  <span id="cutWidgetBadge3" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">댓글 DM 유도</span>
+                </div>
+                <input id="cutSub3" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
               </div>
             </div>
           </div>
@@ -695,9 +687,59 @@
       }
     };
 
+    // ============================================================================
+    // 무한 생성형 씬 디렉터 레지스트리 (8종 컬러 테마 × 12종 그래픽 위젯 × 3단 위치)
+    // ============================================================================
+    const DIRECTOR_THEMES = {
+      royal:    { name: '로얄 골드',    primary: '#0f172a', accent: '#facc15', badge: '#2563eb', text: '#ffffff', sub: '#93c5fd' },
+      crimson:  { name: '크림슨 레드',  primary: '#18181b', accent: '#f43f5e', badge: '#e11d48', text: '#ffffff', sub: '#fda4af' },
+      emerald:  { name: '에메랄드 럭스', primary: '#062c22', accent: '#34d399', badge: '#059669', text: '#ffffff', sub: '#a7f3d0' },
+      cyber:    { name: '사이버 네온',  primary: '#090d16', accent: '#38bdf8', badge: '#4f46e5', text: '#ffffff', sub: '#bae6fd' },
+      cobalt:   { name: '현대 딥코발트', primary: '#002C5F', accent: '#fde047', badge: '#0284c7', text: '#ffffff', sub: '#e0f2fe' },
+      sunset:   { name: '선셋 오렌지',  primary: '#1c1917', accent: '#fb923c', badge: '#ea580c', text: '#ffffff', sub: '#fed7aa' },
+      violet:   { name: '벨벳 바이올렛', primary: '#1e1b4b', accent: '#c084fc', badge: '#7c3aed', text: '#ffffff', sub: '#e9d5ff' },
+      obsidian: { name: '옵시디언 블랙', primary: '#09090b', accent: '#e4e4e7', badge: '#3f3f46', text: '#ffffff', sub: '#a1a1aa' }
+    };
+
+    const WIDGET_POOL = [
+      'BREAKING_NEWS',
+      'MAGAZINE_COVER',
+      'GIANT_DISCOUNT_STAMP',
+      'SPEC_FLOATING_TAGS',
+      'KAKAO_CHAT_PAIR',
+      'RECEIPT_QUOTE',
+      'VS_FINANCE_BATTLE',
+      'CHECKLIST_GLASS',
+      'STOCK_COUNTDOWN',
+      'SMARTKEY_DELIVERY',
+      'COMMENT_DM_MAGNET',
+      'MONTHLY_PAYMENT_HERO'
+    ];
+
+    const WIDGET_LABELS = {
+      BREAKING_NEWS: '긴급 속보 티커',
+      MAGAZINE_COVER: '매거진 커버 프레임',
+      GIANT_DISCOUNT_STAMP: '슬롯머신 특가 스탬프',
+      SPEC_FLOATING_TAGS: '3단 플로팅 스펙태그',
+      KAKAO_CHAT_PAIR: '실제 카톡 대화창',
+      RECEIPT_QUOTE: '영수증 견적 명세표',
+      VS_FINANCE_BATTLE: '할부·렌트·리스 비교',
+      CHECKLIST_GLASS: '글래스 체크리스트',
+      STOCK_COUNTDOWN: '선점재고 잔여 게이지',
+      SMARTKEY_DELIVERY: '스마트키 출고 배너',
+      COMMENT_DM_MAGNET: '댓글 자동 DM 콜아웃',
+      MONTHLY_PAYMENT_HERO: '월 납입금 히어로 보드'
+    };
+
     let campaign = {
       presetKey: 'sorento',
-      videoFormat: 'impact', // 'impact' | 'kakao' | 'compare' | 'catalog'
+      themeId: 'royal',
+      scenePlan: [
+        { cut: 1, widget: 'BREAKING_NEWS', pos: 'center', cam: 0 },
+        { cut: 2, widget: 'KAKAO_CHAT_PAIR', pos: 'center', cam: 1 },
+        { cut: 3, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 2 },
+        { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+      ],
       hook: presets.sorento.hook,
       vehicle: presets.sorento.vehicle,
       discountNum: presets.sorento.discountNum,
@@ -1118,503 +1160,518 @@
           : currentCutSlot;
         const activeHookText = v.hook || campaign.hook;
         const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
-        const fmt = campaign.videoFormat || 'impact';
 
         // ====================================================================
-        // 포맷 1 ('impact'): ⚡ 컷별 풀스크린 임팩트 자막형 (2초마다 레이아웃·자막 전면 전환)
+        // ★ 무한 생성형 씬 그래프 렌더러 (8종 컬러 테마 × 12종 위젯 × 동적 위치)
         // ====================================================================
-        if (fmt === 'impact') {
-          const cutPop = Easing.backOut(cutLocalT / 0.38);
-          const subLine = (campaign.cutCaptions && campaign.cutCaptions[currentCutSlot]) || activeHookText;
+        const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
+        const plan = (campaign.scenePlan && campaign.scenePlan[currentCutSlot]) || {
+          cut: currentCutSlot + 1,
+          widget: WIDGET_POOL[currentCutSlot % WIDGET_POOL.length],
+          pos: 'center'
+        };
+        const widgetType = plan.widget || 'BREAKING_NEWS';
+        const posMode = plan.pos || 'center';
+        const cutPop = Easing.backOut(cutLocalT / 0.38);
+        const slideIn = Easing.power4Out(cutLocalT / 0.45);
+        const subLine = (campaign.cutCaptions && campaign.cutCaptions[currentCutSlot]) || activeHookText;
 
-          // 상단 슬림 컷 인디케이터 바 (고정 요약 카드를 제거해 차량 사진이 시원하게 보임)
-          ctx.save();
-          for (let c = 0; c < 4; c++) {
-            const barW = 112;
-            const barX = 32 + c * (barW + 9);
-            ctx.fillStyle = 'rgba(255,255,255,0.28)';
-            drawRoundedRect(ctx, barX, 24, barW, 6, 3);
-            ctx.fill();
-            if (c < currentCutSlot) {
-              ctx.fillStyle = '#38bdf8';
-              drawRoundedRect(ctx, barX, 24, barW, 6, 3);
-              ctx.fill();
-            } else if (c === currentCutSlot) {
-              const fillW = Math.max(8, barW * Easing.clamp(cutLocalT / 2.0, 0, 1));
-              ctx.fillStyle = '#fde047';
-              drawRoundedRect(ctx, barX, 24, fillW, 6, 3);
-              ctx.fill();
-            }
-          }
-          ctx.restore();
-
-          if (currentCutSlot === 0) {
-            // [1컷 0~2초]: 강렬한 브레이킹 뉴스 배지 + 중앙 초대형 훅 타이틀 + 하단 슬롯머신 특가 스탬프
-            ctx.save();
-            ctx.translate(W / 2, 74);
-            ctx.scale(cutPop, cutPop);
-            ctx.fillStyle = '#ef4444';
-            drawRoundedRect(ctx, -170, -20, 340, 40, 20);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            drawFittedText(`🚨 긴급 입고 · ${campaign.vehicle}`, 0, 7, 316, 18);
-            ctx.restore();
-
-            // 중앙 대형 다크 글래스 임팩트 배너
-            ctx.save();
-            const centerSlide = Easing.power4Out(cutLocalT / 0.45);
-            ctx.globalAlpha = centerSlide;
-            ctx.translate(W / 2, 540 + (1 - centerSlide) * 35);
-            ctx.fillStyle = 'rgba(2, 6, 23, 0.86)';
-            ctx.strokeStyle = '#fde047';
-            ctx.lineWidth = 3;
-            drawRoundedRect(ctx, -242, -74, 484, 148, 22);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fde047';
-            drawFittedText(subLine, 0, -22, 448, 25);
-            const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 1.1));
-            ctx.fillStyle = '#ffffff';
-            drawFittedText(`최대 -${cnt.toLocaleString()}만 원 특판 할인!`, 0, 22, 448, 32);
-            ctx.fillStyle = '#93c5fd';
-            drawFittedText(campaign.discount, 0, 54, 440, 18);
-            ctx.restore();
-          } else if (currentCutSlot === 1) {
-            // [2컷 2~4초]: 좌상단 매거진 프레임 + 우하단 3단 슬라이딩 옵션 스펙 태그
-            ctx.save();
-            const p1 = Easing.power4Out(cutLocalT / 0.4);
-            ctx.globalAlpha = p1;
-            ctx.translate(28 - (1 - p1) * 40, 52);
-            ctx.fillStyle = 'rgba(0, 44, 95, 0.92)';
-            drawRoundedRect(ctx, 0, 0, 360, 76, 16);
-            ctx.fill();
-            ctx.fillStyle = '#38bdf8';
-            ctx.textAlign = 'left';
-            drawFittedText(`POINT 02 · ${CUT_NAMES[activePhotoIndex % 4]}`, 18, 28, 324, 15);
-            ctx.fillStyle = '#ffffff';
-            drawFittedText(subLine, 18, 58, 324, 21);
-            ctx.restore();
-
-            // 3단 스펙 플로팅 카드
-            const tags = [
-              `✨ ${campaign.vehicle} 인기 트림 즉시배정`,
-              activeBullets[0] || '✔ 선점 재고 즉시출고 가능',
-              activeBullets[1] || '✔ 저금리 할부·렌트·리스 맞춤 비교'
-            ];
-            tags.forEach((tg, i) => {
-              const tp = Easing.backOut((cutLocalT - 0.12 * i) / 0.42);
-              if (tp <= 0) return;
-              ctx.save();
-              ctx.translate(W / 2 + (1 - tp) * 60, 505 + i * 62);
-              ctx.fillStyle = i === 0 ? 'rgba(15, 23, 42, 0.92)' : 'rgba(255, 255, 255, 0.94)';
-              drawRoundedRect(ctx, -236, -24, 472, 48, 14);
-              ctx.fill();
-              ctx.textAlign = 'left';
-              ctx.fillStyle = i === 0 ? '#fde047' : HYUNDAI_NAVY;
-              drawFittedText(tg, -214, 7, 430, 19);
-              ctx.restore();
-            });
-          } else if (currentCutSlot === 2) {
-            // [3컷 4~6초]: 금융·월납입금 집중 비교 보드 (가운데 하단 대형 견적 보드)
-            ctx.save();
-            ctx.translate(W / 2, 545);
-            ctx.scale(cutPop, cutPop);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-            ctx.strokeStyle = HYUNDAI_NAVY;
-            ctx.lineWidth = 3;
-            drawRoundedRect(ctx, -240, -110, 480, 210, 22);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = HYUNDAI_NAVY;
-            drawRoundedRect(ctx, -240, -110, 480, 52, 22);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            drawFittedText(`💰 ${campaign.vehicle} 11월 특별 금융 조건`, 0, -77, 440, 20);
-
-            ctx.fillStyle = KIA_RED;
-            drawFittedText(subLine, 0, -24, 444, 26);
-
-            ctx.fillStyle = '#0f172a';
-            drawFittedText(`특별 할인 -${campaign.discountNum.toLocaleString()}만 원  |  ${campaign.discount}`, 0, 16, 444, 20);
-
-            ctx.fillStyle = '#f1f5f9';
-            drawRoundedRect(ctx, -216, 38, 432, 44, 10);
-            ctx.fill();
-            ctx.fillStyle = HYUNDAI_NAVY;
-            drawFittedText(`🎁 ${d.promoTag}`, 0, 66, 410, 16);
-            ctx.restore();
-          } else {
-            // [4컷 6~8초]: 스마트키 출고 인도 & 댓글 키워드 자동 DM 풀스크린 유도
-            ctx.save();
-            ctx.translate(W / 2, 88);
-            ctx.scale(cutPop, cutPop);
-            ctx.fillStyle = 'rgba(16, 185, 129, 0.95)';
-            drawRoundedRect(ctx, -210, -24, 420, 48, 24);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            drawFittedText('🔑 계약 즉시 출고 · 전국 무료 캐리어 탁송', 0, 7, 390, 19);
-            ctx.restore();
-
-            ctx.save();
-            const pulse = 1 + Math.sin(t * 7) * 0.025;
-            ctx.translate(W / 2, 575);
-            ctx.scale(cutPop * pulse, cutPop * pulse);
-            ctx.fillStyle = '#FEE500';
-            ctx.strokeStyle = '#0f172a';
-            ctx.lineWidth = 3.5;
-            drawRoundedRect(ctx, -242, -68, 484, 136, 26);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#0f172a';
-            drawFittedText(subLine, 0, -18, 446, 24);
-            ctx.fillStyle = KIA_RED;
-            drawFittedText(
-              v.ctaBanner || '💬 댓글에 [견적] 남기시면 1:1 최저가 견적표 DM 발송!',
-              0,
-              28,
-              446,
-              20
-            );
-            ctx.restore();
-          }
-        }
-
-        // ====================================================================
-        // 포맷 2 ('kakao'): 💬 실제 고객 카카오톡 1:1 상담 말풍선 티키타카형
-        // ====================================================================
-        else if (fmt === 'kakao') {
-          // 반투명 카카오톡 채팅룸 상단 바
-          ctx.save();
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-          ctx.fillRect(0, 0, W, 86);
-          ctx.fillStyle = '#FEE500';
-          ctx.beginPath();
-          ctx.arc(42, 44, 18, 0, Math.PI * 2);
+        // 상단 4컷 진행 스토리 바 (현재 테마 컬러 반영)
+        ctx.save();
+        for (let c = 0; c < 4; c++) {
+          const barW = 112;
+          const barX = 32 + c * (barW + 9);
+          ctx.fillStyle = 'rgba(255,255,255,0.22)';
+          drawRoundedRect(ctx, barX, 20, barW, 5, 2.5);
           ctx.fill();
-          ctx.fillStyle = '#0f172a';
-          ctx.font = 'bold 15px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('TALK', 42, 49);
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(`${d.name} ${d.title} 실시간 출고상담 (${campaign.vehicle})`, 72, 40, 440, 18);
-          ctx.fillStyle = '#34d399';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.fillText(`● 현재 상담 가능 · 직통 ${d.phone}`, 72, 64);
-          ctx.restore();
-
-          // 4개의 대화 말풍선이 0s, 1.5s, 3.2s, 4.8s에 순차 팝업
-          const chats = campaign.kakaoChat && campaign.kakaoChat.length === 4
-            ? campaign.kakaoChat
-            : [
-                { role: 'customer', text: `팀장님! ${campaign.vehicle} 지금 계약하면 오래 기다려야 하나요? 😭` },
-                { role: 'dealer', text: `아닙니다 고객님! 선점 재고 확보해둬서 대기 없이 즉시출고 가능합니다 🚗` },
-                { role: 'customer', text: '오 대박!! 이번 달 할인이랑 월 납입금은 어느 정도 나오나요?' },
-                { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 특판 혜택으로 ${campaign.discount}에 가능하세요! 👇` }
-              ];
-
-          const appearTimes = [0.15, 1.55, 3.1, 4.6];
-          chats.forEach((msg, idx) => {
-            if (t < appearTimes[idx]) return;
-            const pop = Easing.backOut((t - appearTimes[idx]) / 0.42);
-            const yPos = 126 + idx * 116;
-            const isCust = msg.role === 'customer';
-
-            ctx.save();
-            ctx.translate(W / 2, yPos);
-            ctx.scale(pop, pop);
-
-            // 텍스트를 2줄로 자동 줄바꿈하여 말풍선 안에 깔끔히 렌더링
-            const textStr = msg.text || '';
-            const mid = Math.ceil(textStr.length / 2);
-            const splitIdx = textStr.indexOf(' ', mid - 4);
-            const line1 = splitIdx > 0 && textStr.length > 22 ? textStr.slice(0, splitIdx) : textStr;
-            const line2 = splitIdx > 0 && textStr.length > 22 ? textStr.slice(splitIdx + 1) : '';
-
-            if (isCust) {
-              // 고객 질문 (좌측 화이트 말풍선)
-              ctx.fillStyle = '#cbd5e1';
-              ctx.font = 'bold 13px sans-serif';
-              ctx.textAlign = 'left';
-              ctx.fillText('🙋‍♂️ 구매 문의 고객님', -236, -30);
-
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-              drawRoundedRect(ctx, -236, -20, 410, line2 ? 74 : 52, 16);
-              ctx.fill();
-              ctx.fillStyle = '#0f172a';
-              drawFittedText(line1, -218, 8, 376, 17);
-              if (line2) drawFittedText(line2, -218, 34, 376, 17);
-            } else {
-              // 카마스터 답변 (우측 카카오 옐로우 말풍선)
-              ctx.fillStyle = '#fde047';
-              ctx.font = 'bold 13px sans-serif';
-              ctx.textAlign = 'right';
-              ctx.fillText(`👔 ${d.name} ${d.title} (공식인증)`, 236, -30);
-
-              ctx.fillStyle = '#FEE500';
-              drawRoundedRect(ctx, -174, -20, 410, line2 ? 74 : 52, 16);
-              ctx.fill();
-              ctx.fillStyle = '#0f172a';
-              ctx.textAlign = 'left';
-              drawFittedText(line1, -156, 8, 376, 17);
-              if (line2) drawFittedText(line2, -156, 34, 376, 17);
-            }
-            ctx.restore();
-          });
-
-          // 5.6초부터 하단에 카톡 첨부파일 형태의 [실시간 견적서 카드] 팝업
-          if (t >= 5.4) {
-            const cardPop = Easing.backOut((t - 5.4) / 0.45);
-            ctx.save();
-            ctx.translate(W / 2, 636);
-            ctx.scale(cardPop, cardPop);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.97)';
-            ctx.strokeStyle = HYUNDAI_NAVY;
-            ctx.lineWidth = 3;
-            drawRoundedRect(ctx, -236, -54, 472, 108, 18);
+          if (c < currentCutSlot) {
+            ctx.fillStyle = theme.accent;
+            drawRoundedRect(ctx, barX, 20, barW, 5, 2.5);
             ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = HYUNDAI_NAVY;
-            drawRoundedRect(ctx, -220, -38, 118, 76, 12);
-            ctx.fill();
+          } else if (c === currentCutSlot) {
+            const fillW = Math.max(8, barW * Easing.clamp(cutLocalT / 2.0, 0, 1));
             ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            ctx.font = 'bold 15px sans-serif';
-            ctx.fillText('📄 비밀견적서', -161, -6);
-            ctx.fillStyle = '#fde047';
-            ctx.font = 'bold 14px sans-serif';
-            ctx.fillText('도착 완료', -161, 18);
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = KIA_RED;
-            drawFittedText(`${campaign.vehicle} (-${campaign.discountNum.toLocaleString()}만원 혜택)`, -88, -10, 308, 19);
-            ctx.fillStyle = '#0f172a';
-            drawFittedText(`${campaign.discount} | 댓글 [${v.ctaKeyword || '견적'}] 입력시 즉시 전송!`, -88, 22, 308, 16);
-            ctx.restore();
+            drawRoundedRect(ctx, barX, 20, fillW, 5, 2.5);
+            ctx.fill();
           }
         }
+        ctx.restore();
 
-        // ====================================================================
-        // 포맷 3 ('compare'): 📊 신차 할부 vs 무보증 장기렌트 vs 법인 리스 3단 비교분석형
-        // ====================================================================
-        else if (fmt === 'compare') {
-          // 상단 비교분석 헤더
-          const headPop = Easing.backOut(t / 0.45);
+        // 동적 Y 좌표 앵커 계산 (AI가 지정한 pos: 'top' | 'center' | 'bottom' 반영)
+        const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 565 : 495;
+
+        // --------------------------------------------------------------------
+        // 위젯 1: BREAKING_NEWS (긴급 속보 티커 + 대형 헤드라인 보드)
+        // --------------------------------------------------------------------
+        if (widgetType === 'BREAKING_NEWS') {
           ctx.save();
-          ctx.translate(W / 2, 74);
-          ctx.scale(headPop, headPop);
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -240, -42, 480, 84, 18);
+          ctx.translate(W / 2, 68);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = theme.badge;
+          drawRoundedRect(ctx, -185, -20, 370, 40, 20);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          drawFittedText(`BREAKING · ${campaign.vehicle}`, 0, 7, 340, 17);
+          ctx.restore();
+
+          ctx.save();
+          ctx.globalAlpha = slideIn;
+          ctx.translate(W / 2, anchorY + (1 - slideIn) * 36);
+          ctx.fillStyle = 'rgba(7, 11, 22, 0.88)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -242, -76, 484, 152, 22);
           ctx.fill();
           ctx.stroke();
 
           ctx.textAlign = 'center';
-          ctx.fillStyle = '#38bdf8';
-          drawFittedText(`📊 ${campaign.vehicle} 어떻게 사는 게 가장 이득일까?`, 0, -10, 444, 18);
+          ctx.fillStyle = theme.accent;
+          drawFittedText(subLine, 0, -24, 448, 25);
+          const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 1.0));
           ctx.fillStyle = '#ffffff';
-          drawFittedText(`할부 vs 장기렌트 vs 리스 1:1 핵심 비교 (최대 -${campaign.discountNum.toLocaleString()}만원)`, 0, 22, 444, 21);
+          drawFittedText(`최대 -${cnt.toLocaleString()}만 원 특판 혜택`, 0, 20, 448, 31);
+          ctx.fillStyle = theme.sub;
+          drawFittedText(campaign.discount, 0, 54, 440, 18);
           ctx.restore();
-
-          // 3단 비교 카드가 0.3초, 1.1초, 1.9초에 순차 등장
-          const baseMonthly = parseInt((campaign.discount.match(/\d+/) || [46])[0], 10) || 46;
-          const options = [
-            {
-              title: '① 저금리 신차 할부',
-              tag: '명의 등록 · 장기 보유 추천',
-              line1: `월 ${baseMonthly + 12}만원대 (초기 취등록세 7% 발생)`,
-              line2: `제조사·재고 할인 최대 -${campaign.discountNum.toLocaleString()}만원 즉시 반영`,
-              highlight: false
-            },
-            {
-              title: '② 무보증 특판 장기렌트 [BEST]',
-              tag: '초기비용 0원 · 보험/세금 통합',
-              line1: `${campaign.discount} (취등록세·자동차세·보험료 0원)`,
-              line2: '하·허·호 번호판 | 사고 시 보험 할증 없음 · 대출 미잡힘',
-              highlight: true
-            },
-            {
-              title: '③ 법인·개인사업자 운용리스',
-              tag: '일반 번호판 · 연간 1,500만 절세',
-              line1: `월 ${Math.max(29, baseMonthly - 3)}만원대 (특판 면세가 + 경비처리)`,
-              line2: '일반 승용 번호판 유지 + 법인세/종합소득세 절세 극대화',
-              highlight: false
-            }
-          ];
-
-          options.forEach((opt, i) => {
-            const appearT = 0.35 + i * 0.65;
-            const p = Easing.backOut((t - appearT) / 0.45);
-            if (p <= 0) return;
-
-            const yCenter = 216 + i * 144;
-            ctx.save();
-            ctx.translate(W / 2, yCenter);
-            ctx.scale(p, p);
-
-            ctx.fillStyle = opt.highlight ? 'rgba(255, 255, 255, 0.98)' : 'rgba(15, 23, 42, 0.90)';
-            ctx.strokeStyle = opt.highlight ? '#FEE500' : 'rgba(148, 163, 184, 0.5)';
-            ctx.lineWidth = opt.highlight ? 3.5 : 1.5;
-            drawRoundedRect(ctx, -238, -58, 476, 118, 18);
-            ctx.fill();
-            ctx.stroke();
-
-            // 상단 타이틀 + 우측 배지
-            ctx.textAlign = 'left';
-            ctx.fillStyle = opt.highlight ? HYUNDAI_NAVY : '#fde047';
-            drawFittedText(opt.title, -216, -26, 270, 20);
-
-            ctx.fillStyle = opt.highlight ? KIA_RED : '#334155';
-            drawRoundedRect(ctx, 64, -46, 158, 28, 14);
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'center';
-            drawFittedText(opt.tag, 143, -27, 144, 13);
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = opt.highlight ? KIA_RED : '#ffffff';
-            drawFittedText(`✔ ${opt.line1}`, -216, 8, 432, 18);
-
-            ctx.fillStyle = opt.highlight ? '#334155' : '#cbd5e1';
-            drawFittedText(`• ${opt.line2}`, -216, 38, 432, 15);
-            ctx.restore();
-          });
-
-          // 하단 댓글 유도 바 (y=654)
-          if (t > 2.2) {
-            const ctaP = Easing.backOut((t - 2.2) / 0.45);
-            ctx.save();
-            ctx.translate(W / 2, 654);
-            ctx.scale(ctaP, ctaP);
-            ctx.fillStyle = '#FEE500';
-            drawRoundedRect(ctx, -238, -28, 476, 56, 28);
-            ctx.fill();
-            ctx.fillStyle = '#0f172a';
-            ctx.textAlign = 'center';
-            drawFittedText(`💬 댓글에 [${v.ctaKeyword || '비교견적'}] 남기시면 3가지 비교표 DM 즉시 발송!`, 0, 7, 444, 18);
-            ctx.restore();
-          }
         }
 
-        // ====================================================================
-        // 포맷 4 ('catalog'): 🏛️ 현대·기아 공식 요약 카드형 (기존 클린 쇼룸 스타일)
-        // ====================================================================
-        else {
-          const badgeScale = Easing.backOut(t / 0.45);
+        // --------------------------------------------------------------------
+        // 위젯 2: MAGAZINE_COVER (모터트렌드 매거진 커버 프레임 & 에디토리얼 타이포)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'MAGAZINE_COVER') {
           ctx.save();
-          ctx.translate(W / 2, 48);
-          ctx.scale(badgeScale, badgeScale);
-          const badgeText = `HYUNDAI · KIA 공식 인증  |  ${CUT_NAMES[activePhotoIndex % 4]}`;
-          ctx.font = 'bold 16px sans-serif';
-          const measuredBadgeW = Math.min(476, Math.max(320, ctx.measureText(badgeText).width + 44));
+          ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, 24, 42, W - 48, H - 214, 20);
+          ctx.stroke();
+
+          ctx.globalAlpha = slideIn;
+          ctx.fillStyle = theme.primary;
+          drawRoundedRect(ctx, 42, 62, 230, 36, 8);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'left';
+          drawFittedText(`AUTOREELS EDITION · 0${currentCutSlot + 1}`, 56, 86, 204, 14);
+
+          ctx.fillStyle = 'rgba(9, 13, 22, 0.84)';
+          drawRoundedRect(ctx, 42, 520, W - 84, 142, 18);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.fillRect(42, 520, 8, 142);
 
           ctx.fillStyle = '#ffffff';
-          drawRoundedRect(ctx, -measuredBadgeW / 2, -19, measuredBadgeW, 38, 19);
-          ctx.fill();
-          ctx.fillStyle = HYUNDAI_NAVY;
-          ctx.textAlign = 'center';
-          drawFittedText(badgeText, 0, 6, measuredBadgeW - 28, 16);
+          drawFittedText(campaign.vehicle, 68, 564, 410, 28);
+          ctx.fillStyle = theme.accent;
+          drawFittedText(subLine, 68, 604, 410, 22);
+          ctx.fillStyle = theme.sub;
+          drawFittedText(`${campaign.discount}  |  -${campaign.discountNum.toLocaleString()}만원`, 68, 640, 410, 17);
           ctx.restore();
+        }
 
-          const titleProgress = Easing.power4Out((t - 0.08) / 0.5);
+        // --------------------------------------------------------------------
+        // 위젯 3: GIANT_DISCOUNT_STAMP (초대형 슬롯머신 특가 스탬프)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'GIANT_DISCOUNT_STAMP') {
+          const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 0.95));
           ctx.save();
-          ctx.globalAlpha = titleProgress;
-          ctx.translate(0, (1 - titleProgress) * 24);
-          ctx.textAlign = 'center';
-          ctx.fillStyle = '#fde047';
-          drawFittedText(activeHookText, W / 2, 106, 476, 22);
+          ctx.translate(W / 2, anchorY);
+          ctx.scale(cutPop, cutPop);
 
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(campaign.vehicle, W / 2, 150, 476, 35);
-          ctx.restore();
-
-          ctx.save();
-          const cardScale = Easing.backOut((t - 0.18) / 0.5);
-          ctx.translate(W / 2, 214);
-          ctx.scale(cardScale, cardScale);
-
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-          drawRoundedRect(ctx, -236, -42, 472, 84, 16);
+          ctx.fillStyle = theme.primary;
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 4;
+          drawRoundedRect(ctx, -238, -92, 476, 184, 28);
           ctx.fill();
+          ctx.stroke();
 
-          ctx.fillStyle = HYUNDAI_NAVY;
-          drawRoundedRect(ctx, -236, -42, 128, 84, 16);
+          ctx.fillStyle = theme.badge;
+          drawRoundedRect(ctx, -140, -112, 280, 40, 20);
           ctx.fill();
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 17px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(v.badgeTop || '11월 한정', -172, -8);
-          ctx.fillStyle = '#93c5fd';
-          ctx.font = 'bold 15px sans-serif';
-          ctx.fillText(v.badgeBottom || '특별 프로모션', -172, 18);
+          drawFittedText(`${campaign.vehicle} 당월 특판`, 0, -86, 250, 17);
 
-          const countProgress = Easing.power4Out((t - 0.22) / 1.35);
-          const currentDiscountVal = Math.round(campaign.discountNum * countProgress);
+          ctx.fillStyle = theme.accent;
+          drawFittedText(`-${cnt.toLocaleString()}만 원`, 0, -12, 430, 52);
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(subLine, 0, 34, 436, 22);
+          ctx.fillStyle = theme.sub;
+          drawFittedText(campaign.discount, 0, 68, 420, 18);
+          ctx.restore();
+        }
 
-          ctx.fillStyle = KIA_RED;
-          ctx.textAlign = 'center';
-          drawFittedText(`최대 -${currentDiscountVal.toLocaleString()}만 원 혜택`, 64, -4, 312, 27);
-          ctx.fillStyle = '#1e293b';
-          drawFittedText(campaign.discount, 64, 25, 312, 18);
+        // --------------------------------------------------------------------
+        // 위젯 4: SPEC_FLOATING_TAGS (좌우 비대칭 3단 옵션·트림 플로팅 캡슐)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'SPEC_FLOATING_TAGS') {
+          ctx.save();
+          ctx.translate(30, 54);
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          drawRoundedRect(ctx, 0, 0, 390, 68, 16);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'left';
+          drawFittedText(`KEY POINT · ${CUT_NAMES[activePhotoIndex % 4]}`, 18, 26, 354, 14);
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(subLine, 18, 54, 354, 21);
           ctx.restore();
 
-          ctx.save();
-          activeBullets.slice(0, 2).forEach((line, idx) => {
-            const startT = 0.8 + idx * 0.38;
-            const p = Easing.backOut((t - startT) / 0.45);
-            if (p <= 0) return;
-
+          const tags = [
+            `✦ ${campaign.vehicle} 인기 트림 선점`,
+            activeBullets[0] || '✔ 대기 없는 즉시출고 물량 확보',
+            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 + 저금리 금융`
+          ];
+          tags.forEach((tg, i) => {
+            const tp = Easing.backOut((cutLocalT - i * 0.12) / 0.4);
+            if (tp <= 0) return;
             ctx.save();
-            const yPos = 562 + idx * 54;
-            ctx.translate(W / 2, yPos);
-            ctx.scale(1, p);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
-            drawRoundedRect(ctx, -236, -22, 472, 44, 12);
+            const xOffset = i % 2 === 0 ? -16 : 16;
+            ctx.translate(W / 2 + xOffset + (1 - tp) * 50, 495 + i * 64);
+            ctx.fillStyle = i === 0 ? theme.primary : 'rgba(255, 255, 255, 0.95)';
+            ctx.strokeStyle = theme.accent;
+            ctx.lineWidth = i === 0 ? 2.5 : 0;
+            drawRoundedRect(ctx, -226, -24, 452, 48, 24);
             ctx.fill();
-
-            ctx.fillStyle = HYUNDAI_NAVY;
+            if (i === 0) ctx.stroke();
             ctx.textAlign = 'left';
-            drawFittedText(line, -218, 6, 436, 18);
+            ctx.fillStyle = i === 0 ? theme.accent : '#0f172a';
+            drawFittedText(tg, -200, 7, 400, 18);
             ctx.restore();
           });
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 5: KAKAO_CHAT_PAIR (실제 고객 ↔ 카마스터 카톡 대화 말풍선)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'KAKAO_CHAT_PAIR') {
+          const chats = campaign.kakaoChat && campaign.kakaoChat.length >= 2
+            ? campaign.kakaoChat
+            : [
+                { role: 'customer', text: `팀장님! ${campaign.vehicle} 지금 계약하면 오래 기다려야 하나요? 😭` },
+                { role: 'dealer', text: `아닙니다 고객님! 선점 물량 확보해둬서 이번 주 즉시출고 가능합니다 🚗` }
+              ];
+          const pairOffset = (currentCutSlot % 2) * 2;
+          const pair = [
+            chats[pairOffset % chats.length],
+            chats[(pairOffset + 1) % chats.length]
+          ];
+
+          // 상단 카톡 헤더 캡슐
+          ctx.save();
+          ctx.translate(W / 2, 62);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+          drawRoundedRect(ctx, -236, -24, 472, 48, 24);
+          ctx.fill();
+          ctx.fillStyle = '#FEE500';
+          ctx.beginPath();
+          ctx.arc(-202, 0, 14, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('TALK', -202, 4);
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          drawFittedText(`${d.name} ${d.title} 1:1 실시간 출고상담`, -176, 6, 390, 17);
           ctx.restore();
 
-          const ctaPop = Easing.backOut((t - 1.5) / 0.5);
-          if (ctaPop > 0) {
-            ctx.save();
-            const pulse = 1 + Math.sin(t * 5) * 0.02;
-            ctx.translate(W / 2, 676);
-            ctx.scale(ctaPop * pulse, ctaPop * pulse);
+          pair.forEach((msg, idx) => {
+            const p = Easing.backOut((cutLocalT - idx * 0.28) / 0.42);
+            if (p <= 0) return;
+            const isCust = msg.role === 'customer';
+            const yPos = 470 + idx * 125;
 
-            ctx.fillStyle = '#FEE500';
-            ctx.strokeStyle = HYUNDAI_NAVY;
-            ctx.lineWidth = 2.5;
-            drawRoundedRect(ctx, -236, -26, 472, 52, 26);
+            ctx.save();
+            ctx.translate(W / 2, yPos);
+            ctx.scale(p, p);
+
+            const textStr = msg.text || subLine;
+            const mid = Math.ceil(textStr.length / 2);
+            const splitIdx = textStr.indexOf(' ', mid - 4);
+            const line1 = splitIdx > 0 && textStr.length > 21 ? textStr.slice(0, splitIdx) : textStr;
+            const line2 = splitIdx > 0 && textStr.length > 21 ? textStr.slice(splitIdx + 1) : '';
+
+            if (isCust) {
+              ctx.fillStyle = '#e2e8f0';
+              ctx.font = 'bold 13px sans-serif';
+              ctx.textAlign = 'left';
+              ctx.fillText('🙋‍♂️ 구매 문의 고객님', -236, -28);
+              ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+              drawRoundedRect(ctx, -236, -18, 420, line2 ? 74 : 52, 18);
+              ctx.fill();
+              ctx.fillStyle = '#0f172a';
+              drawFittedText(line1, -216, 10, 384, 17);
+              if (line2) drawFittedText(line2, -216, 36, 384, 17);
+            } else {
+              ctx.fillStyle = '#fde047';
+              ctx.font = 'bold 13px sans-serif';
+              ctx.textAlign = 'right';
+              ctx.fillText(`👔 ${d.name} ${d.title}`, 236, -28);
+              ctx.fillStyle = '#FEE500';
+              drawRoundedRect(ctx, -184, -18, 420, line2 ? 74 : 52, 18);
+              ctx.fill();
+              ctx.fillStyle = '#0f172a';
+              ctx.textAlign = 'left';
+              drawFittedText(line1, -164, 10, 384, 17);
+              if (line2) drawFittedText(line2, -164, 36, 384, 17);
+            }
+            ctx.restore();
+          });
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 6: RECEIPT_QUOTE (공식 견적서/영수증 명세표 보드)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'RECEIPT_QUOTE') {
+          ctx.save();
+          ctx.translate(W / 2, 535);
+          ctx.scale(cutPop, cutPop);
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.97)';
+          ctx.strokeStyle = theme.primary;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -236, -115, 472, 220, 20);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = theme.primary;
+          drawRoundedRect(ctx, -236, -115, 472, 50, 20);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'center';
+          drawFittedText(`OFFICIAL QUOTE · ${campaign.vehicle}`, 0, -83, 436, 19);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#475569';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText('• 당월 특별 프로모션 혜택', -210, -34);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#e11d48';
+          drawFittedText(`-${campaign.discountNum.toLocaleString()}만 원`, 210, -34, 180, 22);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#475569';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText('• 월 납입금 / 출고 조건', -210, 4);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#0f172a';
+          drawFittedText(campaign.discount, 210, 4, 230, 18);
+
+          ctx.fillStyle = '#f1f5f9';
+          drawRoundedRect(ctx, -214, 28, 428, 56, 12);
+          ctx.fill();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = theme.primary;
+          drawFittedText(subLine, 0, 54, 404, 18);
+          ctx.fillStyle = '#475569';
+          drawFittedText(`🎁 ${d.promoTag}`, 0, 76, 404, 14);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 7: VS_FINANCE_BATTLE (할부 vs 장기렌트 vs 리스 3단 비교 보드)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'VS_FINANCE_BATTLE') {
+          const baseMonthly = parseInt((campaign.discount.match(/\d+/) || [46])[0], 10) || 46;
+          const rows = [
+            { name: '신차 할부', desc: `월 ${baseMonthly + 11}만원대 · 취등록세 7% 별도`, best: false },
+            { name: '무보증 장기렌트 BEST', desc: `${campaign.discount} · 세금/보험 0원`, best: true },
+            { name: '법인·사업자 리스', desc: `월 ${Math.max(29, baseMonthly - 3)}만원대 · 연 1,500만 절세`, best: false }
+          ];
+
+          ctx.save();
+          ctx.translate(W / 2, 68);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = theme.primary;
+          drawRoundedRect(ctx, -236, -24, 472, 48, 14);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'center';
+          drawFittedText(`📊 ${subLine}`, 0, 6, 440, 19);
+          ctx.restore();
+
+          rows.forEach((r, idx) => {
+            const rp = Easing.backOut((cutLocalT - idx * 0.14) / 0.42);
+            if (rp <= 0) return;
+            ctx.save();
+            ctx.translate(W / 2, 465 + idx * 78);
+            ctx.scale(rp, rp);
+            ctx.fillStyle = r.best ? 'rgba(255,255,255,0.97)' : 'rgba(15, 23, 42, 0.9)';
+            ctx.strokeStyle = r.best ? theme.accent : 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = r.best ? 3 : 1.5;
+            drawRoundedRect(ctx, -236, -32, 472, 64, 16);
             ctx.fill();
             ctx.stroke();
 
-            ctx.fillStyle = '#0f172a';
-            ctx.textAlign = 'center';
-            drawFittedText(
-              v.ctaBanner || '💬 댓글에 [견적] 남기시면 1:1 최저가 견적표 DM 발송!',
-              0,
-              7,
-              440,
-              19
-            );
+            ctx.textAlign = 'left';
+            ctx.fillStyle = r.best ? '#0f172a' : theme.accent;
+            drawFittedText(r.name, -214, -4, 210, 18);
+            ctx.fillStyle = r.best ? '#e11d48' : '#ffffff';
+            drawFittedText(r.desc, -214, 22, 428, 16);
             ctx.restore();
-          }
+          });
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 8: CHECKLIST_GLASS (글래스모피즘 핵심 혜택 체크리스트)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'CHECKLIST_GLASS') {
+          ctx.save();
+          ctx.translate(W / 2, 92);
+          ctx.scale(cutPop, cutPop);
+          ctx.textAlign = 'center';
+          ctx.fillStyle = theme.accent;
+          drawFittedText(subLine, 0, -12, 460, 23);
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(campaign.vehicle, 0, 28, 460, 34);
+          ctx.restore();
+
+          const items = [
+            activeBullets[0] || '✔ 선점 재고 즉시출고 가능',
+            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 특별 할인`,
+            `✔ ${d.promoTag}`
+          ];
+          items.forEach((it, idx) => {
+            const ip = Easing.backOut((cutLocalT - idx * 0.14) / 0.42);
+            if (ip <= 0) return;
+            ctx.save();
+            ctx.translate(W / 2, 495 + idx * 64);
+            ctx.scale(1, ip);
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+            ctx.strokeStyle = theme.accent;
+            ctx.lineWidth = 1.5;
+            drawRoundedRect(ctx, -236, -25, 472, 50, 14);
+            ctx.fill();
+            ctx.stroke();
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#ffffff';
+            drawFittedText(it, -212, 7, 424, 18);
+            ctx.restore();
+          });
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 9: STOCK_COUNTDOWN (선점 재고 잔여 대수 긴급 게이지 바)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'STOCK_COUNTDOWN') {
+          ctx.save();
+          ctx.translate(W / 2, anchorY);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = 'rgba(9, 13, 22, 0.92)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -238, -86, 476, 172, 22);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = theme.accent;
+          drawFittedText(`⏳ 실시간 선점 물량 마감 임박 · ${campaign.vehicle}`, 0, -44, 440, 19);
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(subLine, 0, -4, 440, 26);
+
+          // 게이지 바 애니메이션
+          ctx.fillStyle = 'rgba(255,255,255,0.15)';
+          drawRoundedRect(ctx, -200, 22, 400, 22, 11);
+          ctx.fill();
+          const barFill = 400 * Easing.clamp(0.82 - cutLocalT * 0.22, 0.28, 0.85);
+          ctx.fillStyle = theme.badge;
+          drawRoundedRect(ctx, -200, 22, barFill, 22, 11);
+          ctx.fill();
+
+          ctx.fillStyle = theme.sub;
+          drawFittedText(`특판가 -${campaign.discountNum.toLocaleString()}만원  |  ${campaign.discount}`, 0, 68, 430, 17);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 10: SMARTKEY_DELIVERY (스마트키 인도 & 전국 캐리어 무상 탁송 배너)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'SMARTKEY_DELIVERY') {
+          ctx.save();
+          ctx.translate(W / 2, 76);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = theme.badge;
+          drawRoundedRect(ctx, -210, -22, 420, 44, 22);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          drawFittedText('🔑 신차 검수 완료 · 전국 무료 캐리어 탁송', 0, 7, 390, 18);
+          ctx.restore();
+
+          ctx.save();
+          ctx.translate(W / 2, 555);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+          ctx.strokeStyle = theme.primary;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -238, -72, 476, 144, 22);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = theme.primary;
+          drawFittedText(subLine, 0, -22, 440, 24);
+          ctx.fillStyle = '#e11d48';
+          drawFittedText(`${campaign.vehicle} · ${campaign.discount}`, 0, 16, 440, 21);
+          ctx.fillStyle = '#334155';
+          drawFittedText(`🎁 ${d.promoTag}`, 0, 50, 440, 16);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 11: MONTHLY_PAYMENT_HERO (월 납입금 집중 히어로 보드)
+        // --------------------------------------------------------------------
+        else if (widgetType === 'MONTHLY_PAYMENT_HERO') {
+          ctx.save();
+          ctx.translate(W / 2, anchorY);
+          ctx.scale(cutPop, cutPop);
+          ctx.fillStyle = theme.primary;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          drawRoundedRect(ctx, -238, -82, 476, 164, 24);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = theme.sub;
+          drawFittedText(`${campaign.vehicle} · 초기비용 0원 맞춤 설계`, 0, -42, 436, 18);
+          ctx.fillStyle = theme.accent;
+          drawFittedText(campaign.discount, 0, 4, 436, 34);
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(subLine, 0, 48, 436, 20);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 12: COMMENT_DM_MAGNET (댓글 키워드 자동 DM 유도 마그넷 배너)
+        // --------------------------------------------------------------------
+        else {
+          ctx.save();
+          const pulse = 1 + Math.sin(t * 7) * 0.025;
+          ctx.translate(W / 2, 565);
+          ctx.scale(cutPop * pulse, cutPop * pulse);
+          ctx.fillStyle = '#FEE500';
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 3.5;
+          drawRoundedRect(ctx, -242, -70, 484, 140, 26);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#0f172a';
+          drawFittedText(subLine, 0, -18, 446, 24);
+          ctx.fillStyle = '#e11d48';
+          drawFittedText(
+            v.ctaBanner || `💬 댓글에 [${v.ctaKeyword || '견적'}] 남기시면 1:1 비밀 조건표 DM 발송!`,
+            0,
+            28,
+            446,
+            20
+          );
+          ctx.restore();
         }
 
         // ======================================================
@@ -2092,6 +2149,7 @@
         }
       }
 
+      syncScenePlanUI();
       renderDealerVariationSummary();
 
       const statusContainer = document.getElementById('previewStatusBadge');
@@ -2174,29 +2232,41 @@
       }
     }
 
-    function selectVideoFormat(fmt) {
-      campaign.videoFormat = fmt;
-      const fmtMeta = {
-        impact: '컷별 풀스크린 임팩트형',
-        kakao: '실제 고객 카톡 상담 대화형',
-        compare: '할부 vs 렌트 vs 리스 3단 비교형',
-        catalog: '현대·기아 공식 요약 카드형'
-      };
-      const labelEl = document.getElementById('activeFormatLabel');
-      if (labelEl) labelEl.textContent = fmtMeta[fmt] || fmtMeta.impact;
-
-      ['impact', 'kakao', 'compare', 'catalog'].forEach((k) => {
-        const btn = document.getElementById(`fmtBtn_${k}`);
-        if (!btn) return;
-        if (k === fmt) {
-          btn.className = 'p-3 rounded-xl border border-indigo-500 bg-indigo-500/15 text-left transition cursor-pointer';
-        } else {
-          btn.className = 'p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-left transition cursor-pointer';
+    function syncScenePlanUI() {
+      const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.GENESIS_COPPER;
+      const badgeEl = document.getElementById('activeSceneRecipeBadge');
+      if (badgeEl) {
+        badgeEl.textContent = `🎨 테마: ${themeObj.label} · 4컷 AI 동적 위젯 활성`;
+      }
+      if (Array.isArray(campaign.scenePlan)) {
+        for (let i = 0; i < 4; i++) {
+          const cutBadge = document.getElementById(`cutWidgetBadge${i}`);
+          const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i];
+          if (cutBadge) {
+            cutBadge.textContent = WIDGET_LABELS[wKey] || wKey;
+          }
         }
-      });
+      }
+    }
 
-      const seekPoint = fmt === 'kakao' ? 5.8 : fmt === 'compare' ? 2.6 : 0.6;
-      window.__timelines['main'].seek(seekPoint);
+    function proceduralRestyleCurrentScene() {
+      const themeKeys = Object.keys(DIRECTOR_THEMES);
+      const otherThemes = themeKeys.filter((k) => k !== campaign.themeId);
+      campaign.themeId = otherThemes[Math.floor(Math.random() * otherThemes.length)] || themeKeys[0];
+
+      const shuffled = [...WIDGET_POOL].sort(() => Math.random() - 0.5);
+      const positions = ['TOP', 'CENTER', 'BOTTOM'];
+      const cameras = ['KEN_BURNS_IN', 'PAN_RIGHT', 'PAN_LEFT', 'DYNAMIC_TILT'];
+
+      campaign.scenePlan = [0, 1, 2, 3].map((idx) => ({
+        widget: shuffled[idx],
+        pos: positions[(idx + Math.floor(Math.random() * 3)) % positions.length],
+        camera: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length],
+        badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
+      }));
+
+      syncScenePlanUI();
+      window.__timelines['main'].seek((window.__timelines['main'].currentTime + 2.0) % 8.0);
     }
 
     function updateCustomCutCaptions() {
@@ -2308,9 +2378,18 @@
         if (ai.ctaBanner && d.variation) {
           d.variation.ctaBanner = ai.ctaBanner;
         }
+        if (ai.themeId && DIRECTOR_THEMES[ai.themeId]) {
+          campaign.themeId = ai.themeId;
+        }
+        if (Array.isArray(ai.scenePlan) && ai.scenePlan.length >= 4) {
+          campaign.scenePlan = ai.scenePlan.slice(0, 4);
+        } else {
+          proceduralRestyleCurrentScene();
+        }
 
         if (noticeEl) {
-          noticeEl.textContent = `✅ [${result.provider}] 창작 완료! 1~4컷 자막과 카톡 대화(포맷 2), SNS 캡션이 모두 새롭게 반영되었습니다.`;
+          const themeLabel = (DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.GENESIS_COPPER).label;
+          noticeEl.textContent = `✅ [${result.provider}] 대본 + [${themeLabel}] 4컷 씬 레이아웃이 새롭게 조합되었습니다!`;
         }
       } catch (err) {
         // 오프라인/로컬 파일 열기 환경일 때만 스마트 폴백 동작
@@ -2333,13 +2412,14 @@
           { role: 'customer', text: '오 대박!! 이번 달 할인이랑 월 납입 조건은 어떻게 되나요?' },
           { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 👇` }
         ];
+        proceduralRestyleCurrentScene();
         if (noticeEl) {
-          noticeEl.textContent = `✅ 상황에 맞춰 4컷 대본과 카톡 대화가 업데이트되었습니다.`;
+          noticeEl.textContent = `✅ 상황에 맞춰 4컷 대본과 씬 레이아웃이 새롭게 조합되었습니다.`;
         }
       } finally {
         if (btnEl) {
           btnEl.disabled = false;
-          btnEl.textContent = '✨ AI 4컷 대본·카톡대화 새로 생성';
+          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
         }
       }
 
