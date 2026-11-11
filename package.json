@@ -1,0 +1,17 @@
+{
+  "name": "dealer-reels-platform",
+  "version": "1.0.0",
+  "description": "자동차 딜러 주간 숏폼/릴스 자동 합성 · 임시서버 검수 · 인스타그램 자동 발행 플랫폼",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "instagram-reels",
+    "car-dealer",
+    "shortform",
+    "ffmpeg",
+    "instagram-graph-api"
+  ],
+  "license": "MIT"
+}
