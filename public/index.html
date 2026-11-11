@@ -112,48 +112,71 @@
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
   <div class="max-w-[1440px] mx-auto space-y-6">
 
-    <!-- 상단 헤더 (56~64px 높이 규격, 조용한 크롬) -->
-    <header class="studio-card px-5 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-[8px] bg-[#232325] border border-[var(--border-strong)] flex items-center justify-center font-mono text-xs font-medium text-[#ededed] shrink-0">
-          AR
+    <!-- 상단 헤더 (딜러 로그인 상태 · 정기구독 결제 · 딜러/관리자 모드 스위치 탑재) -->
+    <header class="studio-card px-5 py-3.5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+      <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-[8px] bg-[#232325] border border-[var(--border-strong)] flex items-center justify-center font-mono text-xs font-medium text-[#ededed] shrink-0">
+            AR
+          </div>
+          <div class="flex items-baseline gap-2.5 flex-wrap">
+            <h1 class="text-[16px] font-medium text-[#ededed] leading-none">
+              AutoReels
+            </h1>
+            <span id="roleModeBadge" class="tag-chip px-2 py-0.5 text-[11px] font-mono text-[#4cc38a]">
+              딜러 전용 스튜디오
+            </span>
+          </div>
         </div>
-        <div class="flex items-baseline gap-3 flex-wrap">
-          <h1 class="text-[16px] font-medium text-[#ededed] leading-none">
-            AutoReels
-          </h1>
-          <span class="text-[13px] text-[#85858b]">
-            신차·중고차 카마스터 9:16 출고 프로모션 영상 제작기
-          </span>
+
+        <!-- 딜러용: 현재 로그인된 내 계정 표시 + 로그인/결제 버튼 -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <div id="headerLoggedDealerChip" class="h-8 px-3 rounded-[8px] bg-[#141415] border border-[var(--border)] flex items-center gap-2 text-[12px]">
+            <span id="headerDrmDot" class="w-2 h-2 rounded-full bg-[#4cc38a]"></span>
+            <span id="headerDealerNameText" class="text-[#ededed] font-medium">김민준 수석 카마스터</span>
+            <span id="headerDealerPhoneText" class="text-[#85858b] font-mono">010-4821-9032</span>
+          </div>
+          <button type="button" onclick="openDealerAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+            딜러 로그인 · 가입
+          </button>
+          <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer">
+            PRO 구독 결제
+          </button>
         </div>
       </div>
 
-      <!-- 상단 뷰 전환 내비게이션 -->
-      <nav class="flex items-center gap-1 bg-[#0f0f10] p-1 rounded-[10px] border border-[var(--border)] overflow-x-auto">
-        <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-medium transition-colors bg-[#232325] text-[#ededed]">
-          스튜디오 제작
+      <!-- 우측: 뷰 전환 내비게이션 & 대표님 관리자 모드 전환 스위치 -->
+      <div class="flex items-center justify-between xl:justify-end gap-2 flex-wrap">
+        <nav id="topAdminNav" class="hidden flex items-center gap-1 bg-[#0f0f10] p-1 rounded-[10px] border border-[var(--border)] overflow-x-auto">
+          <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="whitespace-nowrap h-7 px-3 rounded-[6px] text-[12px] font-medium transition-colors bg-[#232325] text-[#ededed]">
+            스튜디오 제작
+          </button>
+          <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap h-7 px-3 rounded-[6px] text-[12px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
+            구독 딜러 · 매출 본부
+          </button>
+          <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap h-7 px-3 rounded-[6px] text-[12px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
+            렌더링 엔진 규격
+          </button>
+        </nav>
+
+        <button id="roleSwitchBtn" type="button" onclick="toggleRoleViewMode()" class="btn-secondary h-8 px-3 text-[12px] font-mono cursor-pointer" title="실제 딜러가 보는 화면과 대표님 관리자 화면을 전환합니다">
+          대표님 관리자 모드 열기
         </button>
-        <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
-          구독 계정 · AI 설정
-        </button>
-        <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
-          렌더링 엔진 규격
-        </button>
-      </nav>
+      </div>
     </header>
 
-    <!-- 담당 카마스터 프로필 전환 바 -->
-    <div class="studio-card px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+    <!-- [관리자 전용] 담당 카마스터 프로필 전환 바 (딜러 전용 모드에서는 자동 숨김) -->
+    <div id="dealerQuickSelectorBar" class="hidden studio-card px-5 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 flex-wrap">
-        <span class="text-[13px] font-medium text-[#a1a1a6]">
-          담당 카마스터 프로필
+        <span class="text-[12px] font-mono text-[#d97706]">
+          [관리자 전용] 전체 구독 딜러 전환
         </span>
         <div id="dealerQuickSelector" class="flex items-center gap-1.5 flex-wrap"></div>
       </div>
       <div class="flex items-center gap-3">
         <span id="mobileSavedBadge" class="text-[12px] text-[#85858b]">명함 정보는 현재 기기에 자동 저장됩니다</span>
         <button onclick="openNewDealerModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-          프로필 추가
+          수동 딜러 추가
         </button>
       </div>
     </div>
@@ -265,136 +288,121 @@
             </select>
           </div>
 
-          <!-- ★ 영상 시간 · AI 성우(TTS) · BGM 스튜디오 컨트롤 바 -->
+          <!-- ★ 영상 시간(컷·사진 자동확장) · AI 성우(TTS) · 릴스/숏츠 음원(BGM) 컨트롤 바 -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="text-[13px] font-medium text-[#ededed]">영상 시간 · AI 성우(TTS) · BGM 설정</span>
-                <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#a1a1a6]">사운드 대기중 (클릭 시 재생)</span>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[13px] font-medium text-[#ededed]">영상 시간 · 한국어 AI 성우(TTS) · 릴스/숏츠 BGM</span>
+                <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]">클릭 시 사운드 자동 활성</span>
               </div>
-              <button type="button" onclick="triggerFullAudioPreview()" class="btn-primary h-8 px-3 text-[12px] cursor-pointer">
-                사운드 켜고 처음부터 재생 (BGM + 성우)
-              </button>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button type="button" onclick="testCurrentCutTtsNow()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                  🔊 현재 컷 성우 음성 테스트
+                </button>
+                <button type="button" onclick="triggerFullAudioPreview()" class="btn-primary h-8 px-3 text-[12px] cursor-pointer">
+                  ▶️ 사운드 켜고 처음부터 재생 (BGM + 성우)
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">총 영상 길이 (초)</label>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">총 영상 길이 (늘리면 사진·컷 수 자동 추가)</label>
                 <div class="flex gap-1.5">
                   <select id="durationSelect" onchange="setVideoTotalDuration(this.value)" class="studio-input flex-1 h-9 px-2.5 text-[12px] font-mono cursor-pointer">
-                    <option value="8">8초 (초단기 릴스 · 컷당 1.25초)</option>
-                    <option value="12" selected>12초 (표준 숏폼 · 컷당 2.0초)</option>
-                    <option value="15">15초 (인스타 추천 · 컷당 2.75초)</option>
-                    <option value="20">20초 (상세 비교 · 컷당 4.0초)</option>
-                    <option value="30">30초 (풀 스토리 · 컷당 6.25초)</option>
+                    <option value="8">8초 (본편 사진 4컷 + 명함)</option>
+                    <option value="12" selected>12초 (본편 사진 4컷 + 명함)</option>
+                    <option value="15">15초 (본편 사진 6컷 자동확장 + 명함)</option>
+                    <option value="20">20초 (본편 사진 8컷 자동확장 + 명함)</option>
+                    <option value="30">30초 (본편 사진 10컷 풀스토리 + 명함)</option>
                   </select>
                   <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-16 h-9 px-2 text-[12px] font-mono text-center" title="직접 초 입력" />
                 </div>
               </div>
 
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">배경음악 (BGM 비트)</label>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-[12px] text-[#a1a1a6]">릴스·숏츠 배경음악 (BGM)</label>
+                  <label for="customBgmFileInput" class="text-[11px] font-mono text-[#3b82f6] hover:underline cursor-pointer">
+                    + 내 폰/PC 음원(MP3) 불러오기
+                  </label>
+                  <input id="customBgmFileInput" type="file" accept="audio/*,video/mp4" onchange="handleCustomBgmUpload(event)" class="hidden" />
+                </div>
                 <select id="bgmStyleSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
-                  <option value="showroom" selected>트렌디 쇼룸 하우스 (120 BPM)</option>
-                  <option value="luxury">럭셔리 라운지 패드 (95 BPM)</option>
-                  <option value="urban">어반 트랩 비트 (140 BPM)</option>
-                  <option value="bright">브라이트 모던 팝 (124 BPM)</option>
+                  <option value="showroom" selected>릴스 인기 1위 · Chill House 쇼룸 비트</option>
+                  <option value="urban">유튜브 쇼츠 급상승 · Phonk / Trap 비트</option>
+                  <option value="bright">인스타 감성 · Upbeat City Pop 리듬</option>
+                  <option value="luxury">제네시스·수입차 · Luxury Lounge 패드</option>
+                  <option value="custom_mp3" id="customBgmOption" class="hidden">내가 불러온 릴스·숏츠 음원 파일</option>
                   <option value="off">BGM 끄기</option>
                 </select>
               </div>
 
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">AI 성우 내레이션 (TTS)</label>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">한국어 AI 성우 내레이션 (TTS)</label>
                 <select id="ttsVoiceSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
                   <option value="female" selected>여성 아나운서 성우 (또렷·표준)</option>
-                  <option value="male">남성 카마스터 성우 (차분·신뢰)</option>
-                  <option value="energetic">특판 쇼호스트 성우 (빠른 1.2x)</option>
+                  <option value="male">남성 카마스터 성우 (중저음·신뢰)</option>
+                  <option value="energetic">특판 쇼호스트 성우 (빠른 1.25x)</option>
                   <option value="off">성우 내레이션 끄기</option>
                 </select>
               </div>
             </div>
+            <p id="customBgmStatusText" class="hidden text-[11px] font-mono text-[#4cc38a]"></p>
           </div>
 
           <!-- 생성형 씬 디렉터 & 레이아웃 엔진 -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-[#ededed]">생성형 씬 디렉터</span>
+                <span class="text-[13px] font-medium text-[#ededed]">AI 대본 · 멀티컷 스토리보드 생성기</span>
                 <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
                 </span>
-                <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 동적 조합</span>
+                <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
               </div>
               <button type="button" onclick="proceduralRestyleCurrentScene()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                 화면 구도 · 테마 재조립
               </button>
             </div>
 
+            <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
+            <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
+              <strong class="text-[#ededed] font-medium">AI 대본 → 영상 제작 원리:</strong> 아래에 <code class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 입력 후 생성 버튼을 누르면 ① 차종·할인액·월납입금이 즉시 바뀌고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">차량 화보 컷 + 12종 모션 그래픽(카톡 대화·영수증 견적·할인 스탬프) + 한국어 성우(TTS) 음성 + 릴스 BGM</strong>이 즉시 합성되어 재생됩니다.
+            </div>
+
             <div class="flex flex-col sm:flex-row gap-2">
               <input id="aiPromptInput" type="text" placeholder="예: 30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리" class="studio-input flex-1 h-9 px-3 text-[13px]" />
               <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">
-                AI 대본 · 성우 음성 · 씬 구도 생성
+                AI 대본 · 성우 음성 · 영상 생성
               </button>
             </div>
             <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
 
-            <!-- 1~4컷 동적 위젯 요약 및 화면 자막 + 성우 TTS 대본 입력 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
-                <div class="flex items-center justify-between text-[12px]">
-                  <span id="cutTimeLabel0" class="font-mono text-[#a1a1a6]">Cut 1 · 0.0~2.0s</span>
-                  <span id="cutWidgetBadge0" class="font-mono text-[11px] text-[#85858b]">속보 티커</span>
-                </div>
-                <input id="cutSub0" type="text" oninput="updateCustomCutCaptions()" placeholder="1컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-                <input id="cutTts0" type="text" oninput="updateCustomCutCaptions()" placeholder="1컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
-              </div>
-              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
-                <div class="flex items-center justify-between text-[12px]">
-                  <span id="cutTimeLabel1" class="font-mono text-[#a1a1a6]">Cut 2 · 2.0~4.0s</span>
-                  <span id="cutWidgetBadge1" class="font-mono text-[11px] text-[#85858b]">카톡 대화</span>
-                </div>
-                <input id="cutSub1" type="text" oninput="updateCustomCutCaptions()" placeholder="2컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-                <input id="cutTts1" type="text" oninput="updateCustomCutCaptions()" placeholder="2컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
-              </div>
-              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
-                <div class="flex items-center justify-between text-[12px]">
-                  <span id="cutTimeLabel2" class="font-mono text-[#a1a1a6]">Cut 3 · 4.0~6.0s</span>
-                  <span id="cutWidgetBadge2" class="font-mono text-[11px] text-[#85858b]">할인 영수증</span>
-                </div>
-                <input id="cutSub2" type="text" oninput="updateCustomCutCaptions()" placeholder="3컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-                <input id="cutTts2" type="text" oninput="updateCustomCutCaptions()" placeholder="3컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
-              </div>
-              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
-                <div class="flex items-center justify-between text-[12px]">
-                  <span id="cutTimeLabel3" class="font-mono text-[#a1a1a6]">Cut 4 · 6.0~8.0s</span>
-                  <span id="cutWidgetBadge3" class="font-mono text-[11px] text-[#85858b]">댓글 DM 유도</span>
-                </div>
-                <input id="cutSub3" type="text" oninput="updateCustomCutCaptions()" placeholder="4컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-                <input id="cutTts3" type="text" oninput="updateCustomCutCaptions()" placeholder="4컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
-              </div>
-            </div>
+            <!-- 동적 N컷(4컷~10컷) 자막 + 성우 TTS 대본 카드 컨테이너 (시간이 늘어나면 컷 카드도 자동으로 늘어남) -->
+            <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"></div>
           </div>
 
           <!-- 사진 업로드 영역 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label for="multiPhotoInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
-              <span class="text-[13px] font-medium text-[#ededed]">차량 · 출고 사진 업로드 (1~4장)</span>
-              <span class="text-[12px] text-[#85858b] mt-1">선택 시 0~8초 구간 줌인 · 패닝 모션 자동 적용</span>
+              <span id="photoUploadLabelTitle" class="text-[13px] font-medium text-[#ededed]">차량 · 출고 사진 업로드 (1~10장 다중 선택)</span>
+              <span class="text-[12px] text-[#85858b] mt-1">설정한 영상 시간에 맞춰 모든 사진이 순서대로 줌인·패닝 슬라이드됩니다</span>
               <input type="file" id="multiPhotoInput" accept="image/*" multiple onchange="handleMultiPhotoUpload(event)" class="hidden" />
             </label>
             <label for="dealerFaceQuickInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
               <span class="text-[13px] font-medium text-[#ededed]">카마스터 프로필 사진 변경</span>
-              <span class="text-[12px] text-[#85858b] mt-1">하단 프로필 바 및 8~12초 엔딩 명함에 반영</span>
+              <span class="text-[12px] text-[#85858b] mt-1">하단 프로필 바 및 엔딩 명함에 즉시 반영</span>
               <input type="file" id="dealerFaceQuickInput" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="hidden" />
             </label>
           </div>
 
-          <!-- 4컷 썸네일 & 중복 방지 변주 컨트롤 -->
+          <!-- N컷 썸네일 & 중복 방지 변주 컨트롤 -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span class="text-[13px] font-medium text-[#ededed]">지점 내 중복 방지 변주</span>
-                <p class="text-[12px] text-[#85858b] mt-0.5">동일 지점 딜러 간 영상 중복을 피하기 위해 컷 순서와 카메라 궤적을 분리합니다</p>
+                <span id="photoSectionHeaderTitle" class="text-[13px] font-medium text-[#ededed]">적용된 차량 · 쇼룸 컷 화보 (시간 설정에 따라 4~10컷 자동 확장)</span>
+                <p class="text-[12px] text-[#85858b] mt-0.5">썸네일을 클릭하면 해당 컷 시간으로 즉시 이동하며 성우 음성을 들을 수 있습니다</p>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
@@ -408,8 +416,8 @@
             <div id="dealerVariationSummary" class="text-[12px] text-[#a1a1a6] bg-[#141415] px-3.5 py-2.5 rounded-[8px] border border-[var(--border)]">
               변주 레시피 로딩 중
             </div>
-            <div id="aiPhotoThumbnails" class="grid grid-cols-4 gap-2 pt-0.5"></div>
-            <p id="photoUploadStatus" class="text-[12px] text-[#85858b]">기본 실사 화보 4장이 적용되어 있습니다</p>
+            <div id="aiPhotoThumbnails" class="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-0.5"></div>
+            <p id="photoUploadStatus" class="text-[12px] text-[#85858b]">기본 실사 화보가 적용되어 있습니다</p>
             <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="hidden" />
           </div>
 
@@ -473,9 +481,24 @@
               </div>
             </div>
 
-            <!-- 대표님 테스트용 구독 상태 전환 -->
+            <!-- 딜러용: 구독 결제 · 정품 라이선스 즉시 개통 바 -->
             <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border)]">
-              <span class="text-[12px] text-[#85858b]">구독 차단 시뮬레이션</span>
+              <span id="dealerBillingNoticeText" class="text-[12px] text-[#a1a1a6]">
+                정기구독 결제 즉시 내 번호 전용 정품 라이선스가 자동 발급되며 워터마크가 제거됩니다.
+              </span>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="openDealerAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                  내 번호 로그인 · 변경
+                </button>
+                <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer">
+                  PRO 멤버십 결제 · 연장하기
+                </button>
+              </div>
+            </div>
+
+            <!-- [관리자 전용] 대표님 테스트용 구독 상태 전환 (딜러 모드에서는 숨김) -->
+            <div id="adminDrmSimRow" class="hidden flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[var(--border)]">
+              <span class="text-[12px] font-mono text-[#d97706]">[관리자 전용] 구독 차단 시뮬레이션</span>
               <div class="flex flex-wrap gap-1.5">
                 <button type="button" onclick="simulateDrmMode('PRO')" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">
                   정품 구독 정상
@@ -836,6 +859,184 @@
         <button type="button" onclick="closeSnsConnectModal()" class="btn-secondary h-9 px-4 text-[12px] cursor-pointer">취소</button>
         <button type="button" onclick="saveDealerSnsAccounts()" class="btn-primary h-9 px-4 text-[12px] cursor-pointer">연동 저장</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 모달 A: 카마스터 로그인 & 1분 회원가입 모달 (휴대폰 번호 = Rust Wasm DRM 바인딩 ID) -->
+  <!-- ========================================================================= -->
+  <div id="dealerAuthModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="studio-card max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <div>
+          <span class="font-mono text-[11px] text-[#85858b]">CAR MASTER AUTH</span>
+          <h3 class="text-[16px] font-medium text-[#ededed] mt-0.5">카마스터 전용 스튜디오 로그인 · 회원가입</h3>
+        </div>
+        <button type="button" onclick="closeDealerAuthModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+      </div>
+
+      <!-- 로그인 / 신규가입 탭 -->
+      <div class="grid grid-cols-2 gap-1 p-1 rounded-[8px] bg-[#0f0f10] border border-[var(--border)]">
+        <button id="authTabLogin" type="button" onclick="switchAuthModalTab('login')" class="h-8 rounded-[6px] text-[12px] font-medium bg-[#232325] text-[#ededed] cursor-pointer">
+          기존 딜러 로그인
+        </button>
+        <button id="authTabSignup" type="button" onclick="switchAuthModalTab('signup')" class="h-8 rounded-[6px] text-[12px] font-normal text-[#85858b] hover:text-[#ededed] cursor-pointer">
+          1분 신규 회원가입 (무료체험)
+        </button>
+      </div>
+
+      <p class="text-[12px] text-[#a1a1a6] leading-relaxed">
+        입력하신 <strong class="text-[#ededed] font-medium">휴대폰 번호</strong>가 로그인 아이디이자 영상 하단 명함에 고정되는 <strong class="text-[#ededed] font-medium">정품 바인딩 번호</strong>가 됩니다. (타 딜러와 계정 공유 불가)
+      </p>
+
+      <div class="space-y-3 text-[13px]">
+        <div>
+          <label class="block text-[12px] text-[#a1a1a6] mb-1">본인 휴대폰 번호 (아이디 겸 정품 바인딩 번호)</label>
+          <input id="authPhoneInput" type="tel" value="010-5582-3391" placeholder="010-0000-0000" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
+        </div>
+        <div>
+          <label class="block text-[12px] text-[#a1a1a6] mb-1">비밀번호 (4자리 이상)</label>
+          <input id="authPasswordInput" type="password" value="1234" placeholder="••••" class="studio-input w-full h-9 px-3 text-[13px]" />
+        </div>
+
+        <!-- 신규 가입 시 추가 입력 필드 -->
+        <div id="authSignupFields" class="hidden space-y-3 pt-2 border-t border-[var(--border)]">
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1">딜러 성함</label>
+              <input id="authNameInput" type="text" value="정우성" placeholder="홍길동" class="studio-input w-full h-9 px-3 text-[13px]" />
+            </div>
+            <div>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1">직함</label>
+              <input id="authTitleInput" type="text" value="수석 카마스터" placeholder="수석 카마스터" class="studio-input w-full h-9 px-3 text-[13px]" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">소속 전시장 · 대리점명</label>
+            <input id="authBranchInput" type="text" value="현대자동차 도산대로점" placeholder="현대·기아 공식전시장" class="studio-input w-full h-9 px-3 text-[13px]" />
+          </div>
+          <div>
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">출고 고객 전담 서비스 문구</label>
+            <input id="authPromoInput" type="text" value="출고 고객 전원 프리미엄 썬팅 + 블랙박스 무상 지원" class="studio-input w-full h-9 px-3 text-[13px]" />
+          </div>
+        </div>
+      </div>
+
+      <p id="authModalNotice" class="hidden text-[12px] text-[#4cc38a] text-center"></p>
+
+      <button type="button" onclick="submitDealerAuthForm()" id="authSubmitBtn" class="btn-primary w-full h-10 text-[13px] cursor-pointer">
+        내 번호로 스튜디오 시작하기
+      </button>
+
+      <!-- 대표님 확인용 원클릭 데모 로그인 -->
+      <div class="pt-3 border-t border-[var(--border)] space-y-2">
+        <div class="text-[11px] font-mono text-[#85858b]">빠른 시나리오 체험 (원클릭 전환)</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="quickLoginDemoDealer('NEW_TRIAL')" class="btn-secondary h-8 px-2.5 text-[11px] cursor-pointer">
+            미결제 신규딜러로 접속 체험
+          </button>
+          <button type="button" onclick="quickLoginDemoDealer('PRO_MINJUN')" class="btn-secondary h-8 px-2.5 text-[11px] cursor-pointer">
+            PRO 결제딜러(김민준) 접속
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 모달 B: AutoReels PRO 멤버십 정기구독 결제창 (카카오페이 / 토스페이 / 카드결제) -->
+  <!-- ========================================================================= -->
+  <div id="billingCheckoutModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="studio-card max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <div>
+          <span class="font-mono text-[11px] text-[#4cc38a]">SUBSCRIPTION CHECKOUT</span>
+          <h3 class="text-[16px] font-medium text-[#ededed] mt-0.5">AutoReels PRO 카마스터 정기구독 결제</h3>
+        </div>
+        <button type="button" onclick="closeBillingCheckoutModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+      </div>
+
+      <!-- 라이선스 귀속 안내 -->
+      <div class="studio-sub p-3.5 flex items-center justify-between gap-2 text-[12px]">
+        <div>
+          <div class="text-[#85858b]">정품 라이선스 귀속 딜러 및 바인딩 번호</div>
+          <div id="billingTargetDealerText" class="text-[13px] font-medium text-[#ededed] mt-0.5">
+            김민준 수석 카마스터 (010-4821-9032)
+          </div>
+        </div>
+        <span class="tag-chip px-2.5 py-1 font-mono text-[11px] text-[#4cc38a]">즉시 자동개통</span>
+      </div>
+
+      <!-- 요금제 선택 -->
+      <div class="space-y-2">
+        <label class="block text-[12px] text-[#a1a1a6]">1. 구독 플랜 선택 (부가세 포함)</label>
+        <div class="grid grid-cols-1 gap-2">
+          <button type="button" id="planCard_monthly_150k" onclick="selectBillingPlan('monthly_150k')" class="p-3.5 rounded-[10px] border border-[#3b82f6] bg-[#19191b] text-left flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[14px] font-medium text-[#ededed]">월간 PRO 무제한 패스 (30일)</span>
+                <span class="px-2 py-0.5 rounded-[4px] bg-[#3b82f6] text-white text-[10px] font-mono">인기 · 추천</span>
+              </div>
+              <div class="text-[12px] text-[#85858b] mt-0.5">AI 대본 · 한국어 성우 TTS · BGM 영상 무제한 추출 + 4대 SNS 연동</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[15px] font-mono font-medium text-[#ededed]">150,000원</div>
+              <div class="text-[11px] font-mono text-[#85858b]">일 5,000원꼴</div>
+            </div>
+          </button>
+
+          <button type="button" id="planCard_weekly_50k" onclick="selectBillingPlan('weekly_50k')" class="p-3.5 rounded-[10px] border border-[var(--border)] bg-[#141415] text-left flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="text-[14px] font-medium text-[#ededed]">주간 스타터 패스 (7일)</div>
+              <div class="text-[12px] text-[#85858b] mt-0.5">단기 당월 특판 집중 홍보용 · 7일간 워터마크 해제 및 무제한 추출</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[15px] font-mono font-medium text-[#ededed]">50,000원</div>
+              <div class="text-[11px] font-mono text-[#85858b]">7일 권</div>
+            </div>
+          </button>
+
+          <button type="button" id="planCard_annual_1200k" onclick="selectBillingPlan('annual_1200k')" class="p-3.5 rounded-[10px] border border-[var(--border)] bg-[#141415] text-left flex items-center justify-between cursor-pointer">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-[14px] font-medium text-[#ededed]">연간 VIP 마스터 패스 (365일)</span>
+                <span class="tag-chip px-1.5 py-0.5 text-[10px] font-mono text-[#4cc38a]">33% 할인</span>
+              </div>
+              <div class="text-[12px] text-[#85858b] mt-0.5">연간 무제한 이용 + 지점장·법인 세금계산서 및 카드 증빙 지원</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="text-[15px] font-mono font-medium text-[#ededed]">1,200,000원</div>
+              <div class="text-[11px] font-mono text-[#85858b]">월 10만원꼴</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 결제 수단 선택 -->
+      <div class="space-y-2">
+        <label class="block text-[12px] text-[#a1a1a6]">2. 간편결제 · 카드 선택</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" id="payMethod_kakaopay" onclick="selectPayMethod('kakaopay')" class="h-10 rounded-[8px] border border-[#3b82f6] bg-[#232325] text-[12px] font-medium text-[#ededed] cursor-pointer">
+            카카오페이
+          </button>
+          <button type="button" id="payMethod_tosspay" onclick="selectPayMethod('tosspay')" class="h-10 rounded-[8px] border border-[var(--border)] bg-[#141415] text-[12px] font-normal text-[#a1a1a6] cursor-pointer">
+            토스페이
+          </button>
+          <button type="button" id="payMethod_card" onclick="selectPayMethod('card')" class="h-10 rounded-[8px] border border-[var(--border)] bg-[#141415] text-[12px] font-normal text-[#a1a1a6] cursor-pointer">
+            신용·법인카드
+          </button>
+        </div>
+      </div>
+
+      <!-- 결제 완료 시 영수증/라이선스 발급 알림 -->
+      <div id="billingSuccessBox" class="hidden p-3.5 rounded-[10px] bg-[#141415] border border-[#4cc38a] space-y-1 text-[12px]">
+        <div class="font-medium text-[#4cc38a]">결제 승인 및 Rust Wasm 정품 라이선스 즉시 개통 완료!</div>
+        <div id="billingReceiptDetail" class="font-mono text-[11px] text-[#a1a1a6]"></div>
+      </div>
+
+      <button type="button" id="executePayBtn" onclick="executeSubscriptionPayment()" class="w-full h-11 rounded-[10px] bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium text-[14px] transition-colors cursor-pointer">
+        150,000원 결제하고 워터마크 즉시 해제하기
+      </button>
     </div>
   </div>
 
@@ -1265,15 +1466,210 @@
       return dealers.find((d) => d.id === selectedDealerId) || dealers[0];
     }
 
+    // 영상 길이에 따른 본편 컷(사진·장면) 수 계산: 8~12초=4컷, 15초=6컷, 20초=8컷, 30초+=10컷
+    function getTargetCutCount() {
+      if (TOTAL_DURATION >= 26) return 10;
+      if (TOTAL_DURATION >= 18) return 8;
+      if (TOTAL_DURATION >= 14) return 6;
+      return 4;
+    }
+
+    const EXTRA_CUT_BLUEPRINTS = [
+      { label: '5. 파노라마 앰비언트 무드', widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 1, cropMode: 'ambient',
+        sub: (c) => `${c.vehicle} · 캘리그라피 전용 나파가죽 & 앰비언트 라이트`,
+        tts: (c) => `실내를 채우는 고급 나파가죽 시트와 파노라마 디스플레이가 압도적인 품격을 선사합니다.` },
+      { label: '6. 광활한 2열·트렁크 적재', widget: 'CHECKLIST_GLASS', pos: 'bottom', cam: 2, cropMode: 'trunk',
+        sub: (c) => `골프백 4개 + 유모차 여유 수납 · 패밀리·레저 완벽 대응`,
+        tts: (c) => `넓은 2열 레그룸과 대용량 트렁크 공간으로 패밀리카와 레저용 모두 완벽합니다.` },
+      { label: '7. 하이브리드 정숙성·연비', widget: 'MONTHLY_PAYMENT_HERO', pos: 'center', cam: 3, cropMode: 'drive',
+        sub: (c) => `복합연비 최상위 · 정숙한 EV 모드 주행 퍼포먼스`,
+        tts: (c) => `도심에서는 전기차처럼 조용하고, 리터당 뛰어난 복합연비로 유지비까지 확 줄였습니다.` },
+      { label: '8. 할부·렌트·리스 최저금리', widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 0, cropMode: 'finance',
+        sub: (c) => `초기비용 0원 무보증 · 전 금융사 최저금리 1:1 비교`,
+        tts: (c) => `할부, 장기렌트, 리스 전 금융사 금리를 비교해 초기비용 0원 최저 납입금으로 설계해 드립니다.` },
+      { label: '9. 프리미엄 신차패키지 무상', widget: 'STOCK_COUNTDOWN', pos: 'bottom', cam: 1, cropMode: 'package',
+        sub: (c, d) => `🎁 ${d.promoTag}`,
+        tts: (c, d) => `이번 달 계약 고객님께는 ${d.promoTag} 혜택을 전액 무상으로 지원해 드립니다.` },
+      { label: '10. 전시장 VIP 즉시출고 인도', widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2, cropMode: 'vip',
+        sub: (c, d) => `${d.name} ${d.title} 전국 무료 캐리어 탁송 · 댓글 [견적]`,
+        tts: (c, d) => `신차 검수부터 전국 무료 캐리어 탁송까지, ${d.name} ${d.title}이 끝까지 책임지겠습니다.` }
+    ];
+
+    // 4장의 기본 실사 화보를 기반으로 5~10번째 추가 컷 전용 고해상도 쇼룸 앵글/크롭/무드 화보 자동 합성
+    function createSynthesizedCutImage(baseImg, cutIdx, labelText) {
+      const off = document.createElement('canvas');
+      off.width = 540;
+      off.height = 960;
+      const octx = off.getContext('2d');
+      if (baseImg && baseImg.complete && baseImg.naturalWidth > 0) {
+        octx.save();
+        // 각 추가 컷마다 다른 줌/앵글 포커스 부여
+        const zoom = 1.18 + (cutIdx % 3) * 0.08;
+        const offsetX = cutIdx % 2 === 0 ? -38 : 34;
+        const offsetY = cutIdx % 3 === 0 ? -42 : 28;
+        octx.translate(270 + offsetX, 480 + offsetY);
+        octx.scale(zoom, zoom);
+        octx.drawImage(baseImg, -270, -480, 540, 960);
+        octx.restore();
+      } else {
+        const g = octx.createLinearGradient(0, 0, 0, 960);
+        g.addColorStop(0, '#0f172a');
+        g.addColorStop(1, '#020617');
+        octx.fillStyle = g;
+        octx.fillRect(0, 0, 540, 960);
+      }
+      // 컷별 쇼룸 무드 컬러 그레이딩 필터
+      const tints = [
+        'rgba(14, 116, 144, 0.24)',
+        'rgba(30, 58, 138, 0.26)',
+        'rgba(88, 28, 135, 0.22)',
+        'rgba(6, 78, 59, 0.24)',
+        'rgba(124, 45, 18, 0.22)',
+        'rgba(15, 23, 42, 0.28)'
+      ];
+      octx.fillStyle = tints[(cutIdx - 4) % tints.length];
+      octx.fillRect(0, 0, 540, 960);
+
+      const dataUrl = off.toDataURL('image/jpeg', 0.86);
+      const synthImg = new Image();
+      synthImg.src = dataUrl;
+      synthImg._label = labelText;
+      synthImg._dataUrl = dataUrl;
+      return synthImg;
+    }
+
+    // 현재 설정된 영상 시간(컷 수)에 맞춰 사진 배열·자막 배열·TTS 대본·UI 카드·썸네일을 동적 확장/동기화
+    function syncDynamicCutCountAndPhotos() {
+      const targetCuts = getTargetCutCount();
+      const d = getSelectedDealer();
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDur = mainDur / targetCuts;
+
+      while (campaign.cutCaptions.length < targetCuts) {
+        const idx = campaign.cutCaptions.length;
+        const bp = EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
+        campaign.cutCaptions.push(bp.sub(campaign, d));
+      }
+      if (!Array.isArray(campaign.ttsLines)) campaign.ttsLines = [];
+      while (campaign.ttsLines.length < targetCuts) {
+        const idx = campaign.ttsLines.length;
+        if (idx < 4 && campaign.cutCaptions[idx]) {
+          campaign.ttsLines.push(campaign.cutCaptions[idx]);
+        } else {
+          const bp = EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
+          campaign.ttsLines.push(bp.tts(campaign, d));
+        }
+      }
+      if (!Array.isArray(campaign.scenePlan)) campaign.scenePlan = [];
+      while (campaign.scenePlan.length < targetCuts) {
+        const idx = campaign.scenePlan.length;
+        const bp = EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
+        campaign.scenePlan.push({
+          cut: idx + 1,
+          widget: bp.widget,
+          pos: bp.pos,
+          cam: bp.cam
+        });
+      }
+
+      // 기본 AI 사진 모드일 때 시간이 늘어나면(6컷/8컷/10컷) 사진 수도 자동으로 추가 생성
+      if (!campaign.isUserCustomPhotos && campaign.uploadedPhotos.length >= 4) {
+        if (campaign.uploadedPhotos.length > targetCuts) {
+          campaign.uploadedPhotos = campaign.uploadedPhotos.slice(0, targetCuts);
+        } else {
+          while (campaign.uploadedPhotos.length < targetCuts) {
+            const idx = campaign.uploadedPhotos.length;
+            const baseImg = campaign.uploadedPhotos[idx % 4];
+            const bp = EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
+            const synthImg = createSynthesizedCutImage(baseImg, idx, bp.label);
+            campaign.uploadedPhotos.push(synthImg);
+          }
+        }
+      }
+
+      // 썸네일 그리드 업데이트
+      const thumbContainer = document.getElementById('aiPhotoThumbnails');
+      if (thumbContainer && campaign.uploadedPhotos.length > 0) {
+        thumbContainer.innerHTML = '';
+        campaign.uploadedPhotos.forEach((imgObj, idx) => {
+          const sTime = (idx * cutDur).toFixed(1);
+          const eTime = ((idx + 1) * cutDur).toFixed(1);
+          const label =
+            imgObj._label ||
+            (BUILT_IN_AI_CAR_PHOTOS[idx] && BUILT_IN_AI_CAR_PHOTOS[idx].label) ||
+            `${idx + 1}. 쇼룸 컷 #${idx + 1}`;
+          const srcUrl = imgObj._dataUrl || imgObj.src;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.onclick = () => {
+            seekToTime(idx * cutDur + 0.12);
+            testCutTts(idx);
+          };
+          btn.className =
+            'relative rounded-[8px] overflow-hidden border border-[var(--border)] hover:border-[#3b82f6] transition group aspect-[9/14] bg-black cursor-pointer';
+          btn.innerHTML = `
+            <img src="${srcUrl}" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 font-mono text-[10px] text-[#4cc38a]">${sTime}~${eTime}s</span>
+            <span class="absolute bottom-0 inset-x-0 bg-black/80 text-[#ededed] text-[11px] py-0.5 text-center truncate px-1">${label}</span>
+          `;
+          thumbContainer.appendChild(btn);
+        });
+      }
+
+      const statusEl = document.getElementById('photoUploadStatus');
+      if (statusEl) {
+        statusEl.textContent = `현재 ${Math.round(TOTAL_DURATION)}초 영상 설정 → 총 ${campaign.uploadedPhotos.length}장의 차량·쇼룸 화보 컷과 ${targetCuts}컷 성우 대본이 자동 배치되었습니다.`;
+      }
+
+      // 동적 N컷(4~10컷) 자막 & 성우 대본 입력 카드 렌더링
+      renderDynamicCutCardsUI();
+    }
+
+    function renderDynamicCutCardsUI() {
+      const container = document.getElementById('dynamicCutCardsContainer');
+      if (!container) return;
+      const targetCuts = getTargetCutCount();
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDur = mainDur / targetCuts;
+
+      let html = '';
+      for (let i = 0; i < targetCuts; i++) {
+        const s = (i * cutDur).toFixed(1).replace(/\.0$/, '');
+        const e = ((i + 1) * cutDur).toFixed(1).replace(/\.0$/, '');
+        const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i % WIDGET_POOL.length];
+        const wLabel = WIDGET_LABELS[wKey] || wKey;
+        const subVal = (campaign.cutCaptions[i] || '').replace(/"/g, '&quot;');
+        const ttsVal = ((campaign.ttsLines && campaign.ttsLines[i]) || campaign.cutCaptions[i] || '').replace(/"/g, '&quot;');
+
+        html += `
+          <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+            <div class="flex items-center justify-between gap-1 text-[12px]">
+              <span id="cutTimeLabel${i}" class="font-mono text-[#ededed] font-medium">CUT ${i + 1} (${s}~${e}초)</span>
+              <div class="flex items-center gap-1.5">
+                <span id="cutWidgetBadge${i}" class="font-mono text-[11px] text-[#85858b]">${wLabel}</span>
+                <button type="button" onclick="testCutTts(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="이 컷의 한국어 성우 음성을 즉시 들어봅니다">
+                  🔊 성우듣기
+                </button>
+              </div>
+            </div>
+            <input id="cutSub${i}" type="text" value="${subVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 한국어 AI 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+          </div>
+        `;
+      }
+      container.innerHTML = html;
+    }
+
     // ============================================================================
     // 영상 총 길이(8초 / 12초 / 15초 / 20초 / 30초 / 직접 입력) 동적 변경 컨트롤러
     // ============================================================================
     function setVideoTotalDuration(sec) {
       const parsed = Math.max(6, Math.min(60, Number(sec) || 12));
       TOTAL_DURATION = parsed;
-      OUTRO_DURATION = parsed <= 8 ? 2.4 : parsed >= 20 ? 4.5 : 4.0;
+      OUTRO_DURATION = parsed <= 8 ? 2.4 : parsed >= 20 ? 4.0 : 3.5;
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-      const cutDur = mainDur / 4;
+      const targetCuts = getTargetCutCount();
+      const cutDur = mainDur / targetCuts;
 
       if (window.__timelines && window.__timelines['main']) {
         window.__timelines['main'].duration = TOTAL_DURATION;
@@ -1296,44 +1692,38 @@
         const btn = document.getElementById(`durBtn_${dVal}`);
         if (btn) {
           if (Math.round(TOTAL_DURATION) === dVal) {
-            btn.className = 'h-7 px-2 rounded-[6px] text-[11px] font-mono bg-[#3b82f6] text-white cursor-pointer';
+            btn.className = 'h-6 px-2 rounded-[5px] text-[11px] font-mono bg-[#3b82f6] text-white cursor-pointer';
           } else {
-            btn.className = 'h-7 px-2 rounded-[6px] text-[11px] font-mono bg-[#141415] text-[#a1a1a6] border border-[var(--border)] cursor-pointer';
+            btn.className = 'h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer';
           }
         }
       });
-
-      // 4컷 시간 라벨 업데이트
-      for (let i = 0; i < 4; i++) {
-        const lbl = document.getElementById(`cutTimeLabel${i}`);
-        if (lbl) {
-          const s = (i * cutDur).toFixed(1).replace(/\.0$/, '');
-          const e = ((i + 1) * cutDur).toFixed(1).replace(/\.0$/, '');
-          lbl.textContent = `CUT ${i + 1} (${s}~${e}초)`;
-        }
-      }
 
       // 점프 버튼 업데이트
       const jb0 = document.getElementById('jumpBtn0');
       const jb1 = document.getElementById('jumpBtn1');
       const jb2 = document.getElementById('jumpBtn2');
       if (jb0) {
-        jb0.textContent = `0~${(cutDur * 2).toFixed(0)}초 훅`;
-        jb0.onclick = () => seekToTime(0.3);
+        jb0.textContent = `0~${(mainDur * 0.4).toFixed(0)}초 초반훅`;
+        jb0.onclick = () => seekToTime(0.2);
       }
       if (jb1) {
-        jb1.textContent = `${(cutDur * 2).toFixed(0)}~${mainDur.toFixed(0)}초 조건`;
-        jb1.onclick = () => seekToTime(cutDur * 2 + 0.2);
+        jb1.textContent = `${(mainDur * 0.4).toFixed(0)}~${mainDur.toFixed(0)}초 본편(${targetCuts}컷)`;
+        jb1.onclick = () => seekToTime(mainDur * 0.45);
       }
       if (jb2) {
         jb2.textContent = `${mainDur.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초 명함`;
-        jb2.onclick = () => seekToTime(mainDur + 0.4);
+        jb2.onclick = () => seekToTime(mainDur + 0.3);
       }
 
       const expText = document.getElementById('exportBtnText');
       if (expText) {
-        expText.textContent = `${Math.round(TOTAL_DURATION)}초 영상 추출 (BGM·TTS 합성 저장)`;
+        expText.textContent = `${Math.round(TOTAL_DURATION)}초 영상 추출 (${targetCuts}컷+BGM+성우 저장)`;
       }
+
+      // 시간 변경에 맞춰 사진 개수(4~10장) 및 컷 대본 카드 자동 확장
+      syncDynamicCutCountAndPhotos();
+      syncScenePlanUI();
 
       if (window.__timelines && window.__timelines['main']) {
         const cur = Math.min(window.__timelines['main'].currentTime, TOTAL_DURATION - 0.1);
@@ -1342,7 +1732,7 @@
     }
 
     // ============================================================================
-    // WebAudio 실시간 BGM 합성기 + 한국어 AI 성우(TTS) 내레이션 엔진 (MP4 녹화 트랙 믹싱 지원)
+    // 릴스·숏츠 음원(MP3 불러오기 + 내장 비트) & 한국어 AI 성우(TTS) 엔진
     // ============================================================================
     const AudioEngine = {
       ctx: null,
@@ -1356,7 +1746,10 @@
       bgmTimer: null,
       stepIndex: 0,
       lastSpokenCut: -1,
-      ttsBuffers: [null, null, null, null, null],
+      ttsAudioEl: null,
+      customBgmAudioEl: null,
+      customBgmSourceNode: null,
+      customBgmUrl: null,
 
       ensureContext() {
         if (!this.ctx) {
@@ -1364,9 +1757,9 @@
           if (!AudioCtx) return null;
           this.ctx = new AudioCtx();
           this.masterGain = this.ctx.createGain();
-          this.masterGain.gain.value = 0.85;
+          this.masterGain.gain.value = 0.95;
           this.bgmGain = this.ctx.createGain();
-          this.bgmGain.gain.value = 0.28;
+          this.bgmGain.gain.value = 0.30;
           this.ttsGain = this.ctx.createGain();
           this.ttsGain.gain.value = 1.0;
 
@@ -1385,9 +1778,52 @@
         return this.ctx;
       },
 
-      // BGM 스텝 시퀀서 (외부 저작권 문제 없는 순수 WebAudio 신디사이저 비트)
+      // 사용자가 직접 불러온 릴스·숏츠 MP3/오디오 파일 세팅
+      loadCustomBgmFile(file) {
+        const ctx = this.ensureContext();
+        if (this.customBgmUrl) {
+          URL.revokeObjectURL(this.customBgmUrl);
+        }
+        this.customBgmUrl = URL.createObjectURL(file);
+        if (!this.customBgmAudioEl) {
+          this.customBgmAudioEl = new Audio();
+          this.customBgmAudioEl.loop = true;
+          this.customBgmAudioEl.crossOrigin = 'anonymous';
+          if (ctx) {
+            try {
+              this.customBgmSourceNode = ctx.createMediaElementSource(this.customBgmAudioEl);
+              this.customBgmSourceNode.connect(this.bgmGain);
+            } catch (e) {}
+          }
+        }
+        this.customBgmAudioEl.src = this.customBgmUrl;
+        this.customBgmAudioEl.volume = 0.65;
+        this.bgmStyle = 'custom_mp3';
+
+        const opt = document.getElementById('customBgmOption');
+        const sel = document.getElementById('bgmStyleSelect');
+        if (opt) {
+          opt.classList.remove('hidden');
+          opt.textContent = `🎵 내 음원: ${file.name.slice(0, 22)}`;
+        }
+        if (sel) sel.value = 'custom_mp3';
+
+        const statusText = document.getElementById('customBgmStatusText');
+        if (statusText) {
+          statusText.classList.remove('hidden');
+          statusText.textContent = `✅ 릴스·숏츠 음원 [${file.name}] 로드 완료! 영상 재생 및 추출 시 이 음악이 그대로 합성됩니다.`;
+        }
+
+        if (!this.enabled) {
+          toggleAudioMaster(true);
+        } else {
+          this.startBgmLoop();
+        }
+      },
+
+      // 내장 릴스·숏츠 스타일 비트 시퀀서 (풍부한 베이스 + 코드 패드 + 드럼 그루브)
       playBgmStep() {
-        if (!this.enabled || this.bgmStyle === 'off') return;
+        if (!this.enabled || this.bgmStyle === 'off' || this.bgmStyle === 'custom_mp3') return;
         const ctx = this.ensureContext();
         if (!ctx) return;
 
@@ -1395,64 +1831,70 @@
         const step = this.stepIndex % 16;
         this.stepIndex++;
 
-        // 1) 킥 드럼 (Kick)
+        // 1) 딥 서브 킥 (Reels House / Phonk Trap Kick)
         const isKick =
           this.bgmStyle === 'urban'
-            ? (step === 0 || step === 3 || step === 8 || step === 10)
+            ? (step === 0 || step === 3 || step === 6 || step === 8 || step === 11 || step === 14)
             : this.bgmStyle === 'luxury'
-            ? (step === 0 || step === 8)
+            ? (step === 0 || step === 8 || step === 12)
             : (step % 4 === 0);
 
         if (isKick) {
           const osc = ctx.createOscillator();
           const g = ctx.createGain();
           osc.type = 'sine';
-          const startFreq = this.bgmStyle === 'urban' ? 145 : 120;
+          const startFreq = this.bgmStyle === 'urban' ? 155 : 128;
           osc.frequency.setValueAtTime(startFreq, now);
-          osc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
-          g.gain.setValueAtTime(0.65, now);
-          g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          osc.frequency.exponentialRampToValueAtTime(36, now + 0.16);
+          g.gain.setValueAtTime(0.72, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
           osc.connect(g);
           g.connect(this.bgmGain);
           osc.start(now);
-          osc.stop(now + 0.19);
+          osc.stop(now + 0.21);
         }
 
-        // 2) 하이햇 / 스네어 펄스
-        if (step % 2 === 1 || (this.bgmStyle === 'urban' && step % 1 === 0)) {
+        // 2) 크리스피 스네어 & 하이햇
+        if (step % 2 === 1 || step % 4 === 2) {
           const oscH = ctx.createOscillator();
           const gH = ctx.createGain();
-          oscH.type = 'triangle';
-          oscH.frequency.setValueAtTime(step % 4 === 2 ? 3200 : 5400, now);
-          gH.gain.setValueAtTime(step % 4 === 2 ? 0.08 : 0.04, now);
-          gH.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+          oscH.type = step % 4 === 2 ? 'sawtooth' : 'triangle';
+          oscH.frequency.setValueAtTime(step % 4 === 2 ? 1850 : 6200, now);
+          gH.gain.setValueAtTime(step % 4 === 2 ? 0.09 : 0.045, now);
+          gH.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
           oscH.connect(gH);
           gH.connect(this.bgmGain);
           oscH.start(now);
-          oscH.stop(now + 0.05);
+          oscH.stop(now + 0.065);
         }
 
-        // 3) 베이스 & 코드 신스 아르페지오
+        // 3) 릴스 스타일 스테레오 신스 코드 & 멜로디 리프
         const chordSets = {
-          showroom: [110, 130.81, 146.83, 164.81, 196.0, 220.0],
-          luxury:   [98.0, 123.47, 146.83, 185.0, 196.0, 246.94],
-          urban:    [82.41, 98.0, 110.0, 123.47, 146.83, 164.81],
-          bright:   [130.81, 164.81, 196.0, 246.94, 261.63, 329.63]
+          showroom: [130.81, 164.81, 196.0, 246.94, 261.63, 329.63, 293.66, 196.0],
+          urban:    [110.0, 130.81, 164.81, 174.61, 220.0, 261.63, 196.0, 146.83],
+          bright:   [146.83, 185.0, 220.0, 277.18, 293.66, 369.99, 329.63, 246.94],
+          luxury:   [98.0, 123.47, 146.83, 185.0, 220.0, 246.94, 196.0, 146.83]
         };
         const notes = chordSets[this.bgmStyle] || chordSets.showroom;
         const noteFreq = notes[step % notes.length];
 
         if (step % 2 === 0) {
           const oscB = ctx.createOscillator();
+          const oscSub = ctx.createOscillator();
           const gB = ctx.createGain();
-          oscB.type = this.bgmStyle === 'luxury' ? 'sine' : 'sawtooth';
-          oscB.frequency.setValueAtTime(noteFreq, now);
-          gB.gain.setValueAtTime(this.bgmStyle === 'luxury' ? 0.22 : 0.14, now);
-          gB.gain.exponentialRampToValueAtTime(0.002, now + 0.22);
+          oscB.type = this.bgmStyle === 'luxury' ? 'sine' : 'triangle';
+          oscSub.type = 'sine';
+          oscB.frequency.setValueAtTime(noteFreq * 2, now);
+          oscSub.frequency.setValueAtTime(noteFreq, now);
+          gB.gain.setValueAtTime(0.20, now);
+          gB.gain.exponentialRampToValueAtTime(0.002, now + 0.26);
           oscB.connect(gB);
+          oscSub.connect(gB);
           gB.connect(this.bgmGain);
           oscB.start(now);
-          oscB.stop(now + 0.24);
+          oscSub.start(now);
+          oscB.stop(now + 0.27);
+          oscSub.stop(now + 0.27);
         }
       },
 
@@ -1460,9 +1902,16 @@
         this.stopBgmLoop();
         if (!this.enabled || this.bgmStyle === 'off') return;
         this.ensureContext();
-        const bpmMap = { showroom: 120, luxury: 95, urban: 138, bright: 124 };
-        const bpm = bpmMap[this.bgmStyle] || 120;
+
+        if (this.bgmStyle === 'custom_mp3' && this.customBgmAudioEl) {
+          this.customBgmAudioEl.play().catch(() => {});
+          return;
+        }
+
+        const bpmMap = { showroom: 122, luxury: 96, urban: 138, bright: 126 };
+        const bpm = bpmMap[this.bgmStyle] || 122;
         const stepMs = Math.round((60 / bpm / 4) * 1000);
+        this.playBgmStep();
         this.bgmTimer = setInterval(() => {
           if (isPlaying && this.enabled) {
             this.playBgmStep();
@@ -1475,85 +1924,88 @@
           clearInterval(this.bgmTimer);
           this.bgmTimer = null;
         }
-      },
-
-      // 서버리스 /api/tts MP3 오디오 버퍼 프리페치 (WebAudio 녹음 트랙에도 포함되도록 디코딩)
-      async prefetchTtsBuffers() {
-        const ctx = this.ensureContext();
-        if (!ctx || !window.location.protocol.startsWith('http')) return;
-        const d = getSelectedDealer();
-        const lines = [
-          (campaign.ttsLines && campaign.ttsLines[0]) || campaign.cutCaptions[0] || campaign.hook,
-          (campaign.ttsLines && campaign.ttsLines[1]) || campaign.cutCaptions[1] || '',
-          (campaign.ttsLines && campaign.ttsLines[2]) || campaign.cutCaptions[2] || '',
-          (campaign.ttsLines && campaign.ttsLines[3]) || campaign.cutCaptions[3] || '',
-          `${d.branch} ${d.name} ${d.title}입니다. 직통번호나 댓글로 편하게 문의주세요.`
-        ];
-        for (let i = 0; i < lines.length; i++) {
-          const text = (lines[i] || '').replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣.,!?%~-]/g, ' ').trim();
-          if (!text) continue;
+        if (this.customBgmAudioEl) {
           try {
-            const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}&tl=ko`);
-            if (res.ok) {
-              const arrBuf = await res.arrayBuffer();
-              const audioBuf = await ctx.decodeAudioData(arrBuf);
-              this.ttsBuffers[i] = audioBuf;
-            }
+            this.customBgmAudioEl.pause();
           } catch (e) {}
         }
       },
 
+      prefetchTtsBuffers() {
+        // 실시간 스트리밍 + Web Speech 이중 엔진을 사용하므로 즉시 준비됨
+      },
+
+      // ★ 한국어 AI 성우(TTS) 100% 보장 발화 함수 (Web Speech API + /api/tts MP3 오디오 스트림 동시 지원)
       speakCutLine(cutIdx, forceSpeak = false) {
         if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off') return;
         if (!forceSpeak && this.lastSpokenCut === cutIdx) return;
         this.lastSpokenCut = cutIdx;
 
         const d = getSelectedDealer();
+        const totalCuts = getTargetCutCount();
         let text = '';
-        if (cutIdx < 4) {
+        if (cutIdx < totalCuts) {
           text =
             (campaign.ttsLines && campaign.ttsLines[cutIdx]) ||
             (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) ||
             campaign.hook;
         } else {
-          text = `${d.branch} ${d.name} ${d.title}입니다. 댓글에 견적 남겨주시면 즉시 안내해 드립니다.`;
+          text = `${d.branch} ${d.name} ${d.title}입니다. 댓글에 견적 남겨주시면 1대1 최저가 조건표를 즉시 보내드립니다.`;
         }
         const cleanText = String(text || '')
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-          .replace(/[✔🚨✨💰🔑🏢📞🎁💬]/g, '')
+          .replace(/[✔🚨✨💰🔑🏢📞🎁💬★]/g, '')
           .trim();
         if (!cleanText) return;
 
-        // 1) WebAudio 디코딩 버퍼가 있으면 MediaStream 녹음 및 스피커로 재생
-        const ctx = this.ensureContext();
-        if (ctx && this.ttsBuffers[cutIdx]) {
+        this.ensureContext();
+
+        // 1순위: 브라우저 한국어 음성 합성(window.speechSynthesis)이 한국어 보이스를 지원할 경우 즉시 저지연 발화
+        let spokeViaWebSpeech = false;
+        if ('speechSynthesis' in window) {
           try {
-            const src = ctx.createBufferSource();
-            src.buffer = this.ttsBuffers[cutIdx];
-            src.playbackRate.value = this.ttsVoice === 'energetic' ? 1.15 : this.ttsVoice === 'male' ? 0.94 : 1.05;
-            src.connect(this.ttsGain);
-            src.start(0);
-            return;
+            const voices = window.speechSynthesis.getVoices() || [];
+            const koVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().includes('ko'));
+            if (koVoices.length > 0) {
+              window.speechSynthesis.cancel();
+              const utter = new SpeechSynthesisUtterance(cleanText);
+              utter.lang = 'ko-KR';
+              utter.voice = (this.ttsVoice === 'male' && koVoices.length > 1) ? koVoices[koVoices.length - 1] : koVoices[0];
+              utter.pitch = this.ttsVoice === 'male' ? 0.86 : this.ttsVoice === 'energetic' ? 1.12 : 1.04;
+              utter.rate = this.ttsVoice === 'energetic' ? 1.25 : 1.15;
+              utter.volume = 1.0;
+              window.speechSynthesis.speak(utter);
+              spokeViaWebSpeech = true;
+            }
           } catch (e) {}
         }
 
-        // 2) 브라우저 내장 한국어 Web Speech API (window.speechSynthesis) 즉시 발화
-        if ('speechSynthesis' in window) {
+        // 2순위 (또는 모바일/PC에 한국어 보이스가 없거나 Web Speech가 무음일 때): 서버리스 /api/tts 한국어 성우 MP3 스트리밍 즉시 재생
+        if (!spokeViaWebSpeech && window.location.protocol.startsWith('http')) {
+          try {
+            if (!this.ttsAudioEl) {
+              this.ttsAudioEl = new Audio();
+              this.ttsAudioEl.crossOrigin = 'anonymous';
+              if (this.ctx) {
+                try {
+                  const ttsSrc = this.ctx.createMediaElementSource(this.ttsAudioEl);
+                  ttsSrc.connect(this.ttsGain);
+                } catch (e) {}
+              }
+            }
+            this.ttsAudioEl.pause();
+            this.ttsAudioEl.src = `/api/tts?text=${encodeURIComponent(cleanText)}&tl=ko`;
+            this.ttsAudioEl.playbackRate = this.ttsVoice === 'energetic' ? 1.22 : this.ttsVoice === 'male' ? 0.95 : 1.08;
+            this.ttsAudioEl.volume = 1.0;
+            this.ttsAudioEl.play().catch(() => {});
+          } catch (e) {}
+        } else if (!spokeViaWebSpeech && 'speechSynthesis' in window) {
+          // 오프라인 file:// 환경 폴백
           try {
             window.speechSynthesis.cancel();
             const utter = new SpeechSynthesisUtterance(cleanText);
             utter.lang = 'ko-KR';
-            const voices = window.speechSynthesis.getVoices() || [];
-            const koVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().includes('ko'));
-            if (koVoices.length > 0) {
-              if (this.ttsVoice === 'male' && koVoices.length > 1) {
-                utter.voice = koVoices[koVoices.length - 1];
-              } else {
-                utter.voice = koVoices[0];
-              }
-            }
-            utter.pitch = this.ttsVoice === 'male' ? 0.85 : this.ttsVoice === 'energetic' ? 1.12 : 1.04;
-            utter.rate = this.ttsVoice === 'energetic' ? 1.22 : 1.12;
+            utter.rate = 1.15;
             window.speechSynthesis.speak(utter);
           } catch (e) {}
         }
@@ -1562,42 +2014,76 @@
       syncWithTimeline(t) {
         if (!this.enabled) return;
         const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-        const cutDur = mainDur / 4;
-        const slot = t < mainDur ? Math.min(3, Math.floor(t / cutDur)) : 4;
+        const totalCuts = getTargetCutCount();
+        const cutDur = mainDur / totalCuts;
+        const slot = t < mainDur ? Math.min(totalCuts - 1, Math.floor(t / cutDur)) : totalCuts;
         if (slot !== this.lastSpokenCut) {
           this.speakCutLine(slot, false);
         }
       }
     };
 
-    function toggleAudioMaster() {
-      AudioEngine.enabled = !AudioEngine.enabled;
+    // 사용자가 릴스·숏츠 MP3/오디오 파일 업로드 시 호출
+    function handleCustomBgmUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      AudioEngine.loadCustomBgmFile(file);
+    }
+
+    // 특정 컷의 성우 음성을 즉시 테스트 발화
+    function testCutTts(cutIdx) {
+      if (!AudioEngine.enabled) {
+        toggleAudioMaster(true);
+      }
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const totalCuts = getTargetCutCount();
+      const cutDur = mainDur / totalCuts;
+      window.__timelines['main'].seek(cutIdx * cutDur + 0.15);
+      AudioEngine.speakCutLine(cutIdx, true);
+    }
+
+    function testCurrentCutTtsNow() {
+      const t = window.__timelines['main'].currentTime || 0;
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const totalCuts = getTargetCutCount();
+      const cutDur = mainDur / totalCuts;
+      const slot = t < mainDur ? Math.min(totalCuts - 1, Math.floor(t / cutDur)) : 0;
+      testCutTts(slot);
+    }
+
+    function toggleAudioMaster(forceState) {
+      AudioEngine.enabled = typeof forceState === 'boolean' ? forceState : !AudioEngine.enabled;
       const btn = document.getElementById('soundToggleBtn');
-      const statusBadge = document.getElementById('audioStatusBadge');
+      const dot = document.getElementById('soundDot');
+      const lbl = document.getElementById('soundToggleLabel');
+      const engineBadge = document.getElementById('audioEngineBadge');
+
       if (AudioEngine.enabled) {
         AudioEngine.ensureContext();
         AudioEngine.lastSpokenCut = -1;
         AudioEngine.startBgmLoop();
-        AudioEngine.prefetchTtsBuffers();
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#4cc38a]';
+        if (lbl) lbl.textContent = '사운드 켜짐';
         if (btn) {
-          btn.textContent = '🔊 사운드 켜짐 (BGM+TTS)';
-          btn.className = 'h-7 px-2.5 rounded-[6px] text-[12px] font-medium bg-[#3b82f6] text-white border border-[#3b82f6] cursor-pointer flex items-center gap-1.5';
+          btn.className = 'btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5 border-[#4cc38a] text-[#ededed]';
         }
-        if (statusBadge) {
-          statusBadge.textContent = 'BGM + 한국어 TTS 실시간 재생중';
-          statusBadge.className = 'text-[11px] font-mono text-[#4cc38a]';
+        if (engineBadge) {
+          engineBadge.textContent = '🔊 BGM + 한국어 성우(TTS) 실시간 작동중';
+          engineBadge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]';
         }
       } else {
         AudioEngine.stopBgmLoop();
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (AudioEngine.ttsAudioEl) AudioEngine.ttsAudioEl.pause();
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#85858b]';
+        if (lbl) lbl.textContent = '사운드 켜기';
         if (btn) {
-          btn.textContent = '🔇 사운드 켜기 (BGM+TTS)';
-          btn.className = 'h-7 px-2.5 rounded-[6px] text-[12px] font-medium bg-[#232325] text-[#ededed] border border-[var(--border)] hover:bg-[#2c2c2f] cursor-pointer flex items-center gap-1.5';
+          btn.className = 'btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5';
         }
-        if (statusBadge) {
-          statusBadge.textContent = '일시정지됨 (버튼을 누르면 재생)';
-          statusBadge.className = 'text-[11px] font-mono text-[#85858b]';
+        if (engineBadge) {
+          engineBadge.textContent = '🔇 사운드 일시정지됨 (클릭 시 켜짐)';
+          engineBadge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]';
         }
       }
     }
@@ -1607,7 +2093,9 @@
       const ttsEl = document.getElementById('ttsVoiceSelect');
       if (bgmEl) AudioEngine.bgmStyle = bgmEl.value;
       if (ttsEl) AudioEngine.ttsVoice = ttsEl.value;
-      if (AudioEngine.enabled) {
+      if (!AudioEngine.enabled) {
+        toggleAudioMaster(true);
+      } else {
         AudioEngine.startBgmLoop();
         AudioEngine.lastSpokenCut = -1;
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
@@ -1615,14 +2103,10 @@
     }
 
     function triggerFullAudioPreview() {
-      if (!AudioEngine.enabled) {
-        toggleAudioMaster();
-      } else {
-        AudioEngine.lastSpokenCut = -1;
-      }
+      toggleAudioMaster(true);
       isPlaying = true;
       const ppBtn = document.getElementById('playPauseBtn');
-      if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
+      if (ppBtn) ppBtn.textContent = '일시정지';
       window.__timelines['main'].seek(0);
       AudioEngine.speakCutLine(0, true);
     }
@@ -1649,7 +2133,8 @@
 
     function updateTimelineUI(t) {
       const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-      const cutDuration = mainDuration / 4;
+      const totalCuts = getTargetCutCount();
+      const cutDuration = mainDuration / totalCuts;
       const slider = document.getElementById('timelineSlider');
       if (slider && document.activeElement !== slider) {
         slider.max = String(TOTAL_DURATION);
@@ -1666,12 +2151,11 @@
 
       const badge = document.getElementById('activeClipBadge');
       if (badge) {
-        if (t < cutDuration * 2) {
-          badge.textContent = `Scene 1 · 후킹 & 대본 (0~${(cutDuration * 2).toFixed(0)}초)`;
-        } else if (t < mainDuration) {
-          badge.textContent = `Scene 2 · 핵심 혜택 (${(cutDuration * 2).toFixed(0)}~${mainDuration.toFixed(0)}초)`;
+        if (t < mainDuration) {
+          const curSlot = Math.min(totalCuts, Math.floor(t / cutDuration) + 1);
+          badge.textContent = `본편 CUT ${curSlot}/${totalCuts} (${t.toFixed(1)}s / ${mainDuration.toFixed(0)}s)`;
         } else {
-          badge.textContent = `Scene 3 · 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
+          badge.textContent = `엔딩 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
         }
       }
     }
@@ -1776,10 +2260,11 @@
       const HYUNDAI_NAVY = '#002C5F';
       const KIA_RED = '#BB162B';
       const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-      const cutDuration = mainDuration / 4;
+      const totalCuts = getTargetCutCount();
+      const cutDuration = mainDuration / totalCuts;
 
       // ========================================================================
-      // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편 + AI 성우 자막 + 하단 딜러 실물바
+      // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편(4~10컷) + AI 성우 자막 + 하단 딜러 실물바
       // ========================================================================
       if (t < mainDuration) {
         const vid = document.getElementById('hiddenCustomVideo');
@@ -1793,18 +2278,18 @@
           const idx = Math.min(numPhotos - 1, Math.floor(t / slideDuration));
           const localProgress = Easing.clamp((t - idx * slideDuration) / slideDuration, 0, 1);
 
-          const mappedPhotoIdx = (v.cutOrder && v.cutOrder[idx] !== undefined)
+          const mappedPhotoIdx = (idx < 4 && v.cutOrder && v.cutOrder[idx] !== undefined)
             ? (v.cutOrder[idx] % numPhotos)
-            : idx;
+            : (idx % numPhotos);
           const prevMappedPhotoIdx = idx > 0
-            ? ((v.cutOrder && v.cutOrder[idx - 1] !== undefined) ? (v.cutOrder[idx - 1] % numPhotos) : (idx - 1))
+            ? ((idx - 1 < 4 && v.cutOrder && v.cutOrder[idx - 1] !== undefined) ? (v.cutOrder[idx - 1] % numPhotos) : ((idx - 1) % numPhotos))
             : 0;
 
-          const mappedCamIdx = (v.cameraOrder && v.cameraOrder[idx] !== undefined)
-            ? v.cameraOrder[idx]
+          const mappedCamIdx = (v.cameraOrder && v.cameraOrder[idx % 4] !== undefined)
+            ? (v.cameraOrder[idx % 4] + idx)
             : idx;
           const prevMappedCamIdx = idx > 0
-            ? ((v.cameraOrder && v.cameraOrder[idx - 1] !== undefined) ? v.cameraOrder[idx - 1] : (idx - 1))
+            ? ((v.cameraOrder && v.cameraOrder[(idx - 1) % 4] !== undefined) ? (v.cameraOrder[(idx - 1) % 4] + idx - 1) : (idx - 1))
             : 0;
 
           const img = campaign.uploadedPhotos[mappedPhotoIdx];
@@ -1886,16 +2371,14 @@
           ctx.fillText(text, x, y, maxWidth);
         }
 
-        const currentCutSlot = Math.min(3, Math.floor(t / cutDuration));
+        const currentCutSlot = Math.min(totalCuts - 1, Math.floor(t / cutDuration));
         const cutLocalT = t - currentCutSlot * cutDuration;
-        const activePhotoIndex = (v.cutOrder && v.cutOrder[currentCutSlot] !== undefined)
-          ? v.cutOrder[currentCutSlot]
-          : currentCutSlot;
+        const activePhotoIndex = currentCutSlot;
         const activeHookText = v.hook || campaign.hook;
         const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
 
         // ====================================================================
-        // ★ 무한 생성형 씬 그래프 렌더러 (8종 컬러 테마 × 12종 위젯 × 동적 위치)
+        // ★ 무한 생성형 씬 그래프 렌더러 (8종 컬러 테마 × 12종 위젯 × 동적 N컷)
         // ====================================================================
         const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
         const plan = (campaign.scenePlan && campaign.scenePlan[currentCutSlot]) || {
@@ -1903,17 +2386,19 @@
           widget: WIDGET_POOL[currentCutSlot % WIDGET_POOL.length],
           pos: 'center'
         };
-        const widgetType = plan.widget || 'BREAKING_NEWS';
+        const widgetType = plan.widget || WIDGET_POOL[currentCutSlot % WIDGET_POOL.length];
         const posMode = String(plan.pos || 'center').toLowerCase();
         const cutPop = Easing.backOut(cutLocalT / 0.38);
         const slideIn = Easing.power4Out(cutLocalT / 0.45);
         const subLine = (campaign.cutCaptions && campaign.cutCaptions[currentCutSlot]) || activeHookText;
 
-        // 상단 4컷 진행 스토리 바 (현재 테마 컬러 반영)
+        // 상단 N컷(4~10컷) 진행 스토리 바 (현재 테마 컬러 반영)
         ctx.save();
-        for (let c = 0; c < 4; c++) {
-          const barW = 112;
-          const barX = 32 + c * (barW + 9);
+        const gap = totalCuts > 6 ? 5 : 8;
+        const totalAvailW = W - 64 - gap * (totalCuts - 1);
+        const barW = totalAvailW / totalCuts;
+        for (let c = 0; c < totalCuts; c++) {
+          const barX = 32 + c * (barW + gap);
           ctx.fillStyle = 'rgba(255,255,255,0.22)';
           drawRoundedRect(ctx, barX, 20, barW, 5, 2.5);
           ctx.fill();
@@ -1922,7 +2407,7 @@
             drawRoundedRect(ctx, barX, 20, barW, 5, 2.5);
             ctx.fill();
           } else if (c === currentCutSlot) {
-            const fillW = Math.max(8, barW * Easing.clamp(cutLocalT / cutDuration, 0, 1));
+            const fillW = Math.max(6, barW * Easing.clamp(cutLocalT / cutDuration, 0, 1));
             ctx.fillStyle = '#ffffff';
             drawRoundedRect(ctx, barX, 20, fillW, 5, 2.5);
             ctx.fill();
@@ -2704,25 +3189,49 @@
       document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸ 일시정지' : '▶️ 재생';
     }
 
-    // 다중 차량 사진 업로드 핸들러 (자동 3D Ken Burns 슬라이드쇼)
+    // 다중 차량 사진 업로드 핸들러 (자동 3D Ken Burns 슬라이드쇼 · 1~10장 지원)
     function handleMultiPhotoUpload(event) {
       const files = Array.from(event.target.files || []);
       if (files.length === 0) return;
 
+      campaign.isUserCustomPhotos = true;
       campaign.uploadedPhotos = [];
+      const thumbContainer = document.getElementById('aiPhotoThumbnails');
+      if (thumbContainer) thumbContainer.innerHTML = '';
+
       let loadedCount = 0;
-      files.forEach((file) => {
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutSec = mainDur / Math.max(1, files.length);
+
+      files.forEach((file, idx) => {
+        const objUrl = URL.createObjectURL(file);
         const img = new Image();
         img.onload = () => {
           loadedCount++;
           if (loadedCount === files.length) {
-            document.getElementById('photoUploadStatus').textContent =
-              `✅ 차량 사진 ${files.length}장 적용 완료! (0~8초 구간 3D 줌인 슬라이드로 자동 변환됨)`;
-            window.__timelines['main'].seek(0.5);
+            const statusEl = document.getElementById('photoUploadStatus');
+            if (statusEl) {
+              statusEl.textContent =
+                `✅ 내 차량 사진 ${files.length}장 업로드 완료! (영상 시간에 맞춰 ${getTargetCutCount()}컷 슬라이드쇼로 자동 배치됨)`;
+            }
+            window.__timelines['main'].seek(0.25);
           }
         };
-        img.src = URL.createObjectURL(file);
+        img.src = objUrl;
         campaign.uploadedPhotos.push(img);
+
+        if (thumbContainer) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.onclick = () => seekToTime(idx * cutSec + 0.15);
+          btn.className =
+            'relative rounded-[6px] overflow-hidden border border-[var(--border)] hover:border-[var(--accent)] transition group aspect-[9/14] bg-black cursor-pointer';
+          btn.innerHTML = `
+            <img src="${objUrl}" class="w-full h-full object-cover group-hover:scale-105 transition" />
+            <span class="absolute bottom-0 inset-x-0 bg-black/80 text-white text-[10px] py-0.5 text-center truncate px-1">${idx + 1}. 내 사진 #${idx + 1}</span>
+          `;
+          thumbContainer.appendChild(btn);
+        }
       });
     }
 
@@ -2950,7 +3459,9 @@
       const bulletsInput = document.getElementById('inputBullets');
       if (bulletsInput && v.bullets) bulletsInput.value = v.bullets.join('\n');
 
-      for (let i = 0; i < 4; i++) {
+      const totalCuts = getTargetCutCount();
+      renderDynamicCutCardsUI(totalCuts);
+      for (let i = 0; i < totalCuts; i++) {
         const cutEl = document.getElementById(`cutSub${i}`);
         if (cutEl && campaign.cutCaptions && campaign.cutCaptions[i] !== undefined) {
           cutEl.value = campaign.cutCaptions[i];
@@ -3003,19 +3514,35 @@
       if (boundPhoneEl) boundPhoneEl.value = d.licensedPhone || d.phone;
       const boundTextEl = document.getElementById('drmBoundPhoneText');
       if (boundTextEl) boundTextEl.textContent = d.licensedPhone || d.phone;
+      const expEl = document.getElementById('dlrExpiryView');
+      if (expEl) {
+        const ymdStr = String(d.expiryYmd || 20261231);
+        expEl.value = ymdStr.length === 8
+          ? `PRO 무제한 (${ymdStr.slice(0, 4)}-${ymdStr.slice(4, 6)}-${ymdStr.slice(6, 8)})`
+          : 'PRO 무제한 구독';
+      }
+
+      const hdrNameEl = document.getElementById('headerDealerNameText');
+      if (hdrNameEl) hdrNameEl.textContent = `${d.name} ${d.title}`;
+      const hdrPhoneEl = document.getElementById('headerDealerPhoneText');
+      if (hdrPhoneEl) hdrPhoneEl.textContent = d.phone || '';
 
       const drmCode = evaluateDealerDrmStatus(d);
       const badgeEl = document.getElementById('drmStatusBadge');
+      const hdrDotEl = document.getElementById('headerDrmDot');
       if (badgeEl) {
         if (drmCode === 1) {
           badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#4cc38a]';
           badgeEl.textContent = '정품 구독 인증됨 (워터마크 제거)';
+          if (hdrDotEl) hdrDotEl.style.background = '#4cc38a';
         } else if (drmCode === 3) {
           badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#e5484d]';
           badgeEl.textContent = '타 딜러 번호 도용 감지 · 공유 차단됨';
+          if (hdrDotEl) hdrDotEl.style.background = '#e5484d';
         } else {
           badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#d97706]';
-          badgeEl.textContent = '미구독 · 만료 상태 (워터마크 표시)';
+          badgeEl.textContent = '미구독 · 체험판 상태 (워터마크 표시)';
+          if (hdrDotEl) hdrDotEl.style.background = '#d97706';
         }
       }
 
@@ -3196,14 +3723,15 @@
     function syncScenePlanUI() {
       const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
       const themeName = themeObj.name || themeObj.label || '로얄 골드';
+      const totalCuts = getTargetCutCount();
       const badgeEl = document.getElementById('activeSceneRecipeBadge');
       if (badgeEl) {
-        badgeEl.textContent = `테마: ${themeName} · 4컷 AI 위젯`;
+        badgeEl.textContent = `테마: ${themeName} · ${totalCuts}컷 AI 위젯`;
       }
       if (Array.isArray(campaign.scenePlan)) {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < totalCuts; i++) {
           const cutBadge = document.getElementById(`cutWidgetBadge${i}`);
-          const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i];
+          const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i % WIDGET_POOL.length];
           if (cutBadge) {
             cutBadge.textContent = WIDGET_LABELS[wKey] || wKey;
           }
@@ -3216,13 +3744,14 @@
       const positions = ['top', 'center', 'bottom'];
       const cameras = [0, 1, 2, 3];
       const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
+      const totalCuts = getTargetCutCount();
 
       if (RustWasmCore && typeof RustWasmCore.compute_scene_slot === 'function') {
         const firstSlot = RustWasmCore.compute_scene_slot(seed, 0) >>> 0;
         const themeIdx = (firstSlot >>> 24) & 0xff;
         campaign.themeId = themeKeys[themeIdx % themeKeys.length] || themeKeys[0];
 
-        campaign.scenePlan = [0, 1, 2, 3].map((idx) => {
+        campaign.scenePlan = Array.from({ length: totalCuts }, (_, idx) => {
           const packed = RustWasmCore.compute_scene_slot(seed, idx) >>> 0;
           const wIdx = packed & 0xff;
           const pIdx = (packed >>> 8) & 0xff;
@@ -3238,9 +3767,9 @@
         const otherThemes = themeKeys.filter((k) => k !== campaign.themeId);
         campaign.themeId = otherThemes[Math.floor(Math.random() * otherThemes.length)] || themeKeys[0];
         const shuffled = [...WIDGET_POOL].sort(() => Math.random() - 0.5);
-        campaign.scenePlan = [0, 1, 2, 3].map((idx) => ({
+        campaign.scenePlan = Array.from({ length: totalCuts }, (_, idx) => ({
           cut: idx + 1,
-          widget: shuffled[idx],
+          widget: shuffled[idx % shuffled.length],
           pos: positions[(idx + Math.floor(Math.random() * 3)) % positions.length],
           cam: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length]
         }));
@@ -3248,12 +3777,13 @@
 
       syncScenePlanUI();
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-      window.__timelines['main'].seek((window.__timelines['main'].currentTime + mainDur / 4) % mainDur);
+      window.__timelines['main'].seek((window.__timelines['main'].currentTime + mainDur / totalCuts) % mainDur);
     }
 
     function updateCustomCutCaptions() {
-      if (!Array.isArray(campaign.ttsLines)) campaign.ttsLines = ['', '', '', ''];
-      for (let i = 0; i < 4; i++) {
+      const totalCuts = getTargetCutCount();
+      if (!Array.isArray(campaign.ttsLines)) campaign.ttsLines = [];
+      for (let i = 0; i < totalCuts; i++) {
         const el = document.getElementById(`cutSub${i}`);
         if (el) campaign.cutCaptions[i] = el.value;
         const ttsEl = document.getElementById(`cutTts${i}`);
@@ -3338,6 +3868,14 @@
       const noticeEl = document.getElementById('aiGenNotice');
       const raw = (promptEl?.value || '').trim();
       const d = getSelectedDealer();
+      const totalCuts = getTargetCutCount();
+
+      // 사용자 클릭 제스처 시점에 오디오/TTS 엔진을 즉시 활성화하여 음성이 100% 나오도록 보장
+      if (!AudioEngine.enabled) {
+        toggleAudioMaster(true);
+      } else {
+        AudioEngine.ensureContext();
+      }
 
       // 1) 클라이언트에서 먼저 차종('그랜저' 등)을 즉시 인식하여 반영
       const parsedLocal = parsePromptVehicleAndTargetClient(raw);
@@ -3349,11 +3887,11 @@
 
       if (btnEl) {
         btnEl.disabled = true;
-        btnEl.textContent = 'AI 대본·성우 내레이션 생성 중...';
+        btnEl.textContent = `AI ${totalCuts}컷 영상·성우 생성 중...`;
       }
       if (noticeEl) {
         noticeEl.classList.remove('hidden');
-        noticeEl.textContent = `중앙 AI 엔진이 [${raw || campaign.vehicle}] 맞춤 4컷 영상 대본·성우 음성·카톡 대화를 생성 중입니다...`;
+        noticeEl.textContent = `중앙 AI 엔진이 [${raw || campaign.vehicle}] 맞춤 ${totalCuts}컷 영상 대본·성우 음성·카톡 대화를 생성 중입니다...`;
       }
 
       try {
@@ -3421,14 +3959,7 @@
         } else {
           proceduralRestyleCurrentScene();
         }
-
-        if (noticeEl) {
-          const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
-          const themeName = themeObj.name || themeObj.label || '로얄 골드';
-          noticeEl.textContent = `[${campaign.vehicle}] 맞춤 4컷 대본·성우 내레이션·[${themeName}] 레이아웃이 영상에 즉시 반영되었습니다.`;
-        }
       } catch (err) {
-        // 오프라인/폴백 시에도 차종 및 연령 타겟('30대 여성, 그랜저') 정확히 반영
         const personaPrefix = parsedLocal.targetPersona ? `${parsedLocal.targetPersona} 인기 1위! ` : '';
         const newHook = `${personaPrefix}${campaign.vehicle} 당월 즉시출고 특판`;
         campaign.hook = newHook;
@@ -3453,14 +3984,20 @@
           { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 👇` }
         ];
         proceduralRestyleCurrentScene();
-        if (noticeEl) {
-          noticeEl.textContent = `[${campaign.vehicle}] 맞춤 4컷 대본·성우 내레이션이 영상에 즉시 반영되었습니다.`;
-        }
       } finally {
         if (btnEl) {
           btnEl.disabled = false;
-          btnEl.textContent = 'AI 대본 · 씬 구도 새로 생성';
+          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
         }
+      }
+
+      // 설정된 영상 길이(4~10컷)에 맞춰 추가 사진 및 추가 컷 대본·성우 문장 자동 확장!
+      syncDynamicCutCountAndPhotos();
+
+      if (noticeEl) {
+        const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
+        const themeName = themeObj.name || themeObj.label || '로얄 골드';
+        noticeEl.textContent = `✅ [${campaign.vehicle}] 맞춤 ${totalCuts}컷 사진·모션 자막·한국어 성우 음성·[${themeName}] 영상이 완성되어 재생 중입니다!`;
       }
 
       document.getElementById('inputVehicle').value = campaign.vehicle;
@@ -3469,14 +4006,12 @@
       syncPreviewPanel();
       syncTechPanel();
 
-      // 영상 처음으로 이동 후 즉시 재생 & 오디오(BGM+TTS) 프리페치 및 발화
+      // 영상 처음으로 이동 후 즉시 재생 & 한국어 성우(TTS) + BGM 즉시 발화
       isPlaying = true;
       AudioEngine.lastSpokenCut = -1;
       AudioEngine.prefetchTtsBuffers();
-      window.__timelines['main'].seek(0.15);
-      if (AudioEngine.enabled) {
-        AudioEngine.speakCutLine(0, true);
-      }
+      window.__timelines['main'].seek(0.12);
+      AudioEngine.speakCutLine(0, true);
     }
 
     function applyPreset(key) {
@@ -3569,11 +4104,13 @@
     function exportSynthesizedVideo() {
       const d = getSelectedDealer();
       const drmCode = evaluateDealerDrmStatus(d);
+      if (drmCode === 3) {
+        alert(`[정품 보안 차단]\n현재 명함 전화번호(${d.phone})가 구독에 등록된 번호(${d.licensedPhone})와 다릅니다.\n계정 공유가 감지되어 영상 추출이 차단되었습니다.`);
+        return;
+      }
       if (drmCode !== 1) {
-        const msg = drmCode === 3
-          ? `[Rust Wasm DRM 보안 차단]\n현재 입력된 전화번호(${d.phone})가 정품 구독에 등록된 번호(${d.licensedPhone})와 다릅니다.\n1계정 다수 딜러 돌려쓰기(공유)가 감지되어 영상 추출이 차단되었습니다.`
-          : `[Rust Wasm DRM 구독 인증 필요]\n현재 미구독 또는 구독 만료 상태입니다.\n정품 라이선스 키(${formatWasmLicenseKey(d.licensedPhone, 20261231)})를 인증하거나 [정품 구독 정상] 버튼을 눌러 잠금을 해제하세요.`;
-        alert(msg);
+        // 미구독(체험판) 딜러 → 결제창을 바로 띄워 결제 후 즉시 추출 가능하도록 연결
+        openBillingCheckoutModal(true);
         return;
       }
       if (typeof MediaRecorder === 'undefined') {
@@ -3950,6 +4487,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     function resetToAiPhotos() {
       campaign.uploadedPhotos = [];
       campaign.hasCustomVideo = false;
+      campaign.isUserCustomPhotos = false;
       const thumbContainer = document.getElementById('aiPhotoThumbnails');
       if (thumbContainer) thumbContainer.innerHTML = '';
 
@@ -3979,6 +4517,19 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       if (statusEl) {
         statusEl.textContent = '✅ 2026 쏘렌토 하이브리드 전용 4컷(외관·운전석·2열시트·출고인도) + 차별화된 카메라 모션이 적용되었습니다.';
       }
+
+      // 기본 4장 로드 완료 후 영상 길이(6/8/10컷)에 맞춰 추가 쇼룸 컷 자동 합성
+      const baseImgs = campaign.uploadedPhotos.slice(0, 4);
+      Promise.all(
+        baseImgs.map((im) => (im.complete && im.naturalWidth > 0)
+          ? Promise.resolve()
+          : new Promise((r) => { im.addEventListener('load', r, { once: true }); im.addEventListener('error', r, { once: true }); }))
+      ).then(() => {
+        if (!campaign.isUserCustomPhotos && typeof syncDynamicCutCountAndPhotos === 'function') {
+          syncDynamicCutCountAndPhotos();
+          window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+        }
+      });
     }
 
     const BUILT_IN_DEALER_AVATARS = ["data:image/jpeg;base64,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","data:image/jpeg;base64,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","data:image/jpeg;base64,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"];
@@ -3996,15 +4547,314 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       });
     }
 
+    // ============================================================================
+    // 딜러 전용 모드 ↔ 대표님 관리자 모드 전환
+    // ============================================================================
+    let isAdminMode = false;
+
+    function toggleRoleViewMode() {
+      isAdminMode = !isAdminMode;
+      try { localStorage.setItem('autoreels_admin_mode', isAdminMode ? '1' : '0'); } catch (e) {}
+      applyRoleViewModeUI();
+    }
+
+    function applyRoleViewModeUI() {
+      const nav = document.getElementById('topAdminNav');
+      const bar = document.getElementById('dealerQuickSelectorBar');
+      const sim = document.getElementById('adminDrmSimRow');
+      const btn = document.getElementById('roleSwitchBtn');
+      const badge = document.getElementById('roleModeBadge');
+      [nav, bar, sim].forEach((el) => { if (el) el.classList.toggle('hidden', !isAdminMode); });
+      if (btn) btn.textContent = isAdminMode ? '딜러 화면으로 돌아가기' : '대표님 관리자 모드 열기';
+      if (badge) {
+        badge.textContent = isAdminMode ? '대표님 관리자 모드' : '딜러 전용 스튜디오';
+        badge.className = `tag-chip px-2 py-0.5 text-[11px] font-mono ${isAdminMode ? 'text-[#d97706]' : 'text-[#4cc38a]'}`;
+      }
+      if (!isAdminMode) switchMainTab('preview');
+    }
+
+    // ============================================================================
+    // 딜러 로그인 · 1분 회원가입 (휴대폰 번호 = 로그인 ID = 정품 바인딩 번호)
+    // ============================================================================
+    let authModalTab = 'login';
+
+    function openDealerAuthModal() {
+      const m = document.getElementById('dealerAuthModal');
+      const notice = document.getElementById('authModalNotice');
+      if (notice) notice.classList.add('hidden');
+      if (m) m.classList.remove('hidden');
+    }
+    function closeDealerAuthModal() {
+      const m = document.getElementById('dealerAuthModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function switchAuthModalTab(tab) {
+      authModalTab = tab;
+      const on = 'h-8 rounded-[6px] text-[12px] font-medium bg-[#232325] text-[#ededed] cursor-pointer';
+      const off = 'h-8 rounded-[6px] text-[12px] font-normal text-[#85858b] hover:text-[#ededed] cursor-pointer';
+      document.getElementById('authTabLogin').className = tab === 'login' ? on : off;
+      document.getElementById('authTabSignup').className = tab === 'signup' ? on : off;
+      document.getElementById('authSignupFields').classList.toggle('hidden', tab !== 'signup');
+      document.getElementById('authSubmitBtn').textContent =
+        tab === 'signup' ? '가입하고 무료 체험 시작하기' : '내 번호로 스튜디오 시작하기';
+    }
+
+    function normalizePhone(raw) {
+      const digits = String(raw || '').replace(/\D/g, '');
+      if (digits.length === 11) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+      if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+      return String(raw || '').trim();
+    }
+
+    function loadDealerAccounts() {
+      try { return JSON.parse(localStorage.getItem('autoreels_dealer_accounts') || '{}'); } catch (e) { return {}; }
+    }
+    function saveDealerAccounts(map) {
+      try { localStorage.setItem('autoreels_dealer_accounts', JSON.stringify(map)); } catch (e) {}
+    }
+
+    // 로그인된 딜러 계정을 스튜디오 딜러 목록에 반영하고 선택
+    function applyLoggedInDealer(acc) {
+      let d = dealers.find((x) => extractPhoneLast8(x.licensedPhone || x.phone) === extractPhoneLast8(acc.phone));
+      if (!d) {
+        d = {
+          id: 'dlr_' + extractPhoneLast8(acc.phone),
+          name: acc.name,
+          title: acc.title,
+          branch: acc.branch,
+          phone: acc.phone,
+          licensedPhone: acc.phone,
+          igUsername: '@' + (acc.name || 'dealer') + '_official',
+          igPwMasked: 'AES256 (암호화 보관)',
+          accentColor: '#3b82f6',
+          promoTag: acc.promoTag || '',
+          token: 'tok_' + extractPhoneLast8(acc.phone),
+          avatarImg: dealers[0]?.avatarImg || null,
+          status: 'PENDING',
+          variation: createShuffledVariation(),
+          snsAccounts: { ig: '', yt: '', tt: '', fb: '' }
+        };
+        dealers.push(d);
+      }
+      d.name = acc.name || d.name;
+      d.title = acc.title || d.title;
+      d.branch = acc.branch || d.branch;
+      d.phone = acc.phone;
+      d.licensedPhone = acc.phone;
+      if (acc.promoTag) d.promoTag = acc.promoTag;
+      d.licenseKey = acc.licenseKey || 'AR-000000 (미결제 체험판)';
+      d.expiryYmd = acc.expiryYmd || 20261231;
+      try { localStorage.setItem('autoreels_logged_phone', acc.phone); } catch (e) {}
+      selectDealer(d.id, true);
+    }
+
+    async function submitDealerAuthForm() {
+      const phone = normalizePhone(document.getElementById('authPhoneInput').value);
+      const pw = document.getElementById('authPasswordInput').value || '';
+      const notice = document.getElementById('authModalNotice');
+      const showMsg = (msg, ok = true) => {
+        if (!notice) return;
+        notice.classList.remove('hidden');
+        notice.className = `text-[12px] text-center ${ok ? 'text-[#4cc38a]' : 'text-[#e5484d]'}`;
+        notice.textContent = msg;
+      };
+      if (phone.replace(/\D/g, '').length < 10) return showMsg('휴대폰 번호를 정확히 입력해주세요.', false);
+      if (pw.length < 4) return showMsg('비밀번호는 4자리 이상 입력해주세요.', false);
+
+      const accounts = loadDealerAccounts();
+      let acc = accounts[phone];
+
+      if (authModalTab === 'login') {
+        const existing = dealers.find((x) => extractPhoneLast8(x.licensedPhone || x.phone) === extractPhoneLast8(phone));
+        if (!acc && existing) {
+          acc = { phone, pw, name: existing.name, title: existing.title, branch: existing.branch,
+                  promoTag: existing.promoTag, licenseKey: existing.licenseKey, expiryYmd: existing.expiryYmd };
+          accounts[phone] = acc;
+          saveDealerAccounts(accounts);
+        }
+        if (!acc) {
+          switchAuthModalTab('signup');
+          return showMsg('등록되지 않은 번호입니다. 아래 정보를 입력해 1분 가입을 완료해주세요.', false);
+        }
+        if (acc.pw && acc.pw !== pw) return showMsg('비밀번호가 일치하지 않습니다.', false);
+      } else {
+        acc = {
+          phone, pw,
+          name: document.getElementById('authNameInput').value.trim() || '신규 카마스터',
+          title: document.getElementById('authTitleInput').value.trim() || '카마스터',
+          branch: document.getElementById('authBranchInput').value.trim() || '공식 전시장',
+          promoTag: document.getElementById('authPromoInput').value.trim(),
+          licenseKey: 'AR-000000 (미결제 체험판)',
+          expiryYmd: 20261231
+        };
+        // 서버 등록 (실패해도 로컬 계정으로 진행)
+        try {
+          if (window.location.protocol.startsWith('http')) {
+            await fetch('/api/auth-billing', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'login_or_signup', phone, name: acc.name, title: acc.title,
+                                     branch: acc.branch, promoTag: acc.promoTag, isTrial: true })
+            });
+          }
+        } catch (e) {}
+        accounts[phone] = acc;
+        saveDealerAccounts(accounts);
+      }
+
+      applyLoggedInDealer(acc);
+      showMsg(authModalTab === 'signup'
+        ? `${acc.name}님 가입 완료! 무료 체험판으로 바로 제작해보세요. (워터마크 해제는 PRO 결제)`
+        : `${acc.name}님 환영합니다!`);
+      setTimeout(closeDealerAuthModal, 900);
+    }
+
+    function quickLoginDemoDealer(mode) {
+      if (mode === 'PRO_MINJUN') {
+        const d = dealers[0];
+        d.phone = d.licensedPhone || d.phone;
+        d.expiryYmd = 20261231;
+        d.licenseKey = formatWasmLicenseKey(d.licensedPhone || d.phone, 20261231);
+        selectDealer(d.id, true);
+      } else {
+        applyLoggedInDealer({
+          phone: '010-5582-3391', name: '정우성', title: '수석 카마스터', branch: '현대자동차 도산대로점',
+          promoTag: '출고 고객 전원 프리미엄 썬팅 + 블랙박스 무상 지원',
+          licenseKey: 'AR-000000 (미결제 체험판)', expiryYmd: 20261231
+        });
+      }
+      closeDealerAuthModal();
+    }
+
+    // ============================================================================
+    // PRO 정기구독 결제 (카카오페이 / 토스페이 / 카드) → 정품 라이선스 즉시 개통
+    // ============================================================================
+    const BILLING_PLANS = {
+      weekly_50k:   { name: '주간 스타터 패스 (7일)', amount: 50000, expiryYmd: 20261119 },
+      monthly_150k: { name: '월간 PRO 무제한 패스 (30일)', amount: 150000, expiryYmd: 20261231 },
+      annual_1200k: { name: '연간 VIP 마스터 패스 (365일)', amount: 1200000, expiryYmd: 20271112 }
+    };
+    const PAY_METHOD_LABELS = { kakaopay: '카카오페이', tosspay: '토스페이', card: '신용·법인카드' };
+    let selectedPlanKey = 'monthly_150k';
+    let selectedPayMethodKey = 'kakaopay';
+    let resumeExportAfterPay = false;
+
+    function openBillingCheckoutModal(fromExport = false) {
+      resumeExportAfterPay = fromExport === true;
+      const d = getSelectedDealer();
+      const t = document.getElementById('billingTargetDealerText');
+      if (t) t.textContent = `${d.name} ${d.title} (${d.licensedPhone || d.phone})`;
+      const box = document.getElementById('billingSuccessBox');
+      if (box) box.classList.add('hidden');
+      const btn = document.getElementById('executePayBtn');
+      if (btn) btn.disabled = false;
+      selectBillingPlan(selectedPlanKey);
+      selectPayMethod(selectedPayMethodKey);
+      document.getElementById('billingCheckoutModal').classList.remove('hidden');
+    }
+    function closeBillingCheckoutModal() {
+      document.getElementById('billingCheckoutModal').classList.add('hidden');
+    }
+
+    function selectBillingPlan(planKey) {
+      selectedPlanKey = BILLING_PLANS[planKey] ? planKey : 'monthly_150k';
+      Object.keys(BILLING_PLANS).forEach((k) => {
+        const el = document.getElementById(`planCard_${k}`);
+        if (!el) return;
+        el.classList.toggle('border-[#3b82f6]', k === selectedPlanKey);
+        el.classList.toggle('bg-[#19191b]', k === selectedPlanKey);
+        el.classList.toggle('border-[var(--border)]', k !== selectedPlanKey);
+        el.classList.toggle('bg-[#141415]', k !== selectedPlanKey);
+      });
+      const btn = document.getElementById('executePayBtn');
+      if (btn) btn.textContent = `${BILLING_PLANS[selectedPlanKey].amount.toLocaleString()}원 결제하고 워터마크 즉시 해제하기`;
+    }
+
+    function selectPayMethod(methodKey) {
+      selectedPayMethodKey = PAY_METHOD_LABELS[methodKey] ? methodKey : 'kakaopay';
+      Object.keys(PAY_METHOD_LABELS).forEach((k) => {
+        const el = document.getElementById(`payMethod_${k}`);
+        if (!el) return;
+        const on = k === selectedPayMethodKey;
+        el.className = `h-10 rounded-[8px] border text-[12px] cursor-pointer ${
+          on ? 'border-[#3b82f6] bg-[#232325] font-medium text-[#ededed]' : 'border-[var(--border)] bg-[#141415] font-normal text-[#a1a1a6]'
+        }`;
+      });
+    }
+
+    async function executeSubscriptionPayment() {
+      const d = getSelectedDealer();
+      const plan = BILLING_PLANS[selectedPlanKey];
+      const btn = document.getElementById('executePayBtn');
+      const phone = d.licensedPhone || d.phone;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = `${PAY_METHOD_LABELS[selectedPayMethodKey]} 결제 승인 중...`;
+      }
+
+      let receiptId = `PAY-${Date.now().toString().slice(-8)}`;
+      try {
+        if (window.location.protocol.startsWith('http')) {
+          const r = await fetch('/api/auth-billing', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'checkout', phone, plan: selectedPlanKey, payMethod: selectedPayMethodKey })
+          });
+          const j = await r.json();
+          if (j && j.receiptId) receiptId = j.receiptId;
+        }
+      } catch (e) {}
+
+      // 브라우저 내 Wasm DRM 검증기와 동일한 서명으로 라이선스 발급 (결제 직후 즉시 인증 통과)
+      d.phone = phone;
+      d.licensedPhone = phone;
+      d.expiryYmd = plan.expiryYmd;
+      d.licenseKey = formatWasmLicenseKey(phone, plan.expiryYmd);
+
+      const accounts = loadDealerAccounts();
+      if (accounts[phone]) {
+        accounts[phone].licenseKey = d.licenseKey;
+        accounts[phone].expiryYmd = d.expiryYmd;
+        saveDealerAccounts(accounts);
+      }
+
+      syncPreviewPanel();
+      window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+
+      const box = document.getElementById('billingSuccessBox');
+      const detail = document.getElementById('billingReceiptDetail');
+      if (detail) {
+        detail.textContent = `${plan.name} · ${plan.amount.toLocaleString()}원 · ${PAY_METHOD_LABELS[selectedPayMethodKey]} · 영수증 ${receiptId} · 라이선스 ${d.licenseKey}`;
+      }
+      if (box) box.classList.remove('hidden');
+      if (btn) btn.textContent = '결제 완료 · 워터마크 해제됨';
+
+      setTimeout(() => {
+        closeBillingCheckoutModal();
+        if (resumeExportAfterPay) {
+          resumeExportAfterPay = false;
+          exportSynthesizedVideo();
+        }
+      }, 1400);
+    }
+
     // 초기 구동
     loadSavedDealerProfiles();
     loadAdminAiKeys();
     resetToAiPhotos();
     initDealerAvatars();
+    try {
+      isAdminMode = localStorage.getItem('autoreels_admin_mode') === '1';
+      const loggedPhone = localStorage.getItem('autoreels_logged_phone');
+      const accs = loadDealerAccounts();
+      if (loggedPhone && accs[loggedPhone]) applyLoggedInDealer(accs[loggedPhone]);
+    } catch (e) {}
     renderQuickSelector();
     renderAdminDealerList();
     syncPreviewPanel();
     syncTechPanel();
+    applyRoleViewModeUI();
     window.__timelines['main'].seek(0);
     requestAnimationFrame(tick);
   </script>
