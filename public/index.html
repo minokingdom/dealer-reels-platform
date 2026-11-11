@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko" class="dark">
 <head>
   <meta charset="UTF-8" />
@@ -294,6 +294,7 @@
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[13px] font-medium text-[#ededed]">영상 시간 · 한국어 AI 성우(TTS) · 릴스/숏츠 BGM</span>
                 <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]">클릭 시 사운드 자동 활성</span>
+                <span id="ttsProviderBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]">성우: 준비 중</span>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <button type="button" onclick="testCurrentCutTtsNow()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
@@ -329,17 +330,17 @@
                   <input id="customBgmFileInput" type="file" accept="audio/*,video/mp4" onchange="handleCustomBgmUpload(event)" class="hidden" />
                 </div>
                 <select id="bgmStyleSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
-                  <option value="showroom" selected>릴스 인기 1위 · Chill House 쇼룸 비트</option>
-                  <option value="urban">유튜브 쇼츠 급상승 · Phonk / Trap 비트</option>
-                  <option value="bright">인스타 감성 · Upbeat City Pop 리듬</option>
-                  <option value="luxury">제네시스·수입차 · Luxury Lounge 패드</option>
+                  <option value="showroom" selected>내장 비트 · Chill House 쇼룸</option>
+                  <option value="urban">내장 비트 · Phonk / Trap</option>
+                  <option value="bright">내장 비트 · Upbeat City Pop</option>
+                  <option value="luxury">내장 비트 · Luxury Lounge</option>
                   <option value="custom_mp3" id="customBgmOption" class="hidden">내가 불러온 릴스·숏츠 음원 파일</option>
                   <option value="off">BGM 끄기</option>
                 </select>
               </div>
 
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">한국어 AI 성우 내레이션 (TTS)</label>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">한국어 AI 성우 내레이션 (Fish Audio)</label>
                 <select id="ttsVoiceSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
                   <option value="female" selected>여성 아나운서 성우 (또렷·표준)</option>
                   <option value="male">남성 카마스터 성우 (중저음·신뢰)</option>
@@ -1746,7 +1747,6 @@
       bgmTimer: null,
       stepIndex: 0,
       lastSpokenCut: -1,
-      ttsAudioEl: null,
       customBgmAudioEl: null,
       customBgmSourceNode: null,
       customBgmUrl: null,
@@ -1759,20 +1759,34 @@
           this.masterGain = this.ctx.createGain();
           this.masterGain.gain.value = 0.95;
           this.bgmGain = this.ctx.createGain();
-          this.bgmGain.gain.value = 0.30;
+          this.bgmGain.gain.value = 0.42; // 성우 음성이 또렷하게 들리도록 BGM은 한 단계 낮게
           this.ttsGain = this.ctx.createGain();
           this.ttsGain.gain.value = 1.0;
 
           this.bgmGain.connect(this.masterGain);
           this.ttsGain.connect(this.masterGain);
-          this.masterGain.connect(this.ctx.destination);
+          // BGM과 성우가 겹칠 때 소리가 깨지지 않도록 출력 직전에 리미터를 둠
+          this.limiter = this.ctx.createDynamicsCompressor();
+          this.limiter.threshold.value = -8;
+          this.limiter.knee.value = 6;
+          this.limiter.ratio.value = 12;
+          this.limiter.attack.value = 0.003;
+          this.limiter.release.value = 0.15;
+          this.masterGain.connect(this.limiter);
+          this.limiter.connect(this.ctx.destination);
 
           if (typeof this.ctx.createMediaStreamDestination === 'function') {
             this.streamDest = this.ctx.createMediaStreamDestination();
-            this.masterGain.connect(this.streamDest);
+            this.limiter.connect(this.streamDest);
           }
+
+          // 하이햇·클랩용 화이트노이즈 버퍼
+          const len = Math.floor(this.ctx.sampleRate * 0.5);
+          this.noiseBuf = this.ctx.createBuffer(1, len, this.ctx.sampleRate);
+          const ch = this.noiseBuf.getChannelData(0);
+          for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
+        if (this.ctx && this.ctx.state !== 'running') {
           this.ctx.resume().catch(() => {});
         }
         return this.ctx;
@@ -1821,102 +1835,167 @@
         }
       },
 
-      // 내장 릴스·숏츠 스타일 비트 시퀀서 (풍부한 베이스 + 코드 패드 + 드럼 그루브)
+      // ★ 내장 릴스·숏츠 스타일 BGM 엔진 (코드 패드 + 베이스라인 + 아르페지오 리프 + 킥/클랩/하이햇)
+      //   - AudioContext 시간 기준 룩어헤드 스케줄링으로 끊김 없이 재생
+      BGM_STYLES: {
+        // 4마디 코드 진행 (각 코드: [베이스 루트, 코드톤...] Hz)
+        showroom: { bpm: 118, wave: 'sawtooth', cutoff: 1400, kick: [0, 4, 8, 12], clap: [4, 12], hat: 'offbeat',
+          chords: [[110.0, 220.0, 261.63, 329.63, 392.0], [87.31, 174.61, 220.0, 261.63, 329.63],
+                   [130.81, 261.63, 329.63, 392.0, 493.88], [98.0, 196.0, 246.94, 293.66, 392.0]] },
+        urban: { bpm: 140, wave: 'square', cutoff: 900, kick: [0, 3, 6, 10, 11], clap: [8], hat: 'trap',
+          chords: [[73.42, 146.83, 174.61, 220.0, 293.66], [77.78, 155.56, 196.0, 233.08, 311.13],
+                   [65.41, 130.81, 155.56, 196.0, 261.63], [69.3, 138.59, 174.61, 207.65, 277.18]] },
+        bright: { bpm: 112, wave: 'triangle', cutoff: 2600, kick: [0, 8, 10], clap: [4, 12], hat: 'eighth',
+          chords: [[87.31, 174.61, 220.0, 261.63, 329.63], [98.0, 196.0, 246.94, 293.66, 349.23],
+                   [82.41, 164.81, 207.65, 246.94, 329.63], [110.0, 220.0, 261.63, 329.63, 392.0]] },
+        luxury: { bpm: 90, wave: 'sine', cutoff: 1800, kick: [0, 10], clap: [8], hat: 'sparse',
+          chords: [[73.42, 220.0, 277.18, 329.63, 440.0], [61.74, 185.0, 246.94, 293.66, 369.99],
+                   [82.41, 196.0, 246.94, 329.63, 392.0], [55.0, 164.81, 220.0, 277.18, 329.63]] }
+      },
+      nextStepTime: 0,
+
+      scheduleStep(step, when) {
+        const ctx = this.ctx;
+        const S = this.BGM_STYLES[this.bgmStyle] || this.BGM_STYLES.showroom;
+        const stepDur = 60 / S.bpm / 4;
+        const s16 = step % 16;
+        const bar = Math.floor(step / 16) % 4;
+        const chord = S.chords[bar];
+        const out = this.bgmGain;
+
+        // 1) 킥
+        if (S.kick.includes(s16)) {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(150, when);
+          o.frequency.exponentialRampToValueAtTime(42, when + 0.14);
+          g.gain.setValueAtTime(0.9, when);
+          g.gain.exponentialRampToValueAtTime(0.001, when + 0.28);
+          o.connect(g); g.connect(out);
+          o.start(when); o.stop(when + 0.3);
+        }
+
+        // 2) 클랩/스네어 (노이즈)
+        if (S.clap.includes(s16) && this.noiseBuf) {
+          const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+          n.buffer = this.noiseBuf;
+          f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 0.8;
+          g.gain.setValueAtTime(0.32, when);
+          g.gain.exponentialRampToValueAtTime(0.001, when + 0.18);
+          n.connect(f); f.connect(g); g.connect(out);
+          n.start(when); n.stop(when + 0.2);
+        }
+
+        // 3) 하이햇 (노이즈 하이패스)
+        const hatOn =
+          S.hat === 'offbeat' ? s16 % 4 === 2 :
+          S.hat === 'eighth' ? s16 % 2 === 0 :
+          S.hat === 'trap' ? true :
+          s16 % 8 === 4;
+        if (hatOn && this.noiseBuf) {
+          const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+          n.buffer = this.noiseBuf;
+          f.type = 'highpass'; f.frequency.value = 7000;
+          const v = S.hat === 'trap' ? (s16 % 2 === 0 ? 0.09 : 0.05) : 0.1;
+          g.gain.setValueAtTime(v, when);
+          g.gain.exponentialRampToValueAtTime(0.001, when + 0.05);
+          n.connect(f); f.connect(g); g.connect(out);
+          n.start(when); n.stop(when + 0.06);
+        }
+
+        // 4) 코드 패드 (마디 시작마다 1마디 길이로 지속)
+        if (s16 === 0) {
+          const barDur = stepDur * 16;
+          const f = ctx.createBiquadFilter(), g = ctx.createGain();
+          f.type = 'lowpass'; f.frequency.value = S.cutoff; f.Q.value = 0.6;
+          g.gain.setValueAtTime(0.0001, when);
+          g.gain.linearRampToValueAtTime(0.11, when + 0.25);
+          g.gain.setValueAtTime(0.11, when + barDur - 0.3);
+          g.gain.linearRampToValueAtTime(0.0001, when + barDur);
+          f.connect(g); g.connect(out);
+          chord.slice(1, 4).forEach((hz, i) => {
+            [-6, 6].forEach((detune) => {
+              const o = ctx.createOscillator();
+              o.type = S.wave === 'square' ? 'sawtooth' : S.wave;
+              o.frequency.value = hz;
+              o.detune.value = detune + i;
+              o.connect(f);
+              o.start(when); o.stop(when + barDur + 0.05);
+            });
+          });
+        }
+
+        // 5) 베이스라인
+        const bassHit = this.bgmStyle === 'urban' ? S.kick.includes(s16) : (s16 % 4 === 0 || s16 % 4 === 3);
+        if (bassHit) {
+          const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+          o.type = this.bgmStyle === 'urban' ? 'sine' : 'sawtooth';
+          o.frequency.value = chord[0];
+          f.type = 'lowpass'; f.frequency.value = 420;
+          const len = this.bgmStyle === 'urban' ? stepDur * 3.5 : stepDur * 1.6;
+          g.gain.setValueAtTime(0.38, when);
+          g.gain.exponentialRampToValueAtTime(0.001, when + len);
+          o.connect(f); f.connect(g); g.connect(out);
+          o.start(when); o.stop(when + len + 0.02);
+        }
+
+        // 6) 아르페지오 멜로디 리프 (8분음표)
+        if (s16 % 2 === 0) {
+          const pattern = [1, 2, 3, 4, 3, 2, 4, 2];
+          const hz = chord[pattern[(s16 / 2) % pattern.length]] * 2;
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = this.bgmStyle === 'luxury' ? 'sine' : 'triangle';
+          o.frequency.value = hz;
+          g.gain.setValueAtTime(0.0001, when);
+          g.gain.linearRampToValueAtTime(this.bgmStyle === 'urban' ? 0.05 : 0.075, when + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.001, when + stepDur * 1.8);
+          o.connect(g); g.connect(out);
+          o.start(when); o.stop(when + stepDur * 2);
+        }
+      },
+
+      // 하위 호환: 단일 스텝 즉시 재생
       playBgmStep() {
         if (!this.enabled || this.bgmStyle === 'off' || this.bgmStyle === 'custom_mp3') return;
         const ctx = this.ensureContext();
         if (!ctx) return;
-
-        const now = ctx.currentTime;
-        const step = this.stepIndex % 16;
-        this.stepIndex++;
-
-        // 1) 딥 서브 킥 (Reels House / Phonk Trap Kick)
-        const isKick =
-          this.bgmStyle === 'urban'
-            ? (step === 0 || step === 3 || step === 6 || step === 8 || step === 11 || step === 14)
-            : this.bgmStyle === 'luxury'
-            ? (step === 0 || step === 8 || step === 12)
-            : (step % 4 === 0);
-
-        if (isKick) {
-          const osc = ctx.createOscillator();
-          const g = ctx.createGain();
-          osc.type = 'sine';
-          const startFreq = this.bgmStyle === 'urban' ? 155 : 128;
-          osc.frequency.setValueAtTime(startFreq, now);
-          osc.frequency.exponentialRampToValueAtTime(36, now + 0.16);
-          g.gain.setValueAtTime(0.72, now);
-          g.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
-          osc.connect(g);
-          g.connect(this.bgmGain);
-          osc.start(now);
-          osc.stop(now + 0.21);
-        }
-
-        // 2) 크리스피 스네어 & 하이햇
-        if (step % 2 === 1 || step % 4 === 2) {
-          const oscH = ctx.createOscillator();
-          const gH = ctx.createGain();
-          oscH.type = step % 4 === 2 ? 'sawtooth' : 'triangle';
-          oscH.frequency.setValueAtTime(step % 4 === 2 ? 1850 : 6200, now);
-          gH.gain.setValueAtTime(step % 4 === 2 ? 0.09 : 0.045, now);
-          gH.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-          oscH.connect(gH);
-          gH.connect(this.bgmGain);
-          oscH.start(now);
-          oscH.stop(now + 0.065);
-        }
-
-        // 3) 릴스 스타일 스테레오 신스 코드 & 멜로디 리프
-        const chordSets = {
-          showroom: [130.81, 164.81, 196.0, 246.94, 261.63, 329.63, 293.66, 196.0],
-          urban:    [110.0, 130.81, 164.81, 174.61, 220.0, 261.63, 196.0, 146.83],
-          bright:   [146.83, 185.0, 220.0, 277.18, 293.66, 369.99, 329.63, 246.94],
-          luxury:   [98.0, 123.47, 146.83, 185.0, 220.0, 246.94, 196.0, 146.83]
-        };
-        const notes = chordSets[this.bgmStyle] || chordSets.showroom;
-        const noteFreq = notes[step % notes.length];
-
-        if (step % 2 === 0) {
-          const oscB = ctx.createOscillator();
-          const oscSub = ctx.createOscillator();
-          const gB = ctx.createGain();
-          oscB.type = this.bgmStyle === 'luxury' ? 'sine' : 'triangle';
-          oscSub.type = 'sine';
-          oscB.frequency.setValueAtTime(noteFreq * 2, now);
-          oscSub.frequency.setValueAtTime(noteFreq, now);
-          gB.gain.setValueAtTime(0.20, now);
-          gB.gain.exponentialRampToValueAtTime(0.002, now + 0.26);
-          oscB.connect(gB);
-          oscSub.connect(gB);
-          gB.connect(this.bgmGain);
-          oscB.start(now);
-          oscSub.start(now);
-          oscB.stop(now + 0.27);
-          oscSub.stop(now + 0.27);
-        }
+        this.scheduleStep(this.stepIndex++, ctx.currentTime + 0.02);
       },
 
       startBgmLoop() {
         this.stopBgmLoop();
         if (!this.enabled || this.bgmStyle === 'off') return;
-        this.ensureContext();
+        const ctx = this.ensureContext();
+        if (!ctx) return;
 
+        const resumed = ctx.state === 'running' ? Promise.resolve() : ctx.resume().catch(() => {});
+
+        // 내가 불러온 릴스·숏츠 MP3: 컨텍스트 재개 후 재생 (재개 전 재생 시 무음 방지)
         if (this.bgmStyle === 'custom_mp3' && this.customBgmAudioEl) {
-          this.customBgmAudioEl.play().catch(() => {});
+          resumed.then(() => this.customBgmAudioEl.play().catch(() => {}));
           return;
         }
 
-        const bpmMap = { showroom: 122, luxury: 96, urban: 138, bright: 126 };
-        const bpm = bpmMap[this.bgmStyle] || 122;
-        const stepMs = Math.round((60 / bpm / 4) * 1000);
-        this.playBgmStep();
-        this.bgmTimer = setInterval(() => {
-          if (isPlaying && this.enabled) {
-            this.playBgmStep();
-          }
-        }, stepMs);
+        this.stepIndex = 0;
+        resumed.then(() => {
+          if (!this.enabled || this.bgmStyle === 'off' || this.bgmStyle === 'custom_mp3') return;
+          this.nextStepTime = ctx.currentTime + 0.06;
+          this.bgmTimer = setInterval(() => {
+            if (!this.enabled) return;
+            const S = this.BGM_STYLES[this.bgmStyle] || this.BGM_STYLES.showroom;
+            const stepDur = 60 / S.bpm / 4;
+            if (!isPlaying) {
+              this.nextStepTime = ctx.currentTime + 0.06;
+              return;
+            }
+            // 탭이 백그라운드였다가 돌아온 경우 밀린 스텝 건너뛰기
+            if (this.nextStepTime < ctx.currentTime - 0.2) this.nextStepTime = ctx.currentTime + 0.05;
+            while (this.nextStepTime < ctx.currentTime + 0.14) {
+              this.scheduleStep(this.stepIndex++, this.nextStepTime);
+              this.nextStepTime += stepDur;
+            }
+          }, 25);
+        });
       },
 
       stopBgmLoop() {
@@ -1931,16 +2010,22 @@
         }
       },
 
-      prefetchTtsBuffers() {
-        // 실시간 스트리밍 + Web Speech 이중 엔진을 사용하므로 즉시 준비됨
-      },
+      // ------------------------------------------------------------------------
+      // ★ 한국어 AI 성우(TTS): Fish Audio (/api/tts 서버 프록시)
+      //   - MP3를 받아 AudioBuffer로 디코딩한 뒤 ttsGain에 연결하므로
+      //     스피커 재생과 영상 추출 오디오 트랙에 같은 음성이 들어갑니다.
+      //   - Fish Audio를 쓸 수 없을 때(키 미설정, 오프라인)만 브라우저 음성으로 대체합니다.
+      //     브라우저 음성은 추출 영상에 녹음되지 않습니다.
+      // ------------------------------------------------------------------------
+      ttsCache: new Map(),
+      ttsSource: null,
+      ttsSourceGain: null,
+      ttsSpeakToken: 0,
+      ttsProvider: 'unknown', // 'fish' | 'browser' | 'unknown'
+      ttsLastError: '',
+      ttsBlockedUntil: 0,
 
-      // ★ 한국어 AI 성우(TTS) 100% 보장 발화 함수 (Web Speech API + /api/tts MP3 오디오 스트림 동시 지원)
-      speakCutLine(cutIdx, forceSpeak = false) {
-        if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off') return;
-        if (!forceSpeak && this.lastSpokenCut === cutIdx) return;
-        this.lastSpokenCut = cutIdx;
-
+      getCutNarration(cutIdx) {
         const d = getSelectedDealer();
         const totalCuts = getTargetCutCount();
         let text = '';
@@ -1952,62 +2037,203 @@
         } else {
           text = `${d.branch} ${d.name} ${d.title}입니다. 댓글에 견적 남겨주시면 1대1 최저가 조건표를 즉시 보내드립니다.`;
         }
-        const cleanText = String(text || '')
+        return String(text || '')
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
           .replace(/[✔🚨✨💰🔑🏢📞🎁💬★]/g, '')
-          .trim();
-        if (!cleanText) return;
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 200);
+      },
 
-        this.ensureContext();
+      setTtsProvider(provider, errorCode) {
+        this.ttsProvider = provider;
+        this.ttsLastError = errorCode || '';
+        const badge = document.getElementById('ttsProviderBadge');
+        if (!badge) return;
+        if (provider === 'fish') {
+          badge.textContent = '성우: Fish Audio';
+          badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]';
+        } else if (provider === 'browser') {
+          const reason =
+            errorCode === 'fish_api_key_missing' ? 'API 키 미설정' :
+            errorCode === 'http_401' ? 'API 키 오류' :
+            errorCode === 'http_402' ? '크레딧 부족' :
+            errorCode === 'offline' ? '서버 없이 실행 중' : '연결 실패';
+          badge.textContent = `성우: 브라우저 음성 (Fish Audio ${reason} · 추출 영상에는 녹음 안 됨)`;
+          badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#f5a524]';
+        } else {
+          badge.textContent = '성우: 준비 중';
+          badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]';
+        }
+      },
 
-        // 1순위: 브라우저 한국어 음성 합성(window.speechSynthesis)이 한국어 보이스를 지원할 경우 즉시 저지연 발화
-        let spokeViaWebSpeech = false;
-        if ('speechSynthesis' in window) {
+      // 문장 하나의 Fish Audio 음성을 받아 AudioBuffer로 디코딩 (성우·문장별 캐시)
+      fetchTtsBuffer(text) {
+        const voice = this.ttsVoice;
+        const key = `${voice}|${text}`;
+        if (this.ttsCache.has(key)) return this.ttsCache.get(key);
+        // 키 미설정·크레딧 부족처럼 바로 풀리지 않는 오류는 1분간 재요청하지 않음
+        if (Date.now() < this.ttsBlockedUntil) return Promise.reject(new Error(this.ttsLastError || 'blocked'));
+
+        const ctx = this.ensureContext();
+        const job = (async () => {
+          if (!ctx) throw new Error('no_audio_context');
+          if (!window.location.protocol.startsWith('http')) throw new Error('offline');
+          const res = await fetch(`/api/tts?voice=${encodeURIComponent(voice)}&text=${encodeURIComponent(text)}`);
+          if (!res.ok) {
+            let code = `http_${res.status}`;
+            try {
+              const body = await res.json();
+              if (body && body.error === 'fish_api_key_missing') code = body.error;
+            } catch (e) {}
+            throw new Error(code);
+          }
+          const bytes = await res.arrayBuffer();
+          return await ctx.decodeAudioData(bytes);
+        })();
+
+        this.ttsCache.set(key, job);
+        job.then(
+          () => this.setTtsProvider('fish'),
+          (err) => {
+            this.ttsCache.delete(key); // 실패는 캐시하지 않아 다음 재생 때 다시 시도
+            const code = String(err && err.message);
+            if (['fish_api_key_missing', 'http_401', 'http_402', 'offline'].includes(code)) {
+              this.ttsBlockedUntil = Date.now() + 60000;
+            }
+            this.setTtsProvider('browser', code);
+          }
+        );
+        return job;
+      },
+
+      // 모든 컷 + 마지막 명함 멘트 음성을 미리 받아 둠 (재생·추출 시 컷과 음성 타이밍 일치)
+      prefetchTtsBuffers() {
+        if (this.ttsVoice === 'off') return Promise.resolve([]);
+        const totalCuts = getTargetCutCount();
+        const jobs = [];
+        for (let i = 0; i <= totalCuts; i++) {
+          const text = this.getCutNarration(i);
+          if (text) jobs.push(this.fetchTtsBuffer(text).catch(() => null));
+        }
+        return Promise.all(jobs);
+      },
+
+      stopTts() {
+        this.ttsSpeakToken++;
+        if (this.ttsSource) {
+          const src = this.ttsSource;
+          const g = this.ttsSourceGain;
+          this.ttsSource = null;
+          this.ttsSourceGain = null;
           try {
-            const voices = window.speechSynthesis.getVoices() || [];
-            const koVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().includes('ko'));
-            if (koVoices.length > 0) {
-              window.speechSynthesis.cancel();
-              const utter = new SpeechSynthesisUtterance(cleanText);
-              utter.lang = 'ko-KR';
-              utter.voice = (this.ttsVoice === 'male' && koVoices.length > 1) ? koVoices[koVoices.length - 1] : koVoices[0];
-              utter.pitch = this.ttsVoice === 'male' ? 0.86 : this.ttsVoice === 'energetic' ? 1.12 : 1.04;
-              utter.rate = this.ttsVoice === 'energetic' ? 1.25 : 1.15;
-              utter.volume = 1.0;
-              window.speechSynthesis.speak(utter);
-              spokeViaWebSpeech = true;
+            if (g && this.ctx) {
+              const now = this.ctx.currentTime;
+              g.gain.cancelScheduledValues(now);
+              g.gain.setValueAtTime(g.gain.value, now);
+              g.gain.linearRampToValueAtTime(0.0001, now + 0.06);
+              src.stop(now + 0.07);
+            } else {
+              src.stop();
             }
           } catch (e) {}
         }
+        if ('speechSynthesis' in window) {
+          try { window.speechSynthesis.cancel(); } catch (e) {}
+        }
+      },
 
-        // 2순위 (또는 모바일/PC에 한국어 보이스가 없거나 Web Speech가 무음일 때): 서버리스 /api/tts 한국어 성우 MP3 스트리밍 즉시 재생
-        if (!spokeViaWebSpeech && window.location.protocol.startsWith('http')) {
-          try {
-            if (!this.ttsAudioEl) {
-              this.ttsAudioEl = new Audio();
-              this.ttsAudioEl.crossOrigin = 'anonymous';
-              if (this.ctx) {
-                try {
-                  const ttsSrc = this.ctx.createMediaElementSource(this.ttsAudioEl);
-                  ttsSrc.connect(this.ttsGain);
-                } catch (e) {}
-              }
-            }
-            this.ttsAudioEl.pause();
-            this.ttsAudioEl.src = `/api/tts?text=${encodeURIComponent(cleanText)}&tl=ko`;
-            this.ttsAudioEl.playbackRate = this.ttsVoice === 'energetic' ? 1.22 : this.ttsVoice === 'male' ? 0.95 : 1.08;
-            this.ttsAudioEl.volume = 1.0;
-            this.ttsAudioEl.play().catch(() => {});
-          } catch (e) {}
-        } else if (!spokeViaWebSpeech && 'speechSynthesis' in window) {
-          // 오프라인 file:// 환경 폴백
-          try {
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(cleanText);
-            utter.lang = 'ko-KR';
-            utter.rate = 1.15;
-            window.speechSynthesis.speak(utter);
-          } catch (e) {}
+      playTtsBuffer(buffer, cutIdx) {
+        const ctx = this.ctx;
+        if (!ctx || !buffer) return;
+        const src = ctx.createBufferSource();
+        const g = ctx.createGain();
+        src.buffer = buffer;
+
+        // 문장이 컷 길이보다 조금 길면 살짝 빠르게 읽어 컷 안에 맞춤 (최대 1.12배)
+        const totalCuts = getTargetCutCount();
+        const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+        const slotDur = cutIdx < totalCuts ? mainDur / totalCuts : OUTRO_DURATION;
+        const fit = buffer.duration / Math.max(0.5, slotDur - 0.15);
+        src.playbackRate.value = Math.min(1.12, Math.max(1.0, fit));
+
+        g.gain.value = 1.0;
+        src.connect(g);
+        g.connect(this.ttsGain);
+        src.onended = () => {
+          if (this.ttsSource === src) {
+            this.ttsSource = null;
+            this.ttsSourceGain = null;
+          }
+        };
+        src.start();
+        this.ttsSource = src;
+        this.ttsSourceGain = g;
+      },
+
+      speakWithBrowserVoice(text) {
+        if (!('speechSynthesis' in window)) return;
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'ko-KR';
+          const voices = window.speechSynthesis.getVoices() || [];
+          const koVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().includes('ko'));
+          if (koVoices.length > 0) {
+            utter.voice = (this.ttsVoice === 'male' && koVoices.length > 1) ? koVoices[koVoices.length - 1] : koVoices[0];
+          }
+          utter.pitch = this.ttsVoice === 'male' ? 0.86 : this.ttsVoice === 'energetic' ? 1.12 : 1.04;
+          utter.rate = this.ttsVoice === 'energetic' ? 1.25 : 1.15;
+          utter.volume = 1.0;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {}
+      },
+
+      speakCutLine(cutIdx, forceSpeak = false) {
+        if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off') return;
+        if (!forceSpeak && this.lastSpokenCut === cutIdx) return;
+        this.lastSpokenCut = cutIdx;
+
+        const text = this.getCutNarration(cutIdx);
+        this.stopTts();
+        if (!text) return;
+
+        const ctx = this.ensureContext();
+        const token = this.ttsSpeakToken;
+
+        // 다음 컷 음성도 미리 받아 두어 컷이 넘어갈 때 지연 없이 재생
+        const nextIdx = cutIdx < getTargetCutCount() ? cutIdx + 1 : 0;
+        const nextText = this.getCutNarration(nextIdx);
+        if (nextText && nextText !== text) this.fetchTtsBuffer(nextText).catch(() => {});
+        const ctxReady = (ctx && ctx.state !== 'running') ? ctx.resume().catch(() => {}) : Promise.resolve();
+
+        Promise.all([this.fetchTtsBuffer(text), ctxReady]).then(
+          ([buffer]) => {
+            // 음성을 받는 사이 다른 컷으로 넘어갔거나 사운드를 껐으면 재생하지 않음
+            if (token !== this.ttsSpeakToken) return;
+            if (!this.enabled && !forceSpeak) return;
+            this.playTtsBuffer(buffer, cutIdx);
+          },
+          () => {
+            if (token !== this.ttsSpeakToken) return;
+            this.speakWithBrowserVoice(text);
+          }
+        );
+      },
+
+      // 재생/일시정지 전환 시 불러온 음원과 성우 음성도 함께 멈추고 이어 재생
+      onPlayStateChange(playing) {
+        if (!this.enabled) return;
+        if (playing) {
+          if (this.bgmStyle === 'custom_mp3' && this.customBgmAudioEl) {
+            this.customBgmAudioEl.play().catch(() => {});
+          }
+          this.lastSpokenCut = -1;
+        } else {
+          if (this.customBgmAudioEl) {
+            try { this.customBgmAudioEl.pause(); } catch (e) {}
+          }
+          this.stopTts();
         }
       },
 
@@ -2022,6 +2248,15 @@
         }
       }
     };
+
+    // 브라우저 자동재생 정책 대응: 화면을 처음 터치/클릭하는 순간 오디오 엔진 잠금 해제
+    ['pointerdown', 'touchend', 'keydown'].forEach((evt) => {
+      document.addEventListener(evt, () => {
+        if (AudioEngine.ctx && AudioEngine.ctx.state !== 'running') {
+          AudioEngine.ctx.resume().catch(() => {});
+        }
+      }, { passive: true });
+    });
 
     // 사용자가 릴스·숏츠 MP3/오디오 파일 업로드 시 호출
     function handleCustomBgmUpload(event) {
@@ -2062,6 +2297,7 @@
         AudioEngine.ensureContext();
         AudioEngine.lastSpokenCut = -1;
         AudioEngine.startBgmLoop();
+        AudioEngine.prefetchTtsBuffers();
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
         if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#4cc38a]';
         if (lbl) lbl.textContent = '사운드 켜짐';
@@ -2069,13 +2305,12 @@
           btn.className = 'btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5 border-[#4cc38a] text-[#ededed]';
         }
         if (engineBadge) {
-          engineBadge.textContent = '🔊 BGM + 한국어 성우(TTS) 실시간 작동중';
+          engineBadge.textContent = '🔊 BGM + 한국어 성우(TTS) 작동중';
           engineBadge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]';
         }
       } else {
         AudioEngine.stopBgmLoop();
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        if (AudioEngine.ttsAudioEl) AudioEngine.ttsAudioEl.pause();
+        AudioEngine.stopTts();
         if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#85858b]';
         if (lbl) lbl.textContent = '사운드 켜기';
         if (btn) {
@@ -2097,7 +2332,9 @@
         toggleAudioMaster(true);
       } else {
         AudioEngine.startBgmLoop();
+        AudioEngine.stopTts();
         AudioEngine.lastSpokenCut = -1;
+        AudioEngine.prefetchTtsBuffers();
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
       }
     }
@@ -3187,6 +3424,7 @@
     function togglePlayPause() {
       isPlaying = !isPlaying;
       document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸ 일시정지' : '▶️ 재생';
+      AudioEngine.onPlayStateChange(isPlaying);
     }
 
     // 다중 차량 사진 업로드 핸들러 (자동 3D Ken Burns 슬라이드쇼 · 1~10장 지원)
@@ -3789,6 +4027,7 @@
         const ttsEl = document.getElementById(`cutTts${i}`);
         if (ttsEl) campaign.ttsLines[i] = ttsEl.value;
       }
+      if (AudioEngine.enabled) AudioEngine.prefetchTtsBuffers();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
 
@@ -4101,7 +4340,7 @@
       if (modal) modal.classList.add('hidden');
     }
 
-    function exportSynthesizedVideo() {
+    async function exportSynthesizedVideo() {
       const d = getSelectedDealer();
       const drmCode = evaluateDealerDrmStatus(d);
       if (drmCode === 3) {
@@ -4133,9 +4372,25 @@
         AudioEngine.startBgmLoop();
       }
 
-      // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 4컷 + 마지막 딜러 명함) 녹화 시작
+      // 녹화 전에 모든 컷의 성우 음성을 미리 받아 둠 (첫 컷부터 음성이 영상에 들어가도록, 최대 20초 대기)
+      isPlaying = false;
+      AudioEngine.stopTts();
+      if (AudioEngine.ttsVoice !== 'off') {
+        if (expText) expText.textContent = '성우 음성 준비중…';
+        await Promise.race([
+          AudioEngine.prefetchTtsBuffers(),
+          new Promise((resolve) => setTimeout(resolve, 20000))
+        ]);
+      }
+      if (AudioEngine.bgmStyle === 'custom_mp3' && AudioEngine.customBgmAudioEl) {
+        try { AudioEngine.customBgmAudioEl.currentTime = 0; } catch (e) {}
+        AudioEngine.customBgmAudioEl.play().catch(() => {});
+      }
+
+      // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 컷 + 마지막 딜러 명함) 녹화 시작
       window.__timelines['main'].seek(0);
       isPlaying = true;
+      AudioEngine.lastSpokenCut = -1;
       AudioEngine.speakCutLine(0, true);
 
       const canvasStream = canvas.captureStream(30);
