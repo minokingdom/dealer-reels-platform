@@ -1726,11 +1726,28 @@
 
       const stream = canvas.captureStream(30);
       const chunks = [];
-      let mimeType = 'video/webm;codecs=vp9';
-      if (!MediaRecorder.isTypeSupported(mimeType)) {
-        mimeType = 'video/webm';
+      const candidateTypes = [
+        'video/mp4;codecs=avc1',
+        'video/mp4',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8',
+        'video/webm'
+      ];
+      let mimeType = '';
+      for (const c of candidateTypes) {
+        if (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(c)) {
+          mimeType = c;
+          break;
+        }
       }
-      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 4000000 });
+      const recorderOptions = mimeType
+        ? { mimeType, videoBitsPerSecond: 4000000 }
+        : { videoBitsPerSecond: 4000000 };
+      const recorder = new MediaRecorder(stream, recorderOptions);
+      const actualMime = recorder.mimeType || mimeType || 'video/mp4';
+      const isMp4 = actualMime.includes('mp4');
+      const fileExt = isMp4 ? 'mp4' : 'webm';
+      const cleanMime = isMp4 ? 'video/mp4' : 'video/webm';
 
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) chunks.push(e.data);
@@ -1746,13 +1763,14 @@
 
       recorder.onstop = () => {
         clearInterval(progressTimer);
-        const blob = new Blob(chunks, { type: 'video/webm' });
+        const blob = new Blob(chunks, { type: cleanMime });
         const videoUrl = URL.createObjectURL(blob);
         const sizeKb = (blob.size / 1024).toFixed(1);
 
         window.lastRecordedVideoBlob = blob;
         window.lastRecordedVideoUrl = videoUrl;
-        window.lastRecordedFilename = `autoreels_${d.name}_12s.webm`;
+        window.lastRecordedMime = cleanMime;
+        window.lastRecordedFilename = `autoreels_${d.name}_12s.${fileExt}`;
 
         // 화면 내 비디오 플레이어 모달에 추출된 영상 로드 및 즉시 재생
         const player = document.getElementById('exportedVideoPlayer');
@@ -1764,7 +1782,7 @@
           player.play();
         }
         if (metaText) {
-          metaText.textContent = `✅ ${d.name} ${d.title}님 전용 12초 풀영상 완성! (용량: ${sizeKb} KB / 9:16 세로형)`;
+          metaText.textContent = `✅ ${d.name} ${d.title}님 전용 12초 ${fileExt.toUpperCase()} 영상 완성! (용량: ${sizeKb} KB / 9:16 세로형)`;
         }
         if (modal) {
           modal.classList.remove('hidden');
@@ -1783,7 +1801,8 @@
     async function shareRecordedVideoMobile() {
       const notice = document.getElementById('saveStatusNotice');
       const blob = window.lastRecordedVideoBlob;
-      const filename = window.lastRecordedFilename || 'autoreels_dealer_12s.webm';
+      const mime = window.lastRecordedMime || 'video/mp4';
+      const filename = window.lastRecordedFilename || 'autoreels_dealer_12s.mp4';
       const d = getSelectedDealer();
       const caption = buildCaption(d);
 
@@ -1795,7 +1814,7 @@
       copyDealerCaption();
 
       try {
-        const file = new File([blob], filename, { type: 'video/webm' });
+        const file = new File([blob], filename, { type: mime });
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             title: `${campaign.vehicle} - ${d.name} ${d.title}`,
@@ -1803,7 +1822,7 @@
             files: [file]
           });
           if (notice) {
-            notice.textContent = '✅ 모바일 공유창으로 영상과 본문이 전달되었습니다!';
+            notice.textContent = '✅ 모바일 공유창으로 영상 파일과 본문이 전달되었습니다!';
             notice.className = 'text-xs text-emerald-400 font-bold text-center leading-relaxed';
           }
           return;
@@ -1819,21 +1838,23 @@
     async function saveRecordedVideoToDisk() {
       const notice = document.getElementById('saveStatusNotice');
       const blob = window.lastRecordedVideoBlob;
-      const filename = window.lastRecordedFilename || 'autoreels_dealer_12s.webm';
+      const mime = window.lastRecordedMime || 'video/mp4';
+      const filename = window.lastRecordedFilename || 'autoreels_dealer_12s.mp4';
 
       if (!blob) {
-        if (notice) notice.textContent = '⚠️ 먼저 [실제 영상(.webm) 추출] 버튼을 눌러 12초 녹화를 완료해주세요.';
+        if (notice) notice.textContent = '⚠️ 먼저 영상 제작 버튼을 눌러 12초 녹화를 완료해주세요.';
         return;
       }
 
       // 1) 크롬/엣지 File System Access API (다른 이름으로 저장 대화상자) 시도
       if (window.showSaveFilePicker) {
         try {
+          const ext = filename.endsWith('.mp4') ? '.mp4' : '.webm';
           const handle = await window.showSaveFilePicker({
             suggestedName: filename,
             types: [{
-              description: 'WebM Video File',
-              accept: { 'video/webm': ['.webm'] }
+              description: 'Shortform Video File',
+              accept: { [mime]: [ext] }
             }]
           });
           const writable = await handle.createWritable();
