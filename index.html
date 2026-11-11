@@ -136,6 +136,27 @@
             </select>
           </div>
 
+          <!-- 딜러별 스마트 자동 변주 (중복 영상 방지 엔진) -->
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-emerald-500/40 space-y-2">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">🎲 딜러별 자동 변주 ON</span>
+                <span class="text-xs font-bold text-[var(--foreground)]">같은 주차 캠페인이라도 딜러마다 [후킹 문구 · 4컷 순서 · 카메라 무빙 · 댓글 키워드]가 다르게 합성됩니다</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="randomizeCurrentDealerVariation()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition cursor-pointer">
+                  🎲 현재 딜러 조합 다시 섞기
+                </button>
+                <button type="button" onclick="randomizeAllDealersVariation()" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--secondary)] hover:opacity-90 text-[var(--secondary-foreground)] border border-[var(--border)] transition cursor-pointer">
+                  🔀 전 딜러 일괄 랜덤 배정
+                </button>
+              </div>
+            </div>
+            <div id="dealerVariationSummary" class="text-xs text-[var(--muted-foreground)] font-mono bg-[var(--card)] px-3 py-2 rounded-lg border border-[var(--border)]">
+              변주 레시피 로딩 중...
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
               <div class="flex items-center justify-between">
@@ -494,6 +515,85 @@
       uploadedPhotos: [] // Image 객체 배열 (다중 사진 3D Ken Burns 슬라이드용)
     };
 
+    // ============================================================================
+    // 딜러별 스마트 자동 변주 (Smart Per-Dealer Variation & Anti-Duplicate Engine)
+    // ============================================================================
+    const CUT_NAMES = ['외관 디자인', '파노라믹 운전석', '2열 독립 캡틴시트', '즉시출고 스마트키'];
+    const CAMERA_NAMES = ['고속 줌인(Push-In)', '와이드 패닝(Pan)', '줌아웃 리빌(Reveal)', '대각선 포커스(Dolly)'];
+
+    const VARIATION_RECIPES = [
+      {
+        label: '변주 A (정석 쇼룸 후킹형)',
+        cutOrder: [0, 1, 2, 3],
+        cameraOrder: [0, 1, 2, 3],
+        hook: '이번 달 계약 안 하면 손해! 11월 비밀 조건',
+        badgeTop: '11월 한정',
+        badgeBottom: '특별 프로모션',
+        bullets: [
+          '✔ 대기 6개월 → 선점 재고 4대 즉시출고',
+          '✔ 최대 할인 + 저금리 특별 금융 프로모션'
+        ],
+        ctaKeyword: '견적',
+        ctaBanner: '💬 댓글에 [견적] 남기시면 1:1 최저가 견적표 DM 발송!'
+      },
+      {
+        label: '변주 B (즉시출고 키 인도 선행형)',
+        cutOrder: [3, 0, 2, 1],
+        cameraOrder: [2, 0, 3, 1],
+        hook: '대기 6개월? 선점 재고 4대 즉시출고 확정!',
+        badgeTop: '선착순 4대',
+        badgeBottom: '즉시출고 특판',
+        bullets: [
+          '✔ 계약 즉시 당월 출고 가능한 긴급 물량 확보',
+          '✔ 신차 패키지 8종 + 전국 무료 캐리어 탁송'
+        ],
+        ctaKeyword: '즉시출고',
+        ctaBanner: '💬 댓글에 [즉시출고] 남기시면 실시간 재고표 DM 발송!'
+      },
+      {
+        label: '변주 C (법인·사업자 절세 & 실내 강조형)',
+        cutOrder: [1, 2, 0, 3],
+        cameraOrder: [1, 3, 0, 2],
+        hook: '법인·개인사업자 월 납입금 최저가 특판 공개',
+        badgeTop: '사업자·법인',
+        badgeBottom: '최저가 리스',
+        bullets: [
+          '✔ 법인·개인사업자 연간 1,500만 원 전액 비용처리',
+          '✔ 초기비용 0원 무보증 최저가 리스·장기렌트'
+        ],
+        ctaKeyword: '특판',
+        ctaBanner: '💬 댓글에 [특판] 남기시면 사업자 전용 견적서 DM 발송!'
+      },
+      {
+        label: '변주 D (패밀리 캡틴시트 & 무보증 금융형)',
+        cutOrder: [2, 0, 1, 3],
+        cameraOrder: [3, 2, 1, 0],
+        hook: '전국 딜러사 비교 완료! 11월 마지막 최대 할인',
+        badgeTop: '전국 최저가',
+        badgeBottom: '비교견적 보증',
+        bullets: [
+          '✔ 전 금융사 금리 비교로 월 납입금 최저가 설계',
+          '✔ 프리미엄 썬팅·블랙박스·유리막 풀패키지 무상'
+        ],
+        ctaKeyword: '비교견적',
+        ctaBanner: '💬 댓글에 [비교견적] 남기시면 최저가 비교표 DM 발송!'
+      },
+      {
+        label: '변주 E (초저금리 할부 & 스마트키 클로징형)',
+        cutOrder: [0, 3, 1, 2],
+        cameraOrder: [0, 2, 3, 1],
+        hook: '초저금리 할부 vs 장기렌트 1:1 맞춤 비교견적',
+        badgeTop: '초저금리',
+        badgeBottom: '맞춤 금융설계',
+        bullets: [
+          '✔ 심사 서류 간소화 · 당일 승인 및 즉시 배정',
+          '✔ 출고 후 사후관리 & 신차 검수 100% 책임 보장'
+        ],
+        ctaKeyword: '상담',
+        ctaBanner: '💬 댓글에 [상담] 남기시면 1:1 맞춤 견적서 DM 발송!'
+      }
+    ];
+
     let dealers = [
       {
         id: 'dlr_1',
@@ -507,27 +607,29 @@
         promoTag: '출고고객 전원 루마버텍스 썬팅 + 빌트인캠 무상지원',
         token: 'tok_minjun',
         avatarImg: null,
-        status: 'PENDING'
+        status: 'PENDING',
+        variation: JSON.parse(JSON.stringify(VARIATION_RECIPES[0]))
       },
       {
         id: 'dlr_2',
         name: '박서연',
         title: '공식인증 주임',
-        branch: 'BMW 코오롱모터스 서초전시장',
+        branch: '기아 오토큐브 서초전시장',
         phone: '010-7734-1290',
-        igUsername: '@bmw_seoyeon_deal',
+        igUsername: '@kia_seoyeon_deal',
         igPwMasked: 'AES256:3d12...e890 (암호화 보관)',
         accentColor: '#10b981',
         promoTag: '11월 한정 추가할인 + 전국 무료 캐리어 탁송 지원',
         token: 'tok_seoyeon',
         avatarImg: null,
-        status: 'PENDING'
+        status: 'PENDING',
+        variation: JSON.parse(JSON.stringify(VARIATION_RECIPES[1]))
       },
       {
         id: 'dlr_3',
         name: '이도현',
         title: '대표 팀장',
-        branch: '수원 도이치오토월드 인증중고',
+        branch: '현대·기아 법인특판 오토허브',
         phone: '010-9102-5581',
         igUsername: '@dohyun_motors',
         igPwMasked: 'Meta 공식 Graph API 연동됨',
@@ -535,7 +637,8 @@
         promoTag: '1년/2만km 보증연장 + 엔진오일 쿠폰 무상 제공',
         token: 'tok_dohyun',
         avatarImg: null,
-        status: 'PUBLISHED'
+        status: 'PUBLISHED',
+        variation: JSON.parse(JSON.stringify(VARIATION_RECIPES[2]))
       }
     ];
 
@@ -700,42 +803,59 @@
       if (t < 8.0) {
         const vid = document.getElementById('hiddenCustomVideo');
 
-        // 배경: 4컷 각각 완전히 다른 카메라 워크(1.고속줌인 / 2.와이드패닝 / 3.줌아웃리빌 / 4.대각선포커스)
+        const v = d.variation || VARIATION_RECIPES[0];
+
+        // 배경: 딜러마다 다른 사진 순서(cutOrder) 및 카메라 무빙 조합(cameraOrder) 적용
         if (campaign.uploadedPhotos.length > 0) {
           const numPhotos = campaign.uploadedPhotos.length;
           const slideDuration = 8.0 / numPhotos;
           const idx = Math.min(numPhotos - 1, Math.floor(t / slideDuration));
           const localProgress = Easing.clamp((t - idx * slideDuration) / slideDuration, 0, 1);
-          const img = campaign.uploadedPhotos[idx];
-          const prevImg = idx > 0 ? campaign.uploadedPhotos[idx - 1] : null;
+
+          const mappedPhotoIdx = (v.cutOrder && v.cutOrder[idx] !== undefined)
+            ? (v.cutOrder[idx] % numPhotos)
+            : idx;
+          const prevMappedPhotoIdx = idx > 0
+            ? ((v.cutOrder && v.cutOrder[idx - 1] !== undefined) ? (v.cutOrder[idx - 1] % numPhotos) : (idx - 1))
+            : 0;
+
+          const mappedCamIdx = (v.cameraOrder && v.cameraOrder[idx] !== undefined)
+            ? v.cameraOrder[idx]
+            : idx;
+          const prevMappedCamIdx = idx > 0
+            ? ((v.cameraOrder && v.cameraOrder[idx - 1] !== undefined) ? v.cameraOrder[idx - 1] : (idx - 1))
+            : 0;
+
+          const img = campaign.uploadedPhotos[mappedPhotoIdx];
+          const prevImg = idx > 0 ? campaign.uploadedPhotos[prevMappedPhotoIdx] : null;
 
           // 컷별 차별화된 카메라 모션 계산
-          function drawPhotoWithCameraMove(imageObj, cutIndex, prog, alpha = 1) {
+          function drawPhotoWithCameraMove(imageObj, camTypeIndex, prog, alpha = 1) {
             if (!imageObj) return;
             let scale = 1.1;
             let panX = 0;
             let panY = 0;
 
-            if (cutIndex % 4 === 0) {
-              // Cut 1 (외관): 강렬한 Fast Push-In + 로우앵글 틸트업
+            if (camTypeIndex % 4 === 0) {
+              // Move 0: 강렬한 Fast Push-In + 로우앵글 틸트업
               const p = Easing.power4Out(prog);
               scale = 1.02 + p * 0.22;
               panX = 0;
               panY = (1 - p) * 26 - 8;
-            } else if (cutIndex % 4 === 1) {
-              // Cut 2 (운전석 디스플레이): 좌 -> 우 와이드 패닝 스윕 (실내 둘러보기)
+            } else if (camTypeIndex % 4 === 1) {
+              // Move 1: 좌 -> 우 와이드 패닝 스윕 (실내/외관 둘러보기)
               const p = Easing.power3InOut(prog);
               scale = 1.20;
               panX = 48 - p * 96;
               panY = -6;
-            } else if (cutIndex % 4 === 2) {
-              // Cut 3 (2열 캡틴시트): 클로즈업에서 뒤로 쫙 빠지는 Zoom-Out Reveal (공간감 강조)
+            } else if (camTypeIndex % 4 === 2) {
+              // Move 2: 클로즈업에서 뒤로 쫙 빠지는 Zoom-Out Reveal (공간감 강조)
               const p = Easing.power3InOut(prog);
               scale = 1.28 - p * 0.24;
               panX = -14 + p * 14;
               panY = -20 + p * 28;
             } else {
-              // Cut 4 (출고 인도 & 스마트키): 스마트키 쪽으로 대각선 포커스 돌리 인
+              // Move 3: 대각선 포커스 돌리 인
               const p = Easing.power4Out(prog);
               scale = 1.04 + p * 0.19;
               panX = -26 + p * 36;
@@ -753,10 +873,10 @@
           // 컷 전환 시 이전 컷과 부드러운 크로스페이드 / 슬라이드 오버랩 (첫 0.25초)
           if (idx > 0 && localProgress < 0.14 && prevImg) {
             const transP = localProgress / 0.14;
-            drawPhotoWithCameraMove(prevImg, idx - 1, 1.0, 1.0);
-            drawPhotoWithCameraMove(img, idx, localProgress, Easing.power3InOut(transP));
+            drawPhotoWithCameraMove(prevImg, prevMappedCamIdx, 1.0, 1.0);
+            drawPhotoWithCameraMove(img, mappedCamIdx, localProgress, Easing.power3InOut(transP));
           } else {
-            drawPhotoWithCameraMove(img, idx, localProgress, 1.0);
+            drawPhotoWithCameraMove(img, mappedCamIdx, localProgress, 1.0);
           }
 
           // 상단/하단 가독성 그라데이션 (사이버 느낌 없이 깔끔한 다크네이비 쉐이드)
@@ -785,14 +905,16 @@
           ctx.fillText(text, x, y, maxWidth);
         }
 
-        // 상단 공식 인증 배지 (글자 길이를 측정하여 흰색 캡슐 폭을 자동으로 여유 있게 맞춤)
+        // 상단 공식 인증 배지 (현재 딜러의 컷 순서에 맞춰 실제 노출 중인 사진 라벨 표시)
         const badgeScale = Easing.backOut(t / 0.45);
         ctx.save();
         ctx.translate(W / 2, 48);
         ctx.scale(badgeScale, badgeScale);
-        const cutLabels = ['외관 디자인', '파노라믹 운전석', '2열 독립 캡틴시트', '즉시출고 스마트키'];
-        const currentCutIdx = Math.min(3, Math.floor(t / 2.0));
-        const badgeText = `HYUNDAI · KIA 공식 인증  |  ${cutLabels[currentCutIdx]}`;
+        const currentCutSlot = Math.min(3, Math.floor(t / 2.0));
+        const activePhotoIndex = (v.cutOrder && v.cutOrder[currentCutSlot] !== undefined)
+          ? v.cutOrder[currentCutSlot]
+          : currentCutSlot;
+        const badgeText = `HYUNDAI · KIA 공식 인증  |  ${CUT_NAMES[activePhotoIndex % 4]}`;
         ctx.font = 'bold 16px sans-serif';
         const measuredBadgeW = Math.min(476, Math.max(320, ctx.measureText(badgeText).width + 44));
 
@@ -804,14 +926,15 @@
         drawFittedText(badgeText, 0, 6, measuredBadgeW - 28, 16);
         ctx.restore();
 
-        // 메인 훅 타이틀 & 차종명 (.slice 제거 -> 문장 끝이 절대 잘리지 않음)
+        // 메인 훅 타이틀(딜러별 자동 변주 훅) & 차종명
+        const activeHookText = v.hook || campaign.hook;
         const titleProgress = Easing.power4Out((t - 0.08) / 0.5);
         ctx.save();
         ctx.globalAlpha = titleProgress;
         ctx.translate(0, (1 - titleProgress) * 24);
         ctx.textAlign = 'center';
         ctx.fillStyle = '#fde047';
-        drawFittedText(campaign.hook, W / 2, 106, 476, 22);
+        drawFittedText(activeHookText, W / 2, 106, 476, 22);
 
         ctx.fillStyle = '#ffffff';
         drawFittedText(campaign.vehicle, W / 2, 150, 476, 35);
@@ -827,17 +950,17 @@
         drawRoundedRect(ctx, -236, -42, 472, 84, 16);
         ctx.fill();
 
-        // 좌측 네이비 포인트 라벨 (x = -236 ~ -108, 중심 -172)
+        // 좌측 네이비 포인트 라벨 (딜러별 변주 배지 라벨)
         ctx.fillStyle = HYUNDAI_NAVY;
         drawRoundedRect(ctx, -236, -42, 128, 84, 16);
         ctx.fill();
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 17px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('11월 한정', -172, -8);
+        ctx.fillText(v.badgeTop || '11월 한정', -172, -8);
         ctx.fillStyle = '#93c5fd';
         ctx.font = 'bold 15px sans-serif';
-        ctx.fillText('특별 프로모션', -172, 18);
+        ctx.fillText(v.badgeBottom || '특별 프로모션', -172, 18);
 
         // 우측 슬롯머신 할인 금액 카운팅 (우측 영역 폭 316px 내 자동 피팅)
         const countProgress = Easing.power4Out((t - 0.22) / 1.35);
@@ -857,9 +980,10 @@
         drawFittedText(campaign.discount, 64, 25, 312, 18);
         ctx.restore();
 
-        // 하단부 깔끔한 화이트 혜택 체크리스트 카드 (.slice 제거)
+        // 하단부 깔끔한 화이트 혜택 체크리스트 카드 (딜러별 변주 혜택 문구)
+        const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
         ctx.save();
-        campaign.bullets.slice(0, 2).forEach((line, idx) => {
+        activeBullets.slice(0, 2).forEach((line, idx) => {
           const startT = 0.8 + idx * 0.38;
           const p = Easing.backOut((t - startT) / 0.45);
           if (p <= 0) return;
@@ -879,7 +1003,7 @@
         });
         ctx.restore();
 
-        // ★ "댓글에 [견적] 남기면 비밀 견적서 즉시 발송!" 말풍선 배너 (y=676)
+        // ★ 딜러별 댓글 유도 키워드 배너 (예: [견적] / [즉시출고] / [특판]) (y=676)
         const ctaPop = Easing.backOut((t - 1.5) / 0.5);
         if (ctaPop > 0) {
           ctx.save();
@@ -896,7 +1020,13 @@
 
           ctx.fillStyle = '#0f172a';
           ctx.textAlign = 'center';
-          drawFittedText('💬 댓글에 [견적] 남기시면 1:1 최저가 견적표 DM 발송!', 0, 7, 440, 19);
+          drawFittedText(
+            v.ctaBanner || '💬 댓글에 [견적] 남기시면 1:1 최저가 견적표 DM 발송!',
+            0,
+            7,
+            440,
+            19
+          );
           ctx.restore();
         }
 
@@ -1167,19 +1297,99 @@
       campaign.uploadedPhotos = [];
     }
 
+    // --- 딜러별 스마트 자동 변주 & 랜덤 셔플 함수들 ---
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function createShuffledVariation(excludeHook) {
+      const pool = VARIATION_RECIPES.filter((r) => r.hook !== excludeHook);
+      const base = pool[Math.floor(Math.random() * pool.length)] || VARIATION_RECIPES[0];
+      const cutOrder = shuffleArray([0, 1, 2, 3]);
+      const cameraOrder = shuffleArray([0, 1, 2, 3]);
+      return {
+        label: `${base.label} + 셔플 #${Math.floor(100 + Math.random() * 900)}`,
+        cutOrder,
+        cameraOrder,
+        hook: base.hook,
+        badgeTop: base.badgeTop,
+        badgeBottom: base.badgeBottom,
+        bullets: [...base.bullets],
+        ctaKeyword: base.ctaKeyword,
+        ctaBanner: base.ctaBanner
+      };
+    }
+
+    function renderDealerVariationSummary() {
+      const d = getSelectedDealer();
+      const v = d.variation || VARIATION_RECIPES[0];
+      const summaryEl = document.getElementById('dealerVariationSummary');
+      if (!summaryEl) return;
+
+      const cutSeq = (v.cutOrder || [0, 1, 2, 3]).map((idx) => CUT_NAMES[idx % 4]).join(' → ');
+      const camSeq = (v.cameraOrder || [0, 1, 2, 3]).map((idx) => CAMERA_NAMES[idx % 4].split('(')[0]).join(' → ');
+
+      summaryEl.innerHTML =
+        `<div class="flex flex-wrap items-center justify-between gap-1 text-[var(--foreground)] font-sans font-bold mb-1">` +
+        `<span>👤 [${d.name} ${d.title}] 전용 변주 레시피: <span class="text-emerald-400">${v.label}</span></span>` +
+        `<span class="text-xs px-2 py-0.5 rounded bg-[var(--secondary)] text-amber-300">자동 DM 키워드: [${v.ctaKeyword || '견적'}]</span>` +
+        `</div>` +
+        `<div>• <strong>4컷 사진 순서</strong>: ${cutSeq}</div>` +
+        `<div>• <strong>카메라 무빙 순서</strong>: ${camSeq}</div>` +
+        `<div>• <strong>상단 후킹 카피</strong>: "${v.hook}"</div>`;
+    }
+
+    function randomizeCurrentDealerVariation() {
+      const d = getSelectedDealer();
+      d.variation = createShuffledVariation(d.variation?.hook);
+      syncPreviewPanel();
+      syncTechPanel();
+      window.__timelines['main'].seek(0.35);
+    }
+
+    function randomizeAllDealersVariation() {
+      dealers.forEach((dlr, idx) => {
+        const base = VARIATION_RECIPES[(idx + Math.floor(Math.random() * VARIATION_RECIPES.length)) % VARIATION_RECIPES.length];
+        dlr.variation = {
+          label: `${base.label} + 일괄셔플 #${Math.floor(100 + Math.random() * 900)}`,
+          cutOrder: shuffleArray([0, 1, 2, 3]),
+          cameraOrder: shuffleArray([0, 1, 2, 3]),
+          hook: base.hook,
+          badgeTop: base.badgeTop,
+          badgeBottom: base.badgeBottom,
+          bullets: [...base.bullets],
+          ctaKeyword: base.ctaKeyword,
+          ctaBanner: base.ctaBanner
+        };
+      });
+      syncPreviewPanel();
+      syncTechPanel();
+      window.__timelines['main'].seek(0.35);
+    }
+
     // --- UI 동기화 함수들 ---
     function buildCaption(dealer) {
+      const v = dealer.variation || VARIATION_RECIPES[0];
+      const activeHook = v.hook || campaign.hook;
+      const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
+      const kw = v.ctaKeyword || '견적';
       return (
-        `🔥 ${campaign.vehicle} — ${campaign.hook}\n\n` +
+        `🔥 ${campaign.vehicle} — ${activeHook}\n\n` +
         `✔️ 최대 할인 혜택: -${campaign.discountNum.toLocaleString()}만 원\n` +
         `✔️ 월 납입 조건: ${campaign.discount}\n` +
-        `${campaign.bullets.join('\n')}\n` +
+        `${activeBullets.join('\n')}\n` +
         `🎁 딜러 특별 혜택: ${dealer.promoTag}\n\n` +
         `━━━━━━━━━━━━━━━━━━\n` +
         `👤 담당: ${dealer.branch} ${dealer.name} ${dealer.title}\n` +
         `📞 직통 상담: ${dealer.phone}\n` +
-        `💬 댓글에 [견적]을 남겨주시거나 프로필 링크로 문의하시면 1:1 비밀 조건표를 보내드립니다!\n\n` +
-        `#신차견적 #즉시출고 #자동차프로모션 #장기렌트 #리스견적 #카마스터`
+        `💬 댓글에 [${kw}] 남겨주시거나 프로필 링크로 문의하시면 1:1 비밀 조건표를 즉시 DM으로 보내드립니다!\n` +
+        `📌 유튜브 쇼츠 고정댓글: 24시간 실시간 최저가 견적/시승 직통문의 ${dealer.phone}\n\n` +
+        `#신차견적 #즉시출고 #자동차프로모션 #장기렌트 #리스견적 #카마스터 #Shorts`
       );
     }
 
@@ -1246,6 +1456,7 @@
               ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500">✏️ 수정 요청</span>`
               : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-400">⏳ 검수 대기중</span>`;
 
+          const vLabel = d.variation ? d.variation.label : '기본 변주';
           return `
             <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div class="space-y-1">
@@ -1254,6 +1465,7 @@
                   <span class="text-sm font-bold text-[var(--foreground)]">${d.name} ${d.title}</span>
                   <span class="text-xs text-[var(--muted-foreground)]">| ${d.branch}</span>
                   ${badgeHtml}
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-semibold">🎲 ${vLabel}</span>
                 </div>
                 <div class="text-xs text-[var(--muted-foreground)]">
                   📞 ${d.phone} · 📸 ${d.igUsername} · 🔑 ${d.igPwMasked}
@@ -1270,8 +1482,9 @@
 
     function syncPreviewPanel() {
       const d = getSelectedDealer();
+      const v = d.variation || VARIATION_RECIPES[0];
       document.getElementById('stagingUrlText').textContent = `https://staging.autoreels.kr/v/${d.token}`;
-      document.getElementById('previewDealerHeader').textContent = `🪪 2단계: ${d.name} ${d.title}님의 마지막 3D 명함(8~12초) & 인스타 승인`;
+      document.getElementById('previewDealerHeader').textContent = `🪪 2단계: ${d.name} ${d.title}님의 마지막 3D 명함(8~12초) & 멀티 SNS 승인`;
       document.getElementById('dlrInputName').value = d.name;
       document.getElementById('dlrInputTitle').value = d.title;
       document.getElementById('dlrInputPhone').value = d.phone;
@@ -1280,9 +1493,16 @@
       document.getElementById('igAccountBadge').textContent = `${d.igUsername} (${d.igPwMasked})`;
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
 
+      const hookInput = document.getElementById('inputHook');
+      if (hookInput) hookInput.value = v.hook || campaign.hook;
+      const bulletsInput = document.getElementById('inputBullets');
+      if (bulletsInput && v.bullets) bulletsInput.value = v.bullets.join('\n');
+
+      renderDealerVariationSummary();
+
       const statusContainer = document.getElementById('previewStatusBadge');
       if (d.status === 'PUBLISHED') {
-        statusContainer.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">✅ 인스타 게시 완료</span>`;
+        statusContainer.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400">✅ 멀티 SNS 게시 완료</span>`;
       } else if (d.status === 'REVISION') {
         statusContainer.innerHTML = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400">✏️ 수정 요청됨</span>`;
       } else {
@@ -1300,6 +1520,7 @@
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
       renderQuickSelector();
       renderAdminDealerList();
+      renderDealerVariationSummary();
       syncTechPanel();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
@@ -1327,6 +1548,7 @@
     }
 
     function updateCampaignFromInputs() {
+      const d = getSelectedDealer();
       campaign.hook = document.getElementById('inputHook').value;
       campaign.vehicle = document.getElementById('inputVehicle').value;
       campaign.discountNum = Number(document.getElementById('inputDiscountNum').value) || 0;
@@ -1335,12 +1557,17 @@
         .getElementById('inputBullets')
         .value.split('\n')
         .filter((line) => line.trim().length > 0);
+      if (d && d.variation) {
+        d.variation.hook = campaign.hook;
+        d.variation.bullets = [...campaign.bullets];
+      }
       syncPreviewPanel();
       syncTechPanel();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
 
     function batchGenerateToStaging() {
+      randomizeAllDealersVariation();
       dealers.forEach((d) => {
         if (d.status !== 'PUBLISHED') d.status = 'PENDING';
       });
@@ -1631,7 +1858,8 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         promoTag,
         token: 'tok_' + Math.random().toString(36).substring(2, 8),
         avatarImg: null,
-        status: 'PENDING'
+        status: 'PENDING',
+        variation: createShuffledVariation()
       });
 
       closeNewDealerModal();
