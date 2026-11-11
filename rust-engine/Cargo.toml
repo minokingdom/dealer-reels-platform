@@ -1,0 +1,15 @@
+[package]
+name = "autoreels-wasm-core"
+version = "1.0.0"
+edition = "2021"
+description = "AutoReels Generative Scene Director, 60fps Motion Math & Subscription DRM Core in Rust Wasm"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

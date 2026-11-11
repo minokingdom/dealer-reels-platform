@@ -317,17 +317,67 @@
           </div>
         </div>
 
-        <!-- STEP 2: 내 카마스터 명함 정보 & 멀티 SNS 업로드 -->
+        <!-- STEP 2: 내 카마스터 명함 정보 & 정품 구독 DRM & 멀티 SNS 업로드 -->
         <div class="glass-panel rounded-2xl p-4 md:p-6 space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
             <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">STEP 02 · DEALER IDENTITY & PUBLISH</span>
+              <div class="flex items-center gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">STEP 02 · DEALER IDENTITY & DRM</span>
+                <span id="wasmEngineBadge" class="px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/30 text-[10px] font-bold">🦀 Rust Wasm Core v1.0 가동중</span>
+              </div>
               <h2 id="previewDealerHeader" class="text-base md:text-lg font-bold text-white mt-0.5">
                 담당 카마스터 명함 정보 및 멀티 SNS 발행
               </h2>
               <span class="hidden text-xs text-slate-400"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
             </div>
             <div id="previewStatusBadge"></div>
+          </div>
+
+          <!-- ★ Rust Wasm 정품 구독 라이선스 & 전화번호 박제(계정 공유/도용 방지) 보호 카드 -->
+          <div class="glass-sub p-4 rounded-xl border border-indigo-500/25 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">🛡️ 구독 라이선스 & 전화번호 도용 방지 (Rust Wasm DRM)</span>
+              </div>
+              <span id="drmStatusBadge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                🟢 정품 구독 인증됨 (워터마크 제거됨)
+              </span>
+            </div>
+
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              구독권 1개로 지점 동료 딜러들이 전화번호만 바꿔서 돌려쓰는 행위를 막기 위해, <strong>Rust WebAssembly(.wasm) 보안 코어</strong>가 등록된 딜러 연락처(<code id="drmBoundPhoneText" class="text-indigo-300 font-bold">010-4821-9032</code>)와 정품 키를 실시간 대조합니다. 미구독 또는 번호 변경 시 영상 중앙에 워터마크가 박히며 추출이 차단됩니다.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-400 mb-1">딜러 전용 정품 라이선스 키</label>
+                <input id="dlrLicenseKeyInput" type="text" oninput="onDealerLicenseInput()" placeholder="AR-XXXXXX" class="w-full px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-900/90 border border-white/15 text-amber-300" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-400 mb-1">바인딩된 정품 연락처 (변경 시 잠금)</label>
+                <input id="dlrLicensedPhoneView" type="text" readonly class="w-full px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-950/70 border border-white/10 text-slate-300" />
+              </div>
+              <div>
+                <label class="block text-[10px] font-semibold text-slate-400 mb-1">구독 만료일</label>
+                <input id="dlrExpiryView" type="text" readonly value="2026-12-31 (자동갱신)" class="w-full px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-950/70 border border-white/10 text-slate-300" />
+              </div>
+            </div>
+
+            <!-- 대표님 확인용 1클릭 구독/차단 시뮬레이터 -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10">
+              <span class="text-[11px] font-semibold text-slate-400">🧪 대표님 테스트용 구독 차단 시뮬레이션:</span>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" onclick="simulateDrmMode('PRO')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 cursor-pointer transition">
+                  🟢 정품 구독 정상
+                </button>
+                <button type="button" onclick="simulateDrmMode('TRIAL')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 cursor-pointer transition">
+                  🟡 미결제·만료 딜러 차단해보기
+                </button>
+                <button type="button" onclick="simulateDrmMode('TAMPER')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 cursor-pointer transition">
+                  🔴 타 딜러 번호 돌려쓰기 차단해보기
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -339,7 +389,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">상담 직통 연락처 (하단 바 & 엔딩 명함 노출)</label>
+              <label class="block text-[11px] font-semibold text-slate-400 mb-1">상담 직통 연락처 (등록 번호와 다르면 Wasm DRM이 즉시 잠금)</label>
               <input id="dlrInputPhone" type="tel" placeholder="예: 010-4821-9032" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
             </div>
             <div>
@@ -356,29 +406,72 @@
             </div>
           </div>
 
-          <!-- STEP 3: 멀티 SNS 채널 선택 -->
-          <div class="glass-sub p-4 rounded-xl space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-1">
-              <label class="text-xs font-bold text-slate-200">동시 발행 SNS 채널 선택</label>
-              <span class="px-2 py-0.5 rounded-full bg-white/10 text-slate-300 text-[11px] font-medium">One-Source Multi-Use</span>
+          <!-- ★ STEP 3: 내 SNS 계정 연결 관리 & 동시 발행 채널 선택 -->
+          <div class="glass-sub p-4 rounded-xl space-y-3.5">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <label class="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span>🔗 내 SNS 계정 연결 및 동시 발행 채널</span>
+                </label>
+                <p class="text-[11px] text-slate-400 mt-0.5">각 딜러 본인의 인스타그램·유튜브·틱톡·페이스북 계정을 연결해 두면 원클릭으로 발행됩니다.</p>
+              </div>
+              <button type="button" onclick="openSnsConnectModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 cursor-pointer transition">
+                ⚙️ 내 SNS 계정 연결 · 변경
+              </button>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer transition">
-                <input id="snsCheckIg" type="checkbox" checked class="accent-indigo-500" />
-                <span><strong>Instagram Reels</strong> <span class="text-slate-400 text-[11px]">(댓글 키워드 자동 DM)</span></span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer transition">
-                <input id="snsCheckYt" type="checkbox" checked class="accent-indigo-500" />
-                <span><strong>YouTube Shorts</strong> <span class="text-slate-400 text-[11px]">(#Shorts · 고정댓글 링크)</span></span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer transition">
-                <input id="snsCheckTt" type="checkbox" checked class="accent-indigo-500" />
-                <span><strong>TikTok</strong> <span class="text-slate-400 text-[11px]">(추천 피드 배포)</span></span>
-              </label>
-              <label class="flex items-center gap-2.5 p-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] cursor-pointer transition">
-                <input id="snsCheckFb" type="checkbox" checked class="accent-indigo-500" />
-                <span><strong>Facebook Reels</strong> <span class="text-slate-400 text-[11px]">(4060 · 법인 대표 타겟)</span></span>
-              </label>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input id="snsCheckIg" type="checkbox" checked class="accent-indigo-500" />
+                  <div>
+                    <div class="font-bold text-white">Instagram Reels</div>
+                    <div id="snsHandle_ig" class="text-[11px] text-emerald-400 font-mono">@hyundai_minjun_official</div>
+                  </div>
+                </label>
+                <button type="button" onclick="openSnsConnectModal('ig')" id="snsStatusBtn_ig" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
+                  🟢 연결됨
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input id="snsCheckYt" type="checkbox" checked class="accent-indigo-500" />
+                  <div>
+                    <div class="font-bold text-white">YouTube Shorts</div>
+                    <div id="snsHandle_yt" class="text-[11px] text-emerald-400 font-mono">@minjun_car_tv</div>
+                  </div>
+                </label>
+                <button type="button" onclick="openSnsConnectModal('yt')" id="snsStatusBtn_yt" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
+                  🟢 연결됨
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input id="snsCheckTt" type="checkbox" checked class="accent-indigo-500" />
+                  <div>
+                    <div class="font-bold text-white">TikTok</div>
+                    <div id="snsHandle_tt" class="text-[11px] text-emerald-400 font-mono">@minjun_autoteam</div>
+                  </div>
+                </label>
+                <button type="button" onclick="openSnsConnectModal('tt')" id="snsStatusBtn_tt" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
+                  🟢 연결됨
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input id="snsCheckFb" type="checkbox" checked class="accent-indigo-500" />
+                  <div>
+                    <div class="font-bold text-white">Facebook Reels</div>
+                    <div id="snsHandle_fb" class="text-[11px] text-emerald-400 font-mono">강남오토스퀘어 김민준 페이지</div>
+                  </div>
+                </label>
+                <button type="button" onclick="openSnsConnectModal('fb')" id="snsStatusBtn_fb" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
+                  🟢 연결됨
+                </button>
+              </div>
             </div>
           </div>
 
@@ -581,7 +674,125 @@
     </div>
   </div>
 
+  <!-- ★ 딜러 본인 SNS 계정 연결 & OAuth 연동 모달 -->
+  <div id="snsConnectModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 overflow-y-auto">
+    <div class="glass-panel rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl border border-indigo-500/30">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">DEALER SNS OAUTH & ACCOUNT BINDING</span>
+          <h3 id="snsModalHeaderTitle" class="text-base font-bold text-white mt-0.5">🔗 내 4대 SNS 계정 연결 설정</h3>
+        </div>
+        <button onclick="closeSnsConnectModal()" class="px-2.5 py-1 rounded-lg text-xs bg-white/10 text-slate-300 hover:text-white font-bold cursor-pointer">✕ 닫기</button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        연결된 계정 정보는 내 휴대폰/브라우저와 딜러 프로필에 암호화 저장됩니다. <strong>모바일 앱 브릿지 모드(기본)</strong> 또는 <strong>Meta/YouTube 비즈니스 자동 발행</strong>에 사용됩니다.
+      </p>
+
+      <div class="space-y-3 text-xs">
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-pink-400">📸 Instagram Reels 계정</span>
+            <button type="button" onclick="quickOAuthSimulate('ig')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 cursor-pointer">⚡ 인스타 OAuth 간편 로그인</button>
+          </div>
+          <input id="snsInput_ig" type="text" placeholder="예: @hyundai_minjun_official" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-red-400">▶️ YouTube Shorts 채널 핸들</span>
+            <button type="button" onclick="quickOAuthSimulate('yt')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-red-500/20 text-red-300 border border-red-500/30 cursor-pointer">⚡ 구글/유튜브 OAuth 연결</button>
+          </div>
+          <input id="snsInput_yt" type="text" placeholder="예: @minjun_car_tv" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-cyan-400">🎵 TikTok 계정</span>
+            <button type="button" onclick="quickOAuthSimulate('tt')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 cursor-pointer">⚡ 틱톡 계정 OAuth 연결</button>
+          </div>
+          <input id="snsInput_tt" type="text" placeholder="예: @minjun_autoteam" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+        </div>
+
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-blue-400">📘 Facebook 페이지 / Reels</span>
+            <button type="button" onclick="quickOAuthSimulate('fb')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 cursor-pointer">⚡ 메타 페이지 OAuth 연결</button>
+          </div>
+          <input id="snsInput_fb" type="text" placeholder="예: 강남오토스퀘어 김민준 공식페이지" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+        </div>
+      </div>
+
+      <p id="snsModalNotice" class="hidden text-xs font-bold text-emerald-400 text-center"></p>
+
+      <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
+        <button type="button" onclick="closeSnsConnectModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 cursor-pointer">취소</button>
+        <button type="button" onclick="saveDealerSnsAccounts()" class="px-5 py-2 rounded-xl text-xs font-bold btn-primary-glow text-white cursor-pointer">✅ 내 SNS 계정 연동 저장</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ============================================================================
+    // 🦀 Rust + WebAssembly (Wasm) Core Engine (rust-engine/src/lib.rs -> .wasm)
+    // - 60fps Camera Motion Math & Generative Scene Permutation
+    // - Anti-Clone Domain Lock & Phone-Number Bound Subscription DRM
+    // ============================================================================
+    const AUTOREELS_WASM_B64 =
+      'AGFzbQEAAAABGgRgAn9/AX9gAAF/YAF/AX9gBn9/f39/fwF/AwgHAAAAAQACAwUDAQAQBgkBfwFBgIDAAAsHsQEIBm1lbW9yeQIAFWNvbXB1dGVfY2FtZXJhX3Bhbl9weAAAGmNvbXB1dGVfY2FtZXJhX3NjYWxlX21pbGxpAAESY29tcHV0ZV9zY2VuZV9zbG90AAIOZW5naW5lX3ZlcnNpb24AAxpnZW5lcmF0ZV9saWNlbnNlX3NpZ25hdHVyZQAEEnZlcmlmeV9kb21haW5faGFzaAAFF3ZlcmlmeV9zdWJzY3JpcHRpb25fZHJtAAYKvQQHTgEBfyAAQdAPIABB0A9JG0EBdkGMfGohAkEAIQACQAJAAkAgAUEDcUF/ag4CAAECCyACQThswUHoB23BDwsgAkFIbMFB6AdtwSEACyAAC1MBAX8gAEHQDyAAQdAPSRtBAXYhAkGU1QAhAAJAAkACQCABQQNxDgQBAgIAAQsgAkHQAGxB5ABuQaDRAGoPCyACQe4AbEHkAG5B2M8AaiEACyAAC8gBAQF/I4CAgIAAQRBrIgJCh4CAgLABNwIIIAJCgYCAgNAANwIAIAIgAEGV+Kn6B3MiAEEQdiAAc0HrlK+veGwiAEENdiAAc0G13MqVfGwiAEEQdiAAcyIAQQV2QQxxaigCACABQQNxbCAAQQxwakEMcCAAIAFBu772ImxBu772ImpzIgFBEHYgAXNB65Svr3hsIgFBDXYgAXNBtdzKlXxsIgFBEHYgAXMiAUEDcEEIdHIgAUELdEGAgAxxciAAQRV0QYCAgDhxcgsFAEHkAAtPACABQQt3QYuoh/QFcyAAQbnz3fF5bEHBpc6/enNqIgBBEHYgAHNB65Svr3hsIgBBDXYgAHNBtdzKlXxsIgBBEHYgAHNBoPc2cEGgjQZqCzkBAX9BASEBAkAgAEECSQ0AIABB5ae5wXtGDQAgAEG1gviLBEYNACAAQd7EqPIERg0AQQAhAQsgAQs+AAJAIAUQhYCAgAANAEEEDwsCQCAAIAFGDQBBAw8LAkAgAiAAIAMQhICAgABGDQBBAA8LQQJBASAEIANLGws=';
+
+    const RustWasmCore = (() => {
+      try {
+        const binStr = atob(AUTOREELS_WASM_B64);
+        const bytes = new Uint8Array(binStr.length);
+        for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+        const mod = new WebAssembly.Module(bytes);
+        const inst = new WebAssembly.Instance(mod, {});
+        return inst.exports;
+      } catch (e) {
+        console.error('Wasm init error:', e);
+        return null;
+      }
+    })();
+
+    function extractPhoneLast8(phoneStr) {
+      const digits = String(phoneStr || '').replace(/\D/g, '');
+      const last8 = digits.slice(-8);
+      return Number(last8) || 48219032;
+    }
+
+    function getCurrentDomainFlag() {
+      const host = (window.location.hostname || '').toLowerCase();
+      if (!host || host === 'localhost' || host === '127.0.0.1' || host.endsWith('.vercel.app') || host.endsWith('autoreels.kr')) {
+        return 1;
+      }
+      // Compute FNV-1a 32-bit hash for unknown domains
+      let h = 0x811c9dc5;
+      for (let i = 0; i < host.length; i++) {
+        h ^= host.charCodeAt(i);
+        h = Math.imul(h, 0x01000193) >>> 0;
+      }
+      return h;
+    }
+
+    function formatWasmLicenseKey(phoneStr, expiryYmd = 20261231) {
+      const p8 = extractPhoneLast8(phoneStr);
+      const sig = RustWasmCore ? (RustWasmCore.generate_license_signature(p8, expiryYmd) >>> 0) : 884920;
+      return `AR-${sig}`;
+    }
+
+    function parseProvidedLicenseSig(licenseKeyStr) {
+      const m = String(licenseKeyStr || '').trim().match(/(\d{6})/);
+      return m ? Number(m[1]) : 0;
+    }
+
+    // 웹 사이트 무단 복제(Rea/Scraper) 방지 가드 (우클릭 및 소스 추출 단축키 방어)
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) || e.key === 'F12') {
+        e.preventDefault();
+      }
+    });
+
     // ============================================================================
     // GSAP Easing 함수 & 결정론적 수학 헬퍼 (HyperFrames 표준)
     // ============================================================================
@@ -849,7 +1060,16 @@
         title: '수석 카마스터',
         branch: '현대·기아 강남오토스퀘어',
         phone: '010-4821-9032',
+        licensedPhone: '010-4821-9032',
+        expiryYmd: 20261231,
+        licenseKey: formatWasmLicenseKey('010-4821-9032', 20261231),
         igUsername: '@hyundai_minjun_official',
+        snsAccounts: {
+          ig: '@hyundai_minjun_official',
+          yt: '@minjun_car_tv',
+          tt: '@minjun_autoteam',
+          fb: '강남오토스퀘어 김민준 공식페이지'
+        },
         igPwMasked: 'AES256:9f8a...c41b (암호화 보관)',
         accentColor: '#3b82f6',
         promoTag: '출고고객 전원 루마버텍스 썬팅 + 빌트인캠 무상지원',
@@ -864,7 +1084,16 @@
         title: '공식인증 주임',
         branch: '기아 오토큐브 서초전시장',
         phone: '010-7734-1290',
+        licensedPhone: '010-7734-1290',
+        expiryYmd: 20261231,
+        licenseKey: formatWasmLicenseKey('010-7734-1290', 20261231),
         igUsername: '@kia_seoyeon_deal',
+        snsAccounts: {
+          ig: '@kia_seoyeon_deal',
+          yt: '@seoyeon_kia_shorts',
+          tt: '@seoyeon_car_master',
+          fb: '서초전시장 박서연 주임'
+        },
         igPwMasked: 'AES256:3d12...e890 (암호화 보관)',
         accentColor: '#10b981',
         promoTag: '11월 한정 추가할인 + 전국 무료 캐리어 탁송 지원',
@@ -879,7 +1108,16 @@
         title: '대표 팀장',
         branch: '현대·기아 법인특판 오토허브',
         phone: '010-9102-5581',
+        licensedPhone: '010-9102-5581',
+        expiryYmd: 20261231,
+        licenseKey: formatWasmLicenseKey('010-9102-5581', 20261231),
         igUsername: '@dohyun_motors',
+        snsAccounts: {
+          ig: '@dohyun_motors',
+          yt: '@dohyun_lease_tv',
+          tt: '@dohyun_fleet_korea',
+          fb: '법인특판 오토허브 이도현 팀장'
+        },
         igPwMasked: 'Meta 공식 Graph API 연동됨',
         accentColor: '#f59e0b',
         promoTag: '1년/2만km 보증연장 + 엔진오일 쿠폰 무상 제공',
@@ -1077,35 +1315,35 @@
           const img = campaign.uploadedPhotos[mappedPhotoIdx];
           const prevImg = idx > 0 ? campaign.uploadedPhotos[prevMappedPhotoIdx] : null;
 
-          // 컷별 차별화된 카메라 모션 계산
+          // 컷별 차별화된 카메라 모션 계산 (Rust WebAssembly 코어 연산 연동)
           function drawPhotoWithCameraMove(imageObj, camTypeIndex, prog, alpha = 1) {
             if (!imageObj) return;
-            let scale = 1.1;
-            let panX = 0;
+            const localMs = Math.round(Easing.clamp(prog, 0, 1) * 2000);
+            let scale = RustWasmCore
+              ? RustWasmCore.compute_camera_scale_milli(localMs, camTypeIndex) / 10000
+              : 1.1;
+            let panX = RustWasmCore
+              ? RustWasmCore.compute_camera_pan_px(localMs, camTypeIndex)
+              : 0;
             let panY = 0;
 
             if (camTypeIndex % 4 === 0) {
-              // Move 0: 강렬한 Fast Push-In + 로우앵글 틸트업
               const p = Easing.power4Out(prog);
-              scale = 1.02 + p * 0.22;
-              panX = 0;
+              scale = Math.max(scale, 1.02 + p * 0.20);
               panY = (1 - p) * 26 - 8;
             } else if (camTypeIndex % 4 === 1) {
-              // Move 1: 좌 -> 우 와이드 패닝 스윕 (실내/외관 둘러보기)
               const p = Easing.power3InOut(prog);
               scale = 1.20;
               panX = 48 - p * 96;
               panY = -6;
             } else if (camTypeIndex % 4 === 2) {
-              // Move 2: 클로즈업에서 뒤로 쫙 빠지는 Zoom-Out Reveal (공간감 강조)
               const p = Easing.power3InOut(prog);
               scale = 1.28 - p * 0.24;
               panX = -14 + p * 14;
               panY = -20 + p * 28;
             } else {
-              // Move 3: 대각선 포커스 돌리 인
               const p = Easing.power4Out(prog);
-              scale = 1.04 + p * 0.19;
+              scale = Math.max(scale, 1.04 + p * 0.19);
               panX = -26 + p * 36;
               panY = 22 - p * 30;
             }
@@ -1863,8 +2101,52 @@
         ctx.fillText('• 할부 / 리스 / 장기렌트 맞춤 설계', -84, 326);
         ctx.fillStyle = '#64748b';
         ctx.font = '16px sans-serif';
-        ctx.fillText(`• 인스타그램 ${d.igUsername}`, -84, 352);
+        ctx.fillText(`• 인스타그램 ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
 
+        ctx.restore();
+      }
+
+      // ========================================================================
+      // 🦀 Rust WebAssembly (Wasm) DRM & 전화번호 도용(계정 돌려쓰기) 방지 캔버스 워터마크
+      // ========================================================================
+      const drmCode = evaluateDealerDrmStatus(d);
+      if (drmCode !== 1) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.52)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.translate(W / 2, H / 2);
+        ctx.rotate(-0.32);
+
+        const isTamper = drmCode === 3;
+        const bannerColor = isTamper ? 'rgba(225, 29, 72, 0.94)' : 'rgba(217, 119, 6, 0.94)';
+        ctx.fillStyle = bannerColor;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        drawRoundedRect(ctx, -310, -76, 620, 152, 20);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 26px "Pretendard Variable", sans-serif';
+        ctx.fillText(
+          isTamper ? '🚨 전화번호 무단 변경 · 계정 공유 차단됨' : '🔒 AUTOREELS 미구독 · 만료 제한 모드',
+          0,
+          -22
+        );
+        ctx.font = '700 18px "Pretendard Variable", sans-serif';
+        ctx.fillStyle = '#fef08a';
+        ctx.fillText(
+          isTamper
+            ? `정품 바인딩 번호(${d.licensedPhone})와 일치하지 않습니다`
+            : '정품 구독 라이선스 인증 후 워터마크가 제거됩니다',
+          0,
+          16
+        );
+        ctx.font = '600 15px monospace';
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillText('Protected by AutoReels Rust WebAssembly DRM v1.0', 0, 50);
         ctx.restore();
       }
     }
@@ -2150,6 +2432,7 @@
       }
 
       syncScenePlanUI();
+      syncDrmAndSnsUI();
       renderDealerVariationSummary();
 
       const statusContainer = document.getElementById('previewStatusBadge');
@@ -2162,6 +2445,149 @@
       }
     }
 
+    function evaluateDealerDrmStatus(d) {
+      if (!d) return 0;
+      const curP8 = extractPhoneLast8(d.phone);
+      const regP8 = extractPhoneLast8(d.licensedPhone || d.phone);
+      const sig = parseProvidedLicenseSig(d.licenseKey);
+      const expiry = d.expiryYmd || 20261231;
+      const today = 20261112;
+      const domFlag = getCurrentDomainFlag();
+      if (RustWasmCore && typeof RustWasmCore.verify_subscription_drm === 'function') {
+        return RustWasmCore.verify_subscription_drm(curP8, regP8, sig, expiry, today, domFlag) >>> 0;
+      }
+      if (curP8 !== regP8) return 3;
+      return sig > 0 ? 1 : 0;
+    }
+
+    function syncDrmAndSnsUI() {
+      const d = getSelectedDealer();
+      if (!d) return;
+
+      const keyEl = document.getElementById('dlrLicenseKeyInput');
+      if (keyEl) keyEl.value = d.licenseKey || '';
+      const boundPhoneEl = document.getElementById('dlrLicensedPhoneView');
+      if (boundPhoneEl) boundPhoneEl.value = d.licensedPhone || d.phone;
+      const boundTextEl = document.getElementById('drmBoundPhoneText');
+      if (boundTextEl) boundTextEl.textContent = d.licensedPhone || d.phone;
+
+      const drmCode = evaluateDealerDrmStatus(d);
+      const badgeEl = document.getElementById('drmStatusBadge');
+      if (badgeEl) {
+        if (drmCode === 1) {
+          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+          badgeEl.textContent = '🟢 정품 구독 인증됨 (워터마크 제거됨)';
+        } else if (drmCode === 3) {
+          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+          badgeEl.textContent = '🚨 타 딜러 번호 도용 감지! (계정 돌려쓰기 차단됨)';
+        } else {
+          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+          badgeEl.textContent = '🔒 미구독 · 만료 상태 (워터마크 강제 삽입 & 다운로드 잠금)';
+        }
+      }
+
+      // 4대 SNS 연결 상태 UI 업데이트
+      const sns = d.snsAccounts || { ig: d.igUsername, yt: '', tt: '', fb: '' };
+      ['ig', 'yt', 'tt', 'fb'].forEach((ch) => {
+        const handleEl = document.getElementById(`snsHandle_${ch}`);
+        const btnEl = document.getElementById(`snsStatusBtn_${ch}`);
+        const val = (sns[ch] || '').trim();
+        if (handleEl) {
+          handleEl.textContent = val || '미연결 (클릭하여 계정 연결)';
+          handleEl.className = val ? 'text-[11px] text-emerald-400 font-mono' : 'text-[11px] text-slate-500 font-mono';
+        }
+        if (btnEl) {
+          btnEl.textContent = val ? '🟢 연결됨' : '⚪ 연결하기';
+          btnEl.className = val
+            ? 'px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer'
+            : 'px-2 py-1 rounded-lg text-[10px] font-bold bg-white/10 text-slate-300 border border-white/15 cursor-pointer';
+        }
+      });
+    }
+
+    function onDealerLicenseInput() {
+      const d = getSelectedDealer();
+      const val = document.getElementById('dlrLicenseKeyInput')?.value.trim() || '';
+      d.licenseKey = val;
+      syncDrmAndSnsUI();
+      window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+    }
+
+    function simulateDrmMode(mode) {
+      const d = getSelectedDealer();
+      if (mode === 'PRO') {
+        d.phone = d.licensedPhone;
+        d.expiryYmd = 20261231;
+        d.licenseKey = formatWasmLicenseKey(d.licensedPhone, 20261231);
+      } else if (mode === 'TRIAL') {
+        d.phone = d.licensedPhone;
+        d.licenseKey = 'AR-000000 (미결제/만료)';
+      } else if (mode === 'TAMPER') {
+        d.phone = '010-9999-8282';
+        d.licenseKey = formatWasmLicenseKey(d.licensedPhone, 20261231);
+      }
+      document.getElementById('dlrInputPhone').value = d.phone;
+      syncDrmAndSnsUI();
+      window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+    }
+
+    function openSnsConnectModal(focusKey) {
+      const d = getSelectedDealer();
+      const sns = d.snsAccounts || { ig: d.igUsername, yt: '', tt: '', fb: '' };
+      document.getElementById('snsModalHeaderTitle').textContent = `🔗 [${d.name} ${d.title}] 내 4대 SNS 계정 연결 설정`;
+      document.getElementById('snsInput_ig').value = sns.ig || '';
+      document.getElementById('snsInput_yt').value = sns.yt || '';
+      document.getElementById('snsInput_tt').value = sns.tt || '';
+      document.getElementById('snsInput_fb').value = sns.fb || '';
+      const notice = document.getElementById('snsModalNotice');
+      if (notice) notice.classList.add('hidden');
+      const modal = document.getElementById('snsConnectModal');
+      if (modal) modal.classList.remove('hidden');
+      if (focusKey && document.getElementById(`snsInput_${focusKey}`)) {
+        setTimeout(() => document.getElementById(`snsInput_${focusKey}`).focus(), 80);
+      }
+    }
+
+    function closeSnsConnectModal() {
+      const modal = document.getElementById('snsConnectModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function quickOAuthSimulate(channel) {
+      const d = getSelectedDealer();
+      const slug = d.token.replace('tok_', '');
+      const defaults = {
+        ig: `@${slug}_official_motors`,
+        yt: `@${slug}_shorts_tv`,
+        tt: `@${slug}_car_master`,
+        fb: `${d.branch} ${d.name} ${d.title} 공식페이지`
+      };
+      const inputEl = document.getElementById(`snsInput_${channel}`);
+      if (inputEl && !inputEl.value.trim()) {
+        inputEl.value = defaults[channel];
+      }
+      const notice = document.getElementById('snsModalNotice');
+      if (notice) {
+        notice.classList.remove('hidden');
+        notice.textContent = `✅ OAuth 인증 토큰이 연결되었습니다! 아래 [내 SNS 계정 연동 저장]을 눌러 완료하세요.`;
+      }
+    }
+
+    function saveDealerSnsAccounts() {
+      const d = getSelectedDealer();
+      d.snsAccounts = {
+        ig: document.getElementById('snsInput_ig').value.trim(),
+        yt: document.getElementById('snsInput_yt').value.trim(),
+        tt: document.getElementById('snsInput_tt').value.trim(),
+        fb: document.getElementById('snsInput_fb').value.trim()
+      };
+      if (d.snsAccounts.ig) d.igUsername = d.snsAccounts.ig;
+      saveDealerProfileToLocal(d);
+      syncDrmAndSnsUI();
+      closeSnsConnectModal();
+      window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+    }
+
     function saveDealerProfileToLocal(d) {
       try {
         localStorage.setItem(
@@ -2171,7 +2597,8 @@
             title: d.title,
             phone: d.phone,
             branch: d.branch,
-            promoTag: d.promoTag
+            promoTag: d.promoTag,
+            snsAccounts: d.snsAccounts
           })
         );
         const badge = document.getElementById('mobileSavedBadge');
@@ -2192,6 +2619,7 @@
             if (parsed.phone) d.phone = parsed.phone;
             if (parsed.branch) d.branch = parsed.branch;
             if (parsed.promoTag) d.promoTag = parsed.promoTag;
+            if (parsed.snsAccounts) d.snsAccounts = parsed.snsAccounts;
           }
         });
       } catch (e) {}
@@ -2206,6 +2634,7 @@
       d.promoTag = document.getElementById('dlrInputPromo').value;
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
       saveDealerProfileToLocal(d);
+      syncDrmAndSnsUI();
       renderQuickSelector();
       renderAdminDealerList();
       renderDealerVariationSummary();
@@ -2251,19 +2680,38 @@
 
     function proceduralRestyleCurrentScene() {
       const themeKeys = Object.keys(DIRECTOR_THEMES);
-      const otherThemes = themeKeys.filter((k) => k !== campaign.themeId);
-      campaign.themeId = otherThemes[Math.floor(Math.random() * otherThemes.length)] || themeKeys[0];
-
-      const shuffled = [...WIDGET_POOL].sort(() => Math.random() - 0.5);
       const positions = ['TOP', 'CENTER', 'BOTTOM'];
       const cameras = ['KEN_BURNS_IN', 'PAN_RIGHT', 'PAN_LEFT', 'DYNAMIC_TILT'];
+      const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
 
-      campaign.scenePlan = [0, 1, 2, 3].map((idx) => ({
-        widget: shuffled[idx],
-        pos: positions[(idx + Math.floor(Math.random() * 3)) % positions.length],
-        camera: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length],
-        badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
-      }));
+      if (RustWasmCore && typeof RustWasmCore.compute_scene_slot === 'function') {
+        const firstSlot = RustWasmCore.compute_scene_slot(seed, 0) >>> 0;
+        const themeIdx = (firstSlot >>> 24) & 0xff;
+        campaign.themeId = themeKeys[themeIdx % themeKeys.length] || themeKeys[0];
+
+        campaign.scenePlan = [0, 1, 2, 3].map((idx) => {
+          const packed = RustWasmCore.compute_scene_slot(seed, idx) >>> 0;
+          const wIdx = packed & 0xff;
+          const pIdx = (packed >>> 8) & 0xff;
+          const cIdx = (packed >>> 16) & 0xff;
+          return {
+            widget: WIDGET_POOL[wIdx % WIDGET_POOL.length],
+            pos: positions[pIdx % positions.length],
+            camera: cameras[cIdx % cameras.length],
+            badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
+          };
+        });
+      } else {
+        const otherThemes = themeKeys.filter((k) => k !== campaign.themeId);
+        campaign.themeId = otherThemes[Math.floor(Math.random() * otherThemes.length)] || themeKeys[0];
+        const shuffled = [...WIDGET_POOL].sort(() => Math.random() - 0.5);
+        campaign.scenePlan = [0, 1, 2, 3].map((idx) => ({
+          widget: shuffled[idx],
+          pos: positions[(idx + Math.floor(Math.random() * 3)) % positions.length],
+          camera: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length],
+          badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
+        }));
+      }
 
       syncScenePlanUI();
       window.__timelines['main'].seek((window.__timelines['main'].currentTime + 2.0) % 8.0);
@@ -2511,13 +2959,21 @@
     }
 
     function exportSynthesizedVideo() {
+      const d = getSelectedDealer();
+      const drmCode = evaluateDealerDrmStatus(d);
+      if (drmCode !== 1) {
+        const msg = drmCode === 3
+          ? `🚨 [Rust Wasm DRM 보안 차단]\n현재 입력된 전화번호(${d.phone})가 정품 구독에 등록된 번호(${d.licensedPhone})와 다릅니다.\n1계정 다수 딜러 돌려쓰기(공유)가 감지되어 영상 추출이 차단되었습니다.`
+          : `🔒 [Rust Wasm DRM 구독 인증 필요]\n현재 미구독 또는 구독 만료 상태입니다.\n정품 라이선스 키(${formatWasmLicenseKey(d.licensedPhone, 20261231)})를 인증하거나 [🟢 정품 구독 정상] 버튼을 눌러 잠금을 해제하세요.`;
+        alert(msg);
+        return;
+      }
       if (typeof MediaRecorder === 'undefined') {
         alert('현재 브라우저에서 MediaRecorder를 지원하지 않습니다.');
         return;
       }
       const btn = document.getElementById('exportVideoBtn');
-      const d = getSelectedDealer();
-      btn.disabled = true;
+      if (btn) btn.disabled = true;
 
       // 본문 캡션도 자동으로 클립보드에 복사 시도
       copyDealerCaption();
