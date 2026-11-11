@@ -1,79 +1,98 @@
 ﻿<!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoReels HyperFrames Studio - 딜러 숏폼 자동 합성 · 임시서버 검수 · 인스타 발행</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AutoReels - 카마스터 모바일 1분 숏츠·릴스 셀프 제작기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    :root {
+      --background: #090d16;
+      --foreground: #f8fafc;
+      --card: #111827;
+      --card-foreground: #f8fafc;
+      --primary: #2563eb;
+      --primary-foreground: #ffffff;
+      --secondary: #1e293b;
+      --secondary-foreground: #e2e8f0;
+      --muted: #1e293b;
+      --muted-foreground: #94a3b8;
+      --border: #1f2937;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-4 md:p-6">
-  <div class="max-w-7xl mx-auto space-y-5">
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-3 md:p-6 pb-24 md:pb-8">
+  <div class="max-w-7xl mx-auto space-y-4">
 
-    <!-- 상단 헤더 -->
-    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 md:p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <!-- 상단 헤더 (모바일 셀프 제작기 중심) -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3.5 md:p-5 shadow-sm flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
       <div class="space-y-1">
         <div class="flex items-center gap-2 flex-wrap">
-          <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            ⚡ HyperFrames Engine 탑재
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white">
+            📱 모바일 딜러 셀프 제작 모드
           </span>
-          <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
-            3D 쇼룸 + GSAP 시킹 타임라인 + 딜러 3D 메탈 명함
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)]">
+            내 폰 사진 + 내 얼굴 명함 → 1분 만에 릴스·쇼츠·틱톡 완성
           </span>
-          <h1 class="text-lg md:text-xl font-bold tracking-tight text-[var(--foreground)]">
-            자동차 딜러 주 5만 원 숏폼 제작 · 임시서버 승인 · 인스타 자동 업로드
-          </h1>
         </div>
-        <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
-          <code class="px-1.5 py-0.5 rounded bg-[var(--background)]">window.__timelines["main"].seek(t)</code> 결정론적 렌더링으로 임시서버 미리보기와 최종 60fps MP4가 100% 일치합니다.
-        </p>
+        <h1 class="text-base md:text-xl font-bold tracking-tight text-[var(--foreground)]">
+          AutoReels 카마스터 전용 숏폼 셀프 제작 & 멀티 SNS 업로드 스튜디오
+        </h1>
       </div>
 
       <!-- 상단 뷰 전환 탭 -->
-      <div class="flex items-center gap-1.5 bg-[var(--background)] p-1.5 rounded-xl border border-[var(--border)] self-start lg:self-auto">
-        <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all bg-[var(--primary)] text-[var(--primary-foreground)]">
-          📱 1. HyperFrames 릴스 스튜디오 & 딜러 검수
+      <div class="flex items-center gap-1 bg-[var(--background)] p-1 rounded-xl border border-[var(--border)] overflow-x-auto">
+        <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="whitespace-nowrap px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all bg-[var(--primary)] text-[var(--primary-foreground)]">
+          📱 1. 내 숏츠 직접 만들기
         </button>
-        <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-          👥 2. 딜러 명단 & 주간 마스터 설정
+        <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+          👥 2. 지점 딜러 프리셋 관리
         </button>
-        <button id="tabBtnTech" onclick="switchMainTab('tech')" class="px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
-          ⚙️ 3. HyperFrames DOM & 렌더러 코드
+        <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-[var(--muted-foreground)] hover:text-[var(--foreground)]">
+          ⚙️ 3. 엔진 코드
         </button>
       </div>
     </header>
 
-    <!-- 딜러 빠른 전환 & 타임라인 구간 바로가기 바 -->
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="text-xs font-semibold text-[var(--muted-foreground)]">시뮬레이션 딜러 선택:</span>
-        <div id="dealerQuickSelector" class="flex items-center gap-2 flex-wrap"></div>
+    <!-- 빠른 딜러 프로필 전환 & 내 정보 저장 알림 바 -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-3 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5 flex-wrap">
+        <span class="text-xs font-semibold text-[var(--muted-foreground)]">샘플 카마스터 전환:</span>
+        <div id="dealerQuickSelector" class="flex items-center gap-1.5 flex-wrap"></div>
       </div>
-      <div class="flex items-center gap-2 flex-wrap">
-        <button onclick="openNewDealerModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
-          + 신규 딜러 등록 (ID/PW 암호화)
+      <div class="flex items-center gap-2">
+        <span id="mobileSavedBadge" class="text-xs text-emerald-400 font-semibold">💾 입력한 내 명함 정보는 휴대폰에 자동 저장됩니다</span>
+        <button onclick="openNewDealerModal()" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
+          + 새 프로필 추가
         </button>
       </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- 탭 1: HyperFrames 실시간 3D 쇼룸 & 딜러 임시서버 검수·승인 뷰 (기본 활성 탭) -->
+    <!-- 탭 1: 모바일 & PC 겸용 딜러 셀프 숏츠 제작 스튜디오 (기본 활성 탭) -->
     <!-- ========================================================================= -->
-    <section id="viewPreview" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- 좌측: HyperFrames 9:16 스테이지 (5칸) -->
+    <section id="viewPreview" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+      <!-- 좌측(모바일 상단): 9:16 실시간 미리보기 플레이어 & 원터치 저장/변주 버튼 (5칸) -->
       <div class="lg:col-span-5 flex flex-col items-center">
-        <div class="w-full max-w-[360px] bg-[var(--card)] border-2 border-[var(--border)] rounded-3xl p-3.5 shadow-lg space-y-3">
+        <div class="w-full max-w-[360px] bg-[var(--card)] border-2 border-[var(--border)] rounded-3xl p-3 shadow-lg space-y-2.5">
           <!-- 상단 상태 바 -->
           <div class="flex items-center justify-between px-1 text-xs">
             <span class="font-bold text-[var(--foreground)] flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              HyperFrames Live Stage (60fps)
+              실시간 9:16 숏폼 미리보기
             </span>
             <span id="activeClipBadge" class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400">
               Scene 1: 훅 & 카운터
             </span>
           </div>
 
-          <!-- HyperFrames DOM 클립 구조 (숨김 메타데이터 레이어 - 표준 규격 준수) -->
+          <!-- HyperFrames DOM 클립 구조 (숨김 메타데이터 레이어) -->
           <div id="hyperframes-dom-registry" class="hidden">
             <div id="clip-hook" class="clip" data-start="0" data-duration="3" data-track-index="0"></div>
             <div id="clip-showcase" class="clip" data-start="3" data-duration="5" data-track-index="0"></div>
@@ -81,96 +100,106 @@
             <div id="clip-dealer-outro" class="clip" data-start="8" data-duration="4" data-track-index="0"></div>
           </div>
 
-          <!-- 9:16 WebGL/Canvas 하이퍼프레임 렌더링 뷰포트 -->
+          <!-- 9:16 렌더링 뷰포트 -->
           <div class="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black border border-[var(--border)] shadow-inner">
             <canvas id="reelCanvas" width="540" height="960" class="w-full h-full object-cover"></canvas>
             <video id="hiddenCustomVideo" class="hidden" muted playsinline loop crossorigin="anonymous"></video>
           </div>
 
-          <!-- HyperFrames 3단계 씬 점프 버튼 -->
-          <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-            <button onclick="seekToTime(0.0)" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
-              ⚡ 0~3초: 훅·할인카운터
+          <!-- 모바일 핵심 액션 버튼 2개: [바로 문구/무빙 랜덤 변주] + [12초 영상 완성 & 내 폰 저장/공유] -->
+          <div class="grid grid-cols-1 gap-2 pt-1">
+            <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="w-full py-3 px-4 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition flex items-center justify-center gap-1.5 cursor-pointer">
+              🎬 12초 내 숏츠 영상 완성하기 (내 폰 저장 · SNS 공유)
             </button>
-            <button onclick="seekToTime(3.2)" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
-              🚘 3~8초: 3D 쇼룸·혜택
+            <div class="grid grid-cols-2 gap-1.5">
+              <button type="button" onclick="randomizeCurrentDealerVariation()" class="py-2 px-2.5 rounded-xl text-xs font-bold bg-[var(--secondary)] hover:opacity-90 text-emerald-400 border border-emerald-500/30 transition cursor-pointer">
+                🎲 문구·컷순서 자동 바꾸기
+              </button>
+              <button id="playPauseBtn" onclick="togglePlayPause()" class="py-2 px-2.5 rounded-xl text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90 transition cursor-pointer">
+                ⏸ 일시정지
+              </button>
+            </div>
+          </div>
+
+          <!-- 3단계 씬 점프 버튼 -->
+          <div class="grid grid-cols-3 gap-1.5">
+            <button onclick="seekToTime(0.0)" class="py-1.5 px-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
+              ⚡ 0~3초 본편앞
             </button>
-            <button onclick="seekToTime(8.2)" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
-              🪪 8~12초: 딜러 3D명함
+            <button onclick="seekToTime(3.2)" class="py-1.5 px-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
+              🚘 3~8초 혜택·DM
+            </button>
+            <button onclick="seekToTime(8.2)" class="py-1.5 px-1.5 rounded-lg text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)] transition">
+              🪪 8~12초 내명함
             </button>
           </div>
 
-          <!-- 프레임 정밀 시크바 (`window.__timelines.main.seek(t)` 직접 호출) -->
-          <div class="space-y-1.5 px-1">
+          <!-- 시크바 -->
+          <div class="space-y-1 px-1">
             <div class="flex items-center justify-between text-xs text-[var(--muted-foreground)] font-mono">
               <span id="timeCodeText">t = 0.00s / 12.00s</span>
               <span id="frameCountText">Frame: 0 / 720</span>
             </div>
             <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-blue-500 cursor-pointer" />
-            <div class="flex items-center gap-2 pt-1">
-              <button id="playPauseBtn" onclick="togglePlayPause()" class="flex-1 py-2 rounded-xl text-xs font-bold bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:opacity-90 transition">
-                ⏸ 일시정지
-              </button>
-              <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="flex-1 py-2 rounded-xl text-xs font-bold border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
-                💾 실제 영상(.webm) 추출
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- 우측: 차량 사진/3D 테마 즉석 변경 + 딜러 마지막 엔딩카드 편집 + 인스타 원클릭 승인 (7칸) -->
+      <!-- 우측(모바일 하단): 딜러 셀프 제작 STEP 1 (내 차량/사진) -> STEP 2 (내 명함/얼굴) -> STEP 3 (SNS 업로드) -->
       <div class="lg:col-span-7 space-y-4">
-        <!-- 카드 1: 차량 소스 & 모션 프리셋 빠른 컨트롤 -->
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
+        <!-- STEP 1: 차종 선택 & 내 휴대폰 차량/출고 사진 업로드 -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 md:p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
             <div>
-              <h2 class="text-base font-bold text-[var(--foreground)]">🎬 1단계: 본편(0~8초) 3D 쇼룸 & 차량 사진 슬라이드 소스</h2>
-              <p class="text-xs text-[var(--muted-foreground)]">차량 사진 여러 장을 올리면 자동으로 3D 줌인·패닝(Ken Burns) + 쇼룸 스포트라이트가 입혀집니다.</p>
+              <span class="text-xs font-bold text-emerald-400">STEP 1 · 차량 & 사진 선택</span>
+              <h2 class="text-base font-bold text-[var(--foreground)]">🚗 홍보할 차종을 고르거나 내 휴대폰 사진을 올리세요</h2>
             </div>
-            <select id="presetSelect" onchange="applyPreset(this.value)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">
-              <option value="sorento">🔥 프리셋 1: 2026 쏘렌토 하이브리드 (할인 480만원)</option>
-              <option value="bmw5">💎 프리셋 2: BMW 520i M 스포츠 (할인 1,150만원)</option>
-              <option value="gv80">👑 프리셋 3: 제네시스 GV80 페이스리프트 (할인 620만원)</option>
-              <option value="used">🛡️ 프리셋 4: 인증 중고차 무사고 특가 (할인 350만원)</option>
+            <select id="presetSelect" onchange="applyPreset(this.value)" class="w-full sm:w-auto px-3 py-2 rounded-xl text-xs font-bold bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">
+              <option value="sorento">🔥 2026 쏘렌토 하이브리드 (할인 480만원)</option>
+              <option value="santafe">🚙 디 올 뉴 싼타페 하이브리드 (할인 420만원)</option>
+              <option value="carnival">🚐 더 뉴 카니발 하이브리드 9인승 (할인 390만원)</option>
+              <option value="gv80">👑 제네시스 GV80 페이스리프트 (할인 620만원)</option>
+              <option value="bmw5">💎 BMW 520i M 스포츠 특판 (할인 1,150만원)</option>
+              <option value="used">🛡️ 무사고 인증 중고차 특가 (할인 350만원)</option>
             </select>
           </div>
 
-          <!-- 딜러별 스마트 자동 변주 (중복 영상 방지 엔진) -->
-          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-emerald-500/40 space-y-2">
+          <!-- 모바일 원터치 사진 업로드 큰 버튼 2개 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <label for="multiPhotoInput" class="flex flex-col items-center justify-center p-3.5 rounded-xl bg-blue-600/15 hover:bg-blue-600/25 border-2 border-dashed border-blue-500/50 cursor-pointer text-center transition">
+              <span class="text-sm font-bold text-blue-400">📸 내 휴대폰에서 차량·출고 사진 고르기</span>
+              <span class="text-xs text-[var(--muted-foreground)] mt-0.5">사진 1~4장 선택 시 자동으로 줌인·패닝 영상화</span>
+              <input type="file" id="multiPhotoInput" accept="image/*" multiple onchange="handleMultiPhotoUpload(event)" class="hidden" />
+            </label>
+            <label for="dealerFaceQuickInput" class="flex flex-col items-center justify-center p-3.5 rounded-xl bg-emerald-600/15 hover:bg-emerald-600/25 border-2 border-dashed border-emerald-500/50 cursor-pointer text-center transition">
+              <span class="text-sm font-bold text-emerald-400">🤳 내 카마스터 얼굴 프로필 사진 바꾸기</span>
+              <span class="text-xs text-[var(--muted-foreground)] mt-0.5">하단 프로필 바와 8~12초 명함에 내 얼굴 합성</span>
+              <input type="file" id="dealerFaceQuickInput" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="hidden" />
+            </label>
+          </div>
+
+          <!-- 딜러별 스마트 자동 변주 레시피 상태 -->
+          <div class="p-3 rounded-xl bg-[var(--background)] border border-emerald-500/40 space-y-2">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">🎲 딜러별 자동 변주 ON</span>
-                <span class="text-xs font-bold text-[var(--foreground)]">같은 주차 캠페인이라도 딜러마다 [후킹 문구 · 4컷 순서 · 카메라 무빙 · 댓글 키워드]가 다르게 합성됩니다</span>
+              <div class="flex items-center gap-1.5">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold">🎲 중복 방지 자동 변주</span>
+                <span class="text-xs font-bold text-[var(--foreground)]">옆 지점 딜러와 겹치지 않도록 컷 순서·무빙·문구를 자동 조합합니다</span>
               </div>
               <div class="flex items-center gap-1.5">
                 <button type="button" onclick="randomizeCurrentDealerVariation()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition cursor-pointer">
-                  🎲 현재 딜러 조합 다시 섞기
+                  🎲 다른 문구·순서 추천받기
                 </button>
-                <button type="button" onclick="randomizeAllDealersVariation()" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--secondary)] hover:opacity-90 text-[var(--secondary-foreground)] border border-[var(--border)] transition cursor-pointer">
-                  🔀 전 딜러 일괄 랜덤 배정
+                <button type="button" onclick="resetToAiPhotos()" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--secondary)] text-[var(--secondary-foreground)] border border-[var(--border)] cursor-pointer">
+                  기본 화보 복원
                 </button>
               </div>
             </div>
             <div id="dealerVariationSummary" class="text-xs text-[var(--muted-foreground)] font-mono bg-[var(--card)] px-3 py-2 rounded-lg border border-[var(--border)]">
               변주 레시피 로딩 중...
             </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-              <div class="flex items-center justify-between">
-                <label class="block text-xs font-bold text-[var(--foreground)]">🖼️ 기본 탑재된 AI 실사 차량 화보 (4컷 자동 전환)</label>
-                <button onclick="resetToAiPhotos()" class="text-xs px-2 py-0.5 rounded bg-[var(--secondary)] text-[var(--secondary-foreground)] font-semibold">AI 화보 기본값 복원</button>
-              </div>
-              <div id="aiPhotoThumbnails" class="grid grid-cols-4 gap-1.5"></div>
-              <p id="photoUploadStatus" class="text-xs text-emerald-400 font-medium">✅ AI 생성 9:16 실사 차량 화보 4장이 기본 적용되어 재생 중입니다.</p>
-            </div>
-            <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-              <label class="block text-xs font-bold text-[var(--foreground)]">📸 내 차량 사진/영상으로 교체하기 (선택)</label>
-              <input type="file" id="multiPhotoInput" accept="image/*" multiple onchange="handleMultiPhotoUpload(event)" class="w-full text-xs text-[var(--muted-foreground)] file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--primary)] file:text-[var(--primary-foreground)] cursor-pointer" />
-              <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="w-full text-xs text-[var(--muted-foreground)] file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--secondary)] file:text-[var(--secondary-foreground)] cursor-pointer" />
-            </div>
+            <div id="aiPhotoThumbnails" class="grid grid-cols-4 gap-1.5 pt-1"></div>
+            <p id="photoUploadStatus" class="text-xs text-emerald-400 font-medium">✅ 기본 고화질 실사 화보 4장이 적용되어 있습니다. 위 버튼으로 내 휴대폰 사진을 올릴 수 있습니다.</p>
+            <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="hidden" />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
@@ -189,54 +218,55 @@
           </div>
         </div>
 
-        <!-- 카드 2: 딜러 신상정보(마지막 8~12초 3D 메탈 명함) & 임시서버 원클릭 승인 -->
-        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
+        <!-- STEP 2: 내 카마스터 신상정보 입력 (휴대폰에 자동 저장됨) & 멀티 SNS 업로드 -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 md:p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
             <div>
-              <span class="text-xs font-semibold text-[var(--muted-foreground)]">임시서버 전용 검수 URL: <code id="stagingUrlText" class="px-1.5 py-0.5 rounded bg-[var(--background)]">https://staging.autoreels.kr/v/tok_minjun</code></span>
+              <span class="text-xs font-bold text-blue-400">STEP 2 · 내 명함 & 연락처 입력 (한 번 입력하면 휴대폰에 자동 저장)</span>
               <h2 id="previewDealerHeader" class="text-base font-bold text-[var(--foreground)] mt-0.5">
-                🪪 2단계: 김민준 수석 카마스터님의 마지막 3D 명함(8~12초) & 인스타 승인
+                🪪 내 이름·지점·전화번호를 입력하면 하단 바와 8~12초 명함에 실시간 합성됩니다
               </h2>
+              <span class="hidden text-xs text-[var(--muted-foreground)]"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
             </div>
             <div id="previewStatusBadge"></div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">딜러 이름 / 직함</label>
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">내 이름 / 직함</label>
               <div class="flex gap-2">
-                <input id="dlrInputName" type="text" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
-                <input id="dlrInputTitle" type="text" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+                <input id="dlrInputName" type="text" placeholder="예: 김민준" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-2 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+                <input id="dlrInputTitle" type="text" placeholder="예: 수석 카마스터" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-2 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
               </div>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">상담 직통 연락처 (엔딩카드 대형 노출)</label>
-              <input id="dlrInputPhone" type="text" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">상담 직통 연락처 (영상 하단 & 명함 대형 노출)</label>
+              <input id="dlrInputPhone" type="tel" placeholder="예: 010-4821-9032" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">소속 전시장 / 매매상사</label>
-              <input id="dlrInputBranch" type="text" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">소속 전시장 / 대리점 / 상사명</label>
+              <input id="dlrInputBranch" type="text" placeholder="예: 현대·기아 강남오토스퀘어" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">딜러 프로필 사진 첨부 (선택 - 마지막 명함에 합성)</label>
-              <input type="file" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="w-full text-xs text-[var(--muted-foreground)] file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-[var(--secondary)] file:text-[var(--secondary-foreground)] cursor-pointer" />
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">내 얼굴 프로필 사진 첨부 (선택)</label>
+              <input type="file" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="w-full text-xs text-[var(--muted-foreground)] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[var(--primary)] file:text-[var(--primary-foreground)] cursor-pointer" />
             </div>
             <div class="md:col-span-2">
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">딜러 개인 출고 혜택 (엔딩카드 금장 배지 문구)</label>
-              <input id="dlrInputPromo" type="text" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">당월 출고 서비스 문구 (영상 하단 & 마지막 명함 하단 노출)</label>
+              <input id="dlrInputPromo" type="text" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
             </div>
           </div>
 
-          <!-- 멀티 SNS 동시 업로드 채널 선택 -->
-          <div class="p-3 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-            <div class="flex items-center justify-between">
-              <label class="text-xs font-bold text-[var(--foreground)]">🌐 원소스 멀티유즈 동시 발행 채널 선택 (9:16 동일 영상)</label>
-              <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold">Pro 멀티채널 플랜</span>
+          <!-- STEP 3: 멀티 SNS 본문 복사 & 동시 업로드 -->
+          <div class="p-3.5 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2.5">
+            <div class="flex items-center justify-between flex-wrap gap-1">
+              <label class="text-xs font-bold text-[var(--foreground)]">STEP 3 · 🌐 업로드할 SNS 채널 선택 (인스타·유튜브·틱톡·페북)</label>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold">원소스 멀티유즈</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--card)] cursor-pointer">
                 <input id="snsCheckIg" type="checkbox" checked class="accent-emerald-500" />
-                <span>📸 <strong>인스타그램 릴스</strong> <span class="text-[var(--muted-foreground)]">(댓글 [견적] 자동 DM)</span></span>
+                <span>📸 <strong>인스타그램 릴스</strong> <span class="text-[var(--muted-foreground)]">(댓글 키워드 자동 DM)</span></span>
               </label>
               <label class="flex items-center gap-2 p-2 rounded-lg border border-[var(--border)] bg-[var(--card)] cursor-pointer">
                 <input id="snsCheckYt" type="checkbox" checked class="accent-emerald-500" />
@@ -253,22 +283,27 @@
             </div>
           </div>
 
-          <!-- 인스타그램 및 멀티채널 본문(캡션) 확인 -->
+          <!-- 자동 완성된 멀티채널 본문(캡션) & 원터치 복사 -->
           <div class="space-y-1.5">
-            <div class="flex items-center justify-between">
-              <label class="text-xs font-bold text-[var(--foreground)]">📝 자동 완성된 멀티 SNS 본문(캡션 & 유튜브 고정댓글)</label>
-              <span id="igAccountBadge" class="text-xs text-[var(--muted-foreground)]"></span>
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <label class="text-xs font-bold text-[var(--foreground)]">📝 자동 완성된 본문 & 해시태그 (업로드 시 그대로 붙여넣기)</label>
+              <div class="flex items-center gap-2">
+                <span id="igAccountBadge" class="hidden sm:inline text-xs text-[var(--muted-foreground)]"></span>
+                <button type="button" onclick="copyDealerCaption()" id="copyCaptionBtn" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[var(--secondary)] hover:opacity-90 text-emerald-400 border border-emerald-500/30 cursor-pointer">
+                  📋 본문·해시태그 복사하기
+                </button>
+              </div>
             </div>
             <textarea id="dlrCaptionTextarea" rows="4" class="w-full p-2.5 rounded-xl text-xs leading-relaxed bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]"></textarea>
           </div>
 
-          <!-- 승인 완료 버튼 -->
-          <div class="flex flex-col sm:flex-row gap-2.5">
-            <button onclick="approveAndPublishToInstagram()" class="flex-1 py-3 px-4 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-md flex items-center justify-center gap-2">
-              <span>✅ 승인 완료 → 선택한 모든 SNS 채널에 동시 자동 업로드</span>
+          <!-- 모바일 하단 핵심 버튼 2개 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button onclick="exportSynthesizedVideo()" class="py-3 px-4 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+              <span>📲 12초 영상 내 폰에 저장 / 공유창 열기</span>
             </button>
-            <button onclick="requestRevision()" class="py-3 px-4 rounded-xl text-xs font-semibold border border-[var(--border)] hover:bg-[var(--secondary)] text-[var(--foreground)] transition">
-              ✏️ 수정 요청
+            <button onclick="approveAndPublishToInstagram()" class="py-3 px-4 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-md flex items-center justify-center gap-2 cursor-pointer">
+              <span>🚀 연동된 4대 SNS에 즉시 자동 업로드</span>
             </button>
           </div>
 
@@ -392,31 +427,34 @@
     </div>
   </div>
 
-  <!-- 추출된 실제 영상(.webm) 즉시 재생 & 다운로드 모달 -->
-  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-5 space-y-3.5 shadow-2xl">
+  <!-- 추출된 실제 영상(.webm) 즉시 재생 & 모바일 공유/다운로드 모달 -->
+  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 overflow-y-auto">
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-4 md:p-5 space-y-3 shadow-2xl">
       <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
         <div>
-          <h3 class="text-base font-bold text-[var(--foreground)]">🎬 추출 완료된 릴스 영상 파일 확인</h3>
-          <p id="exportedVideoMeta" class="text-xs text-emerald-400 font-medium">12.0초 전체 구간 (0~8초 본편 + 8~12초 딜러 명함) 렌더링 완료</p>
+          <h3 class="text-base font-bold text-[var(--foreground)]">🎬 내 12초 숏츠·릴스 영상 완성!</h3>
+          <p id="exportedVideoMeta" class="text-xs text-emerald-400 font-medium">0~8초 차량 본편 + 8~12초 카마스터 명함 합성 완료</p>
         </div>
         <button onclick="closeExportedVideoModal()" class="px-2.5 py-1 rounded-lg text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)] font-bold">✕ 닫기</button>
       </div>
 
       <!-- 실제 녹화/추출된 WebM 비디오 플레이어 -->
-      <div class="w-full max-w-[270px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black border border-[var(--border)]">
+      <div class="w-full max-w-[240px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black border border-[var(--border)]">
         <video id="exportedVideoPlayer" controls autoplay loop playsinline class="w-full h-full object-cover"></video>
       </div>
 
       <div class="flex flex-col gap-2 pt-1">
-        <button type="button" onclick="saveRecordedVideoToDisk()" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white text-center transition cursor-pointer">
-          📥 내 PC에 영상 파일(.webm) 다른 이름으로 저장하기
+        <button type="button" onclick="shareRecordedVideoMobile()" class="w-full py-3 px-4 rounded-xl text-xs md:text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white text-center transition cursor-pointer shadow-md">
+          📲 모바일 공유창 열기 (인스타 · 쇼츠 · 틱톡 · 카톡 전송)
         </button>
-        <button type="button" onclick="copyLocalStudioPath()" class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-[var(--secondary)] hover:opacity-90 text-[var(--secondary-foreground)] border border-[var(--border)] text-center transition cursor-pointer">
-          📋 저장 안 될 때: 크롬(Chrome) 주소창용 파일 경로 복사하기
+        <button type="button" onclick="saveRecordedVideoToDisk()" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white text-center transition cursor-pointer">
+          📥 내 폰 / PC에 영상 파일(.webm) 직접 다운로드
+        </button>
+        <button type="button" onclick="copyDealerCaption()" class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-[var(--secondary)] hover:opacity-90 text-emerald-400 border border-emerald-500/30 text-center transition cursor-pointer">
+          📋 SNS 본문 & 해시태그 캡션 복사하기 (붙여넣기용)
         </button>
         <p id="saveStatusNotice" class="text-xs text-[var(--muted-foreground)] text-center leading-relaxed">
-          ※ Antigravity 내부 미리보기(샌드박스) 창에서는 브라우저 보안 정책상 다운로드가 차단될 수 있습니다. 위 경로를 복사해 일반 크롬 주소창에 붙여넣으면 즉시 저장됩니다.
+          💡 휴대폰에서는 [📲 모바일 공유창 열기]를 누르면 인스타·유튜브·틱톡·카카오톡으로 영상과 본문이 한 번에 전달됩니다.
         </p>
       </div>
     </div>
@@ -459,6 +497,32 @@
           '✔ 프리미엄 썬팅·블랙박스·유리막 풀패키지 무상'
         ],
         bgGradient: ['#060b19', '#172554'],
+        neonColor: '#38bdf8'
+      },
+      santafe: {
+        hook: '패밀리 SUV 원탑! 싼타페 하브 즉시출고 특판',
+        vehicle: '디 올 뉴 싼타페 하이브리드',
+        discountNum: 420,
+        discount: '월 44만원대 · 선점재고 즉시출고',
+        bullets: [
+          '✔ 캘리그라피·프레스티지 인기 색상 즉시 배정',
+          '✔ 현대캐피탈 저금리 할부 & 무보증 특판 렌트',
+          '✔ 신차패키지 8종 + 공식 카마스터 특별 사은품'
+        ],
+        bgGradient: ['#060b19', '#0f172a'],
+        neonColor: '#38bdf8'
+      },
+      carnival: {
+        hook: '법인·다자녀 압도적 1위! 카니발 하브 긴급물량',
+        vehicle: '더 뉴 카니발 하이브리드 9인승',
+        discountNum: 390,
+        discount: '월 52만원대 · 부가세 환급 가능',
+        bullets: [
+          '✔ 9인승 사업자 부가세 10% 환급 + 전액 비용처리',
+          '✔ 긴급 취소차·선점 물량 대기 없이 당월 출고',
+          '✔ 프리미엄 썬팅 + 사이드스텝 + 코일매트 무상'
+        ],
+        bgGradient: ['#060b19', '#1e293b'],
         neonColor: '#38bdf8'
       },
       bmw5: {
@@ -1510,6 +1574,41 @@
       }
     }
 
+    function saveDealerProfileToLocal(d) {
+      try {
+        localStorage.setItem(
+          'autoreels_my_dealer_profile_' + d.id,
+          JSON.stringify({
+            name: d.name,
+            title: d.title,
+            phone: d.phone,
+            branch: d.branch,
+            promoTag: d.promoTag
+          })
+        );
+        const badge = document.getElementById('mobileSavedBadge');
+        if (badge) {
+          badge.textContent = `✅ [${d.name} ${d.title}] 명함 정보가 내 휴대폰에 자동 저장됨`;
+        }
+      } catch (e) {}
+    }
+
+    function loadSavedDealerProfiles() {
+      try {
+        dealers.forEach((d) => {
+          const raw = localStorage.getItem('autoreels_my_dealer_profile_' + d.id);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.name) d.name = parsed.name;
+            if (parsed.title) d.title = parsed.title;
+            if (parsed.phone) d.phone = parsed.phone;
+            if (parsed.branch) d.branch = parsed.branch;
+            if (parsed.promoTag) d.promoTag = parsed.promoTag;
+          }
+        });
+      } catch (e) {}
+    }
+
     function updateCurrentDealerFromPreview() {
       const d = getSelectedDealer();
       d.name = document.getElementById('dlrInputName').value;
@@ -1518,11 +1617,31 @@
       d.branch = document.getElementById('dlrInputBranch').value;
       d.promoTag = document.getElementById('dlrInputPromo').value;
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
+      saveDealerProfileToLocal(d);
       renderQuickSelector();
       renderAdminDealerList();
       renderDealerVariationSummary();
       syncTechPanel();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+    }
+
+    function copyDealerCaption() {
+      const d = getSelectedDealer();
+      const text = document.getElementById('dlrCaptionTextarea')?.value || buildCaption(d);
+      const btn = document.getElementById('copyCaptionBtn');
+      const notice = document.getElementById('saveStatusNotice');
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          if (btn) btn.textContent = '✅ 복사 완료!';
+          if (notice) {
+            notice.textContent = '✅ 본문과 해시태그가 복사되었습니다! 인스타·쇼츠·틱톡 업로드 시 붙여넣기 하세요.';
+            notice.className = 'text-xs text-emerald-400 font-bold text-center leading-relaxed';
+          }
+          setTimeout(() => {
+            if (btn) btn.textContent = '📋 본문·해시태그 복사하기';
+          }, 2500);
+        }).catch(() => {});
+      }
     }
 
     function applyPreset(key) {
@@ -1536,6 +1655,12 @@
       campaign.bullets = [...p.bullets];
       campaign.bgGradient = p.bgGradient;
       campaign.neonColor = p.neonColor;
+
+      const d = getSelectedDealer();
+      if (d && d.variation) {
+        d.variation.hook = p.hook;
+        d.variation.bullets = [...p.bullets];
+      }
 
       document.getElementById('inputHook').value = campaign.hook;
       document.getElementById('inputVehicle').value = campaign.vehicle;
@@ -1592,6 +1717,9 @@
       const d = getSelectedDealer();
       btn.disabled = true;
 
+      // 본문 캡션도 자동으로 클립보드에 복사 시도
+      copyDealerCaption();
+
       // 0.0초부터 12.0초까지 전 구간(본편 4컷 + 마지막 딜러 명함) 녹화 시작
       window.__timelines['main'].seek(0);
       isPlaying = true;
@@ -1613,7 +1741,7 @@
       const progressTimer = setInterval(() => {
         const elapsed = performance.now() - startMs;
         const pct = Math.min(99, Math.round((elapsed / recordDurationMs) * 100));
-        btn.textContent = `🔴 12초 전구간 추출중 (${pct}%)`;
+        btn.textContent = `🔴 12초 내 숏츠 제작중 (${pct}%)`;
       }, 200);
 
       recorder.onstop = () => {
@@ -1636,20 +1764,56 @@
           player.play();
         }
         if (metaText) {
-          metaText.textContent = `✅ ${d.name} ${d.title}님 전용 12초 풀영상 추출 완료 (용량: ${sizeKb} KB / 540x960)`;
+          metaText.textContent = `✅ ${d.name} ${d.title}님 전용 12초 풀영상 완성! (용량: ${sizeKb} KB / 9:16 세로형)`;
         }
         if (modal) {
           modal.classList.remove('hidden');
         }
 
         btn.disabled = false;
-        btn.textContent = '💾 실제 영상(.webm) 추출';
+        btn.textContent = '🎬 12초 내 숏츠 영상 완성하기 (내 폰 저장 · SNS 공유)';
       };
 
       recorder.start(200);
       setTimeout(() => {
         if (recorder.state === 'recording') recorder.stop();
       }, recordDurationMs);
+    }
+
+    async function shareRecordedVideoMobile() {
+      const notice = document.getElementById('saveStatusNotice');
+      const blob = window.lastRecordedVideoBlob;
+      const filename = window.lastRecordedFilename || 'autoreels_dealer_12s.webm';
+      const d = getSelectedDealer();
+      const caption = buildCaption(d);
+
+      if (!blob) {
+        if (notice) notice.textContent = '⚠️ 먼저 영상 제작을 완료해주세요.';
+        return;
+      }
+
+      copyDealerCaption();
+
+      try {
+        const file = new File([blob], filename, { type: 'video/webm' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: `${campaign.vehicle} - ${d.name} ${d.title}`,
+            text: caption,
+            files: [file]
+          });
+          if (notice) {
+            notice.textContent = '✅ 모바일 공유창으로 영상과 본문이 전달되었습니다!';
+            notice.className = 'text-xs text-emerald-400 font-bold text-center leading-relaxed';
+          }
+          return;
+        }
+      } catch (err) {
+        if (err && err.name === 'AbortError') return;
+      }
+
+      // 파일 공유 미지원 브라우저에서는 즉시 다운로드로 자동 연결
+      await saveRecordedVideoToDisk();
     }
 
     async function saveRecordedVideoToDisk() {
@@ -1919,6 +2083,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     }
 
     // 초기 구동
+    loadSavedDealerProfiles();
     resetToAiPhotos();
     initDealerAvatars();
     renderQuickSelector();
