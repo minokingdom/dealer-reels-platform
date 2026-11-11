@@ -3,141 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AutoReels Studio — 카마스터 AI 숏폼 스튜디오</title>
+  <title>AutoReels — 카마스터 9:16 프로모션 영상 스튜디오</title>
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.css"></script>
   <style>
+    /* Unslop Graphite Neutral Ramp & Tokens (by Damir Sokolovsky, CC BY 4.0) */
     :root {
-      --background: #07090e;
-      --foreground: #f8fafc;
-      --card: rgba(15, 23, 42, 0.72);
-      --card-foreground: #f8fafc;
-      --primary: #4f46e5;
-      --primary-foreground: #ffffff;
-      --secondary: rgba(30, 41, 59, 0.75);
-      --secondary-foreground: #e2e8f0;
-      --muted: #1e293b;
-      --muted-foreground: #94a3b8;
-      --border: rgba(255, 255, 255, 0.09);
+      --bg-deep: #0f0f10;
+      --background: #141415;
+      --card: #19191b;
+      --raised: #232325;
+      --border: rgba(237, 237, 237, 0.08);
+      --border-strong: rgba(237, 237, 237, 0.14);
+      --foreground: #ededed;
+      --secondary-foreground: #a1a1a6;
+      --muted-foreground: #85858b;
+      --primary: #ededed;
+      --primary-foreground: #141415;
+      --secondary: #232325;
+      --muted: #19191b;
+      --semantic-positive: #4cc38a;
+      --semantic-warning: #d97706;
+      --semantic-negative: #e5484d;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     }
     body {
       background-color: var(--background);
-      background-image:
-        radial-gradient(at 15% 0%, rgba(79, 70, 229, 0.16) 0px, transparent 45%),
-        radial-gradient(at 85% 5%, rgba(14, 165, 233, 0.12) 0px, transparent 45%);
-      background-attachment: fixed;
       color: var(--foreground);
       font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      letter-spacing: -0.015em;
+      font-weight: 400;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
     }
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.68);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.6);
+    .font-mono {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-variant-numeric: tabular-nums;
     }
-    .glass-sub {
-      background: rgba(9, 13, 22, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+    .studio-card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
     }
-    .phone-frame {
-      background: linear-gradient(160deg, #1e293b 0%, #090d16 100%);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px rgba(79, 70, 229, 0.15);
+    .studio-sub {
+      background-color: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 12px;
     }
-    .btn-primary-glow {
-      background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
-      box-shadow: 0 8px 25px -5px rgba(79, 70, 229, 0.55);
+    .studio-input {
+      background-color: var(--raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--foreground);
+      transition: border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
     }
-    .btn-primary-glow:hover {
-      background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+    .studio-input::placeholder {
+      color: var(--muted-foreground);
     }
-    input[type="text"], input[type="number"], input[type="tel"], input[type="password"], textarea, select {
-      transition: all 0.18s ease;
-    }
-    input:focus, textarea:focus, select:focus {
+    .studio-input:focus {
       outline: none;
-      border-color: rgba(99, 102, 241, 0.7) !important;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
+      border-color: rgba(237, 237, 237, 0.32);
+      background-color: #28282b;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: background-color 150ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+    .btn-primary:hover {
+      background-color: #dcdce0;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .btn-secondary {
+      background-color: var(--raised);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-weight: 500;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: background-color 150ms var(--ease-out), border-color 150ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+    .btn-secondary:hover {
+      background-color: #2b2b2e;
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:active {
+      transform: scale(0.98);
+    }
+    .monitor-frame {
+      background-color: var(--bg-deep);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+    }
+    .tag-chip {
+      background-color: var(--raised);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--secondary-foreground);
     }
   </style>
 </head>
-<body class="text-[var(--foreground)] antialiased p-3 md:p-6 pb-24 md:pb-10">
-  <div class="max-w-7xl mx-auto space-y-5">
+<body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
+  <div class="max-w-[1440px] mx-auto space-y-6">
 
-    <!-- 상단 헤더 (모던 SaaS 글래스 네비게이션 바) -->
-    <header class="glass-panel rounded-2xl px-4 py-3.5 md:px-6 md:py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-      <div class="flex items-center gap-3.5">
-        <div class="w-10 h-10 rounded-xl btn-primary-glow flex items-center justify-center font-black text-white text-base tracking-tighter shrink-0">
+    <!-- 상단 헤더 (56~64px 높이 규격, 조용한 크롬) -->
+    <header class="studio-card px-5 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-[8px] bg-[#232325] border border-[var(--border-strong)] flex items-center justify-center font-mono text-xs font-medium text-[#ededed] shrink-0">
           AR
         </div>
-        <div>
-          <div class="flex items-center gap-2 flex-wrap">
-            <h1 class="text-base md:text-lg font-extrabold tracking-tight text-white">
-              AutoReels Studio
-            </h1>
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
-              AI Short-Form SaaS
-            </span>
-          </div>
-          <p class="text-xs text-slate-400 mt-0.5">
-            차량 사진과 한 줄 상황만으로 완성하는 카마스터 9:16 숏폼 스튜디오
-          </p>
+        <div class="flex items-baseline gap-3 flex-wrap">
+          <h1 class="text-[16px] font-medium text-[#ededed] leading-none">
+            AutoReels
+          </h1>
+          <span class="text-[13px] text-[#85858b]">
+            신차·중고차 카마스터 9:16 출고 프로모션 영상 제작기
+          </span>
         </div>
       </div>
 
-      <!-- 상단 뷰 전환 세그먼트 탭 -->
-      <div class="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-white/10 overflow-x-auto">
-        <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all bg-indigo-600 text-white shadow-sm">
+      <!-- 상단 뷰 전환 내비게이션 -->
+      <nav class="flex items-center gap-1 bg-[#0f0f10] p-1 rounded-[10px] border border-[var(--border)] overflow-x-auto">
+        <button id="tabBtnPreview" onclick="switchMainTab('preview')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-medium transition-colors bg-[#232325] text-[#ededed]">
           스튜디오 제작
         </button>
-        <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+        <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
           구독 계정 · AI 설정
         </button>
-        <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+        <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
           렌더링 엔진 규격
         </button>
-      </div>
+      </nav>
     </header>
 
-    <!-- 내 카마스터 프로필 전환 바 ('샘플 카마스터 전환' 명칭 변경 완료) -->
-    <div class="glass-panel rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2.5">
-      <div class="flex items-center gap-2 flex-wrap">
-        <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-          담당 카마스터 프로필:
+    <!-- 담당 카마스터 프로필 전환 바 -->
+    <div class="studio-card px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="text-[13px] font-medium text-[#a1a1a6]">
+          담당 카마스터 프로필
         </span>
         <div id="dealerQuickSelector" class="flex items-center gap-1.5 flex-wrap"></div>
       </div>
-      <div class="flex items-center gap-2.5">
-        <span id="mobileSavedBadge" class="text-xs text-slate-400 font-medium">입력한 명함 정보는 기기에 자동 저장됩니다</span>
-        <button onclick="openNewDealerModal()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition cursor-pointer">
-          + 새 프로필 등록
+      <div class="flex items-center gap-3">
+        <span id="mobileSavedBadge" class="text-[12px] text-[#85858b]">명함 정보는 현재 기기에 자동 저장됩니다</span>
+        <button onclick="openNewDealerModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+          프로필 추가
         </button>
       </div>
     </div>
 
     <!-- ========================================================================= -->
-    <!-- 탭 1: 모바일 & PC 겸용 딜러 셀프 숏츠 제작 스튜디오 (기본 활성 탭) -->
+    <!-- 탭 1: 스튜디오 제작 화면 -->
     <!-- ========================================================================= -->
     <section id="viewPreview" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      <!-- 좌측(모바일 상단): 아이폰 베젤 스타일 9:16 실시간 미리보기 & 원터치 저장 -->
-      <div class="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-5">
-        <div class="w-full max-w-[360px] phone-frame rounded-[28px] p-3.5 space-y-3">
+      <!-- 좌측: 9:16 프리뷰 모니터 (화면의 유일한 고채도 포인트 요소) -->
+      <div class="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6">
+        <div class="w-full max-w-[368px] monitor-frame p-4 space-y-3">
           <!-- 상단 상태 바 -->
-          <div class="flex items-center justify-between px-1.5 text-xs">
-            <span class="font-semibold text-slate-200 flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              LIVE PREVIEW
+          <div class="flex items-center justify-between text-[12px]">
+            <span class="text-[#a1a1a6] flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
+              실시간 프리뷰 (540×960 · 60fps)
             </span>
-            <span id="activeClipBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-slate-200 border border-white/10">
+            <span id="activeClipBadge" class="font-mono text-[12px] text-[#85858b]">
               0~3초 · 오프닝 훅
             </span>
           </div>
 
-          <!-- HyperFrames DOM 클립 구조 (숨김 메타데이터 레이어) -->
+          <!-- HyperFrames DOM 클립 구조 -->
           <div id="hyperframes-dom-registry" class="hidden">
             <div id="clip-hook" class="clip" data-start="0" data-duration="3" data-track-index="0"></div>
             <div id="clip-showcase" class="clip" data-start="3" data-duration="5" data-track-index="0"></div>
@@ -146,61 +185,78 @@
           </div>
 
           <!-- 9:16 렌더링 뷰포트 -->
-          <div class="relative w-full aspect-[9/16] rounded-2xl overflow-hidden bg-black ring-1 ring-white/15 shadow-2xl">
+          <div class="relative w-full aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
             <canvas id="reelCanvas" width="540" height="960" class="w-full h-full object-cover"></canvas>
             <video id="hiddenCustomVideo" class="hidden" muted playsinline loop crossorigin="anonymous"></video>
           </div>
 
-          <!-- 모바일 핵심 액션 버튼 -->
-          <div class="grid grid-cols-1 gap-2 pt-0.5">
-            <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="w-full py-3 px-4 rounded-xl text-xs md:text-sm font-bold btn-primary-glow text-white transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>12초 영상 추출 · 내 폰 저장 및 공유</span>
+          <!-- 핵심 액션 컨트롤 -->
+          <div class="space-y-2 pt-1">
+            <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
+              <span id="exportBtnText">12초 영상 추출 및 모바일 저장 (BGM+TTS 포함)</span>
             </button>
-            <div class="grid grid-cols-2 gap-1.5">
-              <button type="button" onclick="randomizeCurrentDealerVariation()" class="py-2 px-2.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition cursor-pointer">
-                컷 순서 · 구도 셔플
+            <div class="grid grid-cols-3 gap-1.5">
+              <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
+                <span id="soundDot" class="w-1.5 h-1.5 rounded-full bg-[#85858b]"></span>
+                <span id="soundToggleLabel">사운드 켜기</span>
               </button>
-              <button id="playPauseBtn" onclick="togglePlayPause()" class="py-2 px-2.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition cursor-pointer">
-                ⏸ 일시정지
+              <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer">
+                컷 · 구도 셔플
+              </button>
+              <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer">
+                일시정지
               </button>
             </div>
           </div>
 
-          <!-- 3단계 씬 점프 버튼 -->
-          <div class="grid grid-cols-3 gap-1.5 bg-slate-950/70 p-1 rounded-xl border border-white/5">
-            <button onclick="seekToTime(0.0)" class="py-1.5 px-1.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition">
-              0~3초 오프닝
+          <!-- 영상 총 길이(초) 원클릭 선택 -->
+          <div class="flex items-center justify-between gap-1.5 bg-[#141415] px-2.5 py-1.5 rounded-[8px] border border-[var(--border)]">
+            <span class="text-[11px] text-[#85858b] font-mono">영상 시간</span>
+            <div class="flex items-center gap-1">
+              <button type="button" id="durBtn_8" onclick="setVideoTotalDuration(8)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">8s</button>
+              <button type="button" id="durBtn_12" onclick="setVideoTotalDuration(12)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono bg-[#232325] text-[#ededed] cursor-pointer">12s</button>
+              <button type="button" id="durBtn_15" onclick="setVideoTotalDuration(15)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">15s</button>
+              <button type="button" id="durBtn_20" onclick="setVideoTotalDuration(20)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">20s</button>
+              <button type="button" id="durBtn_30" onclick="setVideoTotalDuration(30)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">30s</button>
+            </div>
+          </div>
+
+          <!-- 구간 점프 -->
+          <div class="grid grid-cols-3 gap-1 bg-[#141415] p-1 rounded-[8px] border border-[var(--border)]">
+            <button id="jumpBtn0" onclick="seekToTime(0.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
+              0~2초 오프닝
             </button>
-            <button onclick="seekToTime(3.2)" class="py-1.5 px-1.5 rounded-lg text-[11px] font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition">
-              3~8초 상세혜택
+            <button id="jumpBtn1" onclick="seekToTime(3.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
+              2~8초 본편
             </button>
-            <button onclick="seekToTime(8.2)" class="py-1.5 px-1.5 rounded-lg text-[11px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition">
+            <button id="jumpBtn2" onclick="seekToTime(8.2)" class="h-7 px-2 rounded-[6px] text-[12px] bg-[#232325] text-[#ededed] transition-colors">
               8~12초 딜러명함
             </button>
           </div>
 
-          <!-- 시크바 -->
-          <div class="space-y-1 px-1">
-            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <!-- 타임라인 시크바 -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex items-center justify-between text-[12px] text-[#85858b] font-mono">
               <span id="timeCodeText">t = 0.00s / 12.00s</span>
               <span id="frameCountText">Frame: 0 / 720</span>
             </div>
-            <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-indigo-500 cursor-pointer" />
+            <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-[#ededed] cursor-pointer" />
           </div>
         </div>
       </div>
 
-      <!-- 우측(모바일 하단): STEP 1 ~ STEP 3 모던 워크플로우 -->
-      <div class="lg:col-span-7 space-y-5">
-        <!-- STEP 1: 영상 레이아웃 & AI 스토리보드 & 차량 사진 -->
-        <div class="glass-panel rounded-2xl p-4 md:p-6 space-y-5">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+      <!-- 우측: 2단계 편집 워크플로우 -->
+      <div class="lg:col-span-7 space-y-6">
+        <!-- 01 · 대본 및 컷 구성 -->
+        <div class="studio-card p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
             <div>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">STEP 01 · CREATIVE & STORYBOARD</span>
-              <h2 class="text-base md:text-lg font-bold text-white mt-0.5">차종 · 연출 레이아웃 · AI 대본 구성</h2>
+              <span class="font-mono text-[12px] text-[#85858b]">01 · 대본 · 시간 · 사운드(TTS/BGM) 구성</span>
+              <h2 class="text-[16px] font-medium text-[#ededed] mt-1">차종 프리셋 및 생성형 씬 디렉터</h2>
             </div>
-            <select id="presetSelect" onchange="applyPreset(this.value)" class="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-900/90 border border-white/15 text-white cursor-pointer">
+            <select id="presetSelect" onchange="applyPreset(this.value)" class="studio-input w-full sm:w-auto h-9 px-3 text-[13px] cursor-pointer">
               <option value="sorento">2026 쏘렌토 하이브리드 (할인 480만원)</option>
+              <option value="grandeur">2026 디 올 뉴 그랜저 하이브리드 (할인 450만원)</option>
               <option value="santafe">디 올 뉴 싼타페 하이브리드 (할인 420만원)</option>
               <option value="carnival">더 뉴 카니발 하이브리드 9인승 (할인 390만원)</option>
               <option value="gv80">제네시스 GV80 페이스리프트 (할인 620만원)</option>
@@ -209,383 +265,435 @@
             </select>
           </div>
 
-          <!-- ★ 고정 템플릿 4종 제거 → AI 씬 디렉터 & 무한 생성형 레이아웃 엔진 -->
-          <div class="glass-sub p-4 rounded-xl space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-xs font-bold text-white">AI 씬 디렉터 & 무한 레이아웃 생성기</span>
-                <span id="aiEngineStatusBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-medium">중앙 AI 디렉터 활성</span>
-                <span id="activeSceneRecipeBadge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 text-[11px] font-semibold">테마: 로얄골드 · 4컷 동적 조합</span>
+          <!-- ★ 영상 시간 · AI 성우(TTS) · BGM 스튜디오 컨트롤 바 -->
+          <div class="studio-sub p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="text-[13px] font-medium text-[#ededed]">영상 시간 · AI 성우(TTS) · BGM 설정</span>
+                <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#a1a1a6]">사운드 대기중 (클릭 시 재생)</span>
               </div>
-              <button type="button" onclick="proceduralRestyleCurrentScene()" class="px-3 py-1 rounded-lg text-[11px] font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15 transition cursor-pointer">
-                🎨 화면 디자인·색감·위젯 즉시 재조립 (무료)
+              <button type="button" onclick="triggerFullAudioPreview()" class="btn-primary h-8 px-3 text-[12px] cursor-pointer">
+                사운드 켜고 처음부터 재생 (BGM + 성우)
               </button>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-2">
-              <input id="aiPromptInput" type="text" placeholder="예: 30대 워킹맘 그랜저 하브 취소차 1대 선점, 내일 부산 캐리어 탁송 출발" class="flex-1 px-3.5 py-2.5 rounded-xl text-xs bg-slate-900/90 border border-white/10 text-white placeholder:text-slate-500" />
-              <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="px-4 py-2.5 rounded-xl text-xs font-bold btn-primary-glow text-white transition cursor-pointer shrink-0">
-                ✨ AI 새 연출 · 레이아웃 · 대본 생성
-              </button>
-            </div>
-            <p id="aiGenNotice" class="hidden text-xs font-medium text-indigo-300"></p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">총 영상 길이 (초)</label>
+                <div class="flex gap-1.5">
+                  <select id="durationSelect" onchange="setVideoTotalDuration(this.value)" class="studio-input flex-1 h-9 px-2.5 text-[12px] font-mono cursor-pointer">
+                    <option value="8">8초 (초단기 릴스 · 컷당 1.25초)</option>
+                    <option value="12" selected>12초 (표준 숏폼 · 컷당 2.0초)</option>
+                    <option value="15">15초 (인스타 추천 · 컷당 2.75초)</option>
+                    <option value="20">20초 (상세 비교 · 컷당 4.0초)</option>
+                    <option value="30">30초 (풀 스토리 · 컷당 6.25초)</option>
+                  </select>
+                  <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-16 h-9 px-2 text-[12px] font-mono text-center" title="직접 초 입력" />
+                </div>
+              </div>
 
-            <!-- 현재 1~4컷에 조립된 동적 위젯 요약 칩 & 자막 에디터 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="font-semibold text-slate-300">CUT 1 (0~2초)</span>
-                  <span id="cutWidgetBadge0" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">속보 티커</span>
-                </div>
-                <input id="cutSub0" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
+              <div>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">배경음악 (BGM 비트)</label>
+                <select id="bgmStyleSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
+                  <option value="showroom" selected>트렌디 쇼룸 하우스 (120 BPM)</option>
+                  <option value="luxury">럭셔리 라운지 패드 (95 BPM)</option>
+                  <option value="urban">어반 트랩 비트 (140 BPM)</option>
+                  <option value="bright">브라이트 모던 팝 (124 BPM)</option>
+                  <option value="off">BGM 끄기</option>
+                </select>
               </div>
-              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="font-semibold text-slate-300">CUT 2 (2~4초)</span>
-                  <span id="cutWidgetBadge1" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">카톡 대화</span>
-                </div>
-                <input id="cutSub1" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
-              </div>
-              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="font-semibold text-slate-300">CUT 3 (4~6초)</span>
-                  <span id="cutWidgetBadge2" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">할인 영수증</span>
-                </div>
-                <input id="cutSub2" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
-              </div>
-              <div class="p-2.5 rounded-lg bg-slate-950/60 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="font-semibold text-slate-300">CUT 4 (6~8초)</span>
-                  <span id="cutWidgetBadge3" class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-medium">댓글 DM 유도</span>
-                </div>
-                <input id="cutSub3" type="text" oninput="updateCustomCutCaptions()" class="w-full px-2.5 py-1.5 rounded text-xs bg-slate-900/90 border border-white/10 text-white" />
+
+              <div>
+                <label class="block text-[12px] text-[#a1a1a6] mb-1">AI 성우 내레이션 (TTS)</label>
+                <select id="ttsVoiceSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
+                  <option value="female" selected>여성 아나운서 성우 (또렷·표준)</option>
+                  <option value="male">남성 카마스터 성우 (차분·신뢰)</option>
+                  <option value="energetic">특판 쇼호스트 성우 (빠른 1.2x)</option>
+                  <option value="off">성우 내레이션 끄기</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <!-- 모바일 원터치 사진 업로드 버튼 2개 -->
+          <!-- 생성형 씬 디렉터 & 레이아웃 엔진 -->
+          <div class="studio-sub p-4 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[13px] font-medium text-[#ededed]">생성형 씬 디렉터</span>
+                <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
+                </span>
+                <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 동적 조합</span>
+              </div>
+              <button type="button" onclick="proceduralRestyleCurrentScene()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                화면 구도 · 테마 재조립
+              </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="aiPromptInput" type="text" placeholder="예: 30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리" class="studio-input flex-1 h-9 px-3 text-[13px]" />
+              <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">
+                AI 대본 · 성우 음성 · 씬 구도 생성
+              </button>
+            </div>
+            <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
+
+            <!-- 1~4컷 동적 위젯 요약 및 화면 자막 + 성우 TTS 대본 입력 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+                <div class="flex items-center justify-between text-[12px]">
+                  <span id="cutTimeLabel0" class="font-mono text-[#a1a1a6]">Cut 1 · 0.0~2.0s</span>
+                  <span id="cutWidgetBadge0" class="font-mono text-[11px] text-[#85858b]">속보 티커</span>
+                </div>
+                <input id="cutSub0" type="text" oninput="updateCustomCutCaptions()" placeholder="1컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+                <input id="cutTts0" type="text" oninput="updateCustomCutCaptions()" placeholder="1컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+              </div>
+              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+                <div class="flex items-center justify-between text-[12px]">
+                  <span id="cutTimeLabel1" class="font-mono text-[#a1a1a6]">Cut 2 · 2.0~4.0s</span>
+                  <span id="cutWidgetBadge1" class="font-mono text-[11px] text-[#85858b]">카톡 대화</span>
+                </div>
+                <input id="cutSub1" type="text" oninput="updateCustomCutCaptions()" placeholder="2컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+                <input id="cutTts1" type="text" oninput="updateCustomCutCaptions()" placeholder="2컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+              </div>
+              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+                <div class="flex items-center justify-between text-[12px]">
+                  <span id="cutTimeLabel2" class="font-mono text-[#a1a1a6]">Cut 3 · 4.0~6.0s</span>
+                  <span id="cutWidgetBadge2" class="font-mono text-[11px] text-[#85858b]">할인 영수증</span>
+                </div>
+                <input id="cutSub2" type="text" oninput="updateCustomCutCaptions()" placeholder="3컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+                <input id="cutTts2" type="text" oninput="updateCustomCutCaptions()" placeholder="3컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+              </div>
+              <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+                <div class="flex items-center justify-between text-[12px]">
+                  <span id="cutTimeLabel3" class="font-mono text-[#a1a1a6]">Cut 4 · 6.0~8.0s</span>
+                  <span id="cutWidgetBadge3" class="font-mono text-[11px] text-[#85858b]">댓글 DM 유도</span>
+                </div>
+                <input id="cutSub3" type="text" oninput="updateCustomCutCaptions()" placeholder="4컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+                <input id="cutTts3" type="text" oninput="updateCustomCutCaptions()" placeholder="4컷 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 사진 업로드 영역 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label for="multiPhotoInput" class="flex flex-col items-center justify-center p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-dashed border-white/20 hover:border-indigo-400/60 cursor-pointer text-center transition">
-              <span class="text-xs md:text-sm font-bold text-white">차량 · 출고 사진 업로드 (1~4장)</span>
-              <span class="text-[11px] text-slate-400 mt-1">휴대폰 앨범에서 선택 시 자동 줌인 · 패닝 모션 적용</span>
+            <label for="multiPhotoInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
+              <span class="text-[13px] font-medium text-[#ededed]">차량 · 출고 사진 업로드 (1~4장)</span>
+              <span class="text-[12px] text-[#85858b] mt-1">선택 시 0~8초 구간 줌인 · 패닝 모션 자동 적용</span>
               <input type="file" id="multiPhotoInput" accept="image/*" multiple onchange="handleMultiPhotoUpload(event)" class="hidden" />
             </label>
-            <label for="dealerFaceQuickInput" class="flex flex-col items-center justify-center p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-dashed border-white/20 hover:border-indigo-400/60 cursor-pointer text-center transition">
-              <span class="text-xs md:text-sm font-bold text-white">카마스터 프로필 사진 변경</span>
-              <span class="text-[11px] text-slate-400 mt-1">하단 프로필 바 & 8~12초 엔딩 명함에 즉시 반영</span>
+            <label for="dealerFaceQuickInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
+              <span class="text-[13px] font-medium text-[#ededed]">카마스터 프로필 사진 변경</span>
+              <span class="text-[12px] text-[#85858b] mt-1">하단 프로필 바 및 8~12초 엔딩 명함에 반영</span>
               <input type="file" id="dealerFaceQuickInput" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="hidden" />
             </label>
           </div>
 
           <!-- 4컷 썸네일 & 중복 방지 변주 컨트롤 -->
-          <div class="glass-sub p-4 rounded-xl space-y-3">
+          <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-white/10 text-slate-200 text-[11px] font-semibold">중복 방지 변주</span>
-                <span class="text-xs font-medium text-slate-300">동일 지점 딜러 간 영상 중복을 막기 위해 컷 순서와 카메라 모션을 조합합니다</span>
+              <div>
+                <span class="text-[13px] font-medium text-[#ededed]">지점 내 중복 방지 변주</span>
+                <p class="text-[12px] text-[#85858b] mt-0.5">동일 지점 딜러 간 영상 중복을 피하기 위해 컷 순서와 카메라 궤적을 분리합니다</p>
               </div>
-              <div class="flex items-center gap-1.5">
-                <button type="button" onclick="randomizeCurrentDealerVariation()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition cursor-pointer">
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   순서 · 구도 재배치
                 </button>
-                <button type="button" onclick="resetToAiPhotos()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 cursor-pointer">
+                <button type="button" onclick="resetToAiPhotos()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   기본 화보 복원
                 </button>
               </div>
             </div>
-            <div id="dealerVariationSummary" class="text-xs text-slate-400 bg-slate-950/60 px-3.5 py-2.5 rounded-lg border border-white/5">
-              변주 레시피 로딩 중...
+            <div id="dealerVariationSummary" class="text-[12px] text-[#a1a1a6] bg-[#141415] px-3.5 py-2.5 rounded-[8px] border border-[var(--border)]">
+              변주 레시피 로딩 중
             </div>
             <div id="aiPhotoThumbnails" class="grid grid-cols-4 gap-2 pt-0.5"></div>
-            <p id="photoUploadStatus" class="text-[11px] text-slate-400">기본 고화질 실사 화보 4장이 적용되어 있습니다. 상단 버튼으로 직접 촬영한 사진을 올릴 수 있습니다.</p>
+            <p id="photoUploadStatus" class="text-[12px] text-[#85858b]">기본 실사 화보 4장이 적용되어 있습니다</p>
             <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="hidden" />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">차종 타이틀</label>
-              <input id="inputVehicle" type="text" value="2026 쏘렌토 하이브리드" oninput="updateCampaignFromInputs()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 타이틀</label>
+              <input id="inputVehicle" type="text" value="2026 쏘렌토 하이브리드" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">최대 할인 · 혜택 금액 (만원)</label>
-              <input id="inputDiscountNum" type="number" value="480" oninput="updateCampaignFromInputs()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">최대 할인 금액 (만원)</label>
+              <input id="inputDiscountNum" type="number" value="480" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">월 납입금 · 출고 핵심 조건</label>
-              <input id="inputDiscount" type="text" value="월 46만원대 · 3일 즉시출고" oninput="updateCampaignFromInputs()" class="w-full px-3 py-2 rounded-lg text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">월 납입금 · 출고 조건</label>
+              <input id="inputDiscount" type="text" value="월 46만원대 · 3일 즉시출고" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
           </div>
         </div>
 
-        <!-- STEP 2: 내 카마스터 명함 정보 & 정품 구독 DRM & 멀티 SNS 업로드 -->
-        <div class="glass-panel rounded-2xl p-4 md:p-6 space-y-5">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
+        <!-- 02 · 명함 정보, 구독 DRM, 내 SNS 계정 연결 -->
+        <div class="studio-card p-6 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-4">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-400">STEP 02 · DEALER IDENTITY & DRM</span>
-                <span id="wasmEngineBadge" class="px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-300 border border-orange-500/30 text-[10px] font-bold">🦀 Rust Wasm Core v1.0 가동중</span>
+                <span class="font-mono text-[12px] text-[#85858b]">02 · 명함 정보 및 구독 인증</span>
+                <span id="wasmEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px]">Rust Wasm v1.0</span>
               </div>
-              <h2 id="previewDealerHeader" class="text-base md:text-lg font-bold text-white mt-0.5">
+              <h2 id="previewDealerHeader" class="text-[16px] font-medium text-[#ededed] mt-1">
                 담당 카마스터 명함 정보 및 멀티 SNS 발행
               </h2>
-              <span class="hidden text-xs text-slate-400"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
+              <span class="hidden text-xs text-[#85858b]"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
             </div>
             <div id="previewStatusBadge"></div>
           </div>
 
-          <!-- ★ Rust Wasm 정품 구독 라이선스 & 전화번호 박제(계정 공유/도용 방지) 보호 카드 -->
-          <div class="glass-sub p-4 rounded-xl border border-indigo-500/25 space-y-3">
+          <!-- Rust Wasm 정품 구독 라이선스 & 전화번호 바인딩 보호 카드 -->
+          <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-white">🛡️ 구독 라이선스 & 전화번호 도용 방지 (Rust Wasm DRM)</span>
-              </div>
-              <span id="drmStatusBadge" class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                🟢 정품 구독 인증됨 (워터마크 제거됨)
+              <span class="text-[13px] font-medium text-[#ededed]">구독 라이선스 및 전화번호 바인딩 검증 (Rust Wasm DRM)</span>
+              <span id="drmStatusBadge" class="tag-chip px-2.5 py-1 text-[12px] font-medium text-[#4cc38a]">
+                정품 구독 인증됨
               </span>
             </div>
 
-            <p class="text-[11px] text-slate-400 leading-relaxed">
-              구독권 1개로 지점 동료 딜러들이 전화번호만 바꿔서 돌려쓰는 행위를 막기 위해, <strong>Rust WebAssembly(.wasm) 보안 코어</strong>가 등록된 딜러 연락처(<code id="drmBoundPhoneText" class="text-indigo-300 font-bold">010-4821-9032</code>)와 정품 키를 실시간 대조합니다. 미구독 또는 번호 변경 시 영상 중앙에 워터마크가 박히며 추출이 차단됩니다.
+            <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
+              구독권 1개로 지점 동료 딜러들이 연락처만 바꿔 돌려쓰는 행위를 차단하기 위해, Rust WebAssembly 보안 코어가 등록 연락처(<code id="drmBoundPhoneText" class="font-mono text-[#ededed]">010-4821-9032</code>)와 정품 키를 대조합니다. 미구독 또는 번호 변경 시 영상 중앙에 워터마크가 합성되며 추출이 잠깁니다.
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <div>
-                <label class="block text-[10px] font-semibold text-slate-400 mb-1">딜러 전용 정품 라이선스 키</label>
-                <input id="dlrLicenseKeyInput" type="text" oninput="onDealerLicenseInput()" placeholder="AR-XXXXXX" class="w-full px-3 py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-900/90 border border-white/15 text-amber-300" />
+                <label class="block text-[12px] text-[#85858b] mb-1">딜러 정품 라이선스 키</label>
+                <input id="dlrLicenseKeyInput" type="text" oninput="onDealerLicenseInput()" placeholder="AR-XXXXXX" class="studio-input w-full h-9 px-3 text-[12px] font-mono" />
               </div>
               <div>
-                <label class="block text-[10px] font-semibold text-slate-400 mb-1">바인딩된 정품 연락처 (변경 시 잠금)</label>
-                <input id="dlrLicensedPhoneView" type="text" readonly class="w-full px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-950/70 border border-white/10 text-slate-300" />
+                <label class="block text-[12px] text-[#85858b] mb-1">바인딩된 정품 연락처</label>
+                <input id="dlrLicensedPhoneView" type="text" readonly class="studio-input w-full h-9 px-3 text-[12px] font-mono opacity-75" />
               </div>
               <div>
-                <label class="block text-[10px] font-semibold text-slate-400 mb-1">구독 만료일</label>
-                <input id="dlrExpiryView" type="text" readonly value="2026-12-31 (자동갱신)" class="w-full px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-950/70 border border-white/10 text-slate-300" />
+                <label class="block text-[12px] text-[#85858b] mb-1">구독 만료일</label>
+                <input id="dlrExpiryView" type="text" readonly value="2026-12-31" class="studio-input w-full h-9 px-3 text-[12px] font-mono opacity-75" />
               </div>
             </div>
 
-            <!-- 대표님 확인용 1클릭 구독/차단 시뮬레이터 -->
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-white/10">
-              <span class="text-[11px] font-semibold text-slate-400">🧪 대표님 테스트용 구독 차단 시뮬레이션:</span>
+            <!-- 대표님 테스트용 구독 상태 전환 -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border)]">
+              <span class="text-[12px] text-[#85858b]">구독 차단 시뮬레이션</span>
               <div class="flex flex-wrap gap-1.5">
-                <button type="button" onclick="simulateDrmMode('PRO')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 cursor-pointer transition">
-                  🟢 정품 구독 정상
+                <button type="button" onclick="simulateDrmMode('PRO')" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">
+                  정품 구독 정상
                 </button>
-                <button type="button" onclick="simulateDrmMode('TRIAL')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 cursor-pointer transition">
-                  🟡 미결제·만료 딜러 차단해보기
+                <button type="button" onclick="simulateDrmMode('TRIAL')" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">
+                  미결제 · 만료 상태 테스트
                 </button>
-                <button type="button" onclick="simulateDrmMode('TAMPER')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 cursor-pointer transition">
-                  🔴 타 딜러 번호 돌려쓰기 차단해보기
+                <button type="button" onclick="simulateDrmMode('TAMPER')" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">
+                  타 딜러 번호 도용 테스트
                 </button>
               </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">이름 / 직함</label>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">이름 및 직함</label>
               <div class="flex gap-2">
-                <input id="dlrInputName" type="text" placeholder="예: 김민준" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
-                <input id="dlrInputTitle" type="text" placeholder="예: 수석 카마스터" oninput="updateCurrentDealerFromPreview()" class="w-1/2 px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
+                <input id="dlrInputName" type="text" placeholder="김민준" oninput="updateCurrentDealerFromPreview()" class="studio-input w-1/2 h-9 px-3 text-[13px]" />
+                <input id="dlrInputTitle" type="text" placeholder="수석 카마스터" oninput="updateCurrentDealerFromPreview()" class="studio-input w-1/2 h-9 px-3 text-[13px]" />
               </div>
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">상담 직통 연락처 (등록 번호와 다르면 Wasm DRM이 즉시 잠금)</label>
-              <input id="dlrInputPhone" type="tel" placeholder="예: 010-4821-9032" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">상담 직통 연락처 (등록 번호와 다르면 자동 잠금)</label>
+              <input id="dlrInputPhone" type="tel" placeholder="010-4821-9032" oninput="updateCurrentDealerFromPreview()" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">소속 전시장 · 대리점명</label>
-              <input id="dlrInputBranch" type="text" placeholder="예: 현대·기아 강남오토스퀘어" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">소속 전시장 · 대리점명</label>
+              <input id="dlrInputBranch" type="text" placeholder="현대·기아 강남오토스퀘어" oninput="updateCurrentDealerFromPreview()" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">프로필 사진 파일 선택</label>
-              <input type="file" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="w-full text-xs text-slate-400 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white cursor-pointer" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">프로필 사진 파일 선택</label>
+              <input type="file" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="w-full text-[12px] text-[#85858b] file:mr-2.5 file:h-8 file:px-3 file:rounded-[6px] file:border file:border-[var(--border)] file:text-[12px] file:font-medium file:bg-[#232325] file:text-[#ededed] cursor-pointer" />
             </div>
             <div class="md:col-span-2">
-              <label class="block text-[11px] font-semibold text-slate-400 mb-1">출고 고객 전담 혜택 문구</label>
-              <input id="dlrInputPromo" type="text" oninput="updateCurrentDealerFromPreview()" class="w-full px-3 py-2 rounded-xl text-xs bg-slate-900/80 border border-white/10 text-white" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">출고 고객 전담 혜택 문구</label>
+              <input id="dlrInputPromo" type="text" oninput="updateCurrentDealerFromPreview()" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
           </div>
 
-          <!-- ★ STEP 3: 내 SNS 계정 연결 관리 & 동시 발행 채널 선택 -->
-          <div class="glass-sub p-4 rounded-xl space-y-3.5">
+          <!-- 내 SNS 계정 연결 관리 & 동시 발행 채널 선택 -->
+          <div class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <label class="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span>🔗 내 SNS 계정 연결 및 동시 발행 채널</span>
+                <label class="text-[13px] font-medium text-[#ededed]">
+                  내 SNS 계정 연결 및 동시 발행 채널
                 </label>
-                <p class="text-[11px] text-slate-400 mt-0.5">각 딜러 본인의 인스타그램·유튜브·틱톡·페이스북 계정을 연결해 두면 원클릭으로 발행됩니다.</p>
+                <p class="text-[12px] text-[#85858b] mt-0.5">딜러 본인의 인스타그램·유튜브·틱톡·페이스북 계정을 연결해 두면 한 번에 발행됩니다</p>
               </div>
-              <button type="button" onclick="openSnsConnectModal()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 cursor-pointer transition">
-                ⚙️ 내 SNS 계정 연결 · 변경
+              <button type="button" onclick="openSnsConnectModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                내 SNS 계정 연결 · 변경
               </button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[13px]">
+              <div class="flex items-center justify-between p-3 rounded-[8px] border border-[var(--border)] bg-[#141415]">
                 <label class="flex items-center gap-2.5 cursor-pointer">
-                  <input id="snsCheckIg" type="checkbox" checked class="accent-indigo-500" />
+                  <input id="snsCheckIg" type="checkbox" checked class="accent-[#ededed]" />
                   <div>
-                    <div class="font-bold text-white">Instagram Reels</div>
-                    <div id="snsHandle_ig" class="text-[11px] text-emerald-400 font-mono">@hyundai_minjun_official</div>
+                    <div class="font-medium text-[#ededed]">Instagram Reels</div>
+                    <div id="snsHandle_ig" class="text-[12px] text-[#a1a1a6] font-mono">@hyundai_minjun_official</div>
                   </div>
                 </label>
-                <button type="button" onclick="openSnsConnectModal('ig')" id="snsStatusBtn_ig" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
-                  🟢 연결됨
+                <button type="button" onclick="openSnsConnectModal('ig')" id="snsStatusBtn_ig" class="tag-chip px-2 py-1 text-[11px] cursor-pointer">
+                  연결됨
                 </button>
               </div>
 
-              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+              <div class="flex items-center justify-between p-3 rounded-[8px] border border-[var(--border)] bg-[#141415]">
                 <label class="flex items-center gap-2.5 cursor-pointer">
-                  <input id="snsCheckYt" type="checkbox" checked class="accent-indigo-500" />
+                  <input id="snsCheckYt" type="checkbox" checked class="accent-[#ededed]" />
                   <div>
-                    <div class="font-bold text-white">YouTube Shorts</div>
-                    <div id="snsHandle_yt" class="text-[11px] text-emerald-400 font-mono">@minjun_car_tv</div>
+                    <div class="font-medium text-[#ededed]">YouTube Shorts</div>
+                    <div id="snsHandle_yt" class="text-[12px] text-[#a1a1a6] font-mono">@minjun_car_tv</div>
                   </div>
                 </label>
-                <button type="button" onclick="openSnsConnectModal('yt')" id="snsStatusBtn_yt" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
-                  🟢 연결됨
+                <button type="button" onclick="openSnsConnectModal('yt')" id="snsStatusBtn_yt" class="tag-chip px-2 py-1 text-[11px] cursor-pointer">
+                  연결됨
                 </button>
               </div>
 
-              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+              <div class="flex items-center justify-between p-3 rounded-[8px] border border-[var(--border)] bg-[#141415]">
                 <label class="flex items-center gap-2.5 cursor-pointer">
-                  <input id="snsCheckTt" type="checkbox" checked class="accent-indigo-500" />
+                  <input id="snsCheckTt" type="checkbox" checked class="accent-[#ededed]" />
                   <div>
-                    <div class="font-bold text-white">TikTok</div>
-                    <div id="snsHandle_tt" class="text-[11px] text-emerald-400 font-mono">@minjun_autoteam</div>
+                    <div class="font-medium text-[#ededed]">TikTok</div>
+                    <div id="snsHandle_tt" class="text-[12px] text-[#a1a1a6] font-mono">@minjun_autoteam</div>
                   </div>
                 </label>
-                <button type="button" onclick="openSnsConnectModal('tt')" id="snsStatusBtn_tt" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
-                  🟢 연결됨
+                <button type="button" onclick="openSnsConnectModal('tt')" id="snsStatusBtn_tt" class="tag-chip px-2 py-1 text-[11px] cursor-pointer">
+                  연결됨
                 </button>
               </div>
 
-              <div class="flex items-center justify-between p-3 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition">
+              <div class="flex items-center justify-between p-3 rounded-[8px] border border-[var(--border)] bg-[#141415]">
                 <label class="flex items-center gap-2.5 cursor-pointer">
-                  <input id="snsCheckFb" type="checkbox" checked class="accent-indigo-500" />
+                  <input id="snsCheckFb" type="checkbox" checked class="accent-[#ededed]" />
                   <div>
-                    <div class="font-bold text-white">Facebook Reels</div>
-                    <div id="snsHandle_fb" class="text-[11px] text-emerald-400 font-mono">강남오토스퀘어 김민준 페이지</div>
+                    <div class="font-medium text-[#ededed]">Facebook Reels</div>
+                    <div id="snsHandle_fb" class="text-[12px] text-[#a1a1a6] font-mono">강남오토스퀘어 김민준 페이지</div>
                   </div>
                 </label>
-                <button type="button" onclick="openSnsConnectModal('fb')" id="snsStatusBtn_fb" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer">
-                  🟢 연결됨
+                <button type="button" onclick="openSnsConnectModal('fb')" id="snsStatusBtn_fb" class="tag-chip px-2 py-1 text-[11px] cursor-pointer">
+                  연결됨
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- 자동 완성된 멀티채널 본문(캡션) & 원터치 복사 -->
+          <!-- SNS 본문 캡션 & 해시태그 -->
           <div class="space-y-2">
             <div class="flex items-center justify-between flex-wrap gap-2">
-              <label class="text-xs font-bold text-slate-200">SNS 본문 캡션 & 해시태그</label>
+              <label class="text-[13px] font-medium text-[#ededed]">SNS 본문 캡션 및 해시태그</label>
               <div class="flex items-center gap-2">
-                <span id="igAccountBadge" class="hidden sm:inline text-xs text-slate-400"></span>
-                <button type="button" onclick="copyDealerCaption()" id="copyCaptionBtn" class="px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 cursor-pointer transition">
+                <span id="igAccountBadge" class="hidden sm:inline text-[12px] font-mono text-[#85858b]"></span>
+                <button type="button" onclick="copyDealerCaption()" id="copyCaptionBtn" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   본문 · 해시태그 복사
                 </button>
               </div>
             </div>
-            <textarea id="dlrCaptionTextarea" rows="4" class="w-full p-3 rounded-xl text-xs leading-relaxed bg-slate-900/80 border border-white/10 text-slate-200"></textarea>
+            <textarea id="dlrCaptionTextarea" rows="4" class="studio-input w-full p-3 text-[13px] leading-relaxed"></textarea>
           </div>
 
-          <!-- 모바일 하단 핵심 버튼 2개 -->
+          <!-- 하단 핵심 액션 2개 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <button onclick="exportSynthesizedVideo()" class="py-3.5 px-4 rounded-xl text-xs md:text-sm font-bold btn-primary-glow text-white transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>12초 영상 파일 저장 · 모바일 공유</span>
+            <button onclick="exportSynthesizedVideo()" class="btn-primary h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
+              <span>12초 영상 파일 저장 및 공유</span>
             </button>
-            <button onclick="approveAndPublishToInstagram()" class="py-3.5 px-4 rounded-xl text-xs md:text-sm font-bold bg-white/10 hover:bg-white/15 border border-white/15 text-white transition flex items-center justify-center gap-2 cursor-pointer">
+            <button onclick="approveAndPublishToInstagram()" class="btn-secondary h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
               <span>연동된 4대 SNS 자동 발행 실행</span>
             </button>
           </div>
 
           <!-- 실시간 업로드 로그 -->
-          <div id="publishLogBox" class="hidden p-4 rounded-xl bg-slate-950/90 border border-white/10 space-y-1.5 text-xs">
-            <div class="font-bold text-white flex items-center justify-between">
-              <span>멀티 SNS 동시 발행 파이프라인 로그</span>
-              <span id="publishStepStatus" class="text-indigo-400 font-semibold">렌더링 중...</span>
+          <div id="publishLogBox" class="hidden p-4 rounded-[12px] bg-[#0f0f10] border border-[var(--border)] space-y-1.5 text-[12px]">
+            <div class="font-medium text-[#ededed] flex items-center justify-between">
+              <span>멀티 SNS 발행 파이프라인 로그</span>
+              <span id="publishStepStatus" class="text-[#a1a1a6] font-mono">렌더링 중</span>
             </div>
-            <div id="publishLogLines" class="space-y-1 font-mono text-xs text-slate-400"></div>
+            <div id="publishLogLines" class="space-y-1 font-mono text-[12px] text-[#85858b]"></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- 탭 2: 구독 딜러 명단 & 상세 마스터 설정 -->
+    <!-- 탭 2: 구독 딜러 명단 & 중앙 AI 설정 -->
     <!-- ========================================================================= -->
-    <section id="viewAdmin" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-5">
-      <div class="lg:col-span-5 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
-        <h2 class="text-base font-bold text-[var(--foreground)]">🎯 주간 프로모션 문구 상세 편집</h2>
+    <section id="viewAdmin" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-5 studio-card p-6 space-y-5">
+        <h2 class="text-[16px] font-medium text-[#ededed]">주간 프로모션 문구 상세 편집</h2>
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">상단 키네틱 훅(Hook) 문구</label>
-            <input id="inputHook" type="text" value="이번 달 계약 안 하면 손해! 11월 비밀 조건" oninput="updateCampaignFromInputs()" class="w-full px-3 py-2 rounded-lg text-sm bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+            <label class="block text-[12px] text-[#a1a1a6] mb-1.5">상단 훅 문구</label>
+            <input id="inputHook" type="text" value="이번 달 계약 안 하면 손해, 11월 비밀 조건" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">3~8초 구간 순차 등장 혜택 카드 (줄바꿈 구분)</label>
-            <textarea id="inputBullets" rows="4" oninput="updateCampaignFromInputs()" class="w-full px-3 py-2 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]">✔ 대기 6개월 → 선점 재고 4대 즉시출고
+            <label class="block text-[12px] text-[#a1a1a6] mb-1.5">3~8초 구간 순차 등장 혜택 카드 (줄바꿈 구분)</label>
+            <textarea id="inputBullets" rows="4" oninput="updateCampaignFromInputs()" class="studio-input w-full p-3 text-[13px]">✔ 대기 6개월 → 선점 재고 4대 즉시출고
 ✔ 최대 할인 + 저금리 특별 금융 프로모션
 ✔ 프리미엄 썬팅·블랙박스·유리막 풀패키지 무상</textarea>
           </div>
-          <button onclick="batchGenerateToStaging()" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold bg-[var(--primary)] text-[var(--primary-foreground)]">
-            🚀 전 딜러 임시서버 검수 링크 일괄 갱신
+          <button onclick="batchGenerateToStaging()" class="btn-primary w-full h-10 px-4 text-[13px] cursor-pointer">
+            전 딜러 검수 링크 일괄 갱신
           </button>
         </div>
 
-        <!-- ★ 방식 A: 대표님(관리자) 전용 중앙 AI 엔진 설정 패널 -->
-        <div class="pt-4 border-t border-[var(--border)] space-y-3">
+        <!-- 대표님 전용 중앙 AI 엔진 설정 패널 -->
+        <div class="pt-5 border-t border-[var(--border)] space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-1">
-            <h3 class="text-sm font-bold text-amber-400">🔐 방식 A · 대표님(관리자) 중앙 AI 엔진 설정</h3>
-            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[11px] font-bold">딜러 무로그인 즉시 사용</span>
+            <h3 class="text-[14px] font-medium text-[#ededed]">방식 A · 중앙 AI 엔진 설정</h3>
+            <span class="tag-chip px-2 py-0.5 text-[11px]">딜러 로그인 불필요</span>
           </div>
-          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
-            딜러들은 아무 로그인 없이 한 줄만 입력하면 됩니다. 현재 <strong>기본 클라우드 LLM(GPT-4o-mini)</strong>이 즉시 작동 중이며, 대표님의 정식 유료 계정을 연결하려면 아래에 키를 저장하거나 Vercel 환경변수(<code>OPENAI_API_KEY</code> 또는 <code>GEMINI_API_KEY</code>)에 등록하세요.
+          <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
+            딜러들은 별도 로그인 없이 한 줄만 입력하면 됩니다. 기본 클라우드 LLM이 즉시 작동하며, 전용 유료 계정을 연결하려면 아래에 API 키를 저장하세요.
           </p>
-          <div class="space-y-2">
+          <div class="space-y-2.5">
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">OpenAI API Key (선택 · 입력 시 GPT-4o-mini 최우선 사용)</label>
-              <input id="adminOpenAiKeyInput" type="password" placeholder="sk-proj-..." oninput="saveAdminAiKeys()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-mono" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1">OpenAI API Key (선택 · GPT-4o-mini)</label>
+              <input id="adminOpenAiKeyInput" type="password" placeholder="sk-proj-..." oninput="saveAdminAiKeys()" class="studio-input w-full h-9 px-3 text-[12px] font-mono" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">Google Gemini API Key (선택 · 입력 시 Gemini 2.0 Flash 사용)</label>
-              <input id="adminGeminiKeyInput" type="password" placeholder="AIzaSy..." oninput="saveAdminAiKeys()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-mono" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1">Google Gemini API Key (선택 · Gemini 2.0 Flash)</label>
+              <input id="adminGeminiKeyInput" type="password" placeholder="AIzaSy..." oninput="saveAdminAiKeys()" class="studio-input w-full h-9 px-3 text-[12px] font-mono" />
             </div>
-            <p id="adminAiKeyStatus" class="text-[11px] text-emerald-400 font-semibold">✅ 현재 상태: AutoReels 기본 클라우드 LLM 엔진 활성 (키 입력 시 전용 계정으로 즉시 전환)</p>
+            <p id="adminAiKeyStatus" class="text-[12px] text-[#4cc38a]">현재 상태: 기본 클라우드 LLM 엔진 활성</p>
           </div>
         </div>
       </div>
 
-      <div class="lg:col-span-7 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
+      <div class="lg:col-span-7 studio-card p-6 space-y-4">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-          <h2 class="text-base font-bold text-[var(--foreground)]">👥 주 5만 원 구독 딜러 리스트</h2>
-          <span id="statSummaryBadge" class="px-2.5 py-1 rounded-md bg-[var(--secondary)] text-[var(--secondary-foreground)] text-xs font-semibold"></span>
+          <h2 class="text-[16px] font-medium text-[#ededed]">구독 딜러 명단</h2>
+          <span id="statSummaryBadge" class="font-mono text-[12px] text-[#a1a1a6]"></span>
         </div>
         <div id="adminDealerList" class="space-y-3"></div>
       </div>
     </section>
 
     <!-- ========================================================================= -->
-    <!-- 탭 3: HyperFrames DOM & 시킹 렌더러 코드 뷰어 -->
+    <!-- 탭 3: 렌더링 엔진 규격 -->
     <!-- ========================================================================= -->
     <section id="viewTech" class="hidden space-y-4">
-      <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h2 class="text-base font-bold text-[var(--foreground)]">⚙️ HyperFrames 결정론적 타임라인(`window.__timelines`) & 렌더러 구조</h2>
-            <p class="text-xs text-[var(--muted-foreground)]">
-              커스텀 스킬(<code>hyperframes-dealer-reels</code>)과 렌더러 모듈(<code>hyperframes-renderer.js</code>)이 워크스페이스에 등록되었습니다.
-            </p>
-          </div>
+      <div class="studio-card p-6 space-y-4">
+        <div>
+          <h2 class="text-[16px] font-medium text-[#ededed]">HyperFrames 타임라인(`window.__timelines`) 및 Rust Wasm 렌더러 규격</h2>
+          <p class="text-[13px] text-[#85858b] mt-1">
+            결정론적 60fps 시킹 렌더러와 Rust WebAssembly 보안 코어(`autoreels_core.wasm`)가 연동되어 있습니다.
+          </p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-            <div class="text-xs font-bold text-[var(--foreground)]">1. HyperFrames HTML 클립 & `window.__timelines` 규격</div>
-            <pre id="hfCodeBlock" class="text-xs font-mono overflow-x-auto whitespace-pre-wrap text-[var(--muted-foreground)] leading-relaxed"></pre>
+          <div class="studio-sub p-4 space-y-2">
+            <div class="text-[13px] font-medium text-[#ededed]">1. HyperFrames HTML 클립 규격</div>
+            <pre id="hfCodeBlock" class="text-[12px] font-mono overflow-x-auto whitespace-pre-wrap text-[#85858b] leading-relaxed"></pre>
           </div>
-          <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] space-y-2">
-            <div class="text-xs font-bold text-[var(--foreground)]">2. 승인 시 실행되는 60fps Seeking Renderer + Instagram API</div>
-            <pre id="igApiCodeBlock" class="text-xs font-mono overflow-x-auto whitespace-pre-wrap text-[var(--muted-foreground)] leading-relaxed"></pre>
+          <div class="studio-sub p-4 space-y-2">
+            <div class="text-[13px] font-medium text-[#ededed]">2. 60fps Seeking Renderer 및 배포 파이프라인</div>
+            <pre id="igApiCodeBlock" class="text-[12px] font-mono overflow-x-auto whitespace-pre-wrap text-[#85858b] leading-relaxed"></pre>
           </div>
         </div>
       </div>
@@ -594,140 +702,139 @@
   </div>
 
   <!-- 신규 딜러 추가 모달 -->
-  <div id="newDealerModal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-5 space-y-4 shadow-xl">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
-        <h3 class="text-base font-bold text-[var(--foreground)]">+ 새 구독 딜러 등록 (주 5만 원 플랜)</h3>
-        <button onclick="closeNewDealerModal()" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]">✕ 닫기</button>
+  <div id="newDealerModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+    <div class="studio-card max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+        <h3 class="text-[15px] font-medium text-[#ededed]">새 구독 딜러 등록</h3>
+        <button onclick="closeNewDealerModal()" class="text-[12px] text-[#85858b] hover:text-[#ededed]">닫기</button>
       </div>
-      <div class="space-y-3 text-xs">
-        <div class="grid grid-cols-2 gap-2.5">
+      <div class="space-y-3 text-[13px]">
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block font-semibold text-[var(--muted-foreground)] mb-1">딜러 성함 *</label>
-            <input id="modalName" type="text" placeholder="예: 최준혁" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">딜러 성함</label>
+            <input id="modalName" type="text" placeholder="최준혁" class="studio-input w-full h-9 px-3 text-[13px]" />
           </div>
           <div>
-            <label class="block font-semibold text-[var(--muted-foreground)] mb-1">직함</label>
-            <input id="modalTitle" type="text" value="수석 카마스터" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
-          </div>
-        </div>
-        <div>
-          <label class="block font-semibold text-[var(--muted-foreground)] mb-1">소속 전시장 / 상사 *</label>
-          <input id="modalBranch" type="text" placeholder="예: 기아자동차 테헤란로지점" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
-        </div>
-        <div>
-          <label class="block font-semibold text-[var(--muted-foreground)] mb-1">상담 연락처 *</label>
-          <input id="modalPhone" type="text" placeholder="예: 010-1234-5678" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
-        </div>
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block font-semibold text-[var(--muted-foreground)] mb-1">인스타그램 아이디 *</label>
-            <input id="modalIgId" type="text" placeholder="@kia_junhyuk" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
-          </div>
-          <div>
-            <label class="block font-semibold text-[var(--muted-foreground)] mb-1">인스타 비밀번호 (AES-256)</label>
-            <input id="modalIgPw" type="password" placeholder="••••••••" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">직함</label>
+            <input id="modalTitle" type="text" value="수석 카마스터" class="studio-input w-full h-9 px-3 text-[13px]" />
           </div>
         </div>
         <div>
-          <label class="block font-semibold text-[var(--muted-foreground)] mb-1">딜러 출고 서비스 문구 (마지막 3D 명함에 삽입)</label>
-          <input id="modalPromo" type="text" value="계약 고객 전원 프리미엄 신차패키지 7종 무상 시공" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)]" />
+          <label class="block text-[12px] text-[#a1a1a6] mb-1">소속 전시장 · 대리점</label>
+          <input id="modalBranch" type="text" placeholder="기아자동차 테헤란로지점" class="studio-input w-full h-9 px-3 text-[13px]" />
+        </div>
+        <div>
+          <label class="block text-[12px] text-[#a1a1a6] mb-1">상담 연락처 (Rust Wasm DRM 바인딩 번호)</label>
+          <input id="modalPhone" type="text" placeholder="010-1234-5678" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">인스타그램 계정</label>
+            <input id="modalIgId" type="text" placeholder="@kia_junhyuk" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
+          </div>
+          <div>
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">연동 메모</label>
+            <input id="modalIgPw" type="password" placeholder="••••••••" class="studio-input w-full h-9 px-3 text-[13px]" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-[12px] text-[#a1a1a6] mb-1">출고 서비스 문구</label>
+          <input id="modalPromo" type="text" value="계약 고객 전원 프리미엄 신차패키지 7종 무상 시공" class="studio-input w-full h-9 px-3 text-[13px]" />
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeNewDealerModal()" class="px-4 py-2 rounded-lg text-xs font-semibold border border-[var(--border)] text-[var(--muted-foreground)]">취소</button>
-        <button onclick="submitNewDealer()" class="px-4 py-2 rounded-lg text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)]">등록 및 HyperFrames 생성</button>
+        <button onclick="closeNewDealerModal()" class="btn-secondary h-9 px-4 text-[12px]">취소</button>
+        <button onclick="submitNewDealer()" class="btn-primary h-9 px-4 text-[12px]">등록 완료</button>
       </div>
     </div>
   </div>
 
-  <!-- 추출된 실제 영상(.webm) 즉시 재생 & 모바일 공유/다운로드 모달 -->
-  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 overflow-y-auto">
-    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl max-w-md w-full p-4 md:p-5 space-y-3 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
+  <!-- 추출된 실제 영상 재생 & 공유/다운로드 모달 -->
+  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="studio-card max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
         <div>
-          <h3 class="text-base font-bold text-[var(--foreground)]">🎬 내 12초 숏츠·릴스 영상 완성!</h3>
-          <p id="exportedVideoMeta" class="text-xs text-emerald-400 font-medium">0~8초 차량 본편 + 8~12초 카마스터 명함 합성 완료</p>
+          <h3 class="text-[15px] font-medium text-[#ededed]">12초 프로모션 영상 추출 완료</h3>
+          <p id="exportedVideoMeta" class="text-[12px] text-[#4cc38a] mt-0.5">0~8초 차량 본편 + 8~12초 카마스터 명함 합성 완료</p>
         </div>
-        <button onclick="closeExportedVideoModal()" class="px-2.5 py-1 rounded-lg text-xs bg-[var(--secondary)] text-[var(--secondary-foreground)] font-bold">✕ 닫기</button>
+        <button onclick="closeExportedVideoModal()" class="btn-secondary h-7 px-2.5 text-[12px]">닫기</button>
       </div>
 
-      <!-- 실제 녹화/추출된 WebM 비디오 플레이어 -->
-      <div class="w-full max-w-[240px] mx-auto aspect-[9/16] rounded-xl overflow-hidden bg-black border border-[var(--border)]">
+      <div class="w-full max-w-[240px] mx-auto aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
         <video id="exportedVideoPlayer" controls autoplay loop playsinline class="w-full h-full object-cover"></video>
       </div>
 
       <div class="flex flex-col gap-2 pt-1">
-        <button type="button" onclick="shareRecordedVideoMobile()" class="w-full py-3 px-4 rounded-xl text-xs md:text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white text-center transition cursor-pointer shadow-md">
-          📲 모바일 공유창 열기 (인스타 · 쇼츠 · 틱톡 · 카톡 전송)
+        <button type="button" onclick="shareRecordedVideoMobile()" class="btn-primary w-full h-10 px-4 text-[13px] cursor-pointer">
+          모바일 공유창 열기 (인스타 · 쇼츠 · 틱톡 · 카톡)
         </button>
-        <button type="button" onclick="saveRecordedVideoToDisk()" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white text-center transition cursor-pointer">
-          📥 내 폰 / PC에 영상 파일(.webm) 직접 다운로드
+        <button type="button" onclick="saveRecordedVideoToDisk()" class="btn-secondary w-full h-9 px-4 text-[12px] cursor-pointer">
+          기기에 영상 파일 직접 다운로드
         </button>
-        <button type="button" onclick="copyDealerCaption()" class="w-full py-2 px-3 rounded-xl text-xs font-semibold bg-[var(--secondary)] hover:opacity-90 text-emerald-400 border border-emerald-500/30 text-center transition cursor-pointer">
-          📋 SNS 본문 & 해시태그 캡션 복사하기 (붙여넣기용)
+        <button type="button" onclick="copyDealerCaption()" class="btn-secondary w-full h-9 px-4 text-[12px] cursor-pointer">
+          SNS 본문 및 해시태그 복사
         </button>
-        <p id="saveStatusNotice" class="text-xs text-[var(--muted-foreground)] text-center leading-relaxed">
-          💡 휴대폰에서는 [📲 모바일 공유창 열기]를 누르면 인스타·유튜브·틱톡·카카오톡으로 영상과 본문이 한 번에 전달됩니다.
+        <p id="saveStatusNotice" class="text-[12px] text-[#85858b] text-center leading-relaxed pt-1">
+          모바일에서는 공유창 열기를 누르면 연결된 SNS 앱으로 영상과 본문이 전달됩니다.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- ★ 딜러 본인 SNS 계정 연결 & OAuth 연동 모달 -->
-  <div id="snsConnectModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 overflow-y-auto">
-    <div class="glass-panel rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl border border-indigo-500/30">
-      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+  <!-- 딜러 본인 SNS 계정 연결 & OAuth 연동 모달 -->
+  <div id="snsConnectModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="studio-card max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">DEALER SNS OAUTH & ACCOUNT BINDING</span>
-          <h3 id="snsModalHeaderTitle" class="text-base font-bold text-white mt-0.5">🔗 내 4대 SNS 계정 연결 설정</h3>
+          <span class="font-mono text-[11px] text-[#85858b]">SNS 계정 연동</span>
+          <h3 id="snsModalHeaderTitle" class="text-[15px] font-medium text-[#ededed] mt-0.5">내 4대 SNS 계정 연결 설정</h3>
         </div>
-        <button onclick="closeSnsConnectModal()" class="px-2.5 py-1 rounded-lg text-xs bg-white/10 text-slate-300 hover:text-white font-bold cursor-pointer">✕ 닫기</button>
+        <button onclick="closeSnsConnectModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
       </div>
 
-      <p class="text-xs text-slate-300 leading-relaxed">
-        연결된 계정 정보는 내 휴대폰/브라우저와 딜러 프로필에 암호화 저장됩니다. <strong>모바일 앱 브릿지 모드(기본)</strong> 또는 <strong>Meta/YouTube 비즈니스 자동 발행</strong>에 사용됩니다.
+      <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
+        연결된 계정 정보는 현재 기기 및 딜러 프로필에 저장되며, 모바일 앱 공유 브릿지 및 비즈니스 자동 발행에 사용됩니다.
       </p>
 
-      <div class="space-y-3 text-xs">
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+      <div class="space-y-3 text-[13px]">
+        <div class="studio-sub p-3.5 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-pink-400">📸 Instagram Reels 계정</span>
-            <button type="button" onclick="quickOAuthSimulate('ig')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-pink-500/20 text-pink-300 border border-pink-500/30 cursor-pointer">⚡ 인스타 OAuth 간편 로그인</button>
+            <span class="font-medium text-[#ededed]">Instagram Reels 계정</span>
+            <button type="button" onclick="quickOAuthSimulate('ig')" class="btn-secondary h-7 px-2.5 text-[11px] cursor-pointer">OAuth 간편 연결</button>
           </div>
-          <input id="snsInput_ig" type="text" placeholder="예: @hyundai_minjun_official" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+          <input id="snsInput_ig" type="text" placeholder="@hyundai_minjun_official" class="studio-input w-full h-9 px-3 font-mono text-[12px]" />
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+        <div class="studio-sub p-3.5 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-red-400">▶️ YouTube Shorts 채널 핸들</span>
-            <button type="button" onclick="quickOAuthSimulate('yt')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-red-500/20 text-red-300 border border-red-500/30 cursor-pointer">⚡ 구글/유튜브 OAuth 연결</button>
+            <span class="font-medium text-[#ededed]">YouTube Shorts 채널 핸들</span>
+            <button type="button" onclick="quickOAuthSimulate('yt')" class="btn-secondary h-7 px-2.5 text-[11px] cursor-pointer">OAuth 간편 연결</button>
           </div>
-          <input id="snsInput_yt" type="text" placeholder="예: @minjun_car_tv" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+          <input id="snsInput_yt" type="text" placeholder="@minjun_car_tv" class="studio-input w-full h-9 px-3 font-mono text-[12px]" />
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+        <div class="studio-sub p-3.5 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-cyan-400">🎵 TikTok 계정</span>
-            <button type="button" onclick="quickOAuthSimulate('tt')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 cursor-pointer">⚡ 틱톡 계정 OAuth 연결</button>
+            <span class="font-medium text-[#ededed]">TikTok 계정</span>
+            <button type="button" onclick="quickOAuthSimulate('tt')" class="btn-secondary h-7 px-2.5 text-[11px] cursor-pointer">OAuth 간편 연결</button>
           </div>
-          <input id="snsInput_tt" type="text" placeholder="예: @minjun_autoteam" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+          <input id="snsInput_tt" type="text" placeholder="@minjun_autoteam" class="studio-input w-full h-9 px-3 font-mono text-[12px]" />
         </div>
 
-        <div class="p-3 rounded-xl bg-slate-900/90 border border-white/10 space-y-2">
+        <div class="studio-sub p-3.5 space-y-2">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-blue-400">📘 Facebook 페이지 / Reels</span>
-            <button type="button" onclick="quickOAuthSimulate('fb')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 cursor-pointer">⚡ 메타 페이지 OAuth 연결</button>
+            <span class="font-medium text-[#ededed]">Facebook 페이지 · Reels</span>
+            <button type="button" onclick="quickOAuthSimulate('fb')" class="btn-secondary h-7 px-2.5 text-[11px] cursor-pointer">OAuth 간편 연결</button>
           </div>
-          <input id="snsInput_fb" type="text" placeholder="예: 강남오토스퀘어 김민준 공식페이지" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-xs" />
+          <input id="snsInput_fb" type="text" placeholder="강남오토스퀘어 김민준 공식페이지" class="studio-input w-full h-9 px-3 font-mono text-[12px]" />
         </div>
       </div>
 
-      <p id="snsModalNotice" class="hidden text-xs font-bold text-emerald-400 text-center"></p>
+      <p id="snsModalNotice" class="hidden text-[12px] text-[#4cc38a] text-center"></p>
 
-      <div class="flex justify-end gap-2 pt-2 border-t border-white/10">
-        <button type="button" onclick="closeSnsConnectModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-slate-300 border border-white/10 cursor-pointer">취소</button>
-        <button type="button" onclick="saveDealerSnsAccounts()" class="px-5 py-2 rounded-xl text-xs font-bold btn-primary-glow text-white cursor-pointer">✅ 내 SNS 계정 연동 저장</button>
+      <div class="flex justify-end gap-2 pt-3 border-t border-[var(--border)]">
+        <button type="button" onclick="closeSnsConnectModal()" class="btn-secondary h-9 px-4 text-[12px] cursor-pointer">취소</button>
+        <button type="button" onclick="saveDealerSnsAccounts()" class="btn-primary h-9 px-4 text-[12px] cursor-pointer">연동 저장</button>
       </div>
     </div>
   </div>
@@ -843,6 +950,19 @@
         ],
         bgGradient: ['#060b19', '#0f172a'],
         neonColor: '#38bdf8'
+      },
+      grandeur: {
+        hook: '성공의 상징! 디 올 뉴 그랜저 하브 즉시출고 특판',
+        vehicle: '디 올 뉴 그랜저 하이브리드',
+        discountNum: 450,
+        discount: '월 48만원대 · 캘리그라피 즉시배정',
+        bullets: [
+          '✔ 3040 워너비 세단! 정숙성·연비 18km/L 동급 최고',
+          '✔ 대기 없이 이번 주 즉시출고 가능한 선점 물량 확보',
+          '✔ 초기비용 0원 무보증 장기렌트·리스 최저금리 비교'
+        ],
+        bgGradient: ['#09090b', '#1e293b'],
+        neonColor: '#facc15'
       },
       carnival: {
         hook: '법인·다자녀 압도적 1위! 카니발 하브 긴급물량',
@@ -961,6 +1081,12 @@
         '파노라믹 디스플레이 & 2열 독립 캡틴시트 완비',
         '최대 -480만원 혜택 · 월 46만원대 최저금리',
         '계약 즉시 스마트키 인도! 댓글에 [견적] 남겨주세요'
+      ],
+      ttsLines: [
+        '이번 달 계약 안 하면 손해! 2026 쏘렌토 하이브리드 11월 비밀 조건 공개합니다.',
+        '대기 6개월 없이 선점 재고 4대, 이번 주 즉시 출고 가능합니다.',
+        '최대 480만 원 할인 혜택으로 월 46만 원대 최저 금리로 만나보세요.',
+        '김민준 수석 카마스터가 책임 출고합니다. 댓글에 견적 두 글자만 남겨주세요!'
       ],
       kakaoChat: [
         { role: 'customer', text: '팀장님! 쏘렌토 하브 지금 계약하면 진짜 6개월 기다려야 하나요? 😭' },
@@ -1129,13 +1255,376 @@
     ];
 
     let selectedDealerId = 'dlr_1';
-    const TOTAL_DURATION = 12.0;
+    let TOTAL_DURATION = 12.0;
+    let OUTRO_DURATION = 4.0;
     const FPS = 60;
     let isPlaying = true;
     let lastWallTime = performance.now();
 
     function getSelectedDealer() {
       return dealers.find((d) => d.id === selectedDealerId) || dealers[0];
+    }
+
+    // ============================================================================
+    // 영상 총 길이(8초 / 12초 / 15초 / 20초 / 30초 / 직접 입력) 동적 변경 컨트롤러
+    // ============================================================================
+    function setVideoTotalDuration(sec) {
+      const parsed = Math.max(6, Math.min(60, Number(sec) || 12));
+      TOTAL_DURATION = parsed;
+      OUTRO_DURATION = parsed <= 8 ? 2.4 : parsed >= 20 ? 4.5 : 4.0;
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDur = mainDur / 4;
+
+      if (window.__timelines && window.__timelines['main']) {
+        window.__timelines['main'].duration = TOTAL_DURATION;
+      }
+      const slider = document.getElementById('timelineSlider');
+      if (slider) {
+        slider.max = String(TOTAL_DURATION);
+      }
+      const sel = document.getElementById('durationSelect');
+      if (sel && [8, 12, 15, 20, 30].includes(Math.round(TOTAL_DURATION))) {
+        sel.value = String(Math.round(TOTAL_DURATION));
+      }
+      const customIn = document.getElementById('customDurationInput');
+      if (customIn) {
+        customIn.value = String(Math.round(TOTAL_DURATION));
+      }
+
+      // 상단 빠른 시간 버튼 하이라이트 동기화
+      [8, 12, 15, 20, 30].forEach((dVal) => {
+        const btn = document.getElementById(`durBtn_${dVal}`);
+        if (btn) {
+          if (Math.round(TOTAL_DURATION) === dVal) {
+            btn.className = 'h-7 px-2 rounded-[6px] text-[11px] font-mono bg-[#3b82f6] text-white cursor-pointer';
+          } else {
+            btn.className = 'h-7 px-2 rounded-[6px] text-[11px] font-mono bg-[#141415] text-[#a1a1a6] border border-[var(--border)] cursor-pointer';
+          }
+        }
+      });
+
+      // 4컷 시간 라벨 업데이트
+      for (let i = 0; i < 4; i++) {
+        const lbl = document.getElementById(`cutTimeLabel${i}`);
+        if (lbl) {
+          const s = (i * cutDur).toFixed(1).replace(/\.0$/, '');
+          const e = ((i + 1) * cutDur).toFixed(1).replace(/\.0$/, '');
+          lbl.textContent = `CUT ${i + 1} (${s}~${e}초)`;
+        }
+      }
+
+      // 점프 버튼 업데이트
+      const jb0 = document.getElementById('jumpBtn0');
+      const jb1 = document.getElementById('jumpBtn1');
+      const jb2 = document.getElementById('jumpBtn2');
+      if (jb0) {
+        jb0.textContent = `0~${(cutDur * 2).toFixed(0)}초 훅`;
+        jb0.onclick = () => seekToTime(0.3);
+      }
+      if (jb1) {
+        jb1.textContent = `${(cutDur * 2).toFixed(0)}~${mainDur.toFixed(0)}초 조건`;
+        jb1.onclick = () => seekToTime(cutDur * 2 + 0.2);
+      }
+      if (jb2) {
+        jb2.textContent = `${mainDur.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초 명함`;
+        jb2.onclick = () => seekToTime(mainDur + 0.4);
+      }
+
+      const expText = document.getElementById('exportBtnText');
+      if (expText) {
+        expText.textContent = `${Math.round(TOTAL_DURATION)}초 영상 추출 (BGM·TTS 합성 저장)`;
+      }
+
+      if (window.__timelines && window.__timelines['main']) {
+        const cur = Math.min(window.__timelines['main'].currentTime, TOTAL_DURATION - 0.1);
+        window.__timelines['main'].seek(cur);
+      }
+    }
+
+    // ============================================================================
+    // WebAudio 실시간 BGM 합성기 + 한국어 AI 성우(TTS) 내레이션 엔진 (MP4 녹화 트랙 믹싱 지원)
+    // ============================================================================
+    const AudioEngine = {
+      ctx: null,
+      masterGain: null,
+      bgmGain: null,
+      ttsGain: null,
+      streamDest: null,
+      enabled: false,
+      bgmStyle: 'showroom',
+      ttsVoice: 'female',
+      bgmTimer: null,
+      stepIndex: 0,
+      lastSpokenCut: -1,
+      ttsBuffers: [null, null, null, null, null],
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return null;
+          this.ctx = new AudioCtx();
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.value = 0.85;
+          this.bgmGain = this.ctx.createGain();
+          this.bgmGain.gain.value = 0.28;
+          this.ttsGain = this.ctx.createGain();
+          this.ttsGain.gain.value = 1.0;
+
+          this.bgmGain.connect(this.masterGain);
+          this.ttsGain.connect(this.masterGain);
+          this.masterGain.connect(this.ctx.destination);
+
+          if (typeof this.ctx.createMediaStreamDestination === 'function') {
+            this.streamDest = this.ctx.createMediaStreamDestination();
+            this.masterGain.connect(this.streamDest);
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        return this.ctx;
+      },
+
+      // BGM 스텝 시퀀서 (외부 저작권 문제 없는 순수 WebAudio 신디사이저 비트)
+      playBgmStep() {
+        if (!this.enabled || this.bgmStyle === 'off') return;
+        const ctx = this.ensureContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const step = this.stepIndex % 16;
+        this.stepIndex++;
+
+        // 1) 킥 드럼 (Kick)
+        const isKick =
+          this.bgmStyle === 'urban'
+            ? (step === 0 || step === 3 || step === 8 || step === 10)
+            : this.bgmStyle === 'luxury'
+            ? (step === 0 || step === 8)
+            : (step % 4 === 0);
+
+        if (isKick) {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          const startFreq = this.bgmStyle === 'urban' ? 145 : 120;
+          osc.frequency.setValueAtTime(startFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+          g.gain.setValueAtTime(0.65, now);
+          g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          osc.connect(g);
+          g.connect(this.bgmGain);
+          osc.start(now);
+          osc.stop(now + 0.19);
+        }
+
+        // 2) 하이햇 / 스네어 펄스
+        if (step % 2 === 1 || (this.bgmStyle === 'urban' && step % 1 === 0)) {
+          const oscH = ctx.createOscillator();
+          const gH = ctx.createGain();
+          oscH.type = 'triangle';
+          oscH.frequency.setValueAtTime(step % 4 === 2 ? 3200 : 5400, now);
+          gH.gain.setValueAtTime(step % 4 === 2 ? 0.08 : 0.04, now);
+          gH.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+          oscH.connect(gH);
+          gH.connect(this.bgmGain);
+          oscH.start(now);
+          oscH.stop(now + 0.05);
+        }
+
+        // 3) 베이스 & 코드 신스 아르페지오
+        const chordSets = {
+          showroom: [110, 130.81, 146.83, 164.81, 196.0, 220.0],
+          luxury:   [98.0, 123.47, 146.83, 185.0, 196.0, 246.94],
+          urban:    [82.41, 98.0, 110.0, 123.47, 146.83, 164.81],
+          bright:   [130.81, 164.81, 196.0, 246.94, 261.63, 329.63]
+        };
+        const notes = chordSets[this.bgmStyle] || chordSets.showroom;
+        const noteFreq = notes[step % notes.length];
+
+        if (step % 2 === 0) {
+          const oscB = ctx.createOscillator();
+          const gB = ctx.createGain();
+          oscB.type = this.bgmStyle === 'luxury' ? 'sine' : 'sawtooth';
+          oscB.frequency.setValueAtTime(noteFreq, now);
+          gB.gain.setValueAtTime(this.bgmStyle === 'luxury' ? 0.22 : 0.14, now);
+          gB.gain.exponentialRampToValueAtTime(0.002, now + 0.22);
+          oscB.connect(gB);
+          gB.connect(this.bgmGain);
+          oscB.start(now);
+          oscB.stop(now + 0.24);
+        }
+      },
+
+      startBgmLoop() {
+        this.stopBgmLoop();
+        if (!this.enabled || this.bgmStyle === 'off') return;
+        this.ensureContext();
+        const bpmMap = { showroom: 120, luxury: 95, urban: 138, bright: 124 };
+        const bpm = bpmMap[this.bgmStyle] || 120;
+        const stepMs = Math.round((60 / bpm / 4) * 1000);
+        this.bgmTimer = setInterval(() => {
+          if (isPlaying && this.enabled) {
+            this.playBgmStep();
+          }
+        }, stepMs);
+      },
+
+      stopBgmLoop() {
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      },
+
+      // 서버리스 /api/tts MP3 오디오 버퍼 프리페치 (WebAudio 녹음 트랙에도 포함되도록 디코딩)
+      async prefetchTtsBuffers() {
+        const ctx = this.ensureContext();
+        if (!ctx || !window.location.protocol.startsWith('http')) return;
+        const d = getSelectedDealer();
+        const lines = [
+          (campaign.ttsLines && campaign.ttsLines[0]) || campaign.cutCaptions[0] || campaign.hook,
+          (campaign.ttsLines && campaign.ttsLines[1]) || campaign.cutCaptions[1] || '',
+          (campaign.ttsLines && campaign.ttsLines[2]) || campaign.cutCaptions[2] || '',
+          (campaign.ttsLines && campaign.ttsLines[3]) || campaign.cutCaptions[3] || '',
+          `${d.branch} ${d.name} ${d.title}입니다. 직통번호나 댓글로 편하게 문의주세요.`
+        ];
+        for (let i = 0; i < lines.length; i++) {
+          const text = (lines[i] || '').replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣.,!?%~-]/g, ' ').trim();
+          if (!text) continue;
+          try {
+            const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}&tl=ko`);
+            if (res.ok) {
+              const arrBuf = await res.arrayBuffer();
+              const audioBuf = await ctx.decodeAudioData(arrBuf);
+              this.ttsBuffers[i] = audioBuf;
+            }
+          } catch (e) {}
+        }
+      },
+
+      speakCutLine(cutIdx, forceSpeak = false) {
+        if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off') return;
+        if (!forceSpeak && this.lastSpokenCut === cutIdx) return;
+        this.lastSpokenCut = cutIdx;
+
+        const d = getSelectedDealer();
+        let text = '';
+        if (cutIdx < 4) {
+          text =
+            (campaign.ttsLines && campaign.ttsLines[cutIdx]) ||
+            (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) ||
+            campaign.hook;
+        } else {
+          text = `${d.branch} ${d.name} ${d.title}입니다. 댓글에 견적 남겨주시면 즉시 안내해 드립니다.`;
+        }
+        const cleanText = String(text || '')
+          .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+          .replace(/[✔🚨✨💰🔑🏢📞🎁💬]/g, '')
+          .trim();
+        if (!cleanText) return;
+
+        // 1) WebAudio 디코딩 버퍼가 있으면 MediaStream 녹음 및 스피커로 재생
+        const ctx = this.ensureContext();
+        if (ctx && this.ttsBuffers[cutIdx]) {
+          try {
+            const src = ctx.createBufferSource();
+            src.buffer = this.ttsBuffers[cutIdx];
+            src.playbackRate.value = this.ttsVoice === 'energetic' ? 1.15 : this.ttsVoice === 'male' ? 0.94 : 1.05;
+            src.connect(this.ttsGain);
+            src.start(0);
+            return;
+          } catch (e) {}
+        }
+
+        // 2) 브라우저 내장 한국어 Web Speech API (window.speechSynthesis) 즉시 발화
+        if ('speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(cleanText);
+            utter.lang = 'ko-KR';
+            const voices = window.speechSynthesis.getVoices() || [];
+            const koVoices = voices.filter((v) => v.lang && v.lang.toLowerCase().includes('ko'));
+            if (koVoices.length > 0) {
+              if (this.ttsVoice === 'male' && koVoices.length > 1) {
+                utter.voice = koVoices[koVoices.length - 1];
+              } else {
+                utter.voice = koVoices[0];
+              }
+            }
+            utter.pitch = this.ttsVoice === 'male' ? 0.85 : this.ttsVoice === 'energetic' ? 1.12 : 1.04;
+            utter.rate = this.ttsVoice === 'energetic' ? 1.22 : 1.12;
+            window.speechSynthesis.speak(utter);
+          } catch (e) {}
+        }
+      },
+
+      syncWithTimeline(t) {
+        if (!this.enabled) return;
+        const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+        const cutDur = mainDur / 4;
+        const slot = t < mainDur ? Math.min(3, Math.floor(t / cutDur)) : 4;
+        if (slot !== this.lastSpokenCut) {
+          this.speakCutLine(slot, false);
+        }
+      }
+    };
+
+    function toggleAudioMaster() {
+      AudioEngine.enabled = !AudioEngine.enabled;
+      const btn = document.getElementById('soundToggleBtn');
+      const statusBadge = document.getElementById('audioStatusBadge');
+      if (AudioEngine.enabled) {
+        AudioEngine.ensureContext();
+        AudioEngine.lastSpokenCut = -1;
+        AudioEngine.startBgmLoop();
+        AudioEngine.prefetchTtsBuffers();
+        AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
+        if (btn) {
+          btn.textContent = '🔊 사운드 켜짐 (BGM+TTS)';
+          btn.className = 'h-7 px-2.5 rounded-[6px] text-[12px] font-medium bg-[#3b82f6] text-white border border-[#3b82f6] cursor-pointer flex items-center gap-1.5';
+        }
+        if (statusBadge) {
+          statusBadge.textContent = 'BGM + 한국어 TTS 실시간 재생중';
+          statusBadge.className = 'text-[11px] font-mono text-[#4cc38a]';
+        }
+      } else {
+        AudioEngine.stopBgmLoop();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (btn) {
+          btn.textContent = '🔇 사운드 켜기 (BGM+TTS)';
+          btn.className = 'h-7 px-2.5 rounded-[6px] text-[12px] font-medium bg-[#232325] text-[#ededed] border border-[var(--border)] hover:bg-[#2c2c2f] cursor-pointer flex items-center gap-1.5';
+        }
+        if (statusBadge) {
+          statusBadge.textContent = '일시정지됨 (버튼을 누르면 재생)';
+          statusBadge.className = 'text-[11px] font-mono text-[#85858b]';
+        }
+      }
+    }
+
+    function onAudioConfigChange() {
+      const bgmEl = document.getElementById('bgmStyleSelect');
+      const ttsEl = document.getElementById('ttsVoiceSelect');
+      if (bgmEl) AudioEngine.bgmStyle = bgmEl.value;
+      if (ttsEl) AudioEngine.ttsVoice = ttsEl.value;
+      if (AudioEngine.enabled) {
+        AudioEngine.startBgmLoop();
+        AudioEngine.lastSpokenCut = -1;
+        AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
+      }
+    }
+
+    function triggerFullAudioPreview() {
+      if (!AudioEngine.enabled) {
+        toggleAudioMaster();
+      } else {
+        AudioEngine.lastSpokenCut = -1;
+      }
+      isPlaying = true;
+      const ppBtn = document.getElementById('playPauseBtn');
+      if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
+      window.__timelines['main'].seek(0);
+      AudioEngine.speakCutLine(0, true);
     }
 
     // ============================================================================
@@ -1147,16 +1636,23 @@
       duration: TOTAL_DURATION,
       paused: true,
       seek(timeInSeconds) {
+        this.duration = TOTAL_DURATION;
         this.currentTime = Easing.clamp(Number(timeInSeconds), 0, this.duration);
         renderHyperFramesComposition(this.currentTime);
         updateTimelineUI(this.currentTime);
+        if (isPlaying && AudioEngine.enabled) {
+          AudioEngine.syncWithTimeline(this.currentTime);
+        }
         return this;
       }
     };
 
     function updateTimelineUI(t) {
+      const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDuration = mainDuration / 4;
       const slider = document.getElementById('timelineSlider');
       if (slider && document.activeElement !== slider) {
+        slider.max = String(TOTAL_DURATION);
         slider.value = t.toFixed(3);
       }
       const timeCode = document.getElementById('timeCodeText');
@@ -1165,20 +1661,17 @@
       }
       const frameCount = document.getElementById('frameCountText');
       if (frameCount) {
-        frameCount.textContent = `Frame: ${Math.floor(t * FPS)} / ${TOTAL_DURATION * FPS}`;
+        frameCount.textContent = `Frame: ${Math.floor(t * FPS)} / ${Math.round(TOTAL_DURATION * FPS)}`;
       }
 
       const badge = document.getElementById('activeClipBadge');
       if (badge) {
-        if (t < 3.0) {
-          badge.textContent = '⚡ Scene 1: 훅 & 슬롯머신 카운터 (0~3초)';
-          badge.className = 'px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400';
-        } else if (t < 8.0) {
-          badge.textContent = '🚘 Scene 2: 3D 쇼룸 & 핵심혜택 (3~8초)';
-          badge.className = 'px-2 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400';
+        if (t < cutDuration * 2) {
+          badge.textContent = `Scene 1 · 후킹 & 대본 (0~${(cutDuration * 2).toFixed(0)}초)`;
+        } else if (t < mainDuration) {
+          badge.textContent = `Scene 2 · 핵심 혜택 (${(cutDuration * 2).toFixed(0)}~${mainDuration.toFixed(0)}초)`;
         } else {
-          badge.textContent = '🪪 Scene 3: 딜러 3D 메탈 명함 (8~12초)';
-          badge.className = 'px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400';
+          badge.textContent = `Scene 3 · 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
         }
       }
     }
@@ -1282,11 +1775,13 @@
       const H = canvas.height;
       const HYUNDAI_NAVY = '#002C5F';
       const KIA_RED = '#BB162B';
+      const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDuration = mainDuration / 4;
 
       // ========================================================================
-      // 구간 1 & 2 (0.0s ~ 8.0s): 프로모션 본편 + 댓글[견적] 유도 + 하단 딜러 실물바
+      // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편 + AI 성우 자막 + 하단 딜러 실물바
       // ========================================================================
-      if (t < 8.0) {
+      if (t < mainDuration) {
         const vid = document.getElementById('hiddenCustomVideo');
 
         const v = d.variation || VARIATION_RECIPES[0];
@@ -1294,7 +1789,7 @@
         // 배경: 딜러마다 다른 사진 순서(cutOrder) 및 카메라 무빙 조합(cameraOrder) 적용
         if (campaign.uploadedPhotos.length > 0) {
           const numPhotos = campaign.uploadedPhotos.length;
-          const slideDuration = 8.0 / numPhotos;
+          const slideDuration = mainDuration / numPhotos;
           const idx = Math.min(numPhotos - 1, Math.floor(t / slideDuration));
           const localProgress = Easing.clamp((t - idx * slideDuration) / slideDuration, 0, 1);
 
@@ -1391,8 +1886,8 @@
           ctx.fillText(text, x, y, maxWidth);
         }
 
-        const currentCutSlot = Math.min(3, Math.floor(t / 2.0));
-        const cutLocalT = t - currentCutSlot * 2.0; // 0.0 ~ 2.0초
+        const currentCutSlot = Math.min(3, Math.floor(t / cutDuration));
+        const cutLocalT = t - currentCutSlot * cutDuration;
         const activePhotoIndex = (v.cutOrder && v.cutOrder[currentCutSlot] !== undefined)
           ? v.cutOrder[currentCutSlot]
           : currentCutSlot;
@@ -1409,7 +1904,7 @@
           pos: 'center'
         };
         const widgetType = plan.widget || 'BREAKING_NEWS';
-        const posMode = plan.pos || 'center';
+        const posMode = String(plan.pos || 'center').toLowerCase();
         const cutPop = Easing.backOut(cutLocalT / 0.38);
         const slideIn = Easing.power4Out(cutLocalT / 0.45);
         const subLine = (campaign.cutCaptions && campaign.cutCaptions[currentCutSlot]) || activeHookText;
@@ -1427,7 +1922,7 @@
             drawRoundedRect(ctx, barX, 20, barW, 5, 2.5);
             ctx.fill();
           } else if (c === currentCutSlot) {
-            const fillW = Math.max(8, barW * Easing.clamp(cutLocalT / 2.0, 0, 1));
+            const fillW = Math.max(8, barW * Easing.clamp(cutLocalT / cutDuration, 0, 1));
             ctx.fillStyle = '#ffffff';
             drawRoundedRect(ctx, barX, 20, fillW, 5, 2.5);
             ctx.fill();
@@ -1436,7 +1931,7 @@
         ctx.restore();
 
         // 동적 Y 좌표 앵커 계산 (AI가 지정한 pos: 'top' | 'center' | 'bottom' 반영)
-        const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 565 : 495;
+        const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 535 : 475;
 
         // --------------------------------------------------------------------
         // 위젯 1: BREAKING_NEWS (긴급 속보 티커 + 대형 헤드라인 보드)
@@ -1913,7 +2408,38 @@
         }
 
         // ======================================================
-        // Persistent Track (0~8초): 현대·기아 공식 카마스터 하단 실물 프로필 바
+        // ★ AI 대본 · 성우 내레이션 자막 바 (하단 프로필 바 바로 위 고정 노출)
+        // 어떤 위젯(영수증, 슬롯머신 등)이 선택되더라도 AI 대본이 영상에 100% 선명하게 표시됨
+        // ======================================================
+        ctx.save();
+        const narrationLine =
+          (campaign.ttsLines && campaign.ttsLines[currentCutSlot]) ||
+          subLine ||
+          `${campaign.vehicle} · ${campaign.discount}`;
+        ctx.fillStyle = 'rgba(10, 14, 23, 0.90)';
+        ctx.strokeStyle = theme.accent;
+        ctx.lineWidth = 2;
+        drawRoundedRect(ctx, 18, H - 214, W - 36, 52, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        // 좌측 AI VOICE / 이퀄라이저 배지
+        ctx.fillStyle = theme.badge;
+        drawRoundedRect(ctx, 28, H - 204, 78, 32, 8);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`CUT ${currentCutSlot + 1}`, 67, H - 183);
+
+        // 자막 본문 (자동 폰트 피팅)
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        drawFittedText(narrationLine, 118, H - 181, W - 148, 18, 12);
+        ctx.restore();
+
+        // ======================================================
+        // Persistent Track (0~mainDuration): 현대·기아 공식 카마스터 하단 실물 프로필 바
         // ======================================================
         ctx.save();
         ctx.fillStyle = '#ffffff';
@@ -1974,9 +2500,9 @@
         ctx.restore();
       } else {
         // ========================================================================
-        // Scene 3 (8.0s ~ 12.0s): 현대·기아자동차 공식 카마스터 클린 화이트&네이비 명함 엔딩
+        // Scene 3 (mainDuration ~ TOTAL_DURATION): 현대·기아자동차 공식 카마스터 클린 화이트&네이비 명함 엔딩
         // ========================================================================
-        const localT = t - 8.0;
+        const localT = Math.max(0, t - mainDuration);
         const enterP = Easing.backOut(localT / 0.5);
 
         // 배경: 마지막 차량 화보를 은은하게 깔고 밝은 모던 쇼룸 톤 오버레이
@@ -2261,13 +2787,15 @@
       const camSeq = (v.cameraOrder || [0, 1, 2, 3]).map((idx) => CAMERA_NAMES[idx % 4].split('(')[0]).join(' → ');
 
       summaryEl.innerHTML =
-        `<div class="flex flex-wrap items-center justify-between gap-1 text-[var(--foreground)] font-sans font-bold mb-1">` +
-        `<span>👤 [${d.name} ${d.title}] 전용 변주 레시피: <span class="text-emerald-400">${v.label}</span></span>` +
-        `<span class="text-xs px-2 py-0.5 rounded bg-[var(--secondary)] text-amber-300">자동 DM 키워드: [${v.ctaKeyword || '견적'}]</span>` +
+        `<div class="flex flex-wrap items-center justify-between gap-2 text-[#ededed] font-medium mb-1.5">` +
+        `<span>${d.name} ${d.title} · <span class="text-[#a1a1a6] font-normal">${v.label}</span></span>` +
+        `<span class="font-mono text-[11px] px-2 py-0.5 rounded-[6px] bg-[#232325] text-[#a1a1a6]">자동 DM 키워드: ${v.ctaKeyword || '견적'}</span>` +
         `</div>` +
-        `<div>• <strong>4컷 사진 순서</strong>: ${cutSeq}</div>` +
-        `<div>• <strong>카메라 무빙 순서</strong>: ${camSeq}</div>` +
-        `<div>• <strong>상단 후킹 카피</strong>: "${v.hook}"</div>`;
+        `<div class="text-[#85858b] space-y-0.5">` +
+        `<div>4컷 순서: <span class="text-[#a1a1a6]">${cutSeq}</span></div>` +
+        `<div>카메라 궤적: <span class="text-[#a1a1a6]">${camSeq}</span></div>` +
+        `<div>오프닝 카피: <span class="text-[#a1a1a6]">"${v.hook}"</span></div>` +
+        `</div>`;
     }
 
     function randomizeCurrentDealerVariation() {
@@ -2305,16 +2833,15 @@
       const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
       const kw = v.ctaKeyword || '견적';
       return (
-        `🔥 ${campaign.vehicle} — ${activeHook}\n\n` +
-        `✔️ 최대 할인 혜택: -${campaign.discountNum.toLocaleString()}만 원\n` +
-        `✔️ 월 납입 조건: ${campaign.discount}\n` +
+        `${campaign.vehicle} — ${activeHook}\n\n` +
+        `• 최대 할인 혜택: -${campaign.discountNum.toLocaleString()}만 원\n` +
+        `• 월 납입 조건: ${campaign.discount}\n` +
         `${activeBullets.join('\n')}\n` +
-        `🎁 딜러 특별 혜택: ${dealer.promoTag}\n\n` +
-        `━━━━━━━━━━━━━━━━━━\n` +
-        `👤 담당: ${dealer.branch} ${dealer.name} ${dealer.title}\n` +
-        `📞 직통 상담: ${dealer.phone}\n` +
-        `💬 댓글에 [${kw}] 남겨주시거나 프로필 링크로 문의하시면 1:1 비밀 조건표를 즉시 DM으로 보내드립니다!\n` +
-        `📌 유튜브 쇼츠 고정댓글: 24시간 실시간 최저가 견적/시승 직통문의 ${dealer.phone}\n\n` +
+        `• 출고 고객 혜택: ${dealer.promoTag}\n\n` +
+        `──────────────────\n` +
+        `담당: ${dealer.branch} ${dealer.name} ${dealer.title}\n` +
+        `직통 상담: ${dealer.phone}\n` +
+        `댓글에 [${kw}] 남겨주시거나 프로필 링크로 문의하시면 1:1 조건표를 DM으로 보내드립니다.\n\n` +
         `#신차견적 #즉시출고 #자동차프로모션 #장기렌트 #리스견적 #카마스터 #Shorts`
       );
     }
@@ -2332,9 +2859,9 @@
       tabs.forEach((t) => {
         const el = document.getElementById(t.id);
         if (t.key === tab) {
-          el.className = 'whitespace-nowrap px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all bg-indigo-600 text-white shadow-sm';
+          el.className = 'whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-medium transition-colors bg-[#232325] text-[#ededed]';
         } else {
-          el.className = 'whitespace-nowrap px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition-all text-slate-400 hover:text-white';
+          el.className = 'whitespace-nowrap h-8 px-3.5 rounded-[6px] text-[13px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]';
         }
       });
 
@@ -2358,11 +2885,11 @@
       container.innerHTML = dealers
         .map((d) => {
           const active = d.id === selectedDealerId;
-          return `<button onclick="selectDealer('${d.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition border cursor-pointer flex items-center gap-1.5 ${
+          return `<button onclick="selectDealer('${d.id}')" class="h-8 px-3 rounded-[8px] text-[12px] font-medium transition-colors border cursor-pointer flex items-center gap-2 ${
             active
-              ? 'bg-indigo-600 text-white border-indigo-400/50 shadow-sm'
-              : 'bg-white/[0.03] text-slate-300 border-white/10 hover:bg-white/[0.08] hover:text-white'
-          }"><span class="w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : 'bg-slate-500'}"></span>${d.name} ${d.title} <span class="opacity-70 font-normal">(${d.branch.split(' ')[0]})</span></button>`;
+              ? 'bg-[#232325] text-[#ededed] border-[rgba(237,237,237,0.22)]'
+              : 'bg-[#141415] text-[#85858b] border-[var(--border)] hover:text-[#ededed]'
+          }"><span class="w-1.5 h-1.5 rounded-full ${active ? 'bg-[#4cc38a]' : 'bg-[#85858b]'}"></span>${d.name} ${d.title} <span class="text-[#85858b] font-normal">${d.branch.split(' ')[0]}</span></button>`;
         })
         .join('');
     }
@@ -2370,34 +2897,34 @@
     function renderAdminDealerList() {
       const listEl = document.getElementById('adminDealerList');
       const statBadge = document.getElementById('statSummaryBadge');
-      statBadge.textContent = `총 ${dealers.length}명 구독 중 (주간 매출 ${(dealers.length * 50000).toLocaleString()}원)`;
+      statBadge.textContent = `${dealers.length}명 구독 중 · 주간 ${(dealers.length * 50000).toLocaleString()}원`;
 
       listEl.innerHTML = dealers
         .map((d) => {
           const badgeHtml =
             d.status === 'PUBLISHED'
-              ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-500">✅ 승인·게시 완료</span>`
+              ? `<span class="tag-chip px-2 py-0.5 text-[11px] text-[#4cc38a]">발행 완료</span>`
               : d.status === 'REVISION'
-              ? `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-500">✏️ 수정 요청</span>`
-              : `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-400">⏳ 검수 대기중</span>`;
+              ? `<span class="tag-chip px-2 py-0.5 text-[11px] text-[#d97706]">수정 요청</span>`
+              : `<span class="tag-chip px-2 py-0.5 text-[11px] text-[#a1a1a6]">검수 대기</span>`;
 
           const vLabel = d.variation ? d.variation.label : '기본 변주';
           return `
-            <div class="p-4 rounded-xl bg-[var(--background)] border border-[var(--border)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="p-4 rounded-[12px] bg-[#141415] border border-[var(--border)] flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div class="space-y-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <span class="w-3 h-3 rounded-full inline-block" style="background:${d.accentColor}"></span>
-                  <span class="text-sm font-bold text-[var(--foreground)]">${d.name} ${d.title}</span>
-                  <span class="text-xs text-[var(--muted-foreground)]">| ${d.branch}</span>
+                  <span class="w-2 h-2 rounded-full inline-block" style="background:${d.accentColor}"></span>
+                  <span class="text-[14px] font-medium text-[#ededed]">${d.name} ${d.title}</span>
+                  <span class="text-[12px] text-[#85858b]">${d.branch}</span>
                   ${badgeHtml}
-                  <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-xs font-semibold">🎲 ${vLabel}</span>
+                  <span class="font-mono text-[11px] text-[#85858b]">${vLabel}</span>
                 </div>
-                <div class="text-xs text-[var(--muted-foreground)]">
-                  📞 ${d.phone} · 📸 ${d.igUsername} · 🔑 ${d.igPwMasked}
+                <div class="text-[12px] font-mono text-[#85858b]">
+                  ${d.phone} · ${d.igUsername} · ${d.licenseKey}
                 </div>
               </div>
-              <button onclick="selectDealer('${d.id}', true)" class="px-3 py-2 rounded-lg text-xs font-bold bg-[var(--primary)] text-[var(--primary-foreground)]">
-                📱 HyperFrames 검수 열기
+              <button onclick="selectDealer('${d.id}', true)" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                스튜디오 열기
               </button>
             </div>
           `;
@@ -2409,7 +2936,7 @@
       const d = getSelectedDealer();
       const v = d.variation || VARIATION_RECIPES[0];
       document.getElementById('stagingUrlText').textContent = `https://staging.autoreels.kr/v/${d.token}`;
-      document.getElementById('previewDealerHeader').textContent = `${d.name} ${d.title}님의 엔딩 명함(8~12초) 및 멀티 SNS 발행`;
+      document.getElementById('previewDealerHeader').textContent = `${d.name} ${d.title} 명함 정보 및 멀티 SNS 발행`;
       document.getElementById('dlrInputName').value = d.name;
       document.getElementById('dlrInputTitle').value = d.title;
       document.getElementById('dlrInputPhone').value = d.phone;
@@ -2423,11 +2950,17 @@
       const bulletsInput = document.getElementById('inputBullets');
       if (bulletsInput && v.bullets) bulletsInput.value = v.bullets.join('\n');
 
-      // 4컷 스토리보드 자막 입력창 동기화
       for (let i = 0; i < 4; i++) {
         const cutEl = document.getElementById(`cutSub${i}`);
         if (cutEl && campaign.cutCaptions && campaign.cutCaptions[i] !== undefined) {
           cutEl.value = campaign.cutCaptions[i];
+        }
+        const ttsEl = document.getElementById(`cutTts${i}`);
+        if (ttsEl) {
+          ttsEl.value =
+            (campaign.ttsLines && campaign.ttsLines[i]) ||
+            (campaign.cutCaptions && campaign.cutCaptions[i]) ||
+            '';
         }
       }
 
@@ -2437,11 +2970,11 @@
 
       const statusContainer = document.getElementById('previewStatusBadge');
       if (d.status === 'PUBLISHED') {
-        statusContainer.innerHTML = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">발행 완료</span>`;
+        statusContainer.innerHTML = `<span class="tag-chip px-2.5 py-1 text-[12px] text-[#4cc38a]">발행 완료</span>`;
       } else if (d.status === 'REVISION') {
-        statusContainer.innerHTML = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">수정 요청됨</span>`;
+        statusContainer.innerHTML = `<span class="tag-chip px-2.5 py-1 text-[12px] text-[#d97706]">수정 요청됨</span>`;
       } else {
-        statusContainer.innerHTML = `<span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">제작 · 편집 중</span>`;
+        statusContainer.innerHTML = `<span class="tag-chip px-2.5 py-1 text-[12px] text-[#a1a1a6]">편집 중</span>`;
       }
     }
 
@@ -2475,14 +3008,14 @@
       const badgeEl = document.getElementById('drmStatusBadge');
       if (badgeEl) {
         if (drmCode === 1) {
-          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-          badgeEl.textContent = '🟢 정품 구독 인증됨 (워터마크 제거됨)';
+          badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#4cc38a]';
+          badgeEl.textContent = '정품 구독 인증됨 (워터마크 제거)';
         } else if (drmCode === 3) {
-          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
-          badgeEl.textContent = '🚨 타 딜러 번호 도용 감지! (계정 돌려쓰기 차단됨)';
+          badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#e5484d]';
+          badgeEl.textContent = '타 딜러 번호 도용 감지 · 공유 차단됨';
         } else {
-          badgeEl.className = 'px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
-          badgeEl.textContent = '🔒 미구독 · 만료 상태 (워터마크 강제 삽입 & 다운로드 잠금)';
+          badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#d97706]';
+          badgeEl.textContent = '미구독 · 만료 상태 (워터마크 표시)';
         }
       }
 
@@ -2493,14 +3026,14 @@
         const btnEl = document.getElementById(`snsStatusBtn_${ch}`);
         const val = (sns[ch] || '').trim();
         if (handleEl) {
-          handleEl.textContent = val || '미연결 (클릭하여 계정 연결)';
-          handleEl.className = val ? 'text-[11px] text-emerald-400 font-mono' : 'text-[11px] text-slate-500 font-mono';
+          handleEl.textContent = val || '미연결';
+          handleEl.className = val ? 'text-[12px] text-[#a1a1a6] font-mono' : 'text-[12px] text-[#85858b] font-mono';
         }
         if (btnEl) {
-          btnEl.textContent = val ? '🟢 연결됨' : '⚪ 연결하기';
+          btnEl.textContent = val ? '연결됨' : '연결하기';
           btnEl.className = val
-            ? 'px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 cursor-pointer'
-            : 'px-2 py-1 rounded-lg text-[10px] font-bold bg-white/10 text-slate-300 border border-white/15 cursor-pointer';
+            ? 'tag-chip px-2 py-1 text-[11px] text-[#4cc38a] cursor-pointer'
+            : 'tag-chip px-2 py-1 text-[11px] text-[#85858b] cursor-pointer';
         }
       });
     }
@@ -2534,7 +3067,7 @@
     function openSnsConnectModal(focusKey) {
       const d = getSelectedDealer();
       const sns = d.snsAccounts || { ig: d.igUsername, yt: '', tt: '', fb: '' };
-      document.getElementById('snsModalHeaderTitle').textContent = `🔗 [${d.name} ${d.title}] 내 4대 SNS 계정 연결 설정`;
+      document.getElementById('snsModalHeaderTitle').textContent = `[${d.name} ${d.title}] 내 4대 SNS 계정 연결 설정`;
       document.getElementById('snsInput_ig').value = sns.ig || '';
       document.getElementById('snsInput_yt').value = sns.yt || '';
       document.getElementById('snsInput_tt').value = sns.tt || '';
@@ -2569,7 +3102,7 @@
       const notice = document.getElementById('snsModalNotice');
       if (notice) {
         notice.classList.remove('hidden');
-        notice.textContent = `✅ OAuth 인증 토큰이 연결되었습니다! 아래 [내 SNS 계정 연동 저장]을 눌러 완료하세요.`;
+        notice.textContent = `OAuth 인증 토큰이 연결되었습니다. 아래 [저장 완료]를 눌러 반영하세요.`;
       }
     }
 
@@ -2603,7 +3136,7 @@
         );
         const badge = document.getElementById('mobileSavedBadge');
         if (badge) {
-          badge.textContent = `✅ [${d.name} ${d.title}] 명함 정보가 내 휴대폰에 자동 저장됨`;
+          badge.textContent = `[${d.name} ${d.title}] 명함 정보가 로컬에 자동 저장됨`;
         }
       } catch (e) {}
     }
@@ -2649,23 +3182,23 @@
       const notice = document.getElementById('saveStatusNotice');
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {
-          if (btn) btn.textContent = '✅ 복사 완료!';
+          if (btn) btn.textContent = '복사 완료';
           if (notice) {
-            notice.textContent = '✅ 본문과 해시태그가 복사되었습니다! 인스타·쇼츠·틱톡 업로드 시 붙여넣기 하세요.';
-            notice.className = 'text-xs text-emerald-400 font-bold text-center leading-relaxed';
+            notice.textContent = '본문과 해시태그가 복사되었습니다. 업로드 시 붙여넣기 하세요.';
           }
           setTimeout(() => {
-            if (btn) btn.textContent = '📋 본문·해시태그 복사하기';
+            if (btn) btn.textContent = '본문·해시태그 복사';
           }, 2500);
         }).catch(() => {});
       }
     }
 
     function syncScenePlanUI() {
-      const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.GENESIS_COPPER;
+      const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
+      const themeName = themeObj.name || themeObj.label || '로얄 골드';
       const badgeEl = document.getElementById('activeSceneRecipeBadge');
       if (badgeEl) {
-        badgeEl.textContent = `🎨 테마: ${themeObj.label} · 4컷 AI 동적 위젯 활성`;
+        badgeEl.textContent = `테마: ${themeName} · 4컷 AI 위젯`;
       }
       if (Array.isArray(campaign.scenePlan)) {
         for (let i = 0; i < 4; i++) {
@@ -2680,8 +3213,8 @@
 
     function proceduralRestyleCurrentScene() {
       const themeKeys = Object.keys(DIRECTOR_THEMES);
-      const positions = ['TOP', 'CENTER', 'BOTTOM'];
-      const cameras = ['KEN_BURNS_IN', 'PAN_RIGHT', 'PAN_LEFT', 'DYNAMIC_TILT'];
+      const positions = ['top', 'center', 'bottom'];
+      const cameras = [0, 1, 2, 3];
       const seed = (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
 
       if (RustWasmCore && typeof RustWasmCore.compute_scene_slot === 'function') {
@@ -2695,10 +3228,10 @@
           const pIdx = (packed >>> 8) & 0xff;
           const cIdx = (packed >>> 16) & 0xff;
           return {
+            cut: idx + 1,
             widget: WIDGET_POOL[wIdx % WIDGET_POOL.length],
             pos: positions[pIdx % positions.length],
-            camera: cameras[cIdx % cameras.length],
-            badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
+            cam: cameras[cIdx % cameras.length]
           };
         });
       } else {
@@ -2706,21 +3239,25 @@
         campaign.themeId = otherThemes[Math.floor(Math.random() * otherThemes.length)] || themeKeys[0];
         const shuffled = [...WIDGET_POOL].sort(() => Math.random() - 0.5);
         campaign.scenePlan = [0, 1, 2, 3].map((idx) => ({
+          cut: idx + 1,
           widget: shuffled[idx],
           pos: positions[(idx + Math.floor(Math.random() * 3)) % positions.length],
-          camera: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length],
-          badge: ['⚡ AI SCENE', '🔥 FOCUS', '💎 BENEFIT', '🚀 ACTION'][idx]
+          cam: cameras[(idx + Math.floor(Math.random() * 4)) % cameras.length]
         }));
       }
 
       syncScenePlanUI();
-      window.__timelines['main'].seek((window.__timelines['main'].currentTime + 2.0) % 8.0);
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      window.__timelines['main'].seek((window.__timelines['main'].currentTime + mainDur / 4) % mainDur);
     }
 
     function updateCustomCutCaptions() {
+      if (!Array.isArray(campaign.ttsLines)) campaign.ttsLines = ['', '', '', ''];
       for (let i = 0; i < 4; i++) {
         const el = document.getElementById(`cutSub${i}`);
         if (el) campaign.cutCaptions[i] = el.value;
+        const ttsEl = document.getElementById(`cutTts${i}`);
+        if (ttsEl) campaign.ttsLines[i] = ttsEl.value;
       }
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
@@ -2734,14 +3271,14 @@
         const statusEl = document.getElementById('adminAiKeyStatus');
         const badgeEl = document.getElementById('aiEngineStatusBadge');
         if (oa) {
-          if (statusEl) statusEl.textContent = '🔐 대표님 전용 OpenAI (GPT-4o-mini) 유료 키가 연결되었습니다.';
-          if (badgeEl) badgeEl.textContent = '🟢 OpenAI GPT-4o-mini 전용 엔진 가동중';
+          if (statusEl) statusEl.textContent = '전용 OpenAI (GPT-4o-mini) 키가 연결되었습니다.';
+          if (badgeEl) badgeEl.textContent = 'OpenAI GPT-4o-mini 전용 엔진';
         } else if (gm) {
-          if (statusEl) statusEl.textContent = '🔐 대표님 전용 Google Gemini 2.0 Flash 키가 연결되었습니다.';
-          if (badgeEl) badgeEl.textContent = '🟢 Gemini 2.0 Flash 전용 엔진 가동중';
+          if (statusEl) statusEl.textContent = '전용 Google Gemini 2.0 Flash 키가 연결되었습니다.';
+          if (badgeEl) badgeEl.textContent = 'Gemini 2.0 Flash 전용 엔진';
         } else {
-          if (statusEl) statusEl.textContent = '✅ 현재 상태: AutoReels 기본 클라우드 LLM 엔진 활성 (키 입력 시 전용 계정으로 즉시 전환)';
-          if (badgeEl) badgeEl.textContent = '🟢 중앙 AI 엔진 가동중 (딜러 로그인 불필요)';
+          if (statusEl) statusEl.textContent = '현재 상태: AutoReels 기본 클라우드 LLM 엔진 활성';
+          if (badgeEl) badgeEl.textContent = '중앙 AI 엔진 활성';
         }
       } catch (e) {}
     }
@@ -2758,6 +3295,43 @@
       } catch (e) {}
     }
 
+    // 클라이언트 측 차종/타겟 정밀 파서 (예: "30대 여성 , 그랜저" 입력 시 차종 즉시 변경 & 30대 연령 오인 방지)
+    function parsePromptVehicleAndTargetClient(rawPrompt) {
+      const text = String(rawPrompt || '').trim();
+      const carMap = [
+        { kw: ['그랜저', '그랜져', 'gn7'], vehicle: '디 올 뉴 그랜저 하이브리드', discountNum: 450, discount: '월 48만원대 · 캘리그라피 즉시배정' },
+        { kw: ['싼타페', '산타페'], vehicle: '디 올 뉴 싼타페 하이브리드', discountNum: 420, discount: '월 44만원대 · 선점재고 즉시출고' },
+        { kw: ['쏘렌토', '소렌토'], vehicle: '2026 쏘렌토 하이브리드', discountNum: 480, discount: '월 46만원대 · 3일 즉시출고' },
+        { kw: ['카니발', '하이리무진'], vehicle: '더 뉴 카니발 하이브리드 9인승', discountNum: 390, discount: '월 52만원대 · 부가세 환급 가능' },
+        { kw: ['스포티지'], vehicle: '더 뉴 스포티지 하이브리드', discountNum: 310, discount: '월 36만원대 · 사회초년생·여성 추천' },
+        { kw: ['아반떼'], vehicle: '더 뉴 아반떼 CN7 인스퍼레이션', discountNum: 220, discount: '월 27만원대 · 첫차 베스트셀러' },
+        { kw: ['캐스퍼'], vehicle: '캐스퍼 일렉트릭 인스퍼레이션', discountNum: 340, discount: '월 24만원대 · 보조금 추가지원' },
+        { kw: ['코나'], vehicle: '디 올 뉴 코나 하이브리드', discountNum: 280, discount: '월 32만원대 · 여성 오너 선호 1위' },
+        { kw: ['투싼'], vehicle: '더 뉴 투싼 하이브리드', discountNum: 330, discount: '월 37만원대 · 즉시출고 특판' },
+        { kw: ['팰리세이드', '펠리세이드'], vehicle: '디 올 뉴 팰리세이드 하이브리드', discountNum: 510, discount: '월 56만원대 · 패밀리 플래그십' },
+        { kw: ['gv80'], vehicle: '제네시스 GV80 페이스리프트', discountNum: 620, discount: '월 78만원대 · 법인·사업자 비용처리' },
+        { kw: ['gv70'], vehicle: '제네시스 GV70 스포츠 패키지', discountNum: 540, discount: '월 64만원대 · 3040 워너비 SUV' },
+        { kw: ['g80'], vehicle: '제네시스 더 뉴 G80', discountNum: 590, discount: '월 69만원대 · 프리미엄 세단 특판' },
+        { kw: ['bmw', '520i', '5시리즈'], vehicle: 'BMW 520i M Sport 패키지', discountNum: 1150, discount: '월 59만원대 · 즉시출고 가능' },
+        { kw: ['벤츠', 'e클래스'], vehicle: '벤츠 E200 아방가르드', discountNum: 1080, discount: '월 68만원대 · 공식 프로모션' },
+        { kw: ['테슬라', '모델y'], vehicle: '테슬라 Model Y RWD', discountNum: 650, discount: '월 49만원대 · 전기차 보조금 확정' }
+      ];
+      const lower = text.toLowerCase();
+      let matchedCar = null;
+      for (const item of carMap) {
+        if (item.kw.some((k) => lower.includes(k))) {
+          matchedCar = item;
+          break;
+        }
+      }
+      const ageMatch = text.match(/(20대|30대|40대|50대|60대)\s*(여성|여자|남성|남자|주부|직장인| 워킹맘|대표님|사장님|부부)?/);
+      const targetPersona = ageMatch ? ageMatch[0].trim() : text.includes('여성') ? '여성 오너 맞춤' : '';
+      const cleanedForStock = text.replace(/(20|30|40|50|60)\s*대\s*(여성|여자|남성|남자|주부|직장인|워킹맘|초반|중반|후반)?/g, '');
+      const stockMatch = cleanedForStock.match(/(?:재고|선점|물량|한정|딱)\s*(\d{1,2})\s*대|([1-9])\s*대\s*(?:남음|한정|즉시|출고)/);
+      const stockNum = stockMatch ? (stockMatch[1] || stockMatch[2]) : '3';
+      return { matchedCar, targetPersona, stockNum };
+    }
+
     async function generateStoryboardFromPrompt() {
       const promptEl = document.getElementById('aiPromptInput');
       const btnEl = document.getElementById('aiGenBtn');
@@ -2765,13 +3339,21 @@
       const raw = (promptEl?.value || '').trim();
       const d = getSelectedDealer();
 
+      // 1) 클라이언트에서 먼저 차종('그랜저' 등)을 즉시 인식하여 반영
+      const parsedLocal = parsePromptVehicleAndTargetClient(raw);
+      if (parsedLocal.matchedCar) {
+        campaign.vehicle = parsedLocal.matchedCar.vehicle;
+        campaign.discountNum = parsedLocal.matchedCar.discountNum;
+        campaign.discount = parsedLocal.matchedCar.discount;
+      }
+
       if (btnEl) {
         btnEl.disabled = true;
-        btnEl.textContent = '⏳ AI가 4컷 대본·카톡대화 창작 중...';
+        btnEl.textContent = 'AI 대본·성우 내레이션 생성 중...';
       }
       if (noticeEl) {
         noticeEl.classList.remove('hidden');
-        noticeEl.textContent = '🤖 중앙 AI 엔진(LLM)이 상황에 맞는 4컷 자막과 실제 카톡 상담 대화를 새로 작성하고 있습니다...';
+        noticeEl.textContent = `중앙 AI 엔진이 [${raw || campaign.vehicle}] 맞춤 4컷 영상 대본·성우 음성·카톡 대화를 생성 중입니다...`;
       }
 
       try {
@@ -2813,6 +3395,11 @@
         if (Array.isArray(ai.cutCaptions) && ai.cutCaptions.length >= 4) {
           campaign.cutCaptions = ai.cutCaptions.slice(0, 4);
         }
+        if (Array.isArray(ai.ttsLines) && ai.ttsLines.length >= 4) {
+          campaign.ttsLines = ai.ttsLines.slice(0, 4);
+        } else {
+          campaign.ttsLines = [...campaign.cutCaptions];
+        }
         if (Array.isArray(ai.kakaoChat) && ai.kakaoChat.length >= 4) {
           campaign.kakaoChat = ai.kakaoChat.slice(0, 4);
         }
@@ -2836,38 +3423,43 @@
         }
 
         if (noticeEl) {
-          const themeLabel = (DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.GENESIS_COPPER).label;
-          noticeEl.textContent = `✅ [${result.provider}] 대본 + [${themeLabel}] 4컷 씬 레이아웃이 새롭게 조합되었습니다!`;
+          const themeObj = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
+          const themeName = themeObj.name || themeObj.label || '로얄 골드';
+          noticeEl.textContent = `[${campaign.vehicle}] 맞춤 4컷 대본·성우 내레이션·[${themeName}] 레이아웃이 영상에 즉시 반영되었습니다.`;
         }
       } catch (err) {
-        // 오프라인/로컬 파일 열기 환경일 때만 스마트 폴백 동작
-        const numMatch = raw.match(/(\d+)\s*대/);
-        const stockStr = numMatch ? `긴급 선점 ${numMatch[1]}대` : '선점 재고 긴급 물량';
-        const isTax = raw.includes('법인') || raw.includes('부가세') || raw.includes('사업자');
-        const topic = raw || `${campaign.vehicle} 당월 즉시출고 특별 프로모션`;
+        // 오프라인/폴백 시에도 차종 및 연령 타겟('30대 여성, 그랜저') 정확히 반영
+        const personaPrefix = parsedLocal.targetPersona ? `${parsedLocal.targetPersona} 인기 1위! ` : '';
+        const newHook = `${personaPrefix}${campaign.vehicle} 당월 즉시출고 특판`;
+        campaign.hook = newHook;
+        if (d.variation) d.variation.hook = newHook;
 
         campaign.cutCaptions = [
-          `🚨 ${topic.slice(0, 26)}`,
-          `✨ ${stockStr} 대기 없이 이번 주 즉시 배정!`,
-          isTax
-            ? `💰 부가세 10% 환급 + 연 1,500만원 비용처리 완비`
-            : `💰 최대 -${campaign.discountNum.toLocaleString()}만원 할인 · ${campaign.discount}`,
-          `🔑 ${d.name} ${d.title} 직통출고! 댓글에 [견적] 남겨주세요`
+          `🚨 ${newHook}`,
+          `✨ 인기 색상 선점 ${parsedLocal.stockNum}대 대기 없이 즉시 배정!`,
+          `💰 최대 -${campaign.discountNum.toLocaleString()}만원 혜택 · ${campaign.discount}`,
+          `🔑 ${d.name} ${d.title} 책임출고! 댓글에 [견적] 남겨주세요`
+        ];
+        campaign.ttsLines = [
+          `${personaPrefix}${campaign.vehicle}, 이번 달 특별 프로모션 조건 공개합니다!`,
+          `대기 기간 없이 선점 재고 ${parsedLocal.stockNum}대, 이번 주 바로 출고 가능합니다.`,
+          `최대 ${campaign.discountNum}만 원 할인 적용으로 ${campaign.discount}에 만나보세요.`,
+          `${d.name} ${d.title}에게 맡겨주세요. 댓글에 견적 남기시면 즉시 연락드립니다!`
         ];
         campaign.kakaoChat = [
-          { role: 'customer', text: `팀장님! "${topic.slice(0, 20)}" 지금 바로 진행 가능한가요? 😭` },
-          { role: 'dealer', text: `네 고객님! 방금 확보한 물량이라 대기 없이 즉시출고 가능합니다 🚗` },
+          { role: 'customer', text: `팀장님! ${parsedLocal.targetPersona ? parsedLocal.targetPersona + '이 타기 좋은 ' : ''}${campaign.vehicle} 즉시출고 되나요? 😭` },
+          { role: 'dealer', text: `네 고객님! 인기 트림 선점 물량 ${parsedLocal.stockNum}대 확보해둬서 이번 주 바로 출고 가능합니다 🚗` },
           { role: 'customer', text: '오 대박!! 이번 달 할인이랑 월 납입 조건은 어떻게 되나요?' },
           { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 👇` }
         ];
         proceduralRestyleCurrentScene();
         if (noticeEl) {
-          noticeEl.textContent = `✅ 상황에 맞춰 4컷 대본과 씬 레이아웃이 새롭게 조합되었습니다.`;
+          noticeEl.textContent = `[${campaign.vehicle}] 맞춤 4컷 대본·성우 내레이션이 영상에 즉시 반영되었습니다.`;
         }
       } finally {
         if (btnEl) {
           btnEl.disabled = false;
-          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
+          btnEl.textContent = 'AI 대본 · 씬 구도 새로 생성';
         }
       }
 
@@ -2876,12 +3468,21 @@
       document.getElementById('inputDiscount').value = campaign.discount;
       syncPreviewPanel();
       syncTechPanel();
-      window.__timelines['main'].seek(0.5);
+
+      // 영상 처음으로 이동 후 즉시 재생 & 오디오(BGM+TTS) 프리페치 및 발화
+      isPlaying = true;
+      AudioEngine.lastSpokenCut = -1;
+      AudioEngine.prefetchTtsBuffers();
+      window.__timelines['main'].seek(0.15);
+      if (AudioEngine.enabled) {
+        AudioEngine.speakCutLine(0, true);
+      }
     }
 
     function applyPreset(key) {
       const p = presets[key];
       if (!p) return;
+      const d = getSelectedDealer();
       campaign.presetKey = key;
       campaign.hook = p.hook;
       campaign.vehicle = p.vehicle;
@@ -2896,6 +3497,12 @@
         `최대 -${p.discountNum.toLocaleString()}만원 혜택 · ${p.discount}`,
         `계약 즉시 출고 가능! 댓글에 [견적] 남겨주세요`
       ];
+      campaign.ttsLines = [
+        `${p.vehicle}, ${p.hook}`,
+        `${(p.bullets[0] || '인기 색상 선점 물량 즉시 출고').replace('✔ ', '')} 가능합니다.`,
+        `최대 ${p.discountNum}만 원 할인 혜택과 ${p.discount} 조건으로 만나보세요.`,
+        `${d.name} ${d.title}가 책임 출고합니다. 댓글에 견적 두 글자만 남겨주세요!`
+      ];
       campaign.kakaoChat = [
         { role: 'customer', text: `팀장님! ${p.vehicle} 지금 계약하면 대기 기간이 얼마나 걸리나요? 😭` },
         { role: 'dealer', text: `아닙니다 고객님! ${(p.bullets[0] || '선점 재고 즉시출고').replace('✔ ', '')} 가능합니다 🚗` },
@@ -2903,7 +3510,6 @@
         { role: 'dealer', text: `최대 -${p.discountNum.toLocaleString()}만원 혜택으로 ${p.discount}에 출고 가능하세요! 👇` }
       ];
 
-      const d = getSelectedDealer();
       if (d && d.variation) {
         d.variation.hook = p.hook;
         d.variation.bullets = [...p.bullets];
@@ -2918,7 +3524,9 @@
       if (bulletsEl) bulletsEl.value = campaign.bullets.join('\n');
       syncPreviewPanel();
       syncTechPanel();
-      window.__timelines['main'].seek(0.4);
+      AudioEngine.lastSpokenCut = -1;
+      AudioEngine.prefetchTtsBuffers();
+      window.__timelines['main'].seek(0.2);
     }
 
     function updateCampaignFromInputs() {
@@ -2963,8 +3571,8 @@
       const drmCode = evaluateDealerDrmStatus(d);
       if (drmCode !== 1) {
         const msg = drmCode === 3
-          ? `🚨 [Rust Wasm DRM 보안 차단]\n현재 입력된 전화번호(${d.phone})가 정품 구독에 등록된 번호(${d.licensedPhone})와 다릅니다.\n1계정 다수 딜러 돌려쓰기(공유)가 감지되어 영상 추출이 차단되었습니다.`
-          : `🔒 [Rust Wasm DRM 구독 인증 필요]\n현재 미구독 또는 구독 만료 상태입니다.\n정품 라이선스 키(${formatWasmLicenseKey(d.licensedPhone, 20261231)})를 인증하거나 [🟢 정품 구독 정상] 버튼을 눌러 잠금을 해제하세요.`;
+          ? `[Rust Wasm DRM 보안 차단]\n현재 입력된 전화번호(${d.phone})가 정품 구독에 등록된 번호(${d.licensedPhone})와 다릅니다.\n1계정 다수 딜러 돌려쓰기(공유)가 감지되어 영상 추출이 차단되었습니다.`
+          : `[Rust Wasm DRM 구독 인증 필요]\n현재 미구독 또는 구독 만료 상태입니다.\n정품 라이선스 키(${formatWasmLicenseKey(d.licensedPhone, 20261231)})를 인증하거나 [정품 구독 정상] 버튼을 눌러 잠금을 해제하세요.`;
         alert(msg);
         return;
       }
@@ -2973,22 +3581,42 @@
         return;
       }
       const btn = document.getElementById('exportVideoBtn');
+      const expText = document.getElementById('exportBtnText');
       if (btn) btn.disabled = true;
 
       // 본문 캡션도 자동으로 클립보드에 복사 시도
       copyDealerCaption();
 
-      // 0.0초부터 12.0초까지 전 구간(본편 4컷 + 마지막 딜러 명함) 녹화 시작
+      // 녹화 시 BGM + 한국어 TTS 사운드 자동 활성화 및 오디오 트랙 합성
+      if (!AudioEngine.enabled) {
+        toggleAudioMaster();
+      } else {
+        AudioEngine.ensureContext();
+        AudioEngine.lastSpokenCut = -1;
+        AudioEngine.startBgmLoop();
+      }
+
+      // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 4컷 + 마지막 딜러 명함) 녹화 시작
       window.__timelines['main'].seek(0);
       isPlaying = true;
+      AudioEngine.speakCutLine(0, true);
 
-      const stream = canvas.captureStream(30);
+      const canvasStream = canvas.captureStream(30);
+      const combinedTracks = [...canvasStream.getVideoTracks()];
+      if (AudioEngine.streamDest && AudioEngine.streamDest.stream) {
+        const audioTracks = AudioEngine.streamDest.stream.getAudioTracks();
+        if (audioTracks.length > 0) {
+          combinedTracks.push(audioTracks[0]);
+        }
+      }
+      const stream = new MediaStream(combinedTracks);
+
       const chunks = [];
       const candidateTypes = [
         'video/mp4;codecs=avc1',
         'video/mp4',
-        'video/webm;codecs=vp9',
-        'video/webm;codecs=vp8',
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp8,opus',
         'video/webm'
       ];
       let mimeType = '';
@@ -3011,12 +3639,17 @@
         if (e.data && e.data.size > 0) chunks.push(e.data);
       };
 
+      const durSec = Math.round(TOTAL_DURATION);
       const startMs = performance.now();
-      const recordDurationMs = TOTAL_DURATION * 1000; // 12,000ms (12초 전체 녹화)
+      const recordDurationMs = TOTAL_DURATION * 1000;
       const progressTimer = setInterval(() => {
         const elapsed = performance.now() - startMs;
         const pct = Math.min(99, Math.round((elapsed / recordDurationMs) * 100));
-        btn.textContent = `🔴 12초 내 숏츠 제작중 (${pct}%)`;
+        if (expText) {
+          expText.textContent = `${durSec}초 영상(BGM·TTS) 합성 녹화중 (${pct}%)`;
+        } else if (btn) {
+          btn.textContent = `${durSec}초 영상(BGM·TTS) 합성 녹화중 (${pct}%)`;
+        }
       }, 200);
 
       recorder.onstop = () => {
@@ -3028,7 +3661,7 @@
         window.lastRecordedVideoBlob = blob;
         window.lastRecordedVideoUrl = videoUrl;
         window.lastRecordedMime = cleanMime;
-        window.lastRecordedFilename = `autoreels_${d.name}_12s.${fileExt}`;
+        window.lastRecordedFilename = `autoreels_${d.name}_${durSec}s.${fileExt}`;
 
         // 화면 내 비디오 플레이어 모달에 추출된 영상 로드 및 즉시 재생
         const player = document.getElementById('exportedVideoPlayer');
@@ -3040,14 +3673,16 @@
           player.play();
         }
         if (metaText) {
-          metaText.textContent = `✅ ${d.name} ${d.title}님 전용 12초 ${fileExt.toUpperCase()} 영상 완성! (용량: ${sizeKb} KB / 9:16 세로형)`;
+          metaText.textContent = `${d.name} ${d.title}님 전용 ${durSec}초 ${fileExt.toUpperCase()} 영상 완성 (${sizeKb} KB / 9:16 세로형 / BGM 합성)`;
         }
         if (modal) {
           modal.classList.remove('hidden');
         }
 
-        btn.disabled = false;
-        btn.textContent = '🎬 12초 내 숏츠 영상 완성하기 (내 폰 저장 · SNS 공유)';
+        if (btn) btn.disabled = false;
+        if (expText) {
+          expText.textContent = `${durSec}초 영상 추출 (BGM·TTS 합성 저장)`;
+        }
       };
 
       recorder.start(200);
