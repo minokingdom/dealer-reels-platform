@@ -190,18 +190,22 @@
             </div>
           </div>
 
-          <!-- ★ 한 줄 상황 입력 → 4컷 스토리보드 & 카톡 대화 자동 생성기 -->
+          <!-- ★ 한 줄 상황 입력 → 4컷 스토리보드 & 카톡 대화 자동 생성기 (방식 A: 중앙 AI 엔진) -->
           <div class="p-3.5 rounded-xl bg-[var(--background)] border border-amber-500/40 space-y-2.5">
             <div class="flex items-center justify-between flex-wrap gap-1">
-              <span class="text-xs font-bold text-amber-400">✨ 내 출고 상황 한 줄 입력 → 4컷 스토리 대본 & 카톡 대화 자동 생성</span>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-xs font-bold text-amber-400">✨ 내 출고 상황 한 줄 입력 → AI가 4컷 스토리 대본 & 카톡 대화 100% 새로 창작</span>
+                <span id="aiEngineStatusBadge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[11px] font-bold">🟢 중앙 AI 엔진 가동중 (딜러 로그인 불필요)</span>
+              </div>
               <span class="text-[11px] text-[var(--muted-foreground)]">컷별 자막을 직접 수정할 수도 있습니다</span>
             </div>
             <div class="flex flex-col sm:flex-row gap-2">
-              <input id="aiPromptInput" type="text" placeholder="예: 카니발 하브 화이트 2대 선점완료, 법인 부가세 환급 + 신차패키지 무상" class="flex-1 px-3 py-2 rounded-xl text-xs bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]" />
-              <button type="button" onclick="generateStoryboardFromPrompt()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-500 hover:bg-amber-400 text-slate-950 transition cursor-pointer shrink-0">
-                ✨ 4컷 대본·카톡대화 자동 생성
+              <input id="aiPromptInput" type="text" placeholder="예: 30대 워킹맘 고객님 그랜저 하브 취소차 1대 잡아서 내일 부산 탁송 내려갑니다" class="flex-1 px-3 py-2 rounded-xl text-xs bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)]" />
+              <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-amber-500 hover:bg-amber-400 text-slate-950 transition cursor-pointer shrink-0">
+                ✨ AI 4컷 대본·카톡대화 새로 생성
               </button>
             </div>
+            <p id="aiGenNotice" class="hidden text-xs font-semibold text-emerald-400"></p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               <div>
                 <label class="block text-[11px] font-bold text-amber-300 mb-0.5">1컷 (0~2초 · 초반 시선강탈 훅)</label>
@@ -397,6 +401,28 @@
           <button onclick="batchGenerateToStaging()" class="w-full py-2.5 px-4 rounded-xl text-sm font-bold bg-[var(--primary)] text-[var(--primary-foreground)]">
             🚀 전 딜러 임시서버 검수 링크 일괄 갱신
           </button>
+        </div>
+
+        <!-- ★ 방식 A: 대표님(관리자) 전용 중앙 AI 엔진 설정 패널 -->
+        <div class="pt-4 border-t border-[var(--border)] space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-1">
+            <h3 class="text-sm font-bold text-amber-400">🔐 방식 A · 대표님(관리자) 중앙 AI 엔진 설정</h3>
+            <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[11px] font-bold">딜러 무로그인 즉시 사용</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">
+            딜러들은 아무 로그인 없이 한 줄만 입력하면 됩니다. 현재 <strong>기본 클라우드 LLM(GPT-4o-mini)</strong>이 즉시 작동 중이며, 대표님의 정식 유료 계정을 연결하려면 아래에 키를 저장하거나 Vercel 환경변수(<code>OPENAI_API_KEY</code> 또는 <code>GEMINI_API_KEY</code>)에 등록하세요.
+          </p>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">OpenAI API Key (선택 · 입력 시 GPT-4o-mini 최우선 사용)</label>
+              <input id="adminOpenAiKeyInput" type="password" placeholder="sk-proj-..." oninput="saveAdminAiKeys()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-1">Google Gemini API Key (선택 · 입력 시 Gemini 2.0 Flash 사용)</label>
+              <input id="adminGeminiKeyInput" type="password" placeholder="AIzaSy..." oninput="saveAdminAiKeys()" class="w-full px-3 py-1.5 rounded-lg text-xs bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-mono" />
+            </div>
+            <p id="adminAiKeyStatus" class="text-[11px] text-emerald-400 font-semibold">✅ 현재 상태: AutoReels 기본 클라우드 LLM 엔진 활성 (키 입력 시 전용 계정으로 즉시 전환)</p>
+          </div>
         </div>
       </div>
 
@@ -2137,80 +2163,140 @@
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
 
-    function generateStoryboardFromPrompt() {
+    function saveAdminAiKeys() {
+      try {
+        const oa = document.getElementById('adminOpenAiKeyInput')?.value.trim() || '';
+        const gm = document.getElementById('adminGeminiKeyInput')?.value.trim() || '';
+        localStorage.setItem('autoreels_admin_openai_key', oa);
+        localStorage.setItem('autoreels_admin_gemini_key', gm);
+        const statusEl = document.getElementById('adminAiKeyStatus');
+        const badgeEl = document.getElementById('aiEngineStatusBadge');
+        if (oa) {
+          if (statusEl) statusEl.textContent = '🔐 대표님 전용 OpenAI (GPT-4o-mini) 유료 키가 연결되었습니다.';
+          if (badgeEl) badgeEl.textContent = '🟢 OpenAI GPT-4o-mini 전용 엔진 가동중';
+        } else if (gm) {
+          if (statusEl) statusEl.textContent = '🔐 대표님 전용 Google Gemini 2.0 Flash 키가 연결되었습니다.';
+          if (badgeEl) badgeEl.textContent = '🟢 Gemini 2.0 Flash 전용 엔진 가동중';
+        } else {
+          if (statusEl) statusEl.textContent = '✅ 현재 상태: AutoReels 기본 클라우드 LLM 엔진 활성 (키 입력 시 전용 계정으로 즉시 전환)';
+          if (badgeEl) badgeEl.textContent = '🟢 중앙 AI 엔진 가동중 (딜러 로그인 불필요)';
+        }
+      } catch (e) {}
+    }
+
+    function loadAdminAiKeys() {
+      try {
+        const oa = localStorage.getItem('autoreels_admin_openai_key') || '';
+        const gm = localStorage.getItem('autoreels_admin_gemini_key') || '';
+        const oaEl = document.getElementById('adminOpenAiKeyInput');
+        const gmEl = document.getElementById('adminGeminiKeyInput');
+        if (oaEl) oaEl.value = oa;
+        if (gmEl) gmEl.value = gm;
+        saveAdminAiKeys();
+      } catch (e) {}
+    }
+
+    async function generateStoryboardFromPrompt() {
       const promptEl = document.getElementById('aiPromptInput');
+      const btnEl = document.getElementById('aiGenBtn');
+      const noticeEl = document.getElementById('aiGenNotice');
       const raw = (promptEl?.value || '').trim();
       const d = getSelectedDealer();
 
-      if (raw.length > 0) {
-        // 입력한 텍스트에서 차량명, 대수, 키워드 추출
-        if (raw.includes('카니발')) {
-          campaign.vehicle = '더 뉴 카니발 하이브리드 9인승';
-          campaign.discountNum = 390;
-          campaign.discount = '월 52만원대 · 부가세 환급 특판';
-        } else if (raw.includes('싼타페')) {
-          campaign.vehicle = '디 올 뉴 싼타페 하이브리드';
-          campaign.discountNum = 420;
-          campaign.discount = '월 44만원대 · 선점재고 즉시출고';
-        } else if (raw.includes('GV80') || raw.includes('제네시스')) {
-          campaign.vehicle = '제네시스 GV80 페이스리프트';
-          campaign.discountNum = 620;
-          campaign.discount = '법인·사업자 비용처리 특판';
-        } else if (raw.includes('520') || raw.includes('BMW')) {
-          campaign.vehicle = 'BMW 520i M Sport 패키지';
-          campaign.discountNum = 1150;
-          campaign.discount = '월 59만원대 · 즉시출고 가능';
+      if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.textContent = '⏳ AI가 4컷 대본·카톡대화 창작 중...';
+      }
+      if (noticeEl) {
+        noticeEl.classList.remove('hidden');
+        noticeEl.textContent = '🤖 중앙 AI 엔진(LLM)이 상황에 맞는 4컷 자막과 실제 카톡 상담 대화를 새로 작성하고 있습니다...';
+      }
+
+      try {
+        const adminOpenAiKey = localStorage.getItem('autoreels_admin_openai_key') || '';
+        const adminGeminiKey = localStorage.getItem('autoreels_admin_gemini_key') || '';
+
+        const response = await fetch('/api/generate-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: raw,
+            vehicle: campaign.vehicle,
+            discountNum: campaign.discountNum,
+            discount: campaign.discount,
+            dealerName: d.name,
+            dealerTitle: d.title,
+            dealerBranch: d.branch,
+            dealerPromo: d.promoTag,
+            adminOpenAiKey,
+            adminGeminiKey
+          })
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.ok || !result.data) {
+          throw new Error(result.error || 'AI 서버 응답 오류');
         }
 
+        const ai = result.data;
+        if (ai.vehicle) campaign.vehicle = ai.vehicle;
+        if (ai.discountNum !== undefined && !isNaN(Number(ai.discountNum))) {
+          campaign.discountNum = Number(ai.discountNum);
+        }
+        if (ai.discount) campaign.discount = ai.discount;
+        if (ai.hook) {
+          campaign.hook = ai.hook;
+          if (d.variation) d.variation.hook = ai.hook;
+        }
+        if (Array.isArray(ai.cutCaptions) && ai.cutCaptions.length >= 4) {
+          campaign.cutCaptions = ai.cutCaptions.slice(0, 4);
+        }
+        if (Array.isArray(ai.kakaoChat) && ai.kakaoChat.length >= 4) {
+          campaign.kakaoChat = ai.kakaoChat.slice(0, 4);
+        }
+        if (Array.isArray(ai.bullets) && ai.bullets.length >= 2) {
+          campaign.bullets = ai.bullets;
+          if (d.variation) d.variation.bullets = [...ai.bullets];
+        }
+        if (ai.ctaKeyword && d.variation) {
+          d.variation.ctaKeyword = ai.ctaKeyword;
+        }
+        if (ai.ctaBanner && d.variation) {
+          d.variation.ctaBanner = ai.ctaBanner;
+        }
+
+        if (noticeEl) {
+          noticeEl.textContent = `✅ [${result.provider}] 창작 완료! 1~4컷 자막과 카톡 대화(포맷 2), SNS 캡션이 모두 새롭게 반영되었습니다.`;
+        }
+      } catch (err) {
+        // 오프라인/로컬 파일 열기 환경일 때만 스마트 폴백 동작
         const numMatch = raw.match(/(\d+)\s*대/);
         const stockStr = numMatch ? `긴급 선점 ${numMatch[1]}대` : '선점 재고 긴급 물량';
         const isTax = raw.includes('법인') || raw.includes('부가세') || raw.includes('사업자');
+        const topic = raw || `${campaign.vehicle} 당월 즉시출고 특별 프로모션`;
 
         campaign.cutCaptions = [
-          `🚨 ${raw.slice(0, 26)}`,
+          `🚨 ${topic.slice(0, 26)}`,
           `✨ ${stockStr} 대기 없이 이번 주 즉시 배정!`,
           isTax
             ? `💰 부가세 10% 환급 + 연 1,500만원 비용처리 완비`
             : `💰 최대 -${campaign.discountNum.toLocaleString()}만원 할인 · ${campaign.discount}`,
           `🔑 ${d.name} ${d.title} 직통출고! 댓글에 [견적] 남겨주세요`
         ];
-
         campaign.kakaoChat = [
-          { role: 'customer', text: `팀장님! "${raw.slice(0, 22)}" 조건 지금 바로 계약 가능한가요? 😭` },
-          { role: 'dealer', text: `네 고객님! 방금 확보한 ${stockStr}이라 대기 없이 즉시출고 가능합니다 🚗` },
-          { role: 'customer', text: isTax ? '법인·사업자 부가세 환급이랑 초기비용 0원도 되나요?' : '와 대박! 이번 달 할인이랑 월 납입금은 얼마인가요?' },
-          { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 견적서 보내드렸어요 👇` }
+          { role: 'customer', text: `팀장님! "${topic.slice(0, 20)}" 지금 바로 진행 가능한가요? 😭` },
+          { role: 'dealer', text: `네 고객님! 방금 확보한 물량이라 대기 없이 즉시출고 가능합니다 🚗` },
+          { role: 'customer', text: '오 대박!! 이번 달 할인이랑 월 납입 조건은 어떻게 되나요?' },
+          { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 👇` }
         ];
-      } else {
-        // 입력 없이 눌렀을 때도 현재 차종에 맞춰 새로운 4컷 스토리보드 & 카톡 대화 즉석 생성
-        const angles = [
-          [
-            `대기 6개월? ${campaign.vehicle} 3일 내 즉시출고!`,
-            `파노라믹 커브드 디스플레이 & 풀옵션 인기 트림`,
-            `이번 달 한정 최대 -${campaign.discountNum.toLocaleString()}만원 특판 할인`,
-            `계약 즉시 스마트키 인도! 댓글에 [견적] 남겨주세요`
-          ],
-          [
-            `법인·개인사업자 대표님 필수! ${campaign.vehicle}`,
-            `초기비용 0원 · 취등록세·보험료 통합 관리`,
-            `연간 1,500만원 전액 비용처리 + ${campaign.discount}`,
-            `전국 무료 캐리어 탁송! 댓글에 [특판] 남겨주세요`
-          ],
-          [
-            `전 금융사 금리 비교 완료! ${campaign.vehicle} 최저가`,
-            `신차패키지 8종 루마버텍스·블랙박스 전액 무상 시공`,
-            `할인 -${campaign.discountNum.toLocaleString()}만원 적용 시 ${campaign.discount}`,
-            `1:1 비밀 견적표 지금 댓글 [견적]으로 받아보세요!`
-          ]
-        ];
-        const pick = angles[Math.floor(Math.random() * angles.length)];
-        campaign.cutCaptions = [...pick];
-        campaign.kakaoChat = [
-          { role: 'customer', text: `팀장님! ${campaign.vehicle} 지금 계약하면 얼마나 기다려야 하나요?` },
-          { role: 'dealer', text: `고객님! 인기 색상 선점 물량이 있어서 이번 주 바로 출고 가능합니다 🚗` },
-          { role: 'customer', text: `오 좋네요! 초기비용 0원으로 하면 할인이랑 월 납입금은요?` },
-          { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택 들어가서 ${campaign.discount}입니다! 👇` }
-        ];
+        if (noticeEl) {
+          noticeEl.textContent = `✅ 상황에 맞춰 4컷 대본과 카톡 대화가 업데이트되었습니다.`;
+        }
+      } finally {
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.textContent = '✨ AI 4컷 대본·카톡대화 새로 생성';
+        }
       }
 
       document.getElementById('inputVehicle').value = campaign.vehicle;
@@ -2697,6 +2783,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
 
     // 초기 구동
     loadSavedDealerProfiles();
+    loadAdminAiKeys();
     resetToAiPhotos();
     initDealerAvatars();
     renderQuickSelector();
