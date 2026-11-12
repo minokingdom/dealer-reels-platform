@@ -1,5 +1,5 @@
 /**
- * Vercel Serverless Function: GET /api/tts?text=...&voice=female|male|energetic
+ * Vercel Serverless Function: GET /api/tts?text=...&ref=<보이스 ID>&speed=1.1
  * ----------------------------------------------------------------------------
  * Fish Audio 한국어 AI 성우 TTS 프록시 (MP3 바이너리 반환)
  * - API 키는 서버 환경변수에만 두고 브라우저로 내려보내지 않습니다.
@@ -12,8 +12,11 @@
  *   FISH_VOICE_FEMALE     선택. 여성 성우 보이스 모델 ID (reference_id)
  *   FISH_VOICE_MALE       선택. 남성 성우 보이스 모델 ID
  *   FISH_VOICE_ENERGETIC  선택. 쇼호스트 성우 보이스 모델 ID (없으면 여성 보이스 + 빠른 속도)
- *   보이스 ID를 비워두면 Fish Audio 기본 보이스로 합성됩니다.
+ *   보이스 ID를 비워두면 한국어 인기 1위 보이스 하나로 고정해 합성합니다.
+ *   화면에서 성우를 고르면 ?ref=<보이스 ID>, 속도는 ?speed=0.8~1.5 로 전달됩니다.
  */
+
+const { listKoreanVoices, isValidVoiceId } = require('../lib/fish-voices');
 
 const FISH_TTS_URL = 'https://api.fish.audio/v1/tts';
 const MAX_TEXT_LENGTH = 200;
@@ -75,7 +78,22 @@ module.exports = async function handler(req, res) {
   if (!text) {
     return res.status(400).json({ ok: false, error: 'text_required' });
   }
-  const { referenceId, speed } = resolveVoice(String(input.voice || 'female'));
+  // 보이스 결정 순서: 화면에서 고른 보이스(ref) → 환경변수 보이스 → 한국어 인기 1위 보이스
+  // 보이스를 지정하지 않으면 Fish Audio가 문장마다 다른 목소리(남/여)를 골라 섞이므로 반드시 하나로 고정합니다.
+  const preset = resolveVoice(String(input.voice || 'female'));
+  let referenceId = isValidVoiceId(String(input.ref || '')) ? String(input.ref) : preset.referenceId;
+  if (!referenceId) {
+    try {
+      const voices = await listKoreanVoices(apiKey);
+      if (voices.length > 0) referenceId = voices[0].id;
+    } catch (e) {}
+  }
+  if (!referenceId) {
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(502).json({ ok: false, error: 'fish_no_voice_available' });
+  }
+  const requestedSpeed = Number(input.speed);
+  const speed = requestedSpeed >= 0.8 && requestedSpeed <= 1.5 ? requestedSpeed : preset.speed;
 
   const payload = {
     text,
@@ -83,7 +101,7 @@ module.exports = async function handler(req, res) {
     latency: 'normal',
     prosody: { speed }
   };
-  if (referenceId) payload.reference_id = referenceId;
+  payload.reference_id = referenceId;
 
   try {
     const upstream = await fetch(FISH_TTS_URL, {

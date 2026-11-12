@@ -66,6 +66,9 @@
       border-color: rgba(237, 237, 237, 0.32);
       background-color: #28282b;
     }
+    .btn-primary, .btn-secondary, .studio-tab {
+      white-space: nowrap;
+    }
     .btn-primary {
       background-color: var(--primary);
       color: var(--primary-foreground);
@@ -239,7 +242,7 @@
           <div class="flex items-center justify-between text-[12px]">
             <span class="text-[#a1a1a6] flex items-center gap-2">
               <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
-              실시간 프리뷰 (540×960 · 60fps)
+              미리보기
             </span>
             <span id="activeClipBadge" class="font-mono text-[12px] text-[#85858b]">
               0~3초 · 오프닝 훅
@@ -263,31 +266,28 @@
           <!-- 핵심 액션 컨트롤 -->
           <div class="space-y-2 pt-1">
             <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
-              <span id="exportBtnText">12초 영상 추출 및 모바일 저장 (BGM+TTS 포함)</span>
+              <span id="exportBtnText">영상 만들기 · 12초</span>
             </button>
-            <div class="grid grid-cols-3 gap-1.5">
+            <div class="grid grid-cols-2 gap-1.5">
               <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
                 <span id="soundDot" class="w-1.5 h-1.5 rounded-full bg-[#85858b]"></span>
                 <span id="soundToggleLabel">사운드 켜기</span>
               </button>
-              <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer">
-                컷 · 구도 셔플
-              </button>
               <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer">
-                일시정지
+                ⏸ 일시정지
               </button>
             </div>
           </div>
 
           <!-- 영상 총 길이(초) 원클릭 선택 -->
           <div class="flex items-center justify-between gap-1.5 bg-[#141415] px-2.5 py-1.5 rounded-[8px] border border-[var(--border)]">
-            <span class="text-[11px] text-[#85858b] font-mono">영상 시간</span>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center justify-between gap-1 w-full">
               <button type="button" id="durBtn_8" onclick="setVideoTotalDuration(8)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">8s</button>
               <button type="button" id="durBtn_12" onclick="setVideoTotalDuration(12)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono bg-[#232325] text-[#ededed] cursor-pointer">12s</button>
               <button type="button" id="durBtn_15" onclick="setVideoTotalDuration(15)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">15s</button>
               <button type="button" id="durBtn_20" onclick="setVideoTotalDuration(20)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">20s</button>
               <button type="button" id="durBtn_30" onclick="setVideoTotalDuration(30)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">30s</button>
+              <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-11 h-6 px-1 text-[11px] font-mono text-center" title="영상 길이 직접 입력 (초)" aria-label="영상 길이 직접 입력 (초)" />
             </div>
           </div>
 
@@ -296,13 +296,13 @@
           <!-- 구간 점프 -->
           <div class="grid grid-cols-3 gap-1 bg-[#141415] p-1 rounded-[8px] border border-[var(--border)]">
             <button id="jumpBtn0" onclick="seekToTime(0.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
-              0~2초 오프닝
+              처음
             </button>
             <button id="jumpBtn1" onclick="seekToTime(3.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
-              2~8초 본편
+              본편
             </button>
             <button id="jumpBtn2" onclick="seekToTime(8.2)" class="h-7 px-2 rounded-[6px] text-[12px] bg-[#232325] text-[#ededed] transition-colors">
-              8~12초 딜러명함
+              명함
             </button>
           </div>
 
@@ -375,7 +375,7 @@
                 <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
               </div>
               <button type="button" onclick="proceduralRestyleCurrentScene()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                화면 구도 · 테마 재조립
+                테마 바꾸기
               </button>
             </div>
 
@@ -388,7 +388,7 @@
             <div class="flex flex-col sm:flex-row gap-2">
               <input id="aiPromptInput" type="text" placeholder="예: 30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리" class="studio-input flex-1 h-9 px-3 text-[13px]" />
               <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">
-                AI 대본 · 성우 음성 · 영상 생성
+                AI로 만들기
               </button>
             </div>
             <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
@@ -419,16 +419,11 @@
 
         <div id="studioPanel_photo" role="tabpanel" aria-labelledby="studioTabBtn_photo" class="studio-panel hidden p-5 sm:p-6 space-y-5">
           <!-- 사진 업로드 영역 -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 gap-3">
             <label for="multiPhotoInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
               <span id="photoUploadLabelTitle" class="text-[13px] font-medium text-[#ededed]">차량 · 출고 사진 업로드 (1~10장 다중 선택)</span>
               <span class="text-[12px] text-[#85858b] mt-1">설정한 영상 시간에 맞춰 모든 사진이 순서대로 줌인·패닝 슬라이드됩니다</span>
               <input type="file" id="multiPhotoInput" accept="image/*" multiple onchange="handleMultiPhotoUpload(event)" class="hidden" />
-            </label>
-            <label for="dealerFaceQuickInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
-              <span class="text-[13px] font-medium text-[#ededed]">카마스터 프로필 사진 변경</span>
-              <span class="text-[12px] text-[#85858b] mt-1">하단 프로필 바 및 엔딩 명함에 즉시 반영</span>
-              <input type="file" id="dealerFaceQuickInput" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="hidden" />
             </label>
           </div>
 
@@ -441,10 +436,10 @@
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                  순서 · 구도 재배치
+                  구도 섞기
                 </button>
                 <button type="button" onclick="resetToAiPhotos()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                  기본 화보 복원
+                  기본 사진으로
                 </button>
               </div>
             </div>
@@ -467,40 +462,26 @@
           <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-[#ededed]">영상 시간 · 한국어 AI 성우(TTS) · 릴스/숏츠 BGM</span>
+                <span class="text-[13px] font-medium text-[#ededed]">배경음악 · 성우</span>
                 <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]">클릭 시 사운드 자동 활성</span>
                 <span id="ttsProviderBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]">성우: 준비 중</span>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <button type="button" onclick="testCurrentCutTtsNow()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                  🔊 현재 컷 성우 음성 테스트
+                  현재 컷 듣기
                 </button>
                 <button type="button" onclick="triggerFullAudioPreview()" class="btn-primary h-8 px-3 text-[12px] cursor-pointer">
-                  ▶️ 사운드 켜고 처음부터 재생 (BGM + 성우)
+                  처음부터 듣기
                 </button>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">총 영상 길이 (늘리면 사진·컷 수 자동 추가)</label>
-                <div class="flex gap-1.5">
-                  <select id="durationSelect" onchange="setVideoTotalDuration(this.value)" class="studio-input flex-1 h-9 px-2.5 text-[12px] font-mono cursor-pointer">
-                    <option value="8">8초 (본편 사진 4컷 + 명함)</option>
-                    <option value="12" selected>12초 (본편 사진 4컷 + 명함)</option>
-                    <option value="15">15초 (본편 사진 6컷 자동확장 + 명함)</option>
-                    <option value="20">20초 (본편 사진 8컷 자동확장 + 명함)</option>
-                    <option value="30">30초 (본편 사진 10컷 풀스토리 + 명함)</option>
-                  </select>
-                  <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-16 h-9 px-2 text-[12px] font-mono text-center" title="직접 초 입력" />
-                </div>
-              </div>
-
-              <div>
                 <div class="flex items-center justify-between mb-1">
-                  <label class="text-[12px] text-[#a1a1a6]">릴스·숏츠 배경음악 (BGM)</label>
+                  <label class="text-[12px] text-[#a1a1a6]">배경음악</label>
                   <label for="customBgmFileInput" class="text-[11px] font-mono text-[#3b82f6] hover:underline cursor-pointer">
-                    + 내 폰/PC 음원(MP3) 불러오기
+                    + 내 음원 불러오기
                   </label>
                   <input id="customBgmFileInput" type="file" accept="audio/*,video/mp4" onchange="handleCustomBgmUpload(event)" class="hidden" />
                 </div>
@@ -515,12 +496,19 @@
               </div>
 
               <div>
-                <label class="block text-[12px] text-[#a1a1a6] mb-1">한국어 AI 성우 내레이션 (Fish Audio)</label>
+                <label for="ttsVoiceSelect" class="block text-[12px] text-[#a1a1a6] mb-1">성우 목소리 (Fish Audio)</label>
                 <select id="ttsVoiceSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
-                  <option value="female" selected>여성 아나운서 성우 (또렷·표준)</option>
-                  <option value="male">남성 카마스터 성우 (중저음·신뢰)</option>
-                  <option value="energetic">특판 쇼호스트 성우 (빠른 1.25x)</option>
-                  <option value="off">성우 내레이션 끄기</option>
+                  <option value="auto" selected>기본 한국어 성우</option>
+                  <option value="off">성우 끄기</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="ttsSpeedSelect" class="block text-[12px] text-[#a1a1a6] mb-1">말하는 속도</label>
+                <select id="ttsSpeedSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
+                  <option value="1">보통</option>
+                  <option value="1.1" selected>조금 빠르게</option>
+                  <option value="1.2">빠르게</option>
                 </select>
               </div>
             </div>
@@ -551,8 +539,11 @@
               <input id="dlrInputBranch" type="text" placeholder="현대·기아 강남오토스퀘어" oninput="updateCurrentDealerFromPreview()" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
             <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">프로필 사진 파일 선택</label>
-              <input type="file" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="w-full text-[12px] text-[#85858b] file:mr-2.5 file:h-8 file:px-3 file:rounded-[6px] file:border file:border-[var(--border)] file:text-[12px] file:font-medium file:bg-[#232325] file:text-[#ededed] cursor-pointer" />
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">프로필 사진</label>
+              <label for="dealerFaceQuickInput" class="btn-secondary h-9 px-3 text-[13px] flex items-center justify-center cursor-pointer">
+                프로필 사진 바꾸기
+                <input type="file" id="dealerFaceQuickInput" accept="image/*" onchange="handleDealerAvatarUpload(event)" class="hidden" />
+              </label>
             </div>
             <div class="md:col-span-2">
               <label class="block text-[12px] text-[#a1a1a6] mb-1.5">출고 고객 전담 혜택 문구</label>
@@ -592,16 +583,8 @@
             <!-- 딜러용: 구독 결제 · 정품 라이선스 즉시 개통 바 -->
             <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border)]">
               <span id="dealerBillingNoticeText" class="text-[12px] text-[#a1a1a6]">
-                정기구독 결제 즉시 내 번호 전용 정품 라이선스가 자동 발급되며 워터마크가 제거됩니다.
+                결제하면 내 번호 전용 라이선스가 바로 발급되고 워터마크가 사라집니다. 로그인과 결제는 화면 맨 위 버튼에서 합니다.
               </span>
-              <div class="flex items-center gap-2">
-                <button type="button" onclick="openDealerAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                  내 번호 로그인 · 변경
-                </button>
-                <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer">
-                  PRO 멤버십 결제 · 연장하기
-                </button>
-              </div>
             </div>
 
             <!-- [관리자 전용] 대표님 테스트용 구독 상태 전환 (딜러 모드에서는 숨김) -->
@@ -636,11 +619,8 @@
                 <label class="text-[13px] font-medium text-[#ededed]">
                   내 SNS 계정 연결 및 동시 발행 채널
                 </label>
-                <p class="text-[12px] text-[#85858b] mt-0.5">딜러 본인의 인스타그램·유튜브·틱톡·페이스북 계정을 연결해 두면 한 번에 발행됩니다</p>
+                <p class="text-[12px] text-[#85858b] mt-0.5">오른쪽 상태 표시를 누르면 계정을 연결하거나 바꿀 수 있습니다</p>
               </div>
-              <button type="button" onclick="openSnsConnectModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                내 SNS 계정 연결 · 변경
-              </button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[13px]">
@@ -705,7 +685,7 @@
               <div class="flex items-center gap-2">
                 <span id="igAccountBadge" class="hidden sm:inline text-[12px] font-mono text-[#85858b]"></span>
                 <button type="button" onclick="copyDealerCaption()" id="copyCaptionBtn" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                  본문 · 해시태그 복사
+                  본문 복사
                 </button>
               </div>
             </div>
@@ -713,12 +693,9 @@
           </div>
 
           <!-- 하단 핵심 액션 2개 -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <button onclick="exportSynthesizedVideo()" class="btn-primary h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
-              <span>12초 영상 파일 저장 및 공유</span>
-            </button>
-            <button onclick="approveAndPublishToInstagram()" class="btn-secondary h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
-              <span>연동된 4대 SNS 자동 발행 실행</span>
+          <div class="pt-1">
+            <button onclick="approveAndPublishToInstagram()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
+              <span>선택한 SNS에 발행</span>
             </button>
           </div>
 
@@ -1745,7 +1722,7 @@
               <div class="flex items-center gap-1.5">
                 <span id="cutWidgetBadge${i}" class="font-mono text-[11px] text-[#85858b]">${wLabel}</span>
                 <button type="button" onclick="testCutTts(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="이 컷의 한국어 성우 음성을 즉시 들어봅니다">
-                  🔊 성우듣기
+                  듣기
                 </button>
               </div>
             </div>
@@ -1851,21 +1828,21 @@
       const jb1 = document.getElementById('jumpBtn1');
       const jb2 = document.getElementById('jumpBtn2');
       if (jb0) {
-        jb0.textContent = `0~${(mainDur * 0.4).toFixed(0)}초 초반훅`;
+        jb0.textContent = '처음';
         jb0.onclick = () => seekToTime(0.2);
       }
       if (jb1) {
-        jb1.textContent = `${(mainDur * 0.4).toFixed(0)}~${mainDur.toFixed(0)}초 본편(${targetCuts}컷)`;
+        jb1.textContent = `본편 ${targetCuts}컷`;
         jb1.onclick = () => seekToTime(mainDur * 0.45);
       }
       if (jb2) {
-        jb2.textContent = `${mainDur.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초 명함`;
+        jb2.textContent = '명함';
         jb2.onclick = () => seekToTime(mainDur + 0.3);
       }
 
       const expText = document.getElementById('exportBtnText');
       if (expText) {
-        expText.textContent = `${Math.round(TOTAL_DURATION)}초 영상 추출 (${targetCuts}컷+BGM+성우 저장)`;
+        expText.textContent = `영상 만들기 · ${Math.round(TOTAL_DURATION)}초`;
       }
 
       // 시간 변경에 맞춰 사진 개수(4~10장) 및 컷 대본 카드 자동 확장
@@ -1889,7 +1866,9 @@
       streamDest: null,
       enabled: false,
       bgmStyle: 'showroom',
-      ttsVoice: 'female',
+      ttsVoice: 'auto', // 'auto'(서버 기본 한국어 보이스) | Fish Audio 보이스 ID | 'off'
+      ttsSpeed: 1.1,
+      voiceListLoaded: false,
       bgmTimer: null,
       stepIndex: 0,
       lastSpokenCut: -1,
@@ -2215,6 +2194,38 @@
         }
       },
 
+      ttsKey(text) {
+        return `${this.ttsVoice}@${this.ttsSpeed}|${text}`;
+      },
+
+      // Fish Audio 한국어 성우 목록을 받아 선택 상자에 채움 (한 번만)
+      async loadVoiceList() {
+        if (this.voiceListLoaded || !window.location.protocol.startsWith('http')) return;
+        this.voiceListLoaded = true;
+        try {
+          const res = await fetch('/api/tts-voices');
+          if (!res.ok) throw new Error(`http_${res.status}`);
+          const body = await res.json();
+          const sel = document.getElementById('ttsVoiceSelect');
+          if (!sel || !Array.isArray(body.voices) || body.voices.length === 0) return;
+          let saved = '';
+          try { saved = localStorage.getItem('autoreels_tts_voice') || ''; } catch (e) {}
+          const offOpt = sel.querySelector('option[value="off"]');
+          body.voices.forEach((v) => {
+            const opt = document.createElement('option');
+            opt.value = v.id;
+            opt.textContent = v.title;
+            sel.insertBefore(opt, offOpt);
+          });
+          if (saved && body.voices.some((v) => v.id === saved) && this.ttsVoice === 'auto') {
+            sel.value = saved;
+            onAudioConfigChange();
+          }
+        } catch (e) {
+          this.voiceListLoaded = false; // 다음에 다시 시도
+        }
+      },
+
       // Fish Audio 요청은 한 번에 2개까지만 보냄 (한꺼번에 몰리면 일부가 거절되어 음성이 빠짐)
       ttsActive: 0,
       ttsWaiters: [],
@@ -2233,7 +2244,8 @@
       // 문장 하나의 Fish Audio 음성을 받아 AudioBuffer로 디코딩 (성우·문장별 캐시)
       fetchTtsBuffer(text) {
         const voice = this.ttsVoice;
-        const key = `${voice}|${text}`;
+        const speed = this.ttsSpeed;
+        const key = this.ttsKey(text);
         if (this.ttsCache.has(key)) return this.ttsCache.get(key);
         // 키 미설정·크레딧 부족처럼 바로 풀리지 않는 오류는 1분간 재요청하지 않음
         if (Date.now() < this.ttsBlockedUntil) return Promise.reject(new Error(this.ttsLastError || 'blocked'));
@@ -2242,7 +2254,7 @@
         const job = (async () => {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
-          const url = `/api/tts?voice=${encodeURIComponent(voice)}&text=${encodeURIComponent(text)}`;
+          const url = `/api/tts?speed=${speed}` + (voice !== 'auto' ? `&ref=${encodeURIComponent(voice)}` : '') + `&text=${encodeURIComponent(text)}`;
           let res = await this.runTtsRequest(() => fetch(url));
           if (!res.ok && (res.status === 429 || res.status >= 500) && res.status !== 503) {
             await new Promise((r) => setTimeout(r, 900));
@@ -2302,7 +2314,7 @@
         const out = [];
         for (let i = 0; i <= totalCuts; i++) {
           const text = this.getCutNarration(i);
-          let sec = text ? (this.ttsSeconds.get(`${this.ttsVoice}|${text}`) || 0) : 0;
+          let sec = text ? (this.ttsSeconds.get(this.ttsKey(text)) || 0) : 0;
           if (!sec && text && this.ttsProvider === 'browser') {
             sec = text.replace(/[^0-9A-Za-z가-힣]/g, '').length * 0.17 + 0.3;
           }
@@ -2536,6 +2548,7 @@
         AudioEngine.ensureContext();
         AudioEngine.lastSpokenCut = -1;
         AudioEngine.startBgmLoop();
+        AudioEngine.loadVoiceList();
         AudioEngine.prefetchTtsBuffers();
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
         if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#4cc38a]';
@@ -2568,6 +2581,11 @@
       const ttsEl = document.getElementById('ttsVoiceSelect');
       if (bgmEl) AudioEngine.bgmStyle = bgmEl.value;
       if (ttsEl) AudioEngine.ttsVoice = ttsEl.value;
+      const speedEl = document.getElementById('ttsSpeedSelect');
+      if (speedEl) AudioEngine.ttsSpeed = Number(speedEl.value) || 1.1;
+      try {
+        if (ttsEl && ttsEl.value !== 'off') localStorage.setItem('autoreels_tts_voice', ttsEl.value);
+      } catch (e) {}
       if (!AudioEngine.enabled) {
         toggleAudioMaster(true);
       } else {
@@ -2583,7 +2601,7 @@
       toggleAudioMaster(true);
       isPlaying = true;
       const ppBtn = document.getElementById('playPauseBtn');
-      if (ppBtn) ppBtn.textContent = '일시정지';
+      if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
       window.__timelines['main'].seek(0);
       AudioEngine.speakCutLine(0, true);
     }
@@ -3841,6 +3859,7 @@
     const STUDIO_TABS = ['script', 'photo', 'sound', 'card', 'publish'];
     function switchStudioTab(key) {
       if (!STUDIO_TABS.includes(key)) return;
+      if (key === 'sound') AudioEngine.loadVoiceList();
       STUDIO_TABS.forEach((k) => {
         const panel = document.getElementById(`studioPanel_${k}`);
         const btn = document.getElementById(`studioTabBtn_${k}`);
@@ -4219,7 +4238,7 @@
             notice.textContent = '본문과 해시태그가 복사되었습니다. 업로드 시 붙여넣기 하세요.';
           }
           setTimeout(() => {
-            if (btn) btn.textContent = '본문·해시태그 복사';
+            if (btn) btn.textContent = '본문 복사';
           }, 2500);
         }).catch(() => {});
       }
@@ -4643,7 +4662,7 @@
       isPlaying = false;
       AudioEngine.stopTts();
       if (AudioEngine.ttsVoice !== 'off') {
-        if (expText) expText.textContent = '성우 음성 준비중…';
+        if (expText) expText.textContent = '성우 음성 준비 중…';
         await Promise.race([
           AudioEngine.prefetchTtsBuffers(),
           new Promise((resolve) => setTimeout(resolve, 20000))
@@ -4706,9 +4725,9 @@
         const elapsed = performance.now() - startMs;
         const pct = Math.min(99, Math.round((elapsed / recordDurationMs) * 100));
         if (expText) {
-          expText.textContent = `${durSec}초 영상(BGM·TTS) 합성 녹화중 (${pct}%)`;
+          expText.textContent = `영상 만드는 중 ${pct}%`;
         } else if (btn) {
-          btn.textContent = `${durSec}초 영상(BGM·TTS) 합성 녹화중 (${pct}%)`;
+          btn.textContent = `영상 만드는 중 ${pct}%`;
         }
       }, 200);
 
@@ -4748,7 +4767,7 @@
 
         if (btn) btn.disabled = false;
         if (expText) {
-          expText.textContent = `${durSec}초 영상 추출 (BGM·TTS 합성 저장)`;
+          expText.textContent = `영상 만들기 · ${durSec}초`;
         }
       };
 
