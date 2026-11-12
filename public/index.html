@@ -422,7 +422,7 @@
           <div class="grid grid-cols-1 gap-3">
             <label for="multiPhotoInput" class="flex flex-col items-start justify-center p-4 rounded-[12px] bg-[#141415] hover:bg-[#232325] border border-[var(--border)] cursor-pointer transition-colors">
               <span id="photoUploadLabelTitle" class="text-[13px] font-medium text-[#ededed]">사진 · 영상 올리기 (최대 10개)</span>
-              <span class="text-[12px] text-[#85858b] mt-1">올린 순서대로 한 컷씩 들어갑니다. 영상은 컷 길이만큼 앞부분이 재생되고 원래 소리는 빠집니다.</span>
+              <span class="text-[12px] text-[#85858b] mt-1">올린 순서대로 장면이 됩니다. 영상은 장면 길이만큼 앞부분이 재생되고 원래 소리는 빠집니다.</span>
               <input type="file" id="multiPhotoInput" accept="image/*,video/*" multiple onchange="handleMultiPhotoUpload(event)" class="hidden" />
             </label>
           </div>
@@ -432,7 +432,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <span id="photoSectionHeaderTitle" class="text-[13px] font-medium text-[#ededed]">컷에 들어간 사진 · 영상</span>
-                <p class="text-[12px] text-[#85858b] mt-0.5">누르면 그 컷으로 이동해 성우 음성을 들려줍니다</p>
+                <p class="text-[12px] text-[#85858b] mt-0.5">누르면 그 장면으로 이동합니다</p>
               </div>
               <div class="flex items-center gap-2">
                 <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
@@ -1547,12 +1547,12 @@
 
     // 영상 길이에 따른 본편 컷(사진·장면) 수 계산: 8~12초=4컷, 15초=6컷, 20초=8컷, 30초+=10컷
     function getTargetCutCount() {
-      // 컷 수는 올린 사진·영상 개수와 같음 (1~10). 같은 사진을 반복해서 컷을 늘리지 않음.
-      // 영상 길이를 늘리면 컷 수가 아니라 컷당 시간이 늘어남
-      if (campaign.isUserCustomPhotos && campaign.uploadedPhotos.length > 0) {
-        return Math.max(1, Math.min(10, campaign.uploadedPhotos.length));
-      }
-      return 4; // 기본 사진 4장
+      // 컷(자막·성우 대사) 수는 고른 영상 길이로 정함: 길이를 늘리면 컷과 대사가 늘어남.
+      // 사진·영상은 따로 "장면"으로 나뉘어 깔리며, 같은 사진을 반복해 채우지 않음
+      if (BASE_DURATION >= 26) return 10;
+      if (BASE_DURATION >= 18) return 8;
+      if (BASE_DURATION >= 14) return 6;
+      return 4;
     }
 
     const EXTRA_CUT_BLUEPRINTS = [
@@ -1658,8 +1658,11 @@
       if (thumbContainer && campaign.uploadedPhotos.length > 0) {
         thumbContainer.innerHTML = '';
         campaign.uploadedPhotos.forEach((imgObj, idx) => {
-          const sTime = (idx * cutDur).toFixed(1);
-          const eTime = ((idx + 1) * cutDur).toFixed(1);
+          const sceneUnit = mainDur / campaign.uploadedPhotos.length;
+          const sceneStart = toRealTime(idx * sceneUnit);
+          const sceneEnd = idx + 1 >= campaign.uploadedPhotos.length ? mainDur : toRealTime((idx + 1) * sceneUnit);
+          const sTime = sceneStart.toFixed(1);
+          const eTime = sceneEnd.toFixed(1);
           const label =
             imgObj._label ||
             (!campaign.isUserCustomPhotos && BUILT_IN_AI_CAR_PHOTOS[idx] && BUILT_IN_AI_CAR_PHOTOS[idx].label) ||
@@ -1667,10 +1670,7 @@
           const srcUrl = imgObj._dataUrl || imgObj.src;
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.onclick = () => {
-            seekToTime(idx * cutDur + 0.12);
-            testCutTts(idx);
-          };
+          btn.onclick = () => seekToTime(sceneStart + 0.1);
           btn.className =
             'relative rounded-[8px] overflow-hidden border border-[var(--border)] hover:border-[#3b82f6] transition group aspect-[9/14] bg-black cursor-pointer';
           btn.innerHTML = `
@@ -1685,9 +1685,12 @@
 
       const statusEl = document.getElementById('photoUploadStatus');
       if (statusEl) {
-        statusEl.textContent = campaign.isUserCustomPhotos
-          ? `내가 올린 ${campaign.uploadedPhotos.length}개로 ${targetCuts}컷 · ${TOTAL_DURATION.toFixed(1)}초 영상이 만들어집니다.`
-          : `기본 사진 4장으로 4컷 · ${TOTAL_DURATION.toFixed(1)}초 영상이 만들어집니다. 내 사진·영상을 올리면 올린 개수만큼 컷이 생깁니다.`;
+        const sceneCount = campaign.uploadedPhotos.length;
+        statusEl.textContent =
+          `${campaign.isUserCustomPhotos ? '내가 올린' : '기본'} 사진·영상 ${sceneCount}개 · 대본 ${targetCuts}컷 · ${TOTAL_DURATION.toFixed(1)}초. ` +
+          (sceneCount < targetCuts
+            ? `같은 사진을 반복하지 않고 한 장면을 더 길게 보여 줍니다. ${targetCuts - sceneCount}개를 더 올리면 컷마다 다른 장면이 됩니다.`
+            : '컷마다 다른 장면이 들어갑니다.');
       }
 
       // 동적 N컷(4~10컷) 자막 & 성우 대본 입력 카드 렌더링
@@ -1703,8 +1706,8 @@
 
       let html = '';
       for (let i = 0; i < targetCuts; i++) {
-        const s = (i * cutDur).toFixed(1).replace(/\.0$/, '');
-        const e = ((i + 1) * cutDur).toFixed(1).replace(/\.0$/, '');
+        const s = getCutStart(i).toFixed(1).replace(/\.0$/, '');
+        const e = (getCutStart(i) + getCutLengths()[i]).toFixed(1).replace(/\.0$/, '');
         const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i % WIDGET_POOL.length];
         const wLabel = WIDGET_LABELS[wKey] || wKey;
         const subVal = (campaign.cutCaptions[i] || '').replace(/"/g, '&quot;');
@@ -1732,6 +1735,56 @@
     // ============================================================================
     // 영상 총 길이(8초 / 12초 / 15초 / 20초 / 30초 / 직접 입력) 동적 변경 컨트롤러
     // ============================================================================
+    // ------------------------------------------------------------------------
+    // 컷별 길이: 성우가 한 문장을 말하는 시간만큼 그 컷이 이어짐 (문장마다 길이가 다름)
+    //  - 화면 그리기 코드는 "모든 컷 길이가 같은" 가상 시간으로 짜여 있으므로,
+    //    실제 시간 ↔ 가상 시간을 컷 단위로 변환해서 씁니다.
+    // ------------------------------------------------------------------------
+    let CUT_LENGTHS = []; // 컷별 실제 길이(초). 비어 있으면 모든 컷이 같은 길이
+
+    function getMainDuration() {
+      return Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+    }
+    function getCutLengths() {
+      const n = getTargetCutCount();
+      if (CUT_LENGTHS.length === n) return CUT_LENGTHS;
+      return new Array(n).fill(getMainDuration() / n);
+    }
+    function getCutStart(cutIdx) {
+      const lengths = getCutLengths();
+      let start = 0;
+      for (let i = 0; i < Math.min(cutIdx, lengths.length); i++) start += lengths[i];
+      return start;
+    }
+    function getCutIndexAt(realT) {
+      const lengths = getCutLengths();
+      let acc = 0;
+      for (let i = 0; i < lengths.length; i++) {
+        acc += lengths[i];
+        if (realT < acc) return i;
+      }
+      return lengths.length - 1;
+    }
+    // 실제 시간 → 가상 시간 (본편 구간만 변환, 명함 구간은 그대로)
+    function toVirtualTime(realT) {
+      const main = getMainDuration();
+      if (realT >= main) return realT;
+      const lengths = getCutLengths();
+      const unit = main / lengths.length;
+      const i = getCutIndexAt(realT);
+      const frac = Math.min(1, Math.max(0, (realT - getCutStart(i)) / Math.max(0.05, lengths[i])));
+      return Math.min(main - 0.0001, (i + frac) * unit);
+    }
+    // 가상 시간 → 실제 시간
+    function toRealTime(virtualT) {
+      const main = getMainDuration();
+      if (virtualT >= main) return virtualT;
+      const lengths = getCutLengths();
+      const unit = main / lengths.length;
+      const i = Math.min(lengths.length - 1, Math.max(0, Math.floor(virtualT / unit)));
+      return getCutStart(i) + ((virtualT - i * unit) / unit) * lengths[i];
+    }
+
     // AudioEngine은 아래에서 선언되므로, 초기화 도중 호출돼도 안전하게 확인
     function audioEngineReady() {
       try { return !!AudioEngine; } catch (e) { return false; }
@@ -1744,19 +1797,43 @@
       const cuts = getTargetCutCount();
       let mainDur = Math.max(4.0, BASE_DURATION - baseOutro);
       let outro = baseOutro;
+      let lengths = [];
       if (audioEngineReady() && AudioEngine.enabled && AudioEngine.ttsVoice !== 'off') {
         const secs = AudioEngine.getNarrationSeconds();
-        const longestCut = Math.max(0, ...secs.slice(0, cuts));
-        if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.2));
+        const cutSecs = secs.slice(0, cuts);
+        if (cutSecs.length === cuts && cutSecs.every((x) => x > 0)) {
+          // 각 컷 = 그 컷의 성우 문장 길이 + 짧은 숨. 고른 길이보다 짧으면 비율대로 늘려 채움
+          lengths = cutSecs.map((x) => Math.max(1.2, x + 0.18));
+          const need = lengths.reduce((p, q) => p + q, 0);
+          if (need < mainDur) {
+            lengths = lengths.map((x) => (x * mainDur) / need);
+          } else {
+            mainDur = need;
+          }
+        } else {
+          // 아직 길이를 모르는 문장이 있으면 가장 긴 문장 기준으로 같은 길이 확보
+          const longestCut = Math.max(0, ...cutSecs);
+          if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.2));
+        }
         if (secs[cuts] > 0) outro = Math.max(outro, secs[cuts] + 0.35);
       }
-      return { total: Math.round((mainDur + outro) * 10) / 10, outro: Math.round(outro * 10) / 10 };
+      const total = Math.round((mainDur + outro) * 10) / 10;
+      const outroRounded = Math.round(outro * 10) / 10;
+      // 반올림한 전체 길이에 컷 길이 합이 정확히 맞도록 보정
+      if (lengths.length > 0) {
+        const main = Math.max(4.0, total - outroRounded);
+        const sum = lengths.reduce((p, q) => p + q, 0);
+        lengths = lengths.map((x) => (x * main) / sum);
+      }
+      return { total, outro: outroRounded, lengths };
     }
 
     // 성우 음성을 새로 받았을 때 호출: 길이가 달라졌으면 영상 길이를 다시 맞춤
     function refitDurationToNarration() {
       const fit = computeFittedDurations();
-      if (Math.abs(fit.total - TOTAL_DURATION) < 0.05 && Math.abs(fit.outro - OUTRO_DURATION) < 0.05) return false;
+      const sameLengths =
+        fit.lengths.length === CUT_LENGTHS.length && fit.lengths.every((x, i) => Math.abs(x - CUT_LENGTHS[i]) < 0.03);
+      if (sameLengths && Math.abs(fit.total - TOTAL_DURATION) < 0.05 && Math.abs(fit.outro - OUTRO_DURATION) < 0.05) return false;
       applyVideoDurations();
       if (audioEngineReady()) {
         AudioEngine.stopTts();
@@ -1777,6 +1854,7 @@
       const fitted = computeFittedDurations();
       TOTAL_DURATION = fitted.total;
       OUTRO_DURATION = fitted.outro;
+      CUT_LENGTHS = fitted.lengths;
       const fitNotice = document.getElementById('narrationFitNotice');
       if (fitNotice) {
         if (TOTAL_DURATION > BASE_DURATION + 0.4) {
@@ -2491,7 +2569,7 @@
         // 문장이 컷 길이보다 조금 길면 살짝 빠르게 읽어 컷 안에 맞춤 (최대 1.12배)
         const totalCuts = getTargetCutCount();
         const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-        const slotDur = cutIdx < totalCuts ? mainDur / totalCuts : OUTRO_DURATION;
+        const slotDur = cutIdx < totalCuts ? getCutLengths()[cutIdx] : OUTRO_DURATION;
         const speechLen = typeof buffer.__len === 'number' ? buffer.__len : buffer.duration;
         const fit = speechLen / Math.max(0.5, slotDur - 0.1);
         src.playbackRate.value = Math.min(1.12, Math.max(1.0, fit));
@@ -2594,8 +2672,7 @@
         if (!this.enabled) return;
         const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
         const totalCuts = getTargetCutCount();
-        const cutDur = mainDur / totalCuts;
-        const slot = t < mainDur ? Math.min(totalCuts - 1, Math.floor(t / cutDur)) : totalCuts;
+        const slot = t < mainDur ? getCutIndexAt(t) : totalCuts;
         if (slot !== this.lastSpokenCut) {
           this.speakCutLine(slot, false);
         }
@@ -2635,8 +2712,7 @@
       }
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const totalCuts = getTargetCutCount();
-      const cutDur = mainDur / totalCuts;
-      window.__timelines['main'].seek(cutIdx * cutDur + 0.15);
+      window.__timelines['main'].seek(getCutStart(cutIdx) + 0.1);
       AudioEngine.speakCutLine(cutIdx, true);
     }
 
@@ -2644,8 +2720,7 @@
       const t = window.__timelines['main'].currentTime || 0;
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const totalCuts = getTargetCutCount();
-      const cutDur = mainDur / totalCuts;
-      const slot = t < mainDur ? Math.min(totalCuts - 1, Math.floor(t / cutDur)) : 0;
+      const slot = t < mainDur ? getCutIndexAt(t) : 0;
       testCutTts(slot);
     }
 
@@ -2729,7 +2804,9 @@
       seek(timeInSeconds) {
         this.duration = TOTAL_DURATION;
         this.currentTime = Easing.clamp(Number(timeInSeconds), 0, this.duration);
-        renderHyperFramesComposition(this.currentTime);
+        // 화면은 가상 시간(컷 길이 균등)으로 그리고, 소리·표시는 실제 시간을 씀
+        window.__realTimelineT = this.currentTime;
+        renderHyperFramesComposition(toVirtualTime(this.currentTime));
         updateTimelineUI(this.currentTime);
         if (isPlaying && AudioEngine.enabled) {
           AudioEngine.syncWithTimeline(this.currentTime);
@@ -2759,7 +2836,7 @@
       const badge = document.getElementById('activeClipBadge');
       if (badge) {
         if (t < mainDuration) {
-          const curSlot = Math.min(totalCuts, Math.floor(t / cutDuration) + 1);
+          const curSlot = Math.min(totalCuts, getCutIndexAt(t) + 1);
           badge.textContent = `본편 CUT ${curSlot}/${totalCuts} (${t.toFixed(1)}s / ${mainDuration.toFixed(0)}s)`;
         } else {
           badge.textContent = `엔딩 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
@@ -2901,7 +2978,8 @@
 
           const img = campaign.uploadedPhotos[mappedPhotoIdx];
           const prevImg = idx > 0 ? campaign.uploadedPhotos[prevMappedPhotoIdx] : null;
-          syncCutVideos(mappedPhotoIdx, localProgress * slideDuration);
+          // 영상 클립은 실제 시간 기준으로 재생 (가상 시간으로 돌리면 재생 속도가 흔들림)
+          syncCutVideos(mappedPhotoIdx, Math.max(0, (window.__realTimelineT || 0) - toRealTime(idx * slideDuration)));
 
           // 컷별 차별화된 카메라 모션 계산 (Rust WebAssembly 코어 연산 연동)
           function drawPhotoWithCameraMove(imageObj, camTypeIndex, prog, alpha = 1) {
@@ -3930,7 +4008,7 @@
       campaign.hasCustomVideo = false;
       campaign.uploadedPhotos = items;
 
-      applyVideoDurations(); // 컷 수가 바뀌므로 길이·대본 카드·썸네일을 다시 계산
+      applyVideoDurations(); // 장면이 바뀌었으므로 길이·썸네일을 다시 계산
       if (AudioEngine.enabled) AudioEngine.prefetchTtsBuffers();
       AudioEngine.lastSpokenCut = -1;
       window.__timelines['main'].seek(0);
@@ -3939,7 +4017,7 @@
         const failed = files.length - items.length;
         const skipped = picked.length - files.length;
         statusEl.textContent =
-          `${items.length}개를 올려 ${getTargetCutCount()}컷으로 배치했습니다.` +
+          `${items.length}개를 올렸습니다. 영상 길이에 맞춰 순서대로 나뉘어 들어갑니다.` +
           (failed > 0 ? ` ${failed}개는 열 수 없어 제외했습니다.` : '') +
           (skipped > 0 ? ` 10개까지만 쓸 수 있어 ${skipped}개는 제외했습니다.` : '');
       }
