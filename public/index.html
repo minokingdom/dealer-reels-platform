@@ -7698,16 +7698,28 @@ function renderStoryArchetypesUI() {
           ctx.arc(0, -195, 74, 0, Math.PI * 2);
           ctx.stroke();
 
-          // VIP 프라이빗 마스터 골드 캡슐
-          ctx.fillStyle = 'rgba(212, 175, 55, 0.18)';
-          ctx.strokeStyle = theme.accent || '#d4af37';
-          ctx.lineWidth = 1.5;
-          drawRoundedRect(ctx, -95, -134, 190, 28, 14);
+          // VIP 프라이빗 마스터 골드 캡슐 (불투명 솔리드 배경 + 그림자 적용으로 프로필 원형 침범 100% 방지)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
+          ctx.fillStyle = '#0a0d14';
+          drawRoundedRect(ctx, -100, -132, 200, 32, 16);
           ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -100, -132, 200, 32, 16);
           ctx.stroke();
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
           ctx.fillStyle = '#fef3c7';
-          ctx.font = 'bold 14px sans-serif';
-          ctx.fillText('★ VIP 프라이빗 마스터', 0, -115);
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText('★ VIP 프라이빗 마스터', 0, -116);
+          ctx.restore();
 
           // 소속 지점 & 카마스터 성함 (우아한 세리프 타이포그래피)
           ctx.fillStyle = '#94a3b8';
@@ -7815,13 +7827,28 @@ function renderStoryArchetypesUI() {
           drawRoundedRect(ctx, -74, -269, 148, 148, 16);
           ctx.stroke();
 
-          // 취재 전문위원 인증 배지
+          // 취재 전문위원 인증 배지 (불투명 솔리드 배경 + 그림자 적용)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
           ctx.fillStyle = '#dc2626';
-          drawRoundedRect(ctx, -100, -134, 200, 28, 14);
+          drawRoundedRect(ctx, -105, -132, 210, 32, 16);
           ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -105, -132, 210, 32, 16);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
           ctx.fillStyle = '#ffffff';
-          ctx.font = '900 14px sans-serif';
-          ctx.fillText('● 공식 인증 취재 전문위원', 0, -115);
+          ctx.font = '900 13px sans-serif';
+          ctx.fillText('● 공식 인증 취재 전문위원', 0, -116);
+          ctx.restore();
 
           // 소속 지점 & 카마스터 성함
           ctx.fillStyle = '#475569';
@@ -7950,16 +7977,28 @@ function renderStoryArchetypesUI() {
           ctx.moveTo(0, -131); ctx.lineTo(0, -111);
           ctx.stroke();
 
-          // 사이버 시스템 인증 배지
-          ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
-          ctx.strokeStyle = '#06b6d4';
-          ctx.lineWidth = 1.5;
-          drawRoundedRect(ctx, -100, -134, 200, 28, 6);
+          // 사이버 시스템 인증 배지 (불투명 솔리드 배경 + 그림자 적용)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
+          ctx.fillStyle = '#040711';
+          drawRoundedRect(ctx, -110, -132, 220, 32, 6);
           ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -110, -132, 220, 32, 6);
           ctx.stroke();
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
           ctx.fillStyle = '#67e8f9';
-          ctx.font = 'bold 13px monospace';
-          ctx.fillText('[ SYSTEM CERTIFIED MASTER ]', 0, -115);
+          ctx.font = 'bold 12px monospace';
+          ctx.fillText('[ SYSTEM CERTIFIED MASTER ]', 0, -116);
+          ctx.restore();
 
           // 유닛 & 오퍼레이터 성함
           ctx.fillStyle = '#94a3b8';
@@ -8065,13 +8104,28 @@ function renderStoryArchetypesUI() {
           ctx.arc(0, -195, 74, 0, Math.PI * 2);
           ctx.stroke();
 
-          // 팔로우 캡슐 버튼
+          // 팔로우 캡슐 버튼 (불투명 솔리드 배경 + 그림자 적용)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
           ctx.fillStyle = '#3b82f6';
-          drawRoundedRect(ctx, -65, -134, 130, 28, 14);
+          drawRoundedRect(ctx, -70, -132, 140, 32, 16);
           ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -70, -132, 140, 32, 16);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 14px sans-serif';
-          ctx.fillText('✓ 팔로잉 중', 0, -115);
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText('✓ 팔로잉 중', 0, -116);
+          ctx.restore();
 
           // 지점 태그 & 크리에이터 성함
           ctx.fillStyle = '#ec4899';
@@ -8181,13 +8235,28 @@ function renderStoryArchetypesUI() {
           ctx.arc(0, -185, 74, 0, Math.PI * 2);
           ctx.stroke();
 
-          // 피트 수석 마스터 형광 배지
-          ctx.fillStyle = '#FEE500';
-          drawRoundedRect(ctx, -90, -124, 180, 28, 6);
+          // 피트 수석 마스터 형광 배지 (불투명 솔리드 배경 + 그림자 적용)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 10;
+          ctx.shadowOffsetY = 4;
+          ctx.fillStyle = '#fee500';
+          drawRoundedRect(ctx, -95, -124, 190, 32, 6);
           ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -95, -124, 190, 32, 6);
+          ctx.stroke();
+
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
           ctx.fillStyle = '#0f172a';
-          ctx.font = '900 14px sans-serif';
-          ctx.fillText('⚡ SCUDERIA CHIEF DRIVER', 0, -105);
+          ctx.font = '900 13px sans-serif';
+          ctx.fillText('⚡ SCUDERIA CHIEF DRIVER', 0, -108);
+          ctx.restore();
 
           // 레이싱 지점 & 드라이버 성함
           ctx.fillStyle = '#cbd5e1';
