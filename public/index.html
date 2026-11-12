@@ -7460,9 +7460,25 @@ function renderStoryArchetypesUI() {
         if (cur) lines.push(cur);
         if (!overflow && lines.length <= maxLines) return { lines, size: s };
       }
+      // 가장 작은 글자로도 넘치면: 최대 줄 수까지만 쓰고 마지막 줄 끝에 말줄임표
       c.font = gFont(weight, minSize, family);
-      const f = gFitLine(c, text, maxW * maxLines * 0.95, minSize, minSize, family, weight);
-      return { lines: [f.text], size: minSize };
+      const lines = [];
+      let cur = '';
+      for (const ch of String(text || '')) {
+        if (c.measureText(cur + ch).width > maxW) {
+          lines.push(cur);
+          cur = ch.trim() ? ch : '';
+          if (lines.length === maxLines) break;
+        } else cur += ch;
+      }
+      if (lines.length < maxLines && cur) lines.push(cur);
+      const last = lines.length - 1;
+      if (last >= 0) {
+        let tail = lines[last];
+        while (tail.length > 1 && c.measureText(tail + '…').width > maxW) tail = tail.slice(0, -1);
+        lines[last] = tail + '…';
+      }
+      return { lines, size: minSize };
     }
     function gDrawCover(c, img, W, H, scale, panX, panY, alpha) {
       if (!img) return;
@@ -7726,8 +7742,29 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 컷 자막: 기울어진 노란 띠 위 큰 글씨
-      const boxY = 560;
+      // 컷 자막 — 배치(high: 위쪽 / 기본: 가운데 아래)와 모양(alt: 검은 띠 + 흰 글씨)을 스타일마다 다르게
+      const high = info.high;
+      const boxY = high ? 300 : 560;
+      if (info.alt) {
+        const wr2 = gWrap(c, caption, W - 110, 2, 44, 28, GENRE_FONTS.impact, 400);
+        const lh2 = wr2.size * 1.2;
+        const bh2 = wr2.lines.length * lh2 + 58;
+        const slide = gEase(local / 0.3);
+        c.save();
+        c.globalAlpha = Math.min(1, local / 0.12);
+        c.fillStyle = 'rgba(0,0,0,0.76)';
+        c.fillRect(0, boxY - bh2 / 2, W * slide, bh2);
+        c.fillStyle = V.accent;
+        c.fillRect(0, boxY - bh2 / 2, 12, bh2);
+        c.textAlign = 'left';
+        c.fillStyle = V.accent2;
+        c.font = gFont(400, 20, GENRE_FONTS.impact);
+        c.fillText(`POINT 0${cutIdx + 1}`, 32, boxY - bh2 / 2 + 32);
+        c.fillStyle = '#ffffff';
+        c.font = gFont(400, wr2.size, GENRE_FONTS.impact);
+        wr2.lines.forEach((ln, i) => c.fillText(ln, 32, boxY - bh2 / 2 + 46 + lh2 * (i + 0.8)));
+        c.restore();
+      } else {
       c.save();
       c.translate(W / 2, boxY);
       c.rotate(-0.035);
@@ -7745,13 +7782,14 @@ function renderStoryArchetypesUI() {
       c.font = gFont(400, wr.size, GENRE_FONTS.impact);
       wr.lines.forEach((ln, i) => c.fillText(ln, 6, -boxH / 2 + 17 + lh * (i + 0.78)));
       c.restore();
+      }
 
       // 가격 컷: 큰 할인 숫자
       if (isPrice) {
         const p = gEase((local - 0.08) / 0.5);
         const num = Math.round((campaign.discountNum || 0) * p);
         c.save();
-        c.translate(W / 2, 760);
+        c.translate(W / 2, high ? 640 : 760);
         c.textAlign = 'center';
         c.fillStyle = '#ffffff';
         c.font = gFont(400, 30, GENRE_FONTS.impact);
@@ -7774,7 +7812,7 @@ function renderStoryArchetypesUI() {
         c.fillStyle = '#ffffff';
         c.textAlign = 'center';
         c.globalAlpha = Math.min(1, local / 0.3);
-        gDrawLine(c, campaign.vehicle, W / 2, 470, W - 60, 40, 24, GENRE_FONTS.impact, 400);
+        gDrawLine(c, campaign.vehicle, W / 2, high ? 450 : 470, W - 60, 40, 24, GENRE_FONTS.impact, 400);
         c.globalAlpha = 1;
       }
     }
@@ -7864,34 +7902,52 @@ function renderStoryArchetypesUI() {
         c.stroke();
       }
 
-      // 컷 자막: 가운데 정렬 세리프, 천천히 떠오름
+      // 컷 자막 — high: 위쪽 / 기본: 아래쪽, alt: 왼쪽 정렬 + 세로 금선
       const a = gEase(local / 0.6);
+      const high = info.high;
+      const capY = (high ? bar + 210 : H - bar - 150) + (1 - a) * 16;
+      const heroY = high ? H - bar - 250 : bar + 150; // 차종명·혜택 숫자 위치
       c.save();
       c.globalAlpha = a;
-      c.textAlign = 'center';
-      const capY = H - bar - 150 + (1 - a) * 16;
-      const wr = gWrap(c, caption, W - 80, 2, 34, 22, GENRE_FONTS.serif, 700);
-      const lh = wr.size * 1.4;
-      c.fillStyle = '#ffffff';
-      c.shadowColor = 'rgba(0,0,0,0.6)';
-      c.shadowBlur = 12;
-      c.font = gFont(700, wr.size, GENRE_FONTS.serif);
-      wr.lines.forEach((ln, i) => c.fillText(ln, W / 2, capY + lh * i));
-      c.shadowBlur = 0;
-      c.strokeStyle = V.accent;
-      c.lineWidth = 1;
-      c.beginPath();
-      c.moveTo(W / 2 - 24, capY - wr.size - 12);
-      c.lineTo(W / 2 + 24, capY - wr.size - 12);
-      c.stroke();
+      if (!info.alt) {
+        c.textAlign = 'center';
+        const wr = gWrap(c, caption, W - 80, 2, 34, 22, GENRE_FONTS.serif, 700);
+        const lh = wr.size * 1.4;
+        c.fillStyle = '#ffffff';
+        c.shadowColor = 'rgba(0,0,0,0.6)';
+        c.shadowBlur = 12;
+        c.font = gFont(700, wr.size, GENRE_FONTS.serif);
+        wr.lines.forEach((ln, i) => c.fillText(ln, W / 2, capY + lh * i));
+        c.shadowBlur = 0;
+        c.strokeStyle = V.accent;
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(W / 2 - 24, capY - wr.size - 12);
+        c.lineTo(W / 2 + 24, capY - wr.size - 12);
+        c.stroke();
+      } else {
+        c.textAlign = 'left';
+        const wr = gWrap(c, caption, W - 120, 3, 30, 20, GENRE_FONTS.serif, 700);
+        const lh = wr.size * 1.45;
+        const top = capY - wr.size;
+        c.fillStyle = 'rgba(0,0,0,0.45)';
+        c.fillRect(30, top - 40, W - 60, lh * wr.lines.length + 52);
+        c.fillStyle = V.accent;
+        c.fillRect(46, top - 6, 2, lh * wr.lines.length + 2);
+        c.font = gFont(700, 13, GENRE_FONTS.serif);
+        c.fillText(`No. ${String(cutIdx + 1).padStart(2, '0')}`, 62, top - 16);
+        c.fillStyle = '#ffffff';
+        c.font = gFont(700, wr.size, GENRE_FONTS.serif);
+        wr.lines.forEach((ln, i) => c.fillText(ln, 62, capY + lh * i));
+      }
       c.restore();
 
-      if (cutIdx === 0) {
+      if (cutIdx === 0 && !isPrice) {
         c.save();
         c.globalAlpha = gEase(local / 0.8);
         c.textAlign = 'center';
         c.fillStyle = V.accent;
-        gDrawLine(c, campaign.vehicle, W / 2, bar + 150, W - 70, 40, 24, GENRE_FONTS.serif, 900);
+        gDrawLine(c, campaign.vehicle, W / 2, heroY, W - 70, 40, 24, GENRE_FONTS.serif, 900);
         c.restore();
       }
       if (isPrice) {
@@ -7900,9 +7956,9 @@ function renderStoryArchetypesUI() {
         c.textAlign = 'center';
         c.fillStyle = V.accent2;
         c.font = gFont(700, 18, GENRE_FONTS.serif);
-        c.fillText('PRIVILEGE', W / 2, bar + 150);
+        c.fillText('PRIVILEGE', W / 2, heroY);
         c.fillStyle = V.accent;
-        gDrawLine(c, `${campaign.discountNum}만원`, W / 2, bar + 220, W - 80, 64, 36, GENRE_FONTS.serif, 900);
+        gDrawLine(c, `${campaign.discountNum}만원`, W / 2, heroY + 70, W - 80, 64, 36, GENRE_FONTS.serif, 900);
         c.restore();
       }
       // 아주 얇은 진행선
@@ -7986,46 +8042,83 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 컷 자막: 유리 패널
+      // 컷 자막 — high: 위쪽 / 기본: 아래쪽, alt: 터미널에 글자가 타이핑되듯 나타남
       const a = gEase(local / 0.4);
-      const panelY = 590;
-      c.save();
-      c.globalAlpha = a;
-      const wr = gWrap(c, caption, W - 100, 2, 36, 24, GENRE_FONTS.sans, 800);
-      const lh = wr.size * 1.3;
-      const ph = wr.lines.length * lh + 52;
-      const pw = (W - 56) * (0.6 + 0.4 * a);
-      gRoundRect(c, (W - pw) / 2, panelY, pw, ph, 6);
-      c.fillStyle = 'rgba(6, 18, 32, 0.78)';
-      c.fill();
-      c.strokeStyle = V.accent;
-      c.lineWidth = 1.5;
-      c.stroke();
-      c.fillStyle = V.accent;
-      c.font = gFont(500, 12, GENRE_FONTS.mono);
-      c.textAlign = 'left';
-      c.fillText(`> ${V.label.toLowerCase().replace(/\s/g, '_')}.log`, (W - pw) / 2 + 16, panelY + 22);
-      c.fillStyle = '#ffffff';
-      c.font = gFont(800, wr.size, GENRE_FONTS.sans);
-      wr.lines.forEach((ln, i) => c.fillText(ln, (W - pw) / 2 + 16, panelY + 34 + lh * (i + 0.8)));
-      c.restore();
+      const high = info.high;
+      const panelY = high ? 190 : 590;
+      if (!info.alt) {
+        c.save();
+        c.globalAlpha = a;
+        const wr = gWrap(c, caption, W - 100, 2, 36, 24, GENRE_FONTS.sans, 800);
+        const lh = wr.size * 1.3;
+        const ph = wr.lines.length * lh + 52;
+        const pw = (W - 56) * (0.6 + 0.4 * a);
+        gRoundRect(c, (W - pw) / 2, panelY, pw, ph, 6);
+        c.fillStyle = 'rgba(6, 18, 32, 0.78)';
+        c.fill();
+        c.strokeStyle = V.accent;
+        c.lineWidth = 1.5;
+        c.stroke();
+        c.fillStyle = V.accent;
+        c.font = gFont(500, 12, GENRE_FONTS.mono);
+        c.textAlign = 'left';
+        c.fillText(`> ${V.label.toLowerCase().replace(/\s/g, '_')}.log`, (W - pw) / 2 + 16, panelY + 22);
+        c.fillStyle = '#ffffff';
+        c.font = gFont(800, wr.size, GENRE_FONTS.sans);
+        wr.lines.forEach((ln, i) => c.fillText(ln, (W - pw) / 2 + 16, panelY + 34 + lh * (i + 0.8)));
+        c.restore();
+      } else {
+        const wr = gWrap(c, caption, W - 90, 3, 34, 22, GENRE_FONTS.sans, 800);
+        const lh = wr.size * 1.3;
+        const bandH = wr.lines.length * lh + 70;
+        const bg = c.createLinearGradient(0, panelY - 20, 0, panelY + bandH);
+        bg.addColorStop(0, 'rgba(2,10,24,0)');
+        bg.addColorStop(0.25, 'rgba(2,10,24,0.82)');
+        bg.addColorStop(1, 'rgba(2,10,24,0.82)');
+        c.fillStyle = bg;
+        c.fillRect(0, panelY - 20, W, bandH + 20);
+        c.textAlign = 'left';
+        c.fillStyle = V.accent;
+        c.font = gFont(500, 14, GENRE_FONTS.mono);
+        c.fillText(`$ run --cut ${cutIdx + 1}`, 40, panelY + 14);
+        let left = Math.floor(caption.length * Math.min(1, local / 0.7));
+        c.fillStyle = '#ffffff';
+        c.font = gFont(800, wr.size, GENRE_FONTS.sans);
+        let lastX = 40;
+        let lastY = panelY + 40;
+        wr.lines.forEach((ln, i) => {
+          const part = ln.slice(0, Math.max(0, left));
+          left -= ln.length + 1;
+          const y = panelY + 40 + lh * (i + 0.8);
+          c.fillText(part, 40, y);
+          if (part.length > 0) {
+            lastX = 40 + c.measureText(part).width + 4;
+            lastY = y;
+          }
+        });
+        if (Math.sin(t * 10) > 0) {
+          c.fillStyle = V.accent;
+          c.fillRect(lastX, lastY - wr.size * 0.8, wr.size * 0.45, wr.size * 0.9);
+        }
+      }
 
+      const heroY = high ? 640 : 420;
       if (isPrice) {
         const p = gEase((local - 0.1) / 0.5);
         c.textAlign = 'center';
         c.fillStyle = V.accent2;
         c.font = gFont(500, 16, GENRE_FONTS.mono);
-        c.fillText('SAVING', W / 2, 420);
+        c.fillText('SAVING', W / 2, heroY);
         c.fillStyle = V.accent;
         c.shadowColor = V.accent;
         c.shadowBlur = 18;
-        gDrawLine(c, `-${Math.round((campaign.discountNum || 0) * p)}만원`, W / 2, 500, W - 80, 76, 40, GENRE_FONTS.mono, 700);
+        gDrawLine(c, `-${Math.round((campaign.discountNum || 0) * p)}만원`, W / 2, heroY + 80, W - 80, 76, 40, GENRE_FONTS.mono, 700);
         c.shadowBlur = 0;
       } else if (cutIdx === 0) {
         c.textAlign = 'center';
         c.fillStyle = '#ffffff';
         c.globalAlpha = a;
-        gDrawLine(c, campaign.vehicle, W / 2, 540, W - 70, 40, 24, GENRE_FONTS.sans, 900);
+        gDrawLine(c, campaign.vehicle, W / 2, high ? 470 : 540, W - 70, 40, 24, GENRE_FONTS.sans, 900);
         c.globalAlpha = 1;
       }
     }
@@ -8094,31 +8187,52 @@ function renderStoryArchetypesUI() {
         }
       }
 
-      // 컷 자막: 기울어진 이탤릭 블록이 옆에서 밀려 들어옴
+      // 컷 자막 — high: 위쪽 / 기본: 아래쪽, alt: 블록 없이 거대한 외곽선 이탤릭 글씨
       const p = gEase(local / 0.3);
-      const by = 600;
-      const wr = gWrap(c, caption, W - 120, 2, 44, 28, GENRE_FONTS.impact, 400);
-      const lh = wr.size * 1.18;
-      const bh = wr.lines.length * lh + 30;
-      c.save();
-      // 기울임(-0.18)으로 왼쪽으로 밀리는 만큼 오른쪽으로 보정
-      c.translate((1 - p) * -W + 0.18 * (by + bh / 2), 0);
-      c.transform(1, 0, -0.18, 1, 0, 0);
-      c.fillStyle = V.accent;
-      c.fillRect(14, by, W - 28, bh);
-      c.fillStyle = '#000000';
-      c.fillRect(14, by + bh, W - 28, 8);
-      c.fillStyle = '#ffffff';
-      c.textAlign = 'left';
-      c.font = gFont(400, wr.size, GENRE_FONTS.impact);
-      wr.lines.forEach((ln, i) => c.fillText(ln, 40, by + 14 + lh * (i + 0.82)));
-      c.restore();
+      const high = info.high;
+      const by = high ? 190 : 600;
+      if (!info.alt) {
+        const wr = gWrap(c, caption, W - 120, 2, 44, 28, GENRE_FONTS.impact, 400);
+        const lh = wr.size * 1.18;
+        const bh = wr.lines.length * lh + 30;
+        c.save();
+        // 기울임(-0.18)으로 왼쪽으로 밀리는 만큼 오른쪽으로 보정
+        c.translate((1 - p) * -W + 0.18 * (by + bh / 2), 0);
+        c.transform(1, 0, -0.18, 1, 0, 0);
+        c.fillStyle = V.accent;
+        c.fillRect(14, by, W - 28, bh);
+        c.fillStyle = '#000000';
+        c.fillRect(14, by + bh, W - 28, 8);
+        c.fillStyle = '#ffffff';
+        c.textAlign = 'left';
+        c.font = gFont(400, wr.size, GENRE_FONTS.impact);
+        wr.lines.forEach((ln, i) => c.fillText(ln, 40, by + 14 + lh * (i + 0.82)));
+        c.restore();
+      } else {
+        const wr = gWrap(c, caption, W - 80, 2, 58, 34, GENRE_FONTS.impact, 400);
+        const lh = wr.size * 1.05;
+        c.save();
+        c.translate((1 - p) * W * 0.7 + 0.18 * (by + lh), 0);
+        c.transform(1, 0, -0.18, 1, 0, 0);
+        c.textAlign = 'left';
+        c.lineJoin = 'round';
+        c.font = gFont(400, wr.size, GENRE_FONTS.impact);
+        wr.lines.forEach((ln, i) => {
+          const y = by + lh * (i + 0.9);
+          c.lineWidth = 9;
+          c.strokeStyle = '#000000';
+          c.strokeText(ln, 24, y);
+          c.fillStyle = i === 0 ? '#ffffff' : V.accent;
+          c.fillText(ln, 24, y);
+        });
+        c.restore();
+      }
 
       if (isPrice) {
         // 타코미터
         const q = gEase((local - 0.05) / 0.6);
         c.save();
-        c.translate(W / 2, 470);
+        c.translate(W / 2, high ? 600 : 470);
         c.strokeStyle = 'rgba(255,255,255,0.2)';
         c.lineWidth = 14;
         c.beginPath();
@@ -8136,20 +8250,21 @@ function renderStoryArchetypesUI() {
         c.fillText('만원 할인', 0, 52);
         c.restore();
       } else if (cutIdx === 0) {
+        const ty = high ? 470 : 560;
         c.save();
-        c.translate(0.18 * 560, 0);
+        c.translate(0.18 * ty, 0);
         c.transform(1, 0, -0.18, 1, 0, 0);
         c.fillStyle = '#ffffff';
         c.textAlign = 'left';
         c.globalAlpha = p;
-        gDrawLine(c, campaign.vehicle.toUpperCase(), 30, 560, W - 70, 46, 26, GENRE_FONTS.impact, 400);
+        gDrawLine(c, campaign.vehicle.toUpperCase(), 30, ty, W - 70, 46, 26, GENRE_FONTS.impact, 400);
         c.restore();
       }
     }
 
     function drawFinanceMain(c, W, H, t, info) {
       const { V, d, cutIdx, local, caption, isPrice, cutDur, totalCuts } = info;
-      const split = V.sig === 'split';
+      const split = (V.sig === 'split') !== !!info.high; // 스타일에 따라 위아래 분할 화면 여부를 바꿈
       const top = split ? 430 : 0;
       // 아래쪽을 밝은 앱 화면으로
       c.fillStyle = '#f8fafc';
@@ -8176,6 +8291,7 @@ function renderStoryArchetypesUI() {
       gDrawLine(c, V.label, W - 18, 50, 170, 15, 11, GENRE_FONTS.sans, 800);
       drawGenreProgress(c, W, t, cutDur, totalCuts, V.accent, 80, 'rgba(15,23,42,0.08)');
 
+      if (!info.alt) {
       // 지금까지의 컷 자막을 채팅 말풍선으로 쌓음 (최근 3개)
       const bubbles = [];
       for (let i = Math.max(0, cutIdx - 2); i <= cutIdx; i++) {
@@ -8208,6 +8324,42 @@ function renderStoryArchetypesUI() {
         c.restore();
         y += bh + 14;
       });
+
+      } else {
+        // alt: 휴대폰 푸시 알림 카드가 위에서 내려옴 (지난 컷은 흐리게 아래 쌓임)
+        let ny = isPrice ? (split ? 770 : 660) : split ? 470 : 540;
+        const items = [];
+        for (let i = Math.max(0, cutIdx - (isPrice ? 0 : 1)); i <= cutIdx; i++) items.push(i);
+        items.reverse().forEach((ci, order) => {
+          const current = ci === cutIdx;
+          const drop = current ? gBack(local / 0.35) : 1;
+          const txt = gCleanCaption(campaign.cutCaptions[ci] || '');
+          const wr = gWrap(c, txt, W - 140, 2, 21, 15, GENRE_FONTS.sans, 700);
+          const lh = wr.size * 1.35;
+          const nh = wr.lines.length * lh + 58;
+          c.save();
+          c.globalAlpha = current ? Math.min(1, drop) : 0.55;
+          c.translate(0, (1 - drop) * -60);
+          gRoundRect(c, 24, ny, W - 48, nh, 18);
+          c.fillStyle = 'rgba(255,255,255,0.97)';
+          c.shadowColor = 'rgba(15,23,42,0.18)';
+          c.shadowBlur = 16;
+          c.fill();
+          c.shadowBlur = 0;
+          gRoundRect(c, 40, ny + 14, 24, 24, 6);
+          c.fillStyle = V.accent;
+          c.fill();
+          c.textAlign = 'left';
+          c.fillStyle = '#64748b';
+          c.font = gFont(700, 13, GENRE_FONTS.sans);
+          c.fillText(`${V.label} · ${current ? '지금' : '방금'}`, 74, ny + 31);
+          c.fillStyle = '#0f172a';
+          c.font = gFont(700, wr.size, GENRE_FONTS.sans);
+          wr.lines.forEach((ln, i) => c.fillText(ln, 40, ny + 48 + lh * (i + 0.8)));
+          c.restore();
+          ny += nh + 12;
+        });
+      }
 
       if (isPrice) {
         // 견적서 카드
@@ -8306,52 +8458,68 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 아래쪽 흰 카드에 컷 자막
+      // 컷 자막 카드 — high: 위쪽 / 기본: 아래쪽, alt: 진한 색 카드 + 큰 체크 아이콘
       const a = gEase(local / 0.4);
-      const wr = gWrap(c, caption, W - 120, 2, 32, 22, GENRE_FONTS.sans, 800);
+      const high = info.high;
+      const textX = info.alt ? 98 : 46;
+      const wr = gWrap(c, caption, W - 76 - textX, 2, 32, 22, GENRE_FONTS.sans, 800);
       const lh = wr.size * 1.32;
       const ch = wr.lines.length * lh + 60;
-      const cy = H - 120 - ch + (1 - a) * 40;
+      const cy = high ? 86 + (1 - a) * -30 : H - 120 - ch + (1 - a) * 40;
       c.save();
       c.globalAlpha = a;
       gRoundRect(c, 22, cy, W - 44, ch, 22);
-      c.fillStyle = '#ffffff';
+      c.fillStyle = info.alt ? V.accent : '#ffffff';
       c.shadowColor = 'rgba(15,23,42,0.22)';
       c.shadowBlur = 24;
       c.fill();
       c.shadowBlur = 0;
-      c.fillStyle = V.accent;
+      if (info.alt) {
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(60, cy + ch / 2, 20, 0, Math.PI * 2);
+        c.fill();
+        c.strokeStyle = V.accent;
+        c.lineWidth = 4;
+        c.beginPath();
+        c.moveTo(50, cy + ch / 2);
+        c.lineTo(57, cy + ch / 2 + 7);
+        c.lineTo(70, cy + ch / 2 - 8);
+        c.stroke();
+      }
+      c.fillStyle = info.alt ? 'rgba(255,255,255,0.75)' : V.accent;
       c.font = gFont(800, 14, GENRE_FONTS.sans);
       c.textAlign = 'left';
-      c.fillText(`POINT ${cutIdx + 1}`, 46, cy + 30);
-      c.fillStyle = '#0f172a';
+      c.fillText(`POINT ${cutIdx + 1}`, textX, cy + 30);
+      c.fillStyle = info.alt ? '#ffffff' : '#0f172a';
       c.font = gFont(800, wr.size, GENRE_FONTS.sans);
-      wr.lines.forEach((ln, i) => c.fillText(ln, 46, cy + 40 + lh * (i + 0.85)));
+      wr.lines.forEach((ln, i) => c.fillText(ln, textX, cy + 40 + lh * (i + 0.85)));
       c.restore();
+      const heroTop = high ? 600 : 300;
 
       if (isPrice) {
         const p = gEase((local - 0.1) / 0.5);
         c.save();
         c.globalAlpha = p;
-        gRoundRect(c, W / 2 - 150, 300, 300, 150, 24);
+        gRoundRect(c, W / 2 - 150, heroTop, 300, 150, 24);
         c.fillStyle = 'rgba(255,255,255,0.96)';
         c.fill();
         c.fillStyle = '#64748b';
         c.textAlign = 'center';
         c.font = gFont(700, 16, GENRE_FONTS.sans);
-        c.fillText('이번 달 확정 혜택', W / 2, 340);
+        c.fillText('이번 달 혜택', W / 2, heroTop + 40);
         c.fillStyle = V.accent;
-        gDrawLine(c, `-${Math.round((campaign.discountNum || 0) * p)}만원`, W / 2, 410, 260, 58, 30, GENRE_FONTS.sans, 900);
+        gDrawLine(c, `-${Math.round((campaign.discountNum || 0) * p)}만원`, W / 2, heroTop + 110, 260, 58, 30, GENRE_FONTS.sans, 900);
         c.restore();
       } else if (cutIdx === 0) {
         c.save();
         c.globalAlpha = a;
-        gRoundRect(c, 22, 300, W - 44, 76, 18);
+        gRoundRect(c, 22, heroTop, W - 44, 76, 18);
         c.fillStyle = 'rgba(15,23,42,0.72)';
         c.fill();
         c.fillStyle = '#ffffff';
         c.textAlign = 'center';
-        gDrawLine(c, campaign.vehicle, W / 2, 350, W - 90, 34, 20, GENRE_FONTS.sans, 900);
+        gDrawLine(c, campaign.vehicle, W / 2, heroTop + 50, W - 90, 34, 20, GENRE_FONTS.sans, 900);
         c.restore();
       }
     }
@@ -8677,6 +8845,102 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
+    // 두 번째 명함 디자인: 사진을 화면 가득 깔고 아래쪽에 큰 이름을 얹는 잡지 표지형
+    function drawCoverOutro(c, W, H, t, local, V, d) {
+      const light = V.genre === 'trust' || V.genre === 'finance';
+      const font = V.genre === 'luxury' ? GENRE_FONTS.serif : V.genre === 'sale' || V.genre === 'sports' ? GENRE_FONTS.impact : GENRE_FONTS.sans;
+      const weight = V.genre === 'luxury' ? 900 : V.genre === 'sale' || V.genre === 'sports' ? 400 : 900;
+      const a = gEase(local / 0.5);
+      const g = c.createLinearGradient(0, H * 0.25, 0, H);
+      g.addColorStop(0, light ? 'rgba(255,255,255,0)' : 'rgba(0,0,0,0)');
+      g.addColorStop(0.55, light ? 'rgba(255,255,255,0.88)' : 'rgba(0,0,0,0.78)');
+      g.addColorStop(1, light ? 'rgba(255,255,255,0.98)' : 'rgba(0,0,0,0.95)');
+      c.fillStyle = g;
+      c.fillRect(0, 0, W, H);
+      const ink = light ? '#0f172a' : '#ffffff';
+      const sub = light ? '#475569' : 'rgba(255,255,255,0.72)';
+      // 위쪽 라벨
+      c.save();
+      c.globalAlpha = a;
+      c.font = gFont(800, 15, GENRE_FONTS.sans);
+      const lw = c.measureText(V.label).width + 32;
+      gRoundRect(c, 24, 40, lw, 36, V.genre === 'luxury' ? 2 : 18);
+      c.fillStyle = V.accent;
+      c.fill();
+      c.fillStyle = light || V.genre === 'ev' ? '#0b1220' : '#ffffff';
+      if (V.genre === 'trust' || V.genre === 'finance') c.fillStyle = '#ffffff';
+      c.textAlign = 'left';
+      c.fillText(V.label, 40, 64);
+      c.restore();
+      // 이름 블록
+      const slide = gEase(local / 0.45);
+      c.save();
+      c.globalAlpha = a;
+      c.translate((1 - slide) * -40, 0);
+      drawGenreAvatar(c, d, 74, 520, 50, V.accent, 4);
+      c.textAlign = 'left';
+      c.fillStyle = V.accent;
+      gDrawLine(c, d.title, 32, 618, W - 64, 24, 15, font, weight);
+      c.fillStyle = ink;
+      gDrawLine(c, d.name, 30, 696, W - 60, 78, 40, font, weight);
+      c.fillStyle = sub;
+      gDrawLine(c, d.branch || '', 32, 734, W - 64, 17, 12, GENRE_FONTS.sans, 600);
+      c.restore();
+      // 혜택 줄 + CTA
+      c.save();
+      c.globalAlpha = gEase((local - 0.15) / 0.5);
+      c.fillStyle = V.accent;
+      c.fillRect(32, 758, 60, 4);
+      c.fillStyle = ink;
+      c.textAlign = 'left';
+      gDrawLine(c, `최대 -${campaign.discountNum}만원 · ${gCleanCaption(d.promoTag || '')}`, 32, 796, W - 64, 18, 12, GENRE_FONTS.sans, 700);
+      gRoundRect(c, 24, 830, W - 48, 70, V.genre === 'luxury' ? 4 : 35);
+      c.fillStyle = V.accent;
+      c.fill();
+      c.fillStyle = V.genre === 'ev' || (V.genre === 'luxury' && V.grade !== 'cool') ? '#0b1220' : '#ffffff';
+      c.textAlign = 'center';
+      gDrawLine(c, '댓글에 [견적] 남겨주세요', W / 2, 875, W - 90, 27, 16, font, weight);
+      c.restore();
+    }
+
+    // 같은 구성을 쓰는 스타일끼리 겹치지 않게: 구성 안에서 몇 번째 스타일인지에 따라
+    // 자막 위치(high) · 자막 모양(alt) · 명함 디자인(cover)을 조합하고, 스타일 고유 색을 씀
+    const STYLE_RECIPE_ORDER = [0b000, 0b111, 0b010, 0b101, 0b001, 0b110, 0b100, 0b011];
+    let styleRecipeCache = { key: null, mode: null, recipe: null };
+    function gLuminance(hex) {
+      const m = String(hex || '').match(/^#?([0-9a-f]{6})$/i);
+      if (!m) return -1;
+      const n = parseInt(m[1], 16);
+      const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
+        const x = v / 255;
+        return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+    }
+    function getStyleRecipe(V) {
+      let key = '';
+      try { key = activeStoryArchetypeKey || ''; } catch (e) {}
+      const mode = campaign.layoutMode;
+      if (styleRecipeCache.key === key && styleRecipeCache.mode === mode && styleRecipeCache.genre === V.genre) return styleRecipeCache.recipe;
+      let idx = 0;
+      let accent = null;
+      try {
+        const arch = STORY_ARCHETYPES[key];
+        if (arch && arch.layoutMode === mode) {
+          idx = Math.max(0, Object.keys(STORY_ARCHETYPES).filter((k) => STORY_ARCHETYPES[k].layoutMode === mode).indexOf(key));
+          accent = arch.accentColor || null;
+        }
+      } catch (e) {}
+      // 밝은 바탕(신뢰·금융)에는 너무 밝은 색, 어두운 바탕에는 너무 어두운 색을 쓰지 않음
+      const lum = gLuminance(accent);
+      const lightBg = V.genre === 'trust' || V.genre === 'finance';
+      if (lum < 0 || (lightBg && lum > 0.45) || (!lightBg && lum < 0.12)) accent = null;
+      const bits = STYLE_RECIPE_ORDER[idx % STYLE_RECIPE_ORDER.length];
+      const recipe = { idx, high: !!(bits & 1), alt: !!(bits & 2), cover: !!(bits & 4), accent };
+      styleRecipeCache = { key, mode, genre: V.genre, recipe };
+      return recipe;
+    }
+
     // ==========================================================================
     // 진입점: 한 프레임을 장르 엔진으로 그림
     // ==========================================================================
@@ -8684,7 +8948,9 @@ function renderStoryArchetypesUI() {
       const c = ctx;
       const W = canvas.width;
       const H = canvas.height;
-      const V = getGenreVariant(campaign.layoutMode);
+      const baseV = getGenreVariant(campaign.layoutMode);
+      const recipe = getStyleRecipe(baseV);
+      const V = recipe.accent ? Object.assign({}, baseV, { accent: recipe.accent }) : baseV;
       const cutDur = mainDuration / totalCuts;
       c.save();
       c.textBaseline = 'alphabetic';
@@ -8708,7 +8974,9 @@ function renderStoryArchetypesUI() {
           caption,
           isPrice: gIsPriceCut(raw),
           cutDur,
-          totalCuts
+          totalCuts,
+          high: recipe.high,
+          alt: recipe.alt
         };
         if (V.genre === 'sale') drawSaleMain(c, W, H, t, info);
         else if (V.genre === 'luxury') drawLuxuryMain(c, W, H, t, info);
@@ -8721,7 +8989,8 @@ function renderStoryArchetypesUI() {
         syncCutVideos(-1, 0);
         drawGenreBackground(c, W, H, t, mainDuration, V, true);
         const local = Math.min(1, (t - mainDuration) / 1.2);
-        drawGenreOutro(c, W, H, t, local, V, d);
+        if (recipe.cover) drawCoverOutro(c, W, H, t, local, V, d);
+        else drawGenreOutro(c, W, H, t, local, V, d);
       }
       c.restore();
     }
