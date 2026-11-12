@@ -2376,6 +2376,13 @@
       if (numInput) numInput.value = campaign.discountNum;
       const dInput = document.getElementById('inputDiscount');
       if (dInput) dInput.value = campaign.discount;
+      const hookInput = document.getElementById('inputHook');
+      if (hookInput) hookInput.value = campaign.hook;
+
+      const d = getSelectedDealer();
+      if (d && d.variation) {
+        d.variation.hook = campaign.hook;
+      }
 
       // UI 뱃지 업데이트
       const badge = document.getElementById('activeArchetypeBadge');
