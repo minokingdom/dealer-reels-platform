@@ -1,6 +1,9 @@
 {
   "version": 2,
   "framework": null,
+  "functions": {
+    "api/tts-script.js": { "maxDuration": 60 }
+  },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
