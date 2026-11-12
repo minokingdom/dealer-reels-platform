@@ -291,6 +291,8 @@
             </div>
           </div>
 
+          <p id="narrationFitNotice" class="hidden text-[11px] leading-relaxed text-[#f5a524]"></p>
+
           <!-- 구간 점프 -->
           <div class="grid grid-cols-3 gap-1 bg-[#141415] p-1 rounded-[8px] border border-[var(--border)]">
             <button id="jumpBtn0" onclick="seekToTime(0.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
@@ -1378,10 +1380,10 @@
         '계약 즉시 스마트키 인도! 댓글에 [견적] 남겨주세요'
       ],
       ttsLines: [
-        '이번 달 계약 안 하면 손해! 2026 쏘렌토 하이브리드 11월 비밀 조건 공개합니다.',
-        '대기 6개월 없이 선점 재고 4대, 이번 주 즉시 출고 가능합니다.',
-        '최대 480만 원 할인 혜택으로 월 46만 원대 최저 금리로 만나보세요.',
-        '김민준 수석 카마스터가 책임 출고합니다. 댓글에 견적 두 글자만 남겨주세요!'
+        '쏘렌토 하이브리드, 이번 달 비밀 조건!',
+        '선점 재고 4대, 이번 주 바로 출고.',
+        '최대 480만 원 할인, 월 46만 원대.',
+        '댓글에 견적 두 글자만 남겨주세요!'
       ],
       kakaoChat: [
         { role: 'customer', text: '팀장님! 쏘렌토 하브 지금 계약하면 진짜 6개월 기다려야 하나요? 😭' },
@@ -1550,7 +1552,8 @@
     ];
 
     let selectedDealerId = 'dlr_1';
-    let TOTAL_DURATION = 12.0;
+    let BASE_DURATION = 12.0; // 사용자가 고른 영상 길이 (컷 수 기준)
+    let TOTAL_DURATION = 12.0; // 실제 영상 길이 (성우 음성이 길면 자동으로 늘어남)
     let OUTRO_DURATION = 4.0;
     const FPS = 60;
     let isPlaying = true;
@@ -1562,31 +1565,31 @@
 
     // 영상 길이에 따른 본편 컷(사진·장면) 수 계산: 8~12초=4컷, 15초=6컷, 20초=8컷, 30초+=10컷
     function getTargetCutCount() {
-      if (TOTAL_DURATION >= 26) return 10;
-      if (TOTAL_DURATION >= 18) return 8;
-      if (TOTAL_DURATION >= 14) return 6;
+      if (BASE_DURATION >= 26) return 10;
+      if (BASE_DURATION >= 18) return 8;
+      if (BASE_DURATION >= 14) return 6;
       return 4;
     }
 
     const EXTRA_CUT_BLUEPRINTS = [
       { label: '5. 파노라마 앰비언트 무드', widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 1, cropMode: 'ambient',
         sub: (c) => `${c.vehicle} · 캘리그라피 전용 나파가죽 & 앰비언트 라이트`,
-        tts: (c) => `실내를 채우는 고급 나파가죽 시트와 파노라마 디스플레이가 압도적인 품격을 선사합니다.` },
+        tts: (c) => `나파가죽 시트에 파노라마 디스플레이.` },
       { label: '6. 광활한 2열·트렁크 적재', widget: 'CHECKLIST_GLASS', pos: 'bottom', cam: 2, cropMode: 'trunk',
         sub: (c) => `골프백 4개 + 유모차 여유 수납 · 패밀리·레저 완벽 대응`,
-        tts: (c) => `넓은 2열 레그룸과 대용량 트렁크 공간으로 패밀리카와 레저용 모두 완벽합니다.` },
+        tts: (c) => `넓은 2열과 트렁크, 패밀리카로 딱.` },
       { label: '7. 하이브리드 정숙성·연비', widget: 'MONTHLY_PAYMENT_HERO', pos: 'center', cam: 3, cropMode: 'drive',
         sub: (c) => `복합연비 최상위 · 정숙한 EV 모드 주행 퍼포먼스`,
-        tts: (c) => `도심에서는 전기차처럼 조용하고, 리터당 뛰어난 복합연비로 유지비까지 확 줄였습니다.` },
+        tts: (c) => `조용한 주행에 연비까지 잡았습니다.` },
       { label: '8. 할부·렌트·리스 최저금리', widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 0, cropMode: 'finance',
         sub: (c) => `초기비용 0원 무보증 · 전 금융사 최저금리 1:1 비교`,
-        tts: (c) => `할부, 장기렌트, 리스 전 금융사 금리를 비교해 초기비용 0원 최저 납입금으로 설계해 드립니다.` },
+        tts: (c) => `할부, 렌트, 리스 최저 금리로 맞춰드려요.` },
       { label: '9. 프리미엄 신차패키지 무상', widget: 'STOCK_COUNTDOWN', pos: 'bottom', cam: 1, cropMode: 'package',
         sub: (c, d) => `🎁 ${d.promoTag}`,
-        tts: (c, d) => `이번 달 계약 고객님께는 ${d.promoTag} 혜택을 전액 무상으로 지원해 드립니다.` },
+        tts: (c, d) => `계약 고객 전원, 출고 패키지 무상 지원.` },
       { label: '10. 전시장 VIP 즉시출고 인도', widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2, cropMode: 'vip',
         sub: (c, d) => `${d.name} ${d.title} 전국 무료 캐리어 탁송 · 댓글 [견적]`,
-        tts: (c, d) => `신차 검수부터 전국 무료 캐리어 탁송까지, ${d.name} ${d.title}이 끝까지 책임지겠습니다.` }
+        tts: (c, d) => `검수부터 탁송까지 끝까지 책임집니다.` }
     ];
 
     // 4장의 기본 실사 화보를 기반으로 5~10번째 추가 컷 전용 고해상도 쇼룸 앵글/크롭/무드 화보 자동 합성
@@ -1747,7 +1750,7 @@
               </div>
             </div>
             <input id="cutSub${i}" type="text" value="${subVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 한국어 AI 성우 내레이션 대사" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 성우 대사 (짧을수록 영상이 짧아집니다)" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
           </div>
         `;
       }
@@ -1757,10 +1760,60 @@
     // ============================================================================
     // 영상 총 길이(8초 / 12초 / 15초 / 20초 / 30초 / 직접 입력) 동적 변경 컨트롤러
     // ============================================================================
+    // AudioEngine은 아래에서 선언되므로, 초기화 도중 호출돼도 안전하게 확인
+    function audioEngineReady() {
+      try { return !!AudioEngine; } catch (e) { return false; }
+    }
+
+    // 선택한 길이와 성우 음성 길이로 실제 영상 길이를 계산
+    //  - 컷 길이는 가장 긴 성우 문장이 끝까지 나올 만큼 확보 (음성이 중간에 잘리지 않도록)
+    function computeFittedDurations() {
+      const baseOutro = BASE_DURATION <= 8 ? 2.4 : BASE_DURATION >= 20 ? 4.0 : 3.5;
+      const cuts = getTargetCutCount();
+      let mainDur = Math.max(4.0, BASE_DURATION - baseOutro);
+      let outro = baseOutro;
+      if (audioEngineReady() && AudioEngine.enabled && AudioEngine.ttsVoice !== 'off') {
+        const secs = AudioEngine.getNarrationSeconds();
+        const longestCut = Math.max(0, ...secs.slice(0, cuts));
+        if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.3));
+        if (secs[cuts] > 0) outro = Math.max(outro, secs[cuts] + 0.45);
+      }
+      return { total: Math.round((mainDur + outro) * 10) / 10, outro: Math.round(outro * 10) / 10 };
+    }
+
+    // 성우 음성을 새로 받았을 때 호출: 길이가 달라졌으면 영상 길이를 다시 맞춤
+    function refitDurationToNarration() {
+      const fit = computeFittedDurations();
+      if (Math.abs(fit.total - TOTAL_DURATION) < 0.05 && Math.abs(fit.outro - OUTRO_DURATION) < 0.05) return false;
+      applyVideoDurations();
+      if (audioEngineReady()) {
+        AudioEngine.stopTts();
+        AudioEngine.lastSpokenCut = -1;
+      }
+      if (window.__timelines && window.__timelines['main']) window.__timelines['main'].seek(0);
+      return true;
+    }
+
     function setVideoTotalDuration(sec) {
-      const parsed = Math.max(6, Math.min(60, Number(sec) || 12));
-      TOTAL_DURATION = parsed;
-      OUTRO_DURATION = parsed <= 8 ? 2.4 : parsed >= 20 ? 4.0 : 3.5;
+      BASE_DURATION = Math.max(6, Math.min(60, Number(sec) || 12));
+      applyVideoDurations();
+      // 컷 수가 바뀌면 새 컷의 성우 음성을 받아 길이를 다시 맞춤
+      if (audioEngineReady() && AudioEngine.enabled) AudioEngine.prefetchTtsBuffers();
+    }
+
+    function applyVideoDurations() {
+      const fitted = computeFittedDurations();
+      TOTAL_DURATION = fitted.total;
+      OUTRO_DURATION = fitted.outro;
+      const fitNotice = document.getElementById('narrationFitNotice');
+      if (fitNotice) {
+        if (TOTAL_DURATION > BASE_DURATION + 0.4) {
+          fitNotice.textContent = `성우 음성이 잘리지 않도록 ${Math.round(BASE_DURATION)}초 → ${TOTAL_DURATION.toFixed(1)}초로 늘렸습니다. 성우 대본을 짧게 줄이면 영상도 짧아집니다.`;
+          fitNotice.classList.remove('hidden');
+        } else {
+          fitNotice.classList.add('hidden');
+        }
+      }
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const targetCuts = getTargetCutCount();
       const cutDur = mainDur / targetCuts;
@@ -1773,19 +1826,19 @@
         slider.max = String(TOTAL_DURATION);
       }
       const sel = document.getElementById('durationSelect');
-      if (sel && [8, 12, 15, 20, 30].includes(Math.round(TOTAL_DURATION))) {
-        sel.value = String(Math.round(TOTAL_DURATION));
+      if (sel && [8, 12, 15, 20, 30].includes(Math.round(BASE_DURATION))) {
+        sel.value = String(Math.round(BASE_DURATION));
       }
       const customIn = document.getElementById('customDurationInput');
       if (customIn) {
-        customIn.value = String(Math.round(TOTAL_DURATION));
+        customIn.value = String(Math.round(BASE_DURATION));
       }
 
       // 상단 빠른 시간 버튼 하이라이트 동기화
       [8, 12, 15, 20, 30].forEach((dVal) => {
         const btn = document.getElementById(`durBtn_${dVal}`);
         if (btn) {
-          if (Math.round(TOTAL_DURATION) === dVal) {
+          if (Math.round(BASE_DURATION) === dVal) {
             btn.className = 'h-6 px-2 rounded-[5px] text-[11px] font-mono bg-[#3b82f6] text-white cursor-pointer';
           } else {
             btn.className = 'h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer';
@@ -2111,6 +2164,8 @@
       //     브라우저 음성은 추출 영상에 녹음되지 않습니다.
       // ------------------------------------------------------------------------
       ttsCache: new Map(),
+      ttsSeconds: new Map(), // 성우·문장별 실제 음성 길이(초)
+      ttsPrefetchTimer: null,
       ttsSource: null,
       ttsSourceGain: null,
       ttsSpeakToken: 0,
@@ -2128,7 +2183,7 @@
             (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) ||
             campaign.hook;
         } else {
-          text = `${d.branch} ${d.name} ${d.title}입니다. 댓글에 견적 남겨주시면 1대1 최저가 조건표를 즉시 보내드립니다.`;
+          text = `${d.name} ${d.title}입니다. 댓글에 견적 남겨주세요!`;
         }
         return String(text || '')
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
@@ -2182,7 +2237,9 @@
             throw new Error(code);
           }
           const bytes = await res.arrayBuffer();
-          return await ctx.decodeAudioData(bytes);
+          const buffer = await ctx.decodeAudioData(bytes);
+          this.ttsSeconds.set(key, buffer.duration);
+          return buffer;
         })();
 
         this.ttsCache.set(key, job);
@@ -2200,16 +2257,47 @@
         return job;
       },
 
-      // 모든 컷 + 마지막 명함 멘트 음성을 미리 받아 둠 (재생·추출 시 컷과 음성 타이밍 일치)
+      // 각 컷(0..컷수-1)과 마지막 명함 멘트(컷수)의 성우 음성 길이(초). 아직 모르면 0
+      //  - 브라우저 음성으로 대체된 경우에는 글자 수로 어림
+      getNarrationSeconds() {
+        const totalCuts = getTargetCutCount();
+        const out = [];
+        for (let i = 0; i <= totalCuts; i++) {
+          const text = this.getCutNarration(i);
+          let sec = text ? (this.ttsSeconds.get(`${this.ttsVoice}|${text}`) || 0) : 0;
+          if (!sec && text && this.ttsProvider === 'browser') {
+            sec = text.replace(/[^0-9A-Za-z가-힣]/g, '').length * 0.17 + 0.3;
+          }
+          out.push(sec);
+        }
+        return out;
+      },
+
+      // 모든 컷 + 마지막 명함 멘트 음성을 미리 받아 두고, 받은 길이에 맞춰 영상 길이를 조정
       prefetchTtsBuffers() {
-        if (this.ttsVoice === 'off') return Promise.resolve([]);
+        if (this.ttsVoice === 'off') {
+          refitDurationToNarration();
+          return Promise.resolve([]);
+        }
         const totalCuts = getTargetCutCount();
         const jobs = [];
         for (let i = 0; i <= totalCuts; i++) {
           const text = this.getCutNarration(i);
           if (text) jobs.push(this.fetchTtsBuffer(text).catch(() => null));
         }
-        return Promise.all(jobs);
+        return Promise.all(jobs).then((buffers) => {
+          refitDurationToNarration();
+          return buffers;
+        });
+      },
+
+      // 대본을 타이핑하는 동안에는 받지 않고, 입력이 멈춘 뒤 한 번만 받음 (크레딧 낭비 방지)
+      schedulePrefetch(delayMs = 1500) {
+        if (this.ttsPrefetchTimer) clearTimeout(this.ttsPrefetchTimer);
+        this.ttsPrefetchTimer = setTimeout(() => {
+          this.ttsPrefetchTimer = null;
+          if (this.enabled) this.prefetchTtsBuffers();
+        }, delayMs);
       },
 
       stopTts() {
@@ -2416,6 +2504,7 @@
       } else {
         AudioEngine.stopBgmLoop();
         AudioEngine.stopTts();
+        refitDurationToNarration();
         if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-[#85858b]';
         if (lbl) lbl.textContent = '사운드 켜기';
         if (btn) {
@@ -4156,7 +4245,7 @@
         const ttsEl = document.getElementById(`cutTts${i}`);
         if (ttsEl) campaign.ttsLines[i] = ttsEl.value;
       }
-      if (AudioEngine.enabled) AudioEngine.prefetchTtsBuffers();
+      if (AudioEngine.enabled) AudioEngine.schedulePrefetch();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
 
@@ -4340,10 +4429,10 @@
           `🔑 ${d.name} ${d.title} 책임출고! 댓글에 [견적] 남겨주세요`
         ];
         campaign.ttsLines = [
-          `${personaPrefix}${campaign.vehicle}, 이번 달 특별 프로모션 조건 공개합니다!`,
-          `대기 기간 없이 선점 재고 ${parsedLocal.stockNum}대, 이번 주 바로 출고 가능합니다.`,
-          `최대 ${campaign.discountNum}만 원 할인 적용으로 ${campaign.discount}에 만나보세요.`,
-          `${d.name} ${d.title}에게 맡겨주세요. 댓글에 견적 남기시면 즉시 연락드립니다!`
+          `${campaign.vehicle}, 이번 달 특별 조건!`,
+          `선점 재고 ${parsedLocal.stockNum}대, 이번 주 바로 출고.`,
+          `최대 ${campaign.discountNum}만 원 할인 받으세요.`,
+          `댓글에 견적 두 글자만 남겨주세요!`
         ];
         campaign.kakaoChat = [
           { role: 'customer', text: `팀장님! ${parsedLocal.targetPersona ? parsedLocal.targetPersona + '이 타기 좋은 ' : ''}${campaign.vehicle} 즉시출고 되나요? 😭` },
@@ -4401,10 +4490,10 @@
         `계약 즉시 출고 가능! 댓글에 [견적] 남겨주세요`
       ];
       campaign.ttsLines = [
-        `${p.vehicle}, ${p.hook}`,
-        `${(p.bullets[0] || '인기 색상 선점 물량 즉시 출고').replace('✔ ', '')} 가능합니다.`,
-        `최대 ${p.discountNum}만 원 할인 혜택과 ${p.discount} 조건으로 만나보세요.`,
-        `${d.name} ${d.title}가 책임 출고합니다. 댓글에 견적 두 글자만 남겨주세요!`
+        `${p.vehicle}, 이번 달 특별 조건!`,
+        `인기 색상 선점 물량, 바로 출고됩니다.`,
+        `최대 ${p.discountNum}만 원 할인 받으세요.`,
+        `댓글에 견적 두 글자만 남겨주세요!`
       ];
       campaign.kakaoChat = [
         { role: 'customer', text: `팀장님! ${p.vehicle} 지금 계약하면 대기 기간이 얼마나 걸리나요? 😭` },

@@ -19,8 +19,8 @@ const FISH_TTS_URL = 'https://api.fish.audio/v1/tts';
 const MAX_TEXT_LENGTH = 200;
 
 const VOICE_PRESETS = {
-  female: { env: ['FISH_VOICE_FEMALE'], speed: 1.05 },
-  male: { env: ['FISH_VOICE_MALE'], speed: 1.0 },
+  female: { env: ['FISH_VOICE_FEMALE'], speed: 1.1 },
+  male: { env: ['FISH_VOICE_MALE'], speed: 1.05 },
   energetic: { env: ['FISH_VOICE_ENERGETIC', 'FISH_VOICE_FEMALE'], speed: 1.2 }
 };
 
