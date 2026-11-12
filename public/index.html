@@ -2130,7 +2130,7 @@
           '🔑 계약 즉시 3일 이내 고객님 자택 당일 탁송!'
         ],
         ttsLines: [
-          '긴급 속보! 전국 잔여 취소 차량 석 대가 한정 배정되었습니다.',
+          '긴급 속보! 전국 잔여 취소 차량 세 대가 한정 배정되었습니다.',
           '선착순 소진 임박! 이번 주 마감 전 즉시 배정됩니다.',
           '최대 사백팔십만 원 공식 특판 혜택을 놓치지 마세요.',
           '계약 즉시 삼 일 이내 고객님 자택으로 당일 탁송해 드립니다.'
@@ -6949,26 +6949,50 @@ function renderStoryArchetypesUI() {
             if (v > peak) peak = v;
           }
 
-          // 문장 경계: 앞 문장 끝과 뒤 문장 시작의 가운데
+          // 문장 경계: 글자 위치로 추정한 경계 근처(±0.4초)에서 실제로 가장 조용한 지점을 찾아 자름
+          //   (추정 경계가 말끝·말머리에 걸리면 문장 끝 발음이 잘리거나 다음 문장 첫 소리가 섞임)
           const sr = full.sampleRate;
-          const bounds = [Math.max(0, body.lines[0].start - 0.06)];
+          const win = Math.max(1, Math.floor(sr * 0.02));
+          const rmsAt = (t) => {
+            const a = Math.max(0, Math.floor(t * sr) - (win >> 1));
+            const b = Math.min(mono.length, a + win);
+            let s = 0;
+            for (let k = a; k < b; k++) s += mono[k] * mono[k];
+            return Math.sqrt(s / Math.max(1, b - a));
+          };
+          const quietest = (center, lo, hi) => {
+            let best = center;
+            let bestV = Infinity;
+            for (let t = Math.max(lo, 0); t <= Math.min(hi, full.duration); t += 0.01) {
+              const v = rmsAt(t) + Math.abs(t - center) * 0.002;
+              if (v < bestV) {
+                bestV = v;
+                best = t;
+              }
+            }
+            return best;
+          };
+          const bounds = [Math.max(0, body.lines[0].start - 0.08)];
           for (let i = 0; i < lines.length - 1; i++) {
-            bounds.push((body.lines[i].end + body.lines[i + 1].start) / 2);
+            const mid = (body.lines[i].end + body.lines[i + 1].start) / 2;
+            const lo = Math.max(bounds[i] + 0.3, mid - 0.4);
+            const hi = Math.min(full.duration - 0.1, mid + 0.4);
+            bounds.push(lo < hi ? quietest(mid, lo, hi) : mid);
           }
-          bounds.push(Math.min(full.duration, body.lines[lines.length - 1].end + 0.2));
+          // 마지막 문장은 녹음 끝까지 (말끝 여운이 잘리지 않게)
+          bounds.push(full.duration);
 
           lines.forEach((line, i) => {
             const from = Math.max(0, Math.floor(bounds[i] * sr));
             const to = Math.min(full.length, Math.ceil(bounds[i + 1] * sr));
             const len = Math.max(1, to - from);
             const piece = ctx.createBuffer(full.numberOfChannels, len, sr);
-            const fade = Math.min(Math.floor(sr * 0.008), Math.floor(len / 4));
+            const fadeIn = Math.min(Math.floor(sr * 0.01), Math.floor(len / 4));
+            const fadeOut = Math.min(Math.floor(sr * 0.04), Math.floor(len / 4));
             for (let c = 0; c < full.numberOfChannels; c++) {
               const data = full.getChannelData(c).slice(from, to);
-              for (let k = 0; k < fade; k++) {
-                data[k] *= k / fade;
-                data[len - 1 - k] *= k / fade;
-              }
+              for (let k = 0; k < fadeIn; k++) data[k] *= k / fadeIn;
+              for (let k = 0; k < fadeOut; k++) data[len - 1 - k] *= k / fadeOut;
               piece.copyToChannel(data, c);
             }
             piece.__peak = peak;
