@@ -2235,6 +2235,106 @@
 
       // 문장 하나의 Fish Audio 음성을 받아 AudioBuffer로 디코딩 (성우·문장별 캐시)
       fetchTtsBuffer(text) {
+        const key = this.ttsKey(text);
+        if (this.ttsCache.has(key)) return this.ttsCache.get(key);
+        // 대본 전체 녹음이 진행 중이면 그 결과를 기다려 같은 녹음에서 잘라낸 음성을 씀
+        if (this.scriptPending) {
+          return this.scriptPending.then(() => this.ttsCache.get(key) || this.fetchLineBuffer(text));
+        }
+        return this.fetchLineBuffer(text);
+      },
+
+      // ★ 대본 전체를 한 번에 녹음해 문장별로 잘라 둠 (/api/tts-script)
+      //   문장마다 따로 녹음하면 톤·속도·크기가 서로 달라 이어 붙인 티가 나므로,
+      //   한 호흡으로 녹음한 하나의 음성에서 컷별 구간만 잘라 씁니다.
+      scriptCache: new Map(),
+      scriptPending: null,
+      fetchScriptNarration(lines) {
+        const voice = this.ttsVoice;
+        const speed = this.ttsSpeed;
+        const scriptKey = `${voice}@${speed}|${lines.join('\n')}`;
+        if (this.scriptCache.has(scriptKey)) return this.scriptCache.get(scriptKey);
+
+        const ctx = this.ensureContext();
+        const job = (async () => {
+          if (!ctx) throw new Error('no_audio_context');
+          if (!window.location.protocol.startsWith('http')) throw new Error('offline');
+          const url = `/api/tts-script?v=1&speed=${speed}&ref=${encodeURIComponent(voice)}&lines=${encodeURIComponent(JSON.stringify(lines))}`;
+          const res = await this.runTtsRequest(() => fetch(url));
+          if (!res.ok) {
+            let code = `http_${res.status}`;
+            try {
+              const errBody = await res.json();
+              if (errBody && errBody.error === 'fish_api_key_missing') code = errBody.error;
+            } catch (e) {}
+            throw new Error(code);
+          }
+          const body = await res.json();
+          if (!body || !body.audio_base64 || !Array.isArray(body.lines) || body.lines.length !== lines.length) {
+            throw new Error('bad_script_response');
+          }
+          const bin = atob(body.audio_base64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const full = await ctx.decodeAudioData(bytes.buffer);
+
+          // 전체 녹음의 최대 음량 (모든 문장을 같은 배율로 키워 문장 사이 크기를 일정하게 유지)
+          const mono = full.getChannelData(0);
+          let peak = 0;
+          for (let i = 0; i < mono.length; i += 4) {
+            const v = Math.abs(mono[i]);
+            if (v > peak) peak = v;
+          }
+
+          // 문장 경계: 앞 문장 끝과 뒤 문장 시작의 가운데
+          const sr = full.sampleRate;
+          const bounds = [Math.max(0, body.lines[0].start - 0.06)];
+          for (let i = 0; i < lines.length - 1; i++) {
+            bounds.push((body.lines[i].end + body.lines[i + 1].start) / 2);
+          }
+          bounds.push(Math.min(full.duration, body.lines[lines.length - 1].end + 0.2));
+
+          lines.forEach((line, i) => {
+            const from = Math.max(0, Math.floor(bounds[i] * sr));
+            const to = Math.min(full.length, Math.ceil(bounds[i + 1] * sr));
+            const len = Math.max(1, to - from);
+            const piece = ctx.createBuffer(full.numberOfChannels, len, sr);
+            const fade = Math.min(Math.floor(sr * 0.008), Math.floor(len / 4));
+            for (let c = 0; c < full.numberOfChannels; c++) {
+              const data = full.getChannelData(c).slice(from, to);
+              for (let k = 0; k < fade; k++) {
+                data[k] *= k / fade;
+                data[len - 1 - k] *= k / fade;
+              }
+              piece.copyToChannel(data, c);
+            }
+            piece.__peak = peak;
+            piece.__start = 0;
+            piece.__len = piece.duration;
+            const key = `${voice}@${speed}|${line}`;
+            this.ttsCache.set(key, Promise.resolve(piece));
+            this.ttsSeconds.set(key, piece.duration);
+          });
+          return true;
+        })();
+
+        this.scriptCache.set(scriptKey, job);
+        job.then(
+          () => this.setTtsProvider('fish'),
+          (err) => {
+            this.scriptCache.delete(scriptKey);
+            const code = String(err && err.message);
+            if (['fish_api_key_missing', 'http_401', 'http_402', 'offline'].includes(code)) {
+              this.ttsBlockedUntil = Date.now() + 60000;
+              this.setTtsProvider('browser', code);
+            }
+          }
+        );
+        return job;
+      },
+
+      // 문장 하나만 따로 녹음 (전체 녹음을 쓸 수 없을 때의 대체 경로)
+      fetchLineBuffer(text) {
         const voice = this.ttsVoice;
         const speed = this.ttsSpeed;
         const key = this.ttsKey(text);
@@ -2323,15 +2423,24 @@
           return Promise.resolve([]);
         }
         const totalCuts = getTargetCutCount();
-        const jobs = [];
+        const lines = [];
         for (let i = 0; i <= totalCuts; i++) {
           const text = this.getCutNarration(i);
-          if (text) jobs.push(this.fetchTtsBuffer(text).catch(() => null));
+          if (text) lines.push(text);
         }
-        return Promise.all(jobs).then((buffers) => {
-          refitDurationToNarration();
-          return buffers;
-        });
+        if (lines.length === 0) return Promise.resolve([]);
+
+        // 1순위: 대본 전체를 한 번에 녹음. 실패하면 문장별 녹음으로 대체
+        const perLine = () => Promise.all(lines.map((t) => this.fetchLineBuffer(t).catch(() => null)));
+        const job = (Date.now() < this.ttsBlockedUntil ? perLine() : this.fetchScriptNarration(lines).catch(perLine)).then(
+          (result) => {
+            if (this.scriptPending === job) this.scriptPending = null;
+            refitDurationToNarration();
+            return result;
+          }
+        );
+        this.scriptPending = job;
+        return job;
       },
 
       // 대본을 타이핑하는 동안에는 받지 않고, 입력이 멈춘 뒤 한 번만 받음 (크레딧 낭비 방지)
