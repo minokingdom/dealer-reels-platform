@@ -10,6 +10,8 @@
 
 const { isValidVoiceId, CURATED_VOICE_IDS } = require('../lib/fish-voices');
 const { normalizeKoreanNumbers } = require('../lib/korean-numbers');
+// 유료 크레딧이 없을 때 쓰는 Fish Audio 무료 모델
+const FREE_MODEL = (process.env.FISH_TTS_FREE_MODEL || 's2.1-pro-free').trim();
 
 const FISH_TS_URL = 'https://api.fish.audio/v1/tts/stream/with-timestamp';
 const TONE_TAGS = { bright: '[happy]', excited: '[excited]', plain: '' };
@@ -69,13 +71,13 @@ module.exports = async function handler(req, res) {
   const spoken = lines.map((l) => normalizeKoreanNumbers(l));
   const fullText = spoken.map((l) => (toneTag ? `${toneTag} ${l}` : l)).join('\n');
 
-  try {
-    const upstream = await fetch(FISH_TS_URL, {
+  const callFish = (model) =>
+    fetch(FISH_TS_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        model: (process.env.FISH_TTS_MODEL || 's2-pro').trim()
+        model
       },
       body: JSON.stringify({
         text: fullText,
@@ -85,6 +87,9 @@ module.exports = async function handler(req, res) {
         prosody: { speed }
       })
     });
+  try {
+    let upstream = await callFish((process.env.FISH_TTS_MODEL || 's2-pro').trim());
+    if (upstream.status === 402) upstream = await callFish(FREE_MODEL);
     if (!upstream.ok) {
       let detail = '';
       try { detail = (await upstream.text()).slice(0, 300); } catch (e) {}

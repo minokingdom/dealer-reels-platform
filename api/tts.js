@@ -19,6 +19,8 @@
 
 const { isValidVoiceId, CURATED_VOICE_IDS } = require('../lib/fish-voices');
 const { normalizeKoreanNumbers } = require('../lib/korean-numbers');
+// 유료 크레딧이 없을 때 쓰는 Fish Audio 무료 모델
+const FREE_MODEL = (process.env.FISH_TTS_FREE_MODEL || 's2.1-pro-free').trim();
 
 // 말투: S2 모델은 문장 앞의 [대괄호] 지시어로 감정을 조절합니다. 기본은 밝은 톤
 const TONE_TAGS = { bright: '[happy]', excited: '[excited]', plain: '' };
@@ -102,16 +104,20 @@ module.exports = async function handler(req, res) {
   };
   payload.reference_id = referenceId;
 
-  try {
-    const upstream = await fetch(FISH_TTS_URL, {
+  // 크레딧이 떨어지면(402) Fish Audio 무료 모델로 한 번 더 시도
+  const callFish = (model) =>
+    fetch(FISH_TTS_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        model: (process.env.FISH_TTS_MODEL || 's2-pro').trim()
+        model
       },
       body: JSON.stringify(payload)
     });
+  try {
+    let upstream = await callFish((process.env.FISH_TTS_MODEL || 's2-pro').trim());
+    if (upstream.status === 402) upstream = await callFish(FREE_MODEL);
 
     if (!upstream.ok) {
       let detail = '';
