@@ -7817,7 +7817,7 @@ function renderStoryArchetypesUI() {
           ctx.font = '900 13px sans-serif';
           ctx.textAlign = 'center';
           const secLeft = Math.max(1, Math.floor(cutDuration - cutLocalT));
-          ctx.fillText(⏱ D-DAY 마감임박 // 잔여시간 0초, W / 2, 38);
+          ctx.fillText(`⏱ D-DAY 마감임박 // 잔여시간 0${secLeft}초`, W / 2, 38);
           ctx.restore();
         } else if (lMode === 'CANCEL_STOCK') {
           ctx.save();
@@ -9082,17 +9082,17 @@ function renderStoryArchetypesUI() {
           ctx.lineTo(W - 24, 68);
           ctx.stroke();
 
-          const cineBrand = lMode === 'CANNES_FILM' ? 🎞️ CANNES FILM · 
-                          : lMode === 'MONACO_MARINE' ? ⚓ MONACO YACHT · 
-                          : lMode === 'BLACK_OBSIDIAN' ? 🖤 OBSIDIAN ALL-BLACK · 
-                          : lMode === 'VVIP_CONCIERGE' ? 👑 VVIP PRESIDENTIAL · 
-                          : AUTOREELS PRESTIGE · ;
+          const cineBrand = lMode === 'CANNES_FILM' ? `🎞️ CANNES FILM · ${campaign.vehicle.toUpperCase()}`
+                          : lMode === 'MONACO_MARINE' ? `⚓ MONACO YACHT · ${campaign.vehicle.toUpperCase()}`
+                          : lMode === 'BLACK_OBSIDIAN' ? `🖤 OBSIDIAN ALL-BLACK · ${campaign.vehicle.toUpperCase()}`
+                          : lMode === 'VVIP_CONCIERGE' ? `👑 VVIP PRESIDENTIAL · ${campaign.vehicle.toUpperCase()}`
+                          : `AUTOREELS PRESTIGE · ${campaign.vehicle.toUpperCase()}`;
 
-          const cineSub = lMode === 'CANNES_FILM' ? 황금종려상 시네마틱
-                        : lMode === 'MONACO_MARINE' ? 프라이빗 마린 요트
-                        : lMode === 'BLACK_OBSIDIAN' ? 스텔스 럭셔리
-                        : lMode === 'VVIP_CONCIERGE' ? 쇼퍼드리븐 VIP 의전
-                        : ${d.branch || '공식 전시장'} · VIP 의전;
+          const cineSub = lMode === 'CANNES_FILM' ? '황금종려상 시네마틱'
+                        : lMode === 'MONACO_MARINE' ? '프라이빗 마린 요트'
+                        : lMode === 'BLACK_OBSIDIAN' ? '스텔스 럭셔리'
+                        : lMode === 'VVIP_CONCIERGE' ? '쇼퍼드리븐 VIP 의전'
+                        : `${d.branch || '공식 전시장'} · VIP 의전`;
 
           ctx.fillStyle = '#ffffff';
           ctx.font = '700 12px serif';
@@ -9110,7 +9110,7 @@ function renderStoryArchetypesUI() {
           ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
           ctx.font = '700 11px monospace';
           ctx.textAlign = 'center';
-          ctx.fillText(AUTOREELS PRESTIGE // , 0, 0);
+          ctx.fillText(`AUTOREELS PRESTIGE // ${campaign.vehicle.toUpperCase()}`, 0, 0);
           ctx.restore();
 
           // 하단 플로팅 럭셔리 자막 바 (Y: 822 ~ 868)
@@ -9151,10 +9151,10 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'left';
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 14px sans-serif';
-          drawFittedText(${d.name} , 80, 917, 240, 14);
+          drawFittedText(`${d.name} ${d.title}`, 80, 917, 240, 14);
           ctx.fillStyle = '#94a3b8';
           ctx.font = '11px sans-serif';
-          drawFittedText(${d.branch} · VIP 컨시어지, 80, 933, 240, 11);
+          drawFittedText(`${d.branch} · VIP 컨시어지`, 80, 933, 240, 11);
 
           ctx.textAlign = 'right';
           ctx.fillStyle = theme.accent || '#d4af37';
@@ -9209,11 +9209,11 @@ function renderStoryArchetypesUI() {
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 12px sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText(🎤  특파원, 81, H - 109);
+          ctx.fillText(`🎤 ${d.name} 특파원`, 81, H - 109);
 
           ctx.textAlign = 'left';
           ctx.fillStyle = '#ffffff';
-          drawFittedText([단독 현장보도]  공식 당월 특판, 158, H - 108, W - 176, 17);
+          drawFittedText(`[단독 현장보도] ${campaign.vehicle} 공식 당월 특판`, 158, H - 108, W - 176, 17);
 
           // 2단: 적색/골드 롤링 자막 바
           ctx.fillStyle = 'rgba(7, 11, 22, 0.96)';
@@ -9231,7 +9231,7 @@ function renderStoryArchetypesUI() {
           drawFittedText(narrationLine, 98, H - 58, W - 118, 18);
           ctx.fillStyle = '#fbbf24';
           ctx.font = 'bold 13px sans-serif';
-          ctx.fillText(최대 -만원 특별할인 · 취등록세 0원 무보증 즉시출고, 98, H - 24);
+          ctx.fillText(`최대 -${campaign.discountNum}만원 특별할인 · 취등록세 0원 무보증 즉시출고`, 98, H - 24);
           ctx.restore();
         }
 
@@ -9269,7 +9269,7 @@ function renderStoryArchetypesUI() {
           ctx.fillText(cyberHdr, 44, 50);
           ctx.textAlign = 'right';
           ctx.fillStyle = '#38bdf8';
-          ctx.fillText(SUBSIDY: -0,000 KRW, W - 44, 50);
+          ctx.fillText(`SUBSIDY: -${campaign.discountNum}0,000 KRW`, W - 44, 50);
 
           // 좌측 수직 고도/배터리 래더 미터 (Y: 180 ~ 520)
           ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
@@ -9329,7 +9329,7 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'left';
           ctx.fillStyle = '#06b6d4';
           ctx.font = 'bold 12px monospace';
-          ctx.fillText(OPERATOR:  (), 40, 908);
+          ctx.fillText(`OPERATOR: ${d.name.toUpperCase()} (${d.branch})`, 40, 908);
           ctx.fillStyle = '#64748b';
           ctx.font = '10px monospace';
           ctx.fillText('UPLINK_STATUS: CONNECTED // LATENCY 12ms', 40, 925);
@@ -9343,14 +9343,14 @@ function renderStoryArchetypesUI() {
           // 상단 50% (Y: 0 ~ 475): 1:1 카메라 뷰파인더 & REC 타임코드
           ctx.save();
           const recDot = Math.sin(t * 8) > 0 ? 1 : 0.2;
-          ctx.fillStyle = gba(239, 68, 68, );
+          ctx.fillStyle = `rgba(239, 68, 68, ${recDot})`;
           ctx.beginPath();
           ctx.arc(36, 42, 7, 0, Math.PI * 2);
           ctx.fill();
           ctx.font = '900 13px monospace';
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'left';
-          ctx.fillText(REC  [00:0:24], 50, 47);
+          ctx.fillText(`REC  [00:0${currentCutSlot + 1}:24]`, 50, 47);
           ctx.textAlign = 'right';
           ctx.font = 'bold 12px monospace';
           ctx.fillText('4K 60FPS · 🔋 89%', W - 32, 47);
@@ -9377,7 +9377,7 @@ function renderStoryArchetypesUI() {
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 14px sans-serif';
           ctx.textAlign = 'center';
-          const splitTag = lMode === 'TAX_CALCULATOR' ? 💼 사업자 100% 절세 견적 //  : 🚗 공식 신차배정 // ;
+          const splitTag = lMode === 'TAX_CALCULATOR' ? `💼 사업자 100% 절세 견적 // ${campaign.vehicle}` : `🚗 공식 신차배정 // ${campaign.vehicle}`;
           drawFittedText(splitTag, W / 2, 444, W - 70, 14);
           ctx.restore();
 
@@ -9407,7 +9407,7 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'left';
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 15px sans-serif';
-          drawFittedText(${d.name} 카마스터 (), 72, 499, 280, 15);
+          drawFittedText(`${d.name} 카마스터 (${d.branch})`, 72, 499, 280, 15);
           ctx.fillStyle = '#22c55e';
           ctx.font = '11px sans-serif';
           ctx.fillText('● 실시간 1:1 견적 상담 중', 72, 518);
@@ -9469,7 +9469,7 @@ function renderStoryArchetypesUI() {
 
           const raceRibbon = lMode === 'LAUNCH_CONTROL' ? '🚀 LAUNCH CONTROL // 0-100 3.4s READY'
                            : lMode === 'EXHAUST_POP' ? '🔥 VARIABLE EXHAUST // 112 dB POP & BANG'
-                           : 🏁 MOTORSPORTS // LAP 0;
+                           : `🏁 MOTORSPORTS // LAP 0${currentCutSlot + 1}`;
 
           ctx.fillStyle = '#0a0a0d';
           ctx.fillRect(kerbW, 20, W - kerbW * 2, 40);
@@ -9559,10 +9559,10 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'left';
           ctx.fillStyle = '#ef4444';
           ctx.font = '900 13px sans-serif';
-          drawFittedText(🏁 TEAM HYUNDAI // PILOT , 16, 26, W - 170, 13);
+          drawFittedText(`🏁 TEAM HYUNDAI // PILOT ${d.name.toUpperCase()}`, 16, 26, W - 170, 13);
           ctx.fillStyle = '#ffffff';
           ctx.font = 'bold 11px sans-serif';
-          drawFittedText(${campaign.discount} · 최고출력 퍼포먼스 패키지, 16, 48, W - 170, 11);
+          drawFittedText(`${campaign.discount} · 최고출력 퍼포먼스 패키지`, 16, 48, W - 170, 11);
           ctx.restore();
         }
 
@@ -9580,7 +9580,7 @@ function renderStoryArchetypesUI() {
 
           const trustBadge = lMode === 'BLUEHANDS_INSPECT' ? '검수완료'
                            : lMode === 'FAMILY_SAFETY' ? '가족안심'
-                           : CUT ;
+                           : `CUT ${currentCutSlot + 1}`;
 
           ctx.fillStyle = theme.badge || '#2563eb';
           drawRoundedRect(ctx, 28, H - 204, 78, 32, 8);
@@ -9621,13 +9621,13 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'left';
           ctx.fillStyle = HYUNDAI_NAVY;
           ctx.font = 'bold 15px sans-serif';
-          const showroomHeader = lMode === 'BLUEHANDS_INSPECT' ? 📋 블루핸즈 120개 검수
-                               : lMode === 'FAMILY_SAFETY' ? 🛡️ 패밀리 안심케어 5-STAR
-                               : 🏢 ;
+          const showroomHeader = lMode === 'BLUEHANDS_INSPECT' ? '📋 블루핸즈 120개 검수'
+                               : lMode === 'FAMILY_SAFETY' ? '🛡️ 패밀리 안심케어 5-STAR'
+                               : `🏢 ${d.branch}`;
           ctx.fillText(showroomHeader, 126, H - 108, 194);
           ctx.fillStyle = '#0f172a';
           ctx.font = 'bold 23px sans-serif';
-          ctx.fillText(${d.name} , 126, H - 72, 194);
+          ctx.fillText(`${d.name} ${d.title}`, 126, H - 72, 194);
 
           ctx.fillStyle = HYUNDAI_NAVY;
           drawRoundedRect(ctx, 328, H - 128, 194, 66, 12);
@@ -9645,7 +9645,7 @@ function renderStoryArchetypesUI() {
           ctx.fill();
           ctx.textAlign = 'left';
           ctx.fillStyle = '#1e293b';
-          drawFittedText(🎁 , 138, H - 27, 372, 15, 10);
+          drawFittedText(`🎁 ${d.promoTag}`, 138, H - 27, 372, 15, 10);
           ctx.restore();
         }
       } else {
@@ -10137,7 +10137,7 @@ function renderStoryArchetypesUI() {
           const cyberUnit = lMode === 'AUTONOMOUS_LIDAR' ? 'AUTOPILOT: AI LIDAR 360° [ACTIVE]'
                           : lMode === 'BATTERY_TELEMETRY' ? 'HIGH_VOLTAGE: 800V NCM [SOH 100%]'
                           : lMode === 'TECH_ECO_V2L' ? '220V_V2L_OUTDOOR: READY'
-                          : UNIT: ;
+                          : `UNIT: ${d.branch}`;
           ctx.fillText(cyberUnit, -60, -240);
 
           ctx.fillStyle = '#22d3ee';
