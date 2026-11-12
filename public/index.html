@@ -610,10 +610,13 @@
               <span id="aiMixerRecipeText" class="text-[10px] text-[#ededed] truncate max-w-[500px]">테마: -- | 4컷: --</span>
             </div>
 
-            <!-- 카테고리 필터 탭 바 -->
+            <!-- 카테고리 필터 탭 바 (즐겨찾기 포함) -->
             <div class="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]" id="archetypeCategoryFilterBar">
               <button type="button" onclick="filterArchetypeCategory('all')" id="archCatBtn_all" class="h-6 px-2.5 rounded-[5px] font-medium bg-[#232325] text-white border border-white/30 shrink-0">
                 전체 (12)
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('favorite')" id="archCatBtn_favorite" class="h-6 px-2.5 rounded-[5px] text-[#facc15] hover:text-[#fde047] shrink-0 flex items-center gap-1 font-semibold">
+                <span>⭐</span> 즐겨찾기 <span id="favTabCount" class="text-[10px] opacity-80">(0)</span>
               </button>
               <button type="button" onclick="filterArchetypeCategory('special')" id="archCatBtn_special" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
                 ⚡ 특판·즉시출고 (3)
@@ -2295,9 +2298,58 @@
     let activeStoryArchetypeKey = 'clearance';
     let currentArchetypeCategory = 'all';
 
+    function getFavoriteArchetypes() {
+      try {
+        return JSON.parse(localStorage.getItem('autoreels_favorites') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function toggleFavoriteArchetype(e, archKey) {
+      if (e) e.stopPropagation();
+      const favs = getFavoriteArchetypes();
+      const idx = favs.indexOf(archKey);
+      if (idx >= 0) {
+        favs.splice(idx, 1);
+      } else {
+        favs.push(archKey);
+      }
+      localStorage.setItem('autoreels_favorites', JSON.stringify(favs));
+      updateFavoriteTabCount();
+      renderStoryArchetypesUI();
+    }
+
+    function isFavoriteArchetype(archKey) {
+      return getFavoriteArchetypes().includes(archKey);
+    }
+
+    function getPinnedArchetype() {
+      return localStorage.getItem('autoreels_pinned_style') || '';
+    }
+
+    function togglePinnedArchetype(e, archKey) {
+      if (e) e.stopPropagation();
+      const current = getPinnedArchetype();
+      if (current === archKey) {
+        localStorage.removeItem('autoreels_pinned_style');
+      } else {
+        localStorage.setItem('autoreels_pinned_style', archKey);
+      }
+      renderStoryArchetypesUI();
+    }
+
+    function updateFavoriteTabCount() {
+      const countEl = document.getElementById('favTabCount');
+      if (countEl) {
+        const c = getFavoriteArchetypes().length;
+        countEl.textContent = `(${c})`;
+      }
+    }
+
     function filterArchetypeCategory(catKey) {
       currentArchetypeCategory = catKey;
-      const cats = ['all', 'special', 'luxury', 'finance', 'trust'];
+      const cats = ['all', 'favorite', 'special', 'luxury', 'finance', 'trust'];
       cats.forEach((c) => {
         const btn = document.getElementById(`archCatBtn_${c}`);
         if (btn) {
@@ -2574,14 +2626,32 @@
       const container = document.getElementById('storyArchetypeCardsContainer');
       if (!container) return;
 
+      const favList = getFavoriteArchetypes();
+      const pinnedKey = getPinnedArchetype();
+      updateFavoriteTabCount();
+
       const keys = Object.keys(STORY_ARCHETYPES).filter((k) => {
         if (currentArchetypeCategory === 'all') return true;
+        if (currentArchetypeCategory === 'favorite') return favList.includes(k);
         return STORY_ARCHETYPES[k].category === currentArchetypeCategory;
       });
+
+      if (keys.length === 0 && currentArchetypeCategory === 'favorite') {
+        container.innerHTML = `
+          <div class="col-span-full py-10 text-center text-[#85858b] bg-[#141416] rounded-[10px] border border-[#27272a] p-6">
+            <span class="text-[24px] block mb-1.5">⭐</span>
+            <div class="text-[#ededed] font-semibold text-[13px] mb-1">아직 즐겨찾는 스타일이 없습니다</div>
+            <p class="text-[11px] text-[#71717a] max-w-sm mx-auto">마음에 드는 스타일 카드 우측 상단의 별표(★)를 누르시면 여기에 모아서 언제든 원클릭으로 사용하실 수 있습니다.</p>
+          </div>
+        `;
+        return;
+      }
 
       container.innerHTML = keys.map((k) => {
         const arch = STORY_ARCHETYPES[k];
         const isActive = k === activeStoryArchetypeKey;
+        const isFav = favList.includes(k);
+        const isPinned = pinnedKey === k;
         const catBadgeLabel = {
           special: '⚡특판',
           luxury: '👑프리미엄',
@@ -2595,11 +2665,12 @@
               <span class="text-[12px] font-bold text-[#ededed] flex items-center gap-1.5 truncate">
                 <span>${arch.icon}</span>
                 <span class="truncate">${arch.shortTitle}</span>
+                ${isPinned ? '<span class="px-1 py-0.2 rounded text-[8px] bg-[#facc15]/20 text-[#facc15] border border-[#facc15]/40 font-mono">📌고정</span>' : ''}
               </span>
               <div class="flex items-center gap-1 shrink-0">
-                <span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#27272a] text-[#a1a1a6]">
-                  ${catBadgeLabel}
-                </span>
+                <button type="button" onclick="toggleFavoriteArchetype(event, '${k}')" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-[14px] ${isFav ? 'text-[#facc15]' : 'text-[#52525b] hover:text-[#facc15]'}" title="${isFav ? '즐겨찾기 해제' : '즐겨찾기 추가'}">
+                  ${isFav ? '★' : '☆'}
+                </button>
                 <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-medium" style="background: ${arch.accentColor}22; color: ${arch.accentColor}; border: 1px solid ${arch.accentColor}44">
                   ${arch.themeId}
                 </span>
@@ -2608,7 +2679,12 @@
             <p class="text-[11px] text-[#a1a1a6] leading-snug line-clamp-2 min-h-[30px]">${arch.tagline}</p>
             <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between text-[10px] text-[#85858b]">
               <span class="truncate pr-1">${arch.cutCaptions[0].replace(/^[^\s]+\s*/, '')}</span>
-              <span class="font-bold text-[#ededed] shrink-0">선택 →</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" onclick="togglePinnedArchetype(event, '${k}')" class="px-1.5 py-0.5 rounded text-[9px] font-mono transition-colors ${isPinned ? 'bg-[#facc15] text-[#0f172a] font-bold' : 'text-[#71717a] hover:text-[#ededed] hover:bg-[#27272a]'}" title="AutoReels 시작 시 항상 이 스타일로 고정">
+                  ${isPinned ? '📌 해제' : '📌 시작고정'}
+                </button>
+                <span class="font-bold text-[#ededed] ml-1">선택 →</span>
+              </div>
             </div>
           </div>
         `;
@@ -6307,117 +6383,730 @@
         ctx.translate(W / 2, H / 2);
         ctx.scale(enterP, enterP);
 
-        // 공식 카마스터 화이트 명함 카드 본체
+        // ====================================================================
+        // ★ 화면 레이아웃 6대 모드별 명함 엔딩 (Dynamic Outro Business Card Engine)
+        // 테마 및 6대 레이아웃 모드에 맞춰 완전히 다른 스타일의 명함/패스/인증서로 변신!
+        // ====================================================================
         const cardW = 476;
         const cardH = 790;
-        ctx.fillStyle = '#ffffff';
-        drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 28);
-        ctx.fill();
+        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
 
-        // 명함 상단 현대 딥네이비 헤더 영역
-        ctx.save();
-        drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, 175, 28);
-        ctx.clip();
-        const headerGrad = ctx.createLinearGradient(-cardW / 2, -cardH / 2, cardW / 2, -cardH / 2 + 175);
-        headerGrad.addColorStop(0, '#002C5F');
-        headerGrad.addColorStop(1, '#00448E');
-        ctx.fillStyle = headerGrad;
-        ctx.fillRect(-cardW / 2, -cardH / 2, cardW, 175);
-        ctx.restore();
+        // --------------------------------------------------------------------
+        // 명함 모드 1: EDITORIAL_VOGUE ★ [보그 매거진 VIP 블랙 & 골드 오닉스 카드]
+        // --------------------------------------------------------------------
+        if (lMode === 'EDITORIAL_VOGUE') {
+          // 오닉스 블랙 바디 + 미세 골드 그라디언트
+          const cardGrad = ctx.createLinearGradient(0, -cardH / 2, 0, cardH / 2);
+          cardGrad.addColorStop(0, '#090a10');
+          cardGrad.addColorStop(1, '#13151f');
+          ctx.fillStyle = cardGrad;
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 28);
+          ctx.fill();
 
-        // 상단 공식 로고 텍스트
-        ctx.fillStyle = '#93c5fd';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('HYUNDAI · KIA MOTORS OFFICIAL CAR MASTER', 0, -cardH / 2 + 40);
+          // 1.5px 럭셔리 골드 메탈릭 테두리
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 2;
+          ctx.stroke();
 
-        // ★ 딜러 대형 실사 얼굴 프로필 사진 (원형 화이트 프레임)
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(0, -195, 74, 0, Math.PI * 2);
-        ctx.clip();
-        if (d.avatarImg) {
-          ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
-        } else {
-          ctx.fillStyle = HYUNDAI_NAVY;
-          ctx.fillRect(-74, -269, 148, 148);
+          // 상단: VOGUE 에디토리얼 슬림 헤더
+          ctx.fillStyle = '#05070a';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, 140, 28);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(-cardW / 2 + 20, -cardH / 2 + 140);
+          ctx.lineTo(cardW / 2 - 20, -cardH / 2 + 140);
+          ctx.stroke();
+
+          ctx.fillStyle = theme.accent || '#d4af37';
+          ctx.font = '700 13px serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('◆ AUTOREELS COUTURE · PRIVATE CONCIERGE ◆', 0, -cardH / 2 + 42);
+
+          // 딜러 프로필 원형 (골드 링)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          else {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(-74, -269, 148, 148);
+          }
+          ctx.restore();
+
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // VIP 프라이빗 마스터 골드 캡슐
+          ctx.fillStyle = 'rgba(212, 175, 55, 0.18)';
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -95, -134, 190, 28, 14);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#fef3c7';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillText('★ VIP 프라이빗 마스터', 0, -115);
+
+          // 소속 지점 & 카마스터 성함 (우아한 세리프 타이포그래피)
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '16px serif';
+          ctx.fillText(`${d.branch} · VIP 컨시어지`, 0, -78);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 38px serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -28);
+
+          // VIP 1:1 전담 상담 다크 글래스 박스
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -204, 2, 408, 76, 18);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#fef3c7';
+          ctx.font = 'bold 24px sans-serif';
+          ctx.fillText('✨ 1:1 VIP 프라이빗 컨시어지', 0, 48, 384);
+
+          // 댓글 [견적] VIP 시크릿 DM 박스
+          ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -204, 94, 408, 78, 16);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#fef08a';
+          ctx.font = 'bold 20px sans-serif';
+          ctx.fillText('💬 댓글에 [견적] 남겨주시면 시크릿 조건 발송!', 0, 126);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('→ 1:1 비공개 특별 금융 프로모션을 DM으로 즉시 전송', 0, 154);
+
+          // VVIP 출고 기프트 패키지
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, -204, 186, 408, 68, 14);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = theme.accent || '#d4af37';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText('🎁 VVIP 스페셜 딜리버리 기프트', 0, 212);
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = '15px sans-serif';
+          ctx.fillText(d.promoTag, 0, 238, 384);
+
+          // 하단 골드 QR & 컨시어지 정보
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#fef3c7';
+          ctx.font = 'bold 18px serif';
+          ctx.fillText('VVIP 프라이빗 1:1 즉시 출고 배정', -84, 298);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '15px sans-serif';
+          ctx.fillText('• 럭셔리 금융 리스 · 장기렌트 맞춤 설계', -84, 326);
+          ctx.fillStyle = theme.accent || '#d4af37';
+          ctx.fillText(`• 인스타그램 ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
         }
-        ctx.restore();
 
-        // 프로필 사진 화이트 & 골드 이중 링
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.arc(0, -195, 74, 0, Math.PI * 2);
-        ctx.stroke();
+        // --------------------------------------------------------------------
+        // 명함 모드 2: BROADCAST_NEWS ★ [24시 방송국 공식 프레스 기자증 / 취재 배지]
+        // --------------------------------------------------------------------
+        else if (lMode === 'BROADCAST_NEWS') {
+          // 화이트 프레스 카드 본체
+          ctx.fillStyle = '#ffffff';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 28);
+          ctx.fill();
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 3;
+          ctx.stroke();
 
-        // 우수 카마스터 인증 캡슐 배지
-        ctx.fillStyle = '#f59e0b';
-        drawRoundedRect(ctx, -78, -134, 156, 28, 14);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 15px sans-serif';
-        ctx.fillText('★ 우수 카마스터 인증', 0, -115);
+          // 상단 강렬한 레드 속보 헤더 바
+          ctx.save();
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, 160, 28);
+          ctx.clip();
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(-cardW / 2, -cardH / 2, cardW, 160);
+          ctx.restore();
 
-        // 소속 지점 & 카마스터 성함/직함
-        ctx.fillStyle = HYUNDAI_NAVY;
-        ctx.font = 'bold 21px sans-serif';
-        ctx.fillText(d.branch, 0, -76);
+          // LIVE PRESS 헤더 텍스트
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('● 24시 자동차 뉴스 데스크 // 현장 취재팀', 0, -cardH / 2 + 38);
+          ctx.font = '700 12px sans-serif';
+          ctx.fillStyle = '#fecaca';
+          ctx.fillText('OFFICIAL PRESS IDENTIFICATION CARD', 0, -cardH / 2 + 58);
 
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 40px sans-serif';
-        ctx.fillText(`${d.name} ${d.title}`, 0, -26);
+          // 딜러 실사 프로필 (사각 프레스 배지 스타일)
+          ctx.save();
+          drawRoundedRect(ctx, -74, -269, 148, 148, 16);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          else {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-74, -269, 148, 148);
+          }
+          ctx.restore();
 
-        // 상담 안내 대형 네이비 박스 (영상에는 전화번호를 넣지 않음)
-        ctx.fillStyle = HYUNDAI_NAVY;
-        drawRoundedRect(ctx, -204, 2, 408, 76, 18);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 28px sans-serif';
-        ctx.fillText('🔗 프로필 링크로 1:1 상담', 0, 50, 384);
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 4;
+          drawRoundedRect(ctx, -74, -269, 148, 148, 16);
+          ctx.stroke();
 
-        // ★ 댓글 [견적] 자동 DM 안내 강조 박스
-        ctx.fillStyle = '#FEE500';
-        ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 2;
-        drawRoundedRect(ctx, -204, 94, 408, 78, 16);
-        ctx.fill();
-        ctx.stroke();
+          // 취재 전문위원 인증 배지
+          ctx.fillStyle = '#dc2626';
+          drawRoundedRect(ctx, -100, -134, 200, 28, 14);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 14px sans-serif';
+          ctx.fillText('● 공식 인증 취재 전문위원', 0, -115);
 
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 21px sans-serif';
-        ctx.fillText('💬 댓글에 [견적] 두 글자만 남겨주세요!', 0, 127);
-        ctx.fillStyle = '#334155';
-        ctx.font = 'bold 17px sans-serif';
-        ctx.fillText('→ 1:1 비밀 할인 조건표를 DM으로 즉시 보내드립니다', 0, 155);
+          // 소속 지점 & 카마스터 성함
+          ctx.fillStyle = '#475569';
+          ctx.font = 'bold 18px sans-serif';
+          ctx.fillText(`현장 보도국 · ${d.branch}`, 0, -76);
 
-        // 딜러 개인 출고 서비스 패키지 안내
-        ctx.fillStyle = '#f1f5f9';
-        ctx.strokeStyle = '#cbd5e1';
-        ctx.lineWidth = 1.5;
-        drawRoundedRect(ctx, -204, 186, 408, 68, 14);
-        ctx.fill();
-        ctx.stroke();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 40px sans-serif';
+          ctx.fillText(`${d.name} 전문기자`, 0, -26);
 
-        ctx.fillStyle = HYUNDAI_NAVY;
-        ctx.font = 'bold 17px sans-serif';
-        ctx.fillText('🎁 계약 고객 전원 무상 출고 패키지', 0, 212);
-        ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillText(d.promoTag, 0, 238, 384);
+          // 긴급 단독 취재 상담 박스
+          ctx.fillStyle = '#0f172a';
+          drawRoundedRect(ctx, -204, 2, 408, 76, 18);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 24px sans-serif';
+          ctx.fillText('🚨 긴급 단독 취재: 1:1 조건 검증', 0, 48, 384);
 
-        // 하단 카카오톡/인스타 QR 코드 + 상담 안내
-        drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
-        ctx.textAlign = 'left';
-        ctx.fillStyle = HYUNDAI_NAVY;
-        ctx.font = 'bold 19px sans-serif';
-        ctx.fillText('전 차종 즉시출고 · 최저금리 비교', -84, 298);
-        ctx.fillStyle = '#334155';
-        ctx.font = 'bold 16px sans-serif';
-        ctx.fillText('• 할부 / 리스 / 장기렌트 맞춤 설계', -84, 326);
-        ctx.fillStyle = '#64748b';
-        ctx.font = '16px sans-serif';
-        ctx.fillText(`• 인스타그램 ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+          // 댓글 [견적] 뉴스 속보 제보 박스
+          ctx.fillStyle = '#fef08a';
+          ctx.strokeStyle = '#dc2626';
+          ctx.lineWidth = 2.5;
+          drawRoundedRect(ctx, -204, 94, 408, 78, 16);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#991b1b';
+          ctx.font = '900 20px sans-serif';
+          ctx.fillText('💬 방송 댓글에 [견적] 제보 시 즉시 공개!', 0, 126);
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('→ 실시간 배정 비공개 견적서를 DM으로 즉시 회신', 0, 154);
+
+          // 취재 고객 특별 패키지
+          ctx.fillStyle = '#f8fafc';
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -204, 186, 408, 68, 14);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#dc2626';
+          ctx.font = '900 16px sans-serif';
+          ctx.fillText('🎁 취재팀 단독 보도 출고 패키지', 0, 212);
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText(d.promoTag, 0, 238, 384);
+
+          // 하단 프레스 QR 코드
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 18px sans-serif';
+          ctx.fillText('전 차종 당일 배정 보도 라인 가동', -84, 298);
+          ctx.fillStyle = '#334155';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('• 팩트체크 기반 최저금리 비교 검증', -84, 326);
+          ctx.fillStyle = '#dc2626';
+          ctx.fillText(`• 보도 채널 ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+        }
+
+        // --------------------------------------------------------------------
+        // 명함 모드 3: CYBER_HUD ★ [사이버펑크 미래형 HUD 디지털 보안 플레이트]
+        // --------------------------------------------------------------------
+        else if (lMode === 'CYBER_HUD') {
+          // 초심해 다크 사이버 플레이트 본체
+          ctx.fillStyle = '#040711';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 20);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.7)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // 4모서리 네온 코너 브래킷
+          const bLen = 28;
+          ctx.strokeStyle = '#22d3ee';
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          // 좌상단
+          ctx.moveTo(-cardW / 2 + 10, -cardH / 2 + 10 + bLen);
+          ctx.lineTo(-cardW / 2 + 10, -cardH / 2 + 10);
+          ctx.lineTo(-cardW / 2 + 10 + bLen, -cardH / 2 + 10);
+          // 우상단
+          ctx.moveTo(cardW / 2 - 10 - bLen, -cardH / 2 + 10);
+          ctx.lineTo(cardW / 2 - 10, -cardH / 2 + 10);
+          ctx.lineTo(cardW / 2 - 10, -cardH / 2 + 10 + bLen);
+          // 좌하단
+          ctx.moveTo(-cardW / 2 + 10, cardH / 2 - 10 - bLen);
+          ctx.lineTo(-cardW / 2 + 10, cardH / 2 - 10);
+          ctx.lineTo(-cardW / 2 + 10 + bLen, cardH / 2 - 10);
+          // 우하단
+          ctx.moveTo(cardW / 2 - 10 - bLen, cardH / 2 - 10);
+          ctx.lineTo(cardW / 2 - 10, cardH / 2 - 10);
+          ctx.lineTo(cardW / 2 - 10, cardH / 2 - 10 - bLen);
+          ctx.stroke();
+
+          // 상단 HUD 텔레메트리 바
+          ctx.fillStyle = '#22d3ee';
+          ctx.font = 'bold 13px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`SYSTEM: TERMINAL_AUTH // AGENT ID: #AR-${d.token || '2026'}`, 0, -cardH / 2 + 38);
+
+          // 딜러 프로필 (네온 조준선 링)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          else {
+            ctx.fillStyle = '#082f49';
+            ctx.fillRect(-74, -269, 148, 148);
+          }
+          ctx.restore();
+
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 십자 조준선 마크
+          ctx.strokeStyle = '#22d3ee';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-84, -195); ctx.lineTo(-64, -195);
+          ctx.moveTo(64, -195); ctx.lineTo(84, -195);
+          ctx.moveTo(0, -279); ctx.lineTo(0, -259);
+          ctx.moveTo(0, -131); ctx.lineTo(0, -111);
+          ctx.stroke();
+
+          // 사이버 시스템 인증 배지
+          ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -100, -134, 200, 28, 6);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#67e8f9';
+          ctx.font = 'bold 13px monospace';
+          ctx.fillText('[ SYSTEM CERTIFIED MASTER ]', 0, -115);
+
+          // 유닛 & 오퍼레이터 성함
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '15px monospace';
+          ctx.fillText(`TERMINAL_UNIT // ${d.branch}`, 0, -76);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '900 38px monospace';
+          ctx.fillText(`${d.name} OPERATOR`, 0, -26);
+
+          // 다이렉트 업링크 터미널 박스
+          ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -204, 2, 408, 76, 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#67e8f9';
+          ctx.font = 'bold 22px monospace';
+          ctx.fillText('> DIRECT_ACCESS: 1:1 SECURE UPLINK', 0, 48, 384);
+
+          // 댓글 [견적] 암호화 비밀 전송 박스
+          ctx.fillStyle = 'rgba(34, 211, 238, 0.18)';
+          ctx.strokeStyle = '#22d3ee';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -204, 94, 408, 78, 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#a5f3fc';
+          ctx.font = 'bold 19px monospace';
+          ctx.fillText('[ TELEMETRY ] 댓글에 [견적] 입력 시 자동 발송', 0, 126);
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillText('→ 비공개 최저금리 데이터셋을 DM으로 실시간 복호화 전송', 0, 154);
+
+          // 시스템 기어 패키지
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, -204, 186, 408, 68, 8);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 15px monospace';
+          ctx.fillText('⚡ SPECIAL SYSTEM GEAR BUNDLE', 0, 212);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '14px sans-serif';
+          ctx.fillText(d.promoTag, 0, 238, 384);
+
+          // 하단 사이버 QR 매트릭스
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 16px monospace';
+          ctx.fillText('TELEMETRY STATUS: ONLINE (12ms)', -84, 298);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '14px sans-serif';
+          ctx.fillText('• 지능형 금융 알고리즘 0원 승인 최적화', -84, 326);
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillText(`• CYBER_ID @${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+        }
+
+        // --------------------------------------------------------------------
+        // 명함 모드 4: TIKTOK_VIRAL_SPLIT ★ [바이럴 쇼츠 / 인스타 크리에이터 프로필 카드]
+        // --------------------------------------------------------------------
+        else if (lMode === 'TIKTOK_VIRAL_SPLIT') {
+          // 인스타 다크모드 글래스 본체
+          ctx.fillStyle = '#12131a';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 32);
+          ctx.fill();
+
+          // 인스타 선셋 그라디언트 테두리
+          const igGrad = ctx.createLinearGradient(-cardW / 2, -cardH / 2, cardW / 2, cardH / 2);
+          igGrad.addColorStop(0, '#f59e0b');
+          igGrad.addColorStop(0.5, '#ec4899');
+          igGrad.addColorStop(1, '#8b5cf6');
+          ctx.strokeStyle = igGrad;
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+          // 상단 바이럴 크리에이터 헤더
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 15px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚡ 10만뷰 딜러 크리에이터 // 추천 공식 파트너', 0, -cardH / 2 + 42);
+
+          // 딜러 프로필 (인스타 스토리 무지개 링)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          else {
+            ctx.fillStyle = '#27272a';
+            ctx.fillRect(-74, -269, 148, 148);
+          }
+          ctx.restore();
+
+          // 인스타 컬러 외곽 링
+          ctx.strokeStyle = igGrad;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 팔로우 캡슐 버튼
+          ctx.fillStyle = '#3b82f6';
+          drawRoundedRect(ctx, -65, -134, 130, 28, 14);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillText('✓ 팔로잉 중', 0, -115);
+
+          // 지점 태그 & 크리에이터 성함
+          ctx.fillStyle = '#ec4899';
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText(`@${d.branch} 공식 딜러`, 0, -76);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 40px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -26);
+
+          // 3단 스탯 요약 바
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+          drawRoundedRect(ctx, -204, -14, 408, 44, 10);
+          ctx.fill();
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillText('즉시출고 99.8%  |  만족도 ★5.0  |  최저금리 비교', 0, 13);
+
+          // 프로필 링크 카톡 상담 버튼 (인스타 그라디언트)
+          ctx.fillStyle = igGrad;
+          drawRoundedRect(ctx, -204, 38, 408, 62, 16);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 22px sans-serif';
+          ctx.fillText('🔗 프로필 링크 타고 1:1 상담하기', 0, 77, 384);
+
+          // 카카오 노란색 DM 말풍선 강조
+          ctx.fillStyle = '#FEE500';
+          drawRoundedRect(ctx, -204, 110, 408, 70, 16);
+          ctx.fill();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 20px sans-serif';
+          ctx.fillText('💬 댓글에 [견적] 남기면 DM 자동 발송!', 0, 139);
+          ctx.fillStyle = '#475569';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillText('→ 24시간 실시간 AI 봇이 비밀 조건표를 즉시 전송', 0, 163);
+
+          // 출고 사은품 팩
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+          drawRoundedRect(ctx, -204, 188, 408, 64, 12);
+          ctx.fill();
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('🎁 영상 보고 계약하신 분 전원 패키지', 0, 212);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '14px sans-serif';
+          ctx.fillText(d.promoTag, 0, 236, 384);
+
+          // 하단 인스타 QR
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText('인스타그램 릴스 & DM 1:1 맞춤 견적', -84, 298);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '14px sans-serif';
+          ctx.fillText('• 전국 어디서나 무방문 전자계약 출고', -84, 326);
+          ctx.fillStyle = '#ec4899';
+          ctx.fillText(`• ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+        }
+
+        // --------------------------------------------------------------------
+        // 명함 모드 5: RACING_ACTION ★ [모터스포츠 카본 패독 패스 & 피트레인 라이선스]
+        // --------------------------------------------------------------------
+        else if (lMode === 'RACING_ACTION') {
+          // 카본 블랙 레이싱 패스 본체
+          ctx.fillStyle = '#0a0d14';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 24);
+          ctx.fill();
+
+          // 사선 레이싱 스트라이프
+          ctx.save();
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 24);
+          ctx.clip();
+          ctx.rotate((-4 * Math.PI) / 180);
+          ctx.fillStyle = '#e11d48';
+          ctx.fillRect(-cardW, -cardH / 2 + 10, cardW * 2, 28);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(-cardW, -cardH / 2 + 38, cardW * 2, 8);
+          ctx.restore();
+
+          ctx.strokeStyle = '#e11d48';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+          // 헤더: RACING PADDOCK PASS
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('🏁 OFFICIAL PADDOCK PASS // PIT CREW CHIEF', 0, -cardH / 2 + 76);
+
+          // 딜러 프로필 (레이싱 헬멧 프레임 느낌)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, -185, 74, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -259, 148, 148);
+          else {
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(-74, -259, 148, 148);
+          }
+          ctx.restore();
+
+          ctx.strokeStyle = '#e11d48';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(0, -185, 74, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 피트 수석 마스터 형광 배지
+          ctx.fillStyle = '#FEE500';
+          drawRoundedRect(ctx, -90, -124, 180, 28, 6);
+          ctx.fill();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 14px sans-serif';
+          ctx.fillText('⚡ SCUDERIA CHIEF DRIVER', 0, -105);
+
+          // 레이싱 지점 & 드라이버 성함
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText(`${d.branch} SCUDERIA`, 0, -68);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 40px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -20);
+
+          // 즉시 피트인 상담 박스
+          ctx.fillStyle = '#e11d48';
+          drawRoundedRect(ctx, -204, 8, 408, 72, 12);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 24px sans-serif';
+          ctx.fillText('🏎️ 피트인 즉시 상담: 초고속 배정', 0, 52, 384);
+
+          // 댓글 [견적] 레이싱 체커기 박스
+          ctx.fillStyle = '#FEE500';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -204, 94, 408, 78, 12);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#0f172a';
+          ctx.font = '900 20px sans-serif';
+          ctx.fillText('💬 댓글에 [견적] 남기시면 최저가 랩타임 전송!', 0, 126);
+          ctx.fillStyle = '#334155';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('→ 가장 빠른 출고 트랙으로 1:1 다이렉트 안내', 0, 154);
+
+          // 레이싱 팩 사은품
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+          drawRoundedRect(ctx, -204, 186, 408, 68, 10);
+          ctx.fill();
+          ctx.fillStyle = '#f43f5e';
+          ctx.font = '900 15px sans-serif';
+          ctx.fillText('🎁 CIRCUIT PERFORMANCE PACKAGE', 0, 212);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '14px sans-serif';
+          ctx.fillText(d.promoTag, 0, 238, 384);
+
+          // 하단 패독 QR
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 18px sans-serif';
+          ctx.fillText('초고속 스피드 당일 출고 트랙 가동', -84, 298);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '14px sans-serif';
+          ctx.fillText('• 0원 리스 · 렌트 번개 승인 프로세스', -84, 326);
+          ctx.fillStyle = '#f43f5e';
+          ctx.fillText(`• PIT STOP ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+        }
+
+        // --------------------------------------------------------------------
+        // 명함 모드 6: CLASSIC_SHOWROOM ★ [현대·기아 공식 카마스터 클린 화이트&네이비 명함]
+        // --------------------------------------------------------------------
+        else {
+          // 공식 카마스터 화이트 명함 카드 본체
+          ctx.fillStyle = '#ffffff';
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, cardH, 28);
+          ctx.fill();
+
+          // 테마 색상 연동 테두리
+          ctx.strokeStyle = theme.primary || '#002C5F';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // 명함 상단 현대 딥네이비/테마 헤더 영역
+          ctx.save();
+          drawRoundedRect(ctx, -cardW / 2, -cardH / 2, cardW, 175, 28);
+          ctx.clip();
+          const headerGrad = ctx.createLinearGradient(-cardW / 2, -cardH / 2, cardW / 2, -cardH / 2 + 175);
+          headerGrad.addColorStop(0, theme.primary || '#002C5F');
+          headerGrad.addColorStop(1, theme.accent || '#00448E');
+          ctx.fillStyle = headerGrad;
+          ctx.fillRect(-cardW / 2, -cardH / 2, cardW, 175);
+          ctx.restore();
+
+          // 상단 공식 로고 텍스트
+          ctx.fillStyle = '#93c5fd';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('HYUNDAI · KIA MOTORS OFFICIAL CAR MASTER', 0, -cardH / 2 + 40);
+
+          // ★ 딜러 대형 실사 얼굴 프로필 사진 (원형 화이트 프레임)
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) {
+            ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          } else {
+            ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
+            ctx.fillRect(-74, -269, 148, 148);
+          }
+          ctx.restore();
+
+          // 프로필 사진 화이트 & 골드 이중 링
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 우수 카마스터 인증 캡슐 배지
+          ctx.fillStyle = '#f59e0b';
+          drawRoundedRect(ctx, -78, -134, 156, 28, 14);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText('★ 우수 카마스터 인증', 0, -115);
+
+          // 소속 지점 & 카마스터 성함/직함
+          ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
+          ctx.font = 'bold 21px sans-serif';
+          ctx.fillText(d.branch, 0, -76);
+
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 40px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -26);
+
+          // 상담 안내 대형 네이비 박스
+          ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
+          drawRoundedRect(ctx, -204, 2, 408, 76, 18);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 28px sans-serif';
+          ctx.fillText('🔗 프로필 링크로 1:1 상담', 0, 50, 384);
+
+          // ★ 댓글 [견적] 자동 DM 안내 강조 박스
+          ctx.fillStyle = '#FEE500';
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -204, 94, 408, 78, 16);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 21px sans-serif';
+          ctx.fillText('💬 댓글에 [견적] 두 글자만 남겨주세요!', 0, 127);
+          ctx.fillStyle = '#334155';
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText('→ 1:1 비밀 할인 조건표를 DM으로 즉시 보내드립니다', 0, 155);
+
+          // 딜러 개인 출고 서비스 패키지 안내
+          ctx.fillStyle = '#f1f5f9';
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -204, 186, 408, 68, 14);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
+          ctx.font = 'bold 17px sans-serif';
+          ctx.fillText('🎁 계약 고객 전원 무상 출고 패키지', 0, 212);
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(d.promoTag, 0, 238, 384);
+
+          // 하단 카카오톡/인스타 QR 코드 + 상담 안내
+          drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
+          ctx.font = 'bold 19px sans-serif';
+          ctx.fillText('전 차종 즉시출고 · 최저금리 비교', -84, 298);
+          ctx.fillStyle = '#334155';
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText('• 할부 / 리스 / 장기렌트 맞춤 설계', -84, 326);
+          ctx.fillStyle = '#64748b';
+          ctx.font = '16px sans-serif';
+          ctx.fillText(`• 인스타그램 ${d.snsAccounts?.ig || d.igUsername}`, -84, 352);
+        }
 
         ctx.restore();
       }
@@ -8528,7 +9217,12 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     renderStoryArchetypesUI();
     renderVisualStoryboardTrack();
     renderKillerCopyChips();
-    applyStoryArchetype('clearance');
+    const initPinned = getPinnedArchetype();
+    if (initPinned && STORY_ARCHETYPES[initPinned]) {
+      applyStoryArchetype(initPinned);
+    } else {
+      applyStoryArchetype('clearance');
+    }
     syncPreviewPanel();
     syncTechPanel();
     applyRoleViewModeUI();
