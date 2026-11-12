@@ -1898,6 +1898,7 @@
       clearance: {
         id: 'clearance',
         category: 'special',
+        layoutMode: 'BROADCAST_NEWS',
         title: '⚡ 긴급 한정특판형',
         shortTitle: '한정특판',
         tagline: '선착순 배정 · 취소차 긴급 확보 · 카운트다운 게이지',
@@ -1930,6 +1931,7 @@
       ev_future: {
         id: 'ev_future',
         category: 'special',
+        layoutMode: 'CYBER_HUD',
         title: '⚡ 미래형 테크 & EV 전기차형',
         shortTitle: '미래테크EV',
         tagline: '사이버네틱 타겟 · 정부 보조금 선점 · 제로백 게이지',
@@ -1962,6 +1964,7 @@
       gift_bonanza: {
         id: 'gift_bonanza',
         category: 'special',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
         title: '🎁 출고 사은품 8종 폭탄형',
         shortTitle: '사은품폭탄',
         tagline: '프리미엄 썬팅+블박+유리막+PPF 풀패키지 무상 시공',
@@ -1994,6 +1997,7 @@
       luxury: {
         id: 'luxury',
         category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
         title: '🎬 시네마틱 프리미엄형',
         shortTitle: '시네마틱',
         tagline: '도로 위의 예술품 · 최고급 나파가죽 · VIP 프라이빗 컨시어지',
@@ -2026,6 +2030,7 @@
       corporate_tax: {
         id: 'corporate_tax',
         category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
         title: '🏢 CEO 법인·개인사업자 절세형',
         shortTitle: 'CEO법인절세',
         tagline: '연 1,500만 전액 비용처리 · 부가세 환급 · 절세 명세서',
@@ -2058,6 +2063,7 @@
       high_performance: {
         id: 'high_performance',
         category: 'luxury',
+        layoutMode: 'RACING_ACTION',
         title: '🏎️ 고성능 스포츠 다이내믹형',
         shortTitle: '스포츠퍼포먼스',
         tagline: 'RPM 배기음 게이지 · 서킷 퍼포먼스 · 슬랜티드 레이싱 리본',
@@ -2090,6 +2096,7 @@
       finance: {
         id: 'finance',
         category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
         title: '⚖️ 월 납입금 실속 비교형',
         shortTitle: '금융배틀',
         tagline: '할부 vs 장기렌트 · 취등록세 0원 · 하루 커피 한잔 값',
@@ -2122,6 +2129,7 @@
       entry_firstcar: {
         id: 'entry_firstcar',
         category: 'finance',
+        layoutMode: 'BROADCAST_NEWS',
         title: '💼 사회초년생 첫차 가성비형',
         shortTitle: '첫차가성비',
         tagline: '초기비용 0원 무보증 · 하루 1만원대 · 운전연수 무상',
@@ -2154,6 +2162,7 @@
       instant_approval: {
         id: 'instant_approval',
         category: 'finance',
+        layoutMode: 'CYBER_HUD',
         title: '⏱️ 비대면 10분 간편 승인형',
         shortTitle: '비대면승인',
         tagline: '무서류 비대면 모바일 심사 · 신용점수 무관 · 당일 승인 패스',
@@ -2186,6 +2195,7 @@
       trust: {
         id: 'trust',
         category: 'trust',
+        layoutMode: 'CLASSIC_SHOWROOM',
         title: '🤝 카마스터 찐 감동·인도형',
         shortTitle: '신뢰인도',
         tagline: '출고 고객 5.0 리뷰 · 36가지 신차검수 · 평생 사후관리',
@@ -2218,6 +2228,7 @@
       family_camping: {
         id: 'family_camping',
         category: 'trust',
+        layoutMode: 'EDITORIAL_VOGUE',
         title: '👨‍👩‍👧‍👦 패밀리 차박 & 아웃도어형',
         shortTitle: '패밀리차박',
         tagline: '2열 풀플랫 차박 · 파노라마 선루프 · 안전패키지 풀옵션',
@@ -2250,6 +2261,7 @@
       certified_used: {
         id: 'certified_used',
         category: 'trust',
+        layoutMode: 'BROADCAST_NEWS',
         title: '🔍 무사고 인증 중고차 팩트체크형',
         shortTitle: '인증중고팩트',
         tagline: '성능점검 무사고 직인 · 침수·전손 0원 공개 · 1년 2만km 보증',
@@ -2334,11 +2346,16 @@
         { cut: 4, widget: selectedWidgets[3], pos: 'bottom', cam: cams[3] }
       ];
 
-      // 4. 시네마틱 대기 FX 무작위 지정 (6종)
+      // 4. 화면 전체 레이아웃 구성 모드 (6종 전면 변환)
+      const layoutModes = ['EDITORIAL_VOGUE', 'BROADCAST_NEWS', 'CYBER_HUD', 'TIKTOK_VIRAL_SPLIT', 'RACING_ACTION', 'CLASSIC_SHOWROOM'];
+      const selectedLayoutMode = layoutModes[Math.floor(Math.random() * layoutModes.length)];
+      campaign.layoutMode = selectedLayoutMode;
+
+      // 5. 시네마틱 대기 FX 무작위 지정 (6종)
       const fxObj = ATMOSPHERE_FX_OPTIONS[Math.floor(Math.random() * ATMOSPHERE_FX_OPTIONS.length)];
       campaign.atmosphereFx = fxObj.id;
 
-      // 5. 다이내믹 세일즈 조건 및 절차적 킬러 카피 매트릭스 결합
+      // 6. 다이내믹 세일즈 조건 및 절차적 킬러 카피 매트릭스 결합
       const discountOptions = [290, 340, 390, 440, 480, 520, 580, 640, 720, 850, 920, 1100];
       const randomDiscountNum = discountOptions[Math.floor(Math.random() * discountOptions.length)];
       const monthlyPay = Math.floor(randomDiscountNum * 0.07 + 19);
@@ -2403,8 +2420,16 @@
         if (permTextEl) permTextEl.textContent = `4,213,440 조합 중 #${permIndex.toLocaleString()}호`;
         const recipeTextEl = document.getElementById('aiMixerRecipeText');
         if (recipeTextEl) {
+          const layoutLabels = {
+            EDITORIAL_VOGUE: '보그 매거진 에디토리얼',
+            BROADCAST_NEWS: '24시 방송국 LIVE 속보',
+            CYBER_HUD: '3D 사이버네틱 HUD 테크',
+            TIKTOK_VIRAL_SPLIT: '2분할 바이럴 숏폼',
+            RACING_ACTION: '-8도 사선 레이싱 서킷',
+            CLASSIC_SHOWROOM: '정통 공식 쇼룸'
+          };
           const wNames = selectedWidgets.map(w => WIDGET_LABELS[w] || w).join(' ➔ ');
-          recipeTextEl.textContent = `[${themeObj.name}] · ${wNames} · [${fxObj.name}]`;
+          recipeTextEl.textContent = `[${layoutLabels[selectedLayoutMode]}] · [${themeObj.name}] · ${wNames} · [${fxObj.name}]`;
         }
       }
 
@@ -2501,6 +2526,7 @@
 
       const d = getSelectedDealer();
       campaign.themeId = arch.themeId;
+      campaign.layoutMode = arch.layoutMode || 'CLASSIC_SHOWROOM';
       campaign.hook = arch.hook;
       campaign.discountNum = arch.discountNum;
       campaign.discount = arch.discount;
@@ -2511,6 +2537,9 @@
       if (d.variation) {
         d.variation.hook = arch.hook;
       }
+
+      const hookInput = document.getElementById('inputHook');
+      if (hookInput) hookInput.value = campaign.hook;
 
       const vInput = document.getElementById('inputVehicle');
       if (vInput) vInput.value = campaign.vehicle;
@@ -5852,98 +5881,407 @@
           ctx.restore();
         }
 
-        // ======================================================
-        // ★ AI 대본 · 성우 내레이션 자막 바 (하단 프로필 바 바로 위 고정 노출)
-        // 어떤 위젯(영수증, 슬롯머신 등)이 선택되더라도 AI 대본이 영상에 100% 선명하게 표시됨
-        // ======================================================
-        ctx.save();
+        // ====================================================================
+        // ★ 화면 전체 레이아웃 6대 모드 (Screen Composition Engine)
+        // 하단 152px 흰색 박스 강제성을 완전 탈피하여, 모드마다 화면 구성 자체가 완전히 뒤바뀜!
+        // ====================================================================
+        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
         const narrationLine =
           (campaign.ttsLines && campaign.ttsLines[currentCutSlot]) ||
           subLine ||
           `${campaign.vehicle} · ${campaign.discount}`;
-        ctx.fillStyle = 'rgba(10, 14, 23, 0.90)';
-        ctx.strokeStyle = theme.accent;
-        ctx.lineWidth = 2;
-        drawRoundedRect(ctx, 18, H - 214, W - 36, 52, 14);
-        ctx.fill();
-        ctx.stroke();
 
-        // 좌측 AI VOICE / 이퀄라이저 배지
-        ctx.fillStyle = theme.badge;
-        drawRoundedRect(ctx, 28, H - 204, 78, 32, 8);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 12px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText(`CUT ${currentCutSlot + 1}`, 67, H - 183);
+        // --------------------------------------------------------------------
+        // 모드 1: EDITORIAL_VOGUE ★ [보그 매거진 에디토리얼 풀스크린 모드]
+        // 하단 흰색 바 100% 제거! 9:16 사진 완전 개방 + 미니멀 골드 레터박스 + 플로팅 글래스 캡슐
+        // --------------------------------------------------------------------
+        if (lMode === 'EDITORIAL_VOGUE') {
+          // 상단: 럭셔리 매거진 얇은 레터박스 라인 & 헤더
+          ctx.save();
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(30, 48);
+          ctx.lineTo(W - 30, 48);
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '700 12px serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('AUTOREELS COUTURE · 2026 SPECIAL EDITION', 32, 40);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = theme.accent;
+          ctx.fillText('EXCLUSIVE', W - 32, 40);
+          ctx.restore();
 
-        // 자막 본문 (자동 폰트 피팅)
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#ffffff';
-        drawFittedText(narrationLine, 118, H - 181, W - 148, 18, 12);
-        ctx.restore();
+          // 중앙/하단 자막: 박스 없이 사진 위에 직접 얹히는 초대형 38px 골드/화이트 타이포그래피!
+          ctx.save();
+          ctx.translate(W / 2, H - 150);
+          drawKineticWords(narrationLine, 0, 0, W - 60, 34, cutLocalT, 0.08, '#ffffff');
+          ctx.restore();
 
-        // ======================================================
-        // Persistent Track (0~mainDuration): 현대·기아 공식 카마스터 하단 실물 프로필 바
-        // ======================================================
-        ctx.save();
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, H - 152, W, 152);
-        ctx.fillStyle = HYUNDAI_NAVY;
-        ctx.fillRect(0, H - 152, W, 7);
+          // 하단 딜러 시그니처: 무거운 흰색 바 대신 초경량 플로팅 글래스 캡슐
+          ctx.save();
+          ctx.translate(W / 2, H - 55);
+          ctx.fillStyle = 'rgba(10, 14, 23, 0.82)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -220, -25, 440, 50, 25);
+          ctx.fill();
+          ctx.stroke();
 
-        // ★ 파란 '김' 원형 대신 정장 차림 실제 한국인 카마스터 얼굴 프로필 사진
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(68, H - 74, 46, 0, Math.PI * 2);
-        ctx.clip();
-        if (d.avatarImg) {
-          ctx.drawImage(d.avatarImg, 22, H - 120, 92, 92);
-        } else {
-          ctx.fillStyle = HYUNDAI_NAVY;
-          ctx.fillRect(22, H - 120, 92, 92);
+          // 딜러 프로필 원형
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(-185, 0, 18, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -203, -18, 36, 36);
+          else {
+            ctx.fillStyle = theme.accent;
+            ctx.fillRect(-203, -18, 36, 36);
+          }
+          ctx.restore();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, -155, -3);
+          ctx.fillStyle = theme.sub;
+          ctx.font = '11px sans-serif';
+          ctx.fillText(`${d.branch} · 1:1 VIP 프라이빗 컨시어지`, -155, 13);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = theme.accent;
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('💬 VIP 상담', 200, 5);
+          ctx.restore();
         }
-        ctx.restore();
 
-        // 프로필 사진 네이비 테두리 링
-        ctx.strokeStyle = HYUNDAI_NAVY;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(68, H - 74, 46, 0, Math.PI * 2);
-        ctx.stroke();
+        // --------------------------------------------------------------------
+        // 모드 2: BROADCAST_NEWS ★ [24시 방송국 LIVE 뉴스룸 속보 모드]
+        // 상단 풀와이드 LIVE 속보 티커 + 하단 정통 방송국 2단 뉴스 하단서드
+        // --------------------------------------------------------------------
+        else if (lMode === 'BROADCAST_NEWS') {
+          // 상단: 풀와이드 빨간색 LIVE 속보 헤더 바
+          ctx.save();
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(0, 0, W, 48);
+          const p = 1 + Math.sin(t * 9) * 0.15;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(36, 24, 7 * p, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '900 15px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('LIVE 뉴스특보', 54, 30);
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText('전국 잔여물량 긴급배정 현장 // 24시 단독', W - 24, 30);
+          ctx.restore();
 
-        // 좌측: 소속 지점 + 성함/직함 (우측 전화번호 박스와 절대 겹치지 않도록 x=126~320 영역 고정)
-        ctx.textAlign = 'left';
-        ctx.fillStyle = HYUNDAI_NAVY;
-        ctx.font = 'bold 15px sans-serif';
-        ctx.fillText(`🏢 ${d.branch}`, 126, H - 108, 194);
+          // 하단: 방송국 2단 풀와이드 뉴스룸 로어서드
+          ctx.save();
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(0, H - 140, W, 52);
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(0, H - 140, W, 4);
 
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 23px sans-serif';
-        ctx.fillText(`${d.name} ${d.title}`, 126, H - 72, 194);
+          // 좌측 기자/카마스터 배지
+          ctx.fillStyle = '#2563eb';
+          drawRoundedRect(ctx, 16, H - 132, 130, 36, 6);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`🎤 ${d.name} 특파원`, 81, H - 109);
 
-        // 우측: 상담 안내 네이비 박스 (x=328 ~ 522)
-        ctx.fillStyle = HYUNDAI_NAVY;
-        drawRoundedRect(ctx, 328, H - 128, 194, 66, 12);
-        ctx.fill();
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#93c5fd';
-        ctx.font = 'bold 13px sans-serif';
-        // 영상에는 전화번호를 넣지 않고 댓글·DM 상담으로 안내
-        ctx.fillText('1:1 견적상담', 425, H - 104);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 18px sans-serif';
-        ctx.fillText('💬 댓글에 [견적]', 425, H - 76, 180);
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(`[단독 현장보도] ${campaign.vehicle} 공식 당월 특판`, 158, H - 108, W - 176, 17);
 
-        // 하단 전폭: 출고 서비스 혜택 바 (x=126 ~ 522)
-        ctx.fillStyle = '#f1f5f9';
-        drawRoundedRect(ctx, 126, H - 50, 396, 36, 8);
-        ctx.fill();
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 15px sans-serif';
-        ctx.fillText(`🎁 ${d.promoTag}`, 138, H - 27, 372);
-        ctx.restore();
+          // 2단: 적색/골드 롤링 자막 바
+          ctx.fillStyle = 'rgba(7, 11, 22, 0.96)';
+          ctx.fillRect(0, H - 88, W, 88);
+          ctx.fillStyle = '#ef4444';
+          drawRoundedRect(ctx, 16, H - 76, 70, 26, 4);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('속보', 51, H - 58);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(narrationLine, 98, H - 58, W - 118, 18);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText(`최대 -${campaign.discountNum}만원 특별할인 · 취등록세 0원 무보증 즉시출고`, 98, H - 24);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 모드 3: CYBER_HUD ★ [3D 사이버네틱 HUD 테크 모드]
+        // 4코너 L자 타겟 브래킷 + 사이버 그리드 + 터미널 에이전트 뱃지
+        // --------------------------------------------------------------------
+        else if (lMode === 'CYBER_HUD') {
+          ctx.save();
+          const cs = 22;
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 2.5;
+          [[20, 20], [W - 20, 20], [20, H - 20], [W - 20, H - 20]].forEach(([cx, cy]) => {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy + (cy < 100 ? cs : -cs));
+            ctx.lineTo(cx, cy);
+            ctx.lineTo(cx + (cx < 100 ? cs : -cs), cy);
+            ctx.stroke();
+          });
+
+          // 상단 디지털 텔레메트리 바
+          ctx.fillStyle = 'rgba(6, 11, 25, 0.85)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, 28, 28, W - 56, 32, 6);
+          ctx.fill();
+          ctx.stroke();
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'left';
+          ctx.fillText('SYS // ONLINE  [RADAR: 100%]', 40, 48);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillText(`SUBSIDY // -${campaign.discountNum}0,000 KRW`, W - 40, 48);
+
+          // 중앙/하단 네온 발광 자막 바
+          ctx.fillStyle = 'rgba(5, 8, 18, 0.92)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, 20, H - 180, W - 40, 56, 12);
+          ctx.fill();
+          ctx.stroke();
+          ctx.textAlign = 'center';
+          drawKineticWords(narrationLine, W / 2, H - 146, W - 70, 20, cutLocalT, 0.05, '#ffffff');
+
+          // 하단 사이버 에이전트 ID 플레이트
+          ctx.fillStyle = 'rgba(6, 11, 25, 0.95)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, 20, H - 110, W - 40, 90, 10);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = theme.accent;
+          ctx.font = 'bold 13px monospace';
+          ctx.fillText(`AGENT // ${d.name.toUpperCase()} (CARMASTER)`, 40, H - 82);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '12px sans-serif';
+          ctx.fillText('STATUS: PRE-APPROVED // 당일 즉시출고 승인', 40, H - 60);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '11px monospace';
+          ctx.fillText(`DEPT: HYUNDAI OFFICIAL [${d.branch}]`, 40, H - 38);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#22c55e';
+          ctx.font = 'bold 14px monospace';
+          ctx.fillText('● 100% ONLINE PASS', W - 40, H - 60);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 모드 4: TIKTOK_VIRAL_SPLIT ★ [바이럴 숏폼 REC & 크리에이터 모드]
+        // 상단 REC 타임코드 + 볼드 옐로우 바이럴 텍스트 + 우측 틱톡 아바타 팔로우 뱃지
+        // --------------------------------------------------------------------
+        else if (lMode === 'TIKTOK_VIRAL_SPLIT') {
+          // 상단 REC 인디케이터
+          ctx.save();
+          const recDot = Math.sin(t * 8) > 0 ? 1 : 0.2;
+          ctx.fillStyle = `rgba(239, 68, 68, ${recDot})`;
+          ctx.beginPath();
+          ctx.arc(36, 42, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '900 13px monospace';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.fillText(`REC  [00:0${currentCutSlot + 1}:18]`, 50, 47);
+          ctx.textAlign = 'right';
+          ctx.font = 'bold 12px monospace';
+          ctx.fillText('4K 60FPS 🔋89%', W - 32, 47);
+          ctx.restore();
+
+          // 중앙: 화면을 뒤덮는 틱톡 스타일 초대형 볼드 옐로우 자막! (검은 테두리)
+          ctx.save();
+          ctx.translate(W / 2, H - 210);
+          ctx.font = '900 32px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 6;
+          ctx.strokeText(narrationLine, 0, 0, W - 60);
+          ctx.fillStyle = '#FEE500';
+          ctx.fillText(narrationLine, 0, 0, W - 60);
+          ctx.restore();
+
+          // 하단: 크리에이터 스타일 플로팅 카드 + 우측 원형 아바타 (팔로우 뱃지)
+          ctx.save();
+          ctx.translate(24, H - 110);
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
+          drawRoundedRect(ctx, 0, 0, W - 140, 76, 16);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`@${d.name} 카마스터`, 20, 30);
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '12px sans-serif';
+          drawFittedText('💬 댓글에 [견적] 남기시면 비밀조건표 발송!', 20, 54, W - 180, 13);
+
+          ctx.save();
+          ctx.translate(W - 85, 28);
+          ctx.beginPath();
+          ctx.arc(0, 0, 26, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -26, -26, 52, 52);
+          else {
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(-26, -26, 52, 52);
+          }
+          ctx.restore();
+
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(W - 85, 52, 10, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('+', W - 85, 57);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 모드 5: RACING_ACTION ★ [-8도 사선 레이싱 서킷 모드]
+        // 사선 카본 스트라이프 + 레이싱 드라이버 패스포트 뱃지
+        // --------------------------------------------------------------------
+        else if (lMode === 'RACING_ACTION') {
+          ctx.save();
+          ctx.translate(W / 2, H - 180);
+          ctx.rotate((-8 * Math.PI) / 180);
+          ctx.fillStyle = 'rgba(15, 15, 20, 0.96)';
+          ctx.fillRect(-W, -40, W * 2, 80);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(-W, -40, W * 2, 5);
+          ctx.fillRect(-W, 35, W * 2, 5);
+
+          ctx.textAlign = 'center';
+          drawKineticWords(narrationLine, 0, 6, W - 60, 22, cutLocalT, 0.05, '#ffffff');
+          ctx.restore();
+
+          // 하단: 레이싱 드라이버 패스포트 뱃지
+          ctx.save();
+          ctx.translate(W / 2, H - 65);
+          ctx.fillStyle = 'rgba(20, 20, 26, 0.95)';
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, -220, -28, 440, 56, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(-185, 0, 18, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -203, -18, 36, 36);
+          else {
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(-203, -18, 36, 36);
+          }
+          ctx.restore();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '900 13px sans-serif';
+          ctx.fillText(`🏁 TEAM HYUNDAI // PILOT ${d.name.toUpperCase()}`, -155, -6);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText(`최고출력 퍼포먼스 패키지 · ${campaign.discount}`, -155, 12);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 모드 6: CLASSIC_SHOWROOM ★ [정통 현대·기아 공식 쇼룸 모드]
+        // 기존 신뢰감 넘치는 화이트 & 네이비 공식 카마스터 명함 카드
+        // --------------------------------------------------------------------
+        else {
+          ctx.save();
+          ctx.fillStyle = 'rgba(10, 14, 23, 0.90)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 2;
+          drawRoundedRect(ctx, 18, H - 214, W - 36, 52, 14);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = theme.badge;
+          drawRoundedRect(ctx, 28, H - 204, 78, 32, 8);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`CUT ${currentCutSlot + 1}`, 67, H - 183);
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          drawFittedText(narrationLine, 118, H - 181, W - 148, 18, 12);
+          ctx.restore();
+
+          ctx.save();
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, H - 152, W, 152);
+          ctx.fillStyle = HYUNDAI_NAVY;
+          ctx.fillRect(0, H - 152, W, 7);
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(68, H - 74, 46, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, 22, H - 120, 92, 92);
+          else {
+            ctx.fillStyle = HYUNDAI_NAVY;
+            ctx.fillRect(22, H - 120, 92, 92);
+          }
+          ctx.restore();
+
+          ctx.strokeStyle = HYUNDAI_NAVY;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(68, H - 74, 46, 0, Math.PI * 2);
+          ctx.stroke();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = HYUNDAI_NAVY;
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText(`🏢 ${d.branch}`, 126, H - 108, 194);
+          ctx.fillStyle = '#0f172a';
+          ctx.font = 'bold 23px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 126, H - 72, 194);
+
+          ctx.fillStyle = HYUNDAI_NAVY;
+          drawRoundedRect(ctx, 328, H - 128, 194, 66, 12);
+          ctx.fill();
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#93c5fd';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText('1:1 견적상담', 425, H - 104);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 18px sans-serif';
+          ctx.fillText('💬 댓글에 [견적]', 425, H - 76, 180);
+
+          ctx.fillStyle = '#f1f5f9';
+          drawRoundedRect(ctx, 126, H - 50, 396, 36, 8);
+          ctx.fill();
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.fillText(`🎁 ${d.promoTag}`, 138, H - 27, 372);
+          ctx.restore();
+        }
       } else {
         // ========================================================================
         // Scene 3 (mainDuration ~ TOTAL_DURATION): 현대·기아자동차 공식 카마스터 클린 화이트&네이비 명함 엔딩
