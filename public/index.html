@@ -331,17 +331,17 @@
     <div id="adminTopBanner" class="hidden rounded-[10px] bg-gradient-to-r from-[#d97706]/20 via-[#b45309]/15 to-transparent border border-[#d97706]/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs flex-wrap">
       <div class="flex items-center gap-2.5 text-[#fbbf24] font-medium">
         <span class="w-2.5 h-2.5 rounded-full bg-[#fbbf24] animate-pulse shrink-0"></span>
-        <span>🔒 본사 대표님 관리자 콘솔 활성화 (전체 딜러 제어 · DRM 정책 시뮬레이터 · 매출 본부 관리)</span>
+        <span>🔒 본사 대표님 관리자 콘솔 활성화 (전체 카마스터 제어 · DRM 정책 시뮬레이터 · 매출 본부 관리)</span>
       </div>
       <div class="flex items-center gap-3">
         <span class="text-[#a8a29e] font-mono text-[11px] hidden sm:inline">단축키: Ctrl + Shift + A</span>
         <button type="button" onclick="exitAdminMode()" class="px-2.5 py-1 rounded-[6px] bg-[#d97706]/30 hover:bg-[#d97706]/50 text-[#fef3c7] border border-[#d97706]/60 transition-colors font-medium cursor-pointer">
-          관리자 모드 종료 (딜러 화면으로)
+          관리자 모드 종료 (카마스터 화면으로)
         </button>
       </div>
     </div>
 
-    <!-- 상단 헤더 (딜러 로그인 상태 · 정기구독 결제 · 딜러/관리자 모드 스위치 탑재) -->
+    <!-- 상단 헤더 (카마스터 로그인 상태 · 정기구독 결제 · 카마스터/관리자 모드 스위치 탑재) -->
     <header class="studio-card px-5 py-3.5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
       <div class="flex items-center justify-between gap-3 flex-wrap">
         <div class="flex items-center gap-3">
@@ -353,12 +353,12 @@
               AutoReels
             </h1>
             <span id="roleModeBadge" class="tag-chip px-2 py-0.5 text-[11px] font-mono text-[#4cc38a]">
-              딜러 전용 스튜디오
+              카마스터 전용 스튜디오
             </span>
           </div>
         </div>
 
-        <!-- 딜러용: 현재 로그인된 내 계정 표시 + 로그인/결제 버튼 -->
+        <!-- 카마스터용: 현재 로그인된 내 계정 표시 + 로그인/결제 버튼 -->
         <div class="flex items-center gap-2 flex-wrap">
           <div id="headerLoggedDealerChip" class="h-8 px-3 rounded-[8px] bg-[#141415] border border-[var(--border)] flex items-center gap-2 text-[12px]">
             <span id="headerDrmDot" class="w-2 h-2 rounded-full bg-[#4cc38a]"></span>
@@ -366,7 +366,7 @@
             <span id="headerDealerPhoneText" class="text-[#85858b] font-mono">010-4821-9032</span>
           </div>
           <button type="button" onclick="openDealerAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-            딜러 로그인 · 가입
+            카마스터 로그인 · 가입
           </button>
           <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer">
             PRO 구독 결제
@@ -381,31 +381,31 @@
             스튜디오 제작
           </button>
           <button id="tabBtnAdmin" onclick="switchMainTab('admin')" class="whitespace-nowrap h-7 px-3 rounded-[6px] text-[12px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
-            구독 딜러 · 매출 본부
+            구독 카마스터 · 매출 본부
           </button>
           <button id="tabBtnTech" onclick="switchMainTab('tech')" class="whitespace-nowrap h-7 px-3 rounded-[6px] text-[12px] font-normal transition-colors text-[#85858b] hover:text-[#ededed]">
             렌더링 엔진 규격
           </button>
         </nav>
 
-        <button id="roleSwitchBtn" type="button" onclick="toggleRoleViewMode()" class="hidden btn-secondary h-8 px-3 text-[12px] font-mono cursor-pointer" title="실제 딜러가 보는 화면과 대표님 관리자 화면을 전환합니다">
+        <button id="roleSwitchBtn" type="button" onclick="toggleRoleViewMode()" class="hidden btn-secondary h-8 px-3 text-[12px] font-mono cursor-pointer" title="실제 카마스터가 보는 화면과 대표님 관리자 화면을 전환합니다">
           대표님 관리자 모드 열기
         </button>
       </div>
     </header>
 
-    <!-- [관리자 전용] 담당 카마스터 프로필 전환 바 (딜러 전용 모드에서는 자동 숨김) -->
+    <!-- [관리자 전용] 담당 카마스터 프로필 전환 바 (카마스터 전용 모드에서는 자동 숨김) -->
     <div id="dealerQuickSelectorBar" class="hidden studio-card px-5 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3 flex-wrap">
         <span class="text-[12px] font-mono text-[#d97706]">
-          [관리자 전용] 전체 구독 딜러 전환
+          [관리자 전용] 전체 구독 카마스터 전환
         </span>
         <div id="dealerQuickSelector" class="flex items-center gap-1.5 flex-wrap"></div>
       </div>
       <div class="flex items-center gap-3">
         <span id="mobileSavedBadge" class="text-[12px] text-[#85858b]">명함 정보는 현재 기기에 자동 저장됩니다</span>
         <button onclick="openNewDealerModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-          수동 딜러 추가
+          수동 카마스터 추가
         </button>
       </div>
     </div>
@@ -600,13 +600,13 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- ★ 디자인 스타일 (124종, 서로 다른 화면) + 색상 (따로 선택) -->
+          <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
           <!-- ================================================================= -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h3 class="text-[13px] font-semibold text-[#ededed]">디자인 스타일</h3>
-                <p class="text-[11px] text-[#85858b] mt-0.5">사진 배치·자막·글꼴·움직임·명함이 서로 다른 <span id="designStyleCount">124</span>가지 디자인입니다. 색상은 아래에서 따로 고릅니다.</p>
+                <p class="text-[11px] text-[#85858b] mt-0.5">사진 배치·자막·글꼴·움직임·명함이 서로 다른 <span id="designStyleCount">136</span>가지 디자인입니다. 색상은 아래에서 따로 고릅니다.</p>
               </div>
               <span id="activeDesignName" class="tag-chip px-2.5 py-1 text-[11px] text-[#ededed]"></span>
             </div>
@@ -663,6 +663,9 @@
               </button>
               <button type="button" onclick="filterArchetypeCategory('favorite')" id="archCatBtn_favorite" class="h-6 px-2.5 rounded-[5px] text-[#facc15] hover:text-[#fde047] shrink-0 flex items-center gap-1 font-semibold">
                 <span>⭐</span> 즐겨찾기 <span id="favTabCount" class="text-[10px] opacity-80">(0)</span>
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('vlog')" id="archCatBtn_vlog" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
+                🎬 출고 브이로그 (<span id="catCount_vlog">8</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('special')" id="archCatBtn_special" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
                 ⚡ 특판·즉시 (<span id="catCount_special">16</span>)
@@ -843,6 +846,15 @@
                   <option value="urban">내장 비트 · Phonk / Trap</option>
                   <option value="bright">내장 비트 · Upbeat City Pop</option>
                   <option value="luxury">내장 비트 · Luxury Lounge</option>
+                  <option value="lofi">내장 비트 · Lo-fi 감성</option>
+                  <option value="vlog">내장 비트 · Acoustic Pop 브이로그</option>
+                  <option value="cinema">내장 비트 · Cinematic 트레일러</option>
+                  <option value="drive">내장 비트 · Synthwave 드라이브</option>
+                  <option value="edm">내장 비트 · EDM 페스티벌</option>
+                  <option value="funk">내장 비트 · Funk 그루브</option>
+                  <option value="ballad">내장 비트 · Piano 발라드</option>
+                  <option value="news">내장 비트 · Breaking News</option>
+                  <option value="jazz">내장 비트 · Jazz 라운지</option>
                   <option value="custom_mp3" id="customBgmOption" class="hidden">내가 불러온 릴스·숏츠 음원 파일</option>
                   <option value="off">BGM 끄기</option>
                 </select>
@@ -918,12 +930,12 @@
             <div class="px-4 pb-4 space-y-3">
 
             <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
-              구독권 1개로 지점 동료 딜러들이 연락처만 바꿔 돌려쓰는 행위를 차단하기 위해, Rust WebAssembly 보안 코어가 등록 연락처(<code id="drmBoundPhoneText" class="font-mono text-[#ededed]">010-4821-9032</code>)와 정품 키를 대조합니다. 미구독 또는 번호 변경 시 영상 중앙에 워터마크가 합성되며 추출이 잠깁니다.
+              구독권 1개로 지점 동료 카마스터들이 연락처만 바꿔 돌려쓰는 행위를 차단하기 위해, Rust WebAssembly 보안 코어가 등록 연락처(<code id="drmBoundPhoneText" class="font-mono text-[#ededed]">010-4821-9032</code>)와 정품 키를 대조합니다. 미구독 또는 번호 변경 시 영상 중앙에 워터마크가 합성되며 추출이 잠깁니다.
             </p>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               <div>
-                <label class="block text-[12px] text-[#85858b] mb-1">딜러 정품 라이선스 키</label>
+                <label class="block text-[12px] text-[#85858b] mb-1">카마스터 정품 라이선스 키</label>
                 <input id="dlrLicenseKeyInput" type="text" oninput="onDealerLicenseInput()" placeholder="AR-XXXXXX" class="studio-input w-full h-9 px-3 text-[12px] font-mono" />
               </div>
               <div>
@@ -936,14 +948,14 @@
               </div>
             </div>
 
-            <!-- 딜러용: 구독 결제 · 정품 라이선스 즉시 개통 바 -->
+            <!-- 카마스터용: 구독 결제 · 정품 라이선스 즉시 개통 바 -->
             <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border)]">
               <span id="dealerBillingNoticeText" class="text-[12px] text-[#a1a1a6]">
                 결제하면 내 번호 전용 라이선스가 바로 발급되고 워터마크가 사라집니다. 로그인과 결제는 화면 맨 위 버튼에서 합니다.
               </span>
             </div>
 
-            <!-- [관리자 전용] 대표님 테스트용 구독 상태 전환 (딜러 모드에서는 숨김) -->
+            <!-- [관리자 전용] 대표님 테스트용 구독 상태 전환 (카마스터 모드에서는 숨김) -->
             <div id="adminDrmSimRow" class="hidden flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-[var(--border)]">
               <span class="text-[12px] font-mono text-[#d97706]">[관리자 전용] 구독 차단 시뮬레이션</span>
               <div class="flex flex-wrap gap-1.5">
@@ -954,7 +966,7 @@
                   미결제 · 만료 상태 테스트
                 </button>
                 <button type="button" onclick="simulateDrmMode('TAMPER')" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">
-                  타 딜러 번호 도용 테스트
+                  타 카마스터 번호 도용 테스트
                 </button>
               </div>
             </div>
@@ -1074,7 +1086,7 @@
     </section>
 
     <!-- ========================================================================= -->
-    <!-- 탭 2: 구독 딜러 명단 & 중앙 AI 설정 -->
+    <!-- 탭 2: 구독 카마스터 명단 & 중앙 AI 설정 -->
     <!-- ========================================================================= -->
     <section id="viewAdmin" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-5 studio-card p-6 space-y-5">
@@ -1091,7 +1103,7 @@
 ✔ 프리미엄 썬팅·블랙박스·유리막 풀패키지 무상</textarea>
           </div>
           <button onclick="batchGenerateToStaging()" class="btn-primary w-full h-10 px-4 text-[13px] cursor-pointer">
-            전 딜러 검수 링크 일괄 갱신
+            전 카마스터 검수 링크 일괄 갱신
           </button>
         </div>
 
@@ -1099,10 +1111,10 @@
         <div class="pt-5 border-t border-[var(--border)] space-y-3">
           <div class="flex items-center justify-between flex-wrap gap-1">
             <h3 class="text-[14px] font-medium text-[#ededed]">방식 A · 중앙 AI 엔진 설정</h3>
-            <span class="tag-chip px-2 py-0.5 text-[11px]">딜러 로그인 불필요</span>
+            <span class="tag-chip px-2 py-0.5 text-[11px]">카마스터 로그인 불필요</span>
           </div>
           <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
-            딜러들은 별도 로그인 없이 한 줄만 입력하면 됩니다. 기본 클라우드 LLM이 즉시 작동하며, 전용 유료 계정을 연결하려면 아래에 API 키를 저장하세요.
+            카마스터들은 별도 로그인 없이 한 줄만 입력하면 됩니다. 기본 클라우드 LLM이 즉시 작동하며, 전용 유료 계정을 연결하려면 아래에 API 키를 저장하세요.
           </p>
           <div class="space-y-2.5">
             <div>
@@ -1120,7 +1132,7 @@
 
       <div class="lg:col-span-7 studio-card p-6 space-y-4">
         <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-          <h2 class="text-[16px] font-medium text-[#ededed]">구독 딜러 명단</h2>
+          <h2 class="text-[16px] font-medium text-[#ededed]">구독 카마스터 명단</h2>
           <span id="statSummaryBadge" class="font-mono text-[12px] text-[#a1a1a6]"></span>
         </div>
         <div id="adminDealerList" class="space-y-3"></div>
@@ -1151,7 +1163,7 @@
       </div>
     </section>
 
-    <!-- 하단 푸터 (딜러 지원 및 본사 관리자 로그인 진입점) -->
+    <!-- 하단 푸터 (카마스터 지원 및 본사 관리자 로그인 진입점) -->
     <footer class="mt-12 pt-6 border-t border-[var(--border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#6e6e73]">
       <div>
         © 2026 AutoReels Studio · 전국 신차·중고차 카마스터 전용 쇼츠·릴스 솔루션
@@ -1168,17 +1180,17 @@
 
   </div>
 
-  <!-- 신규 딜러 추가 모달 -->
+  <!-- 신규 카마스터 추가 모달 -->
   <div id="newDealerModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
     <div class="studio-card max-w-md w-full p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-        <h3 class="text-[15px] font-medium text-[#ededed]">새 구독 딜러 등록</h3>
+        <h3 class="text-[15px] font-medium text-[#ededed]">새 구독 카마스터 등록</h3>
         <button onclick="closeNewDealerModal()" class="text-[12px] text-[#85858b] hover:text-[#ededed]">닫기</button>
       </div>
       <div class="space-y-3 text-[13px]">
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-[12px] text-[#a1a1a6] mb-1">딜러 성함</label>
+            <label class="block text-[12px] text-[#a1a1a6] mb-1">카마스터 성함</label>
             <input id="modalName" type="text" placeholder="최준혁" class="studio-input w-full h-9 px-3 text-[13px]" />
           </div>
           <div>
@@ -1255,7 +1267,7 @@
     </div>
   </div>
 
-  <!-- 딜러 본인 SNS 계정 연결 & OAuth 연동 모달 -->
+  <!-- 카마스터 본인 SNS 계정 연결 & OAuth 연동 모달 -->
   <div id="snsConnectModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
     <div class="studio-card max-w-lg w-full p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
@@ -1267,7 +1279,7 @@
       </div>
 
       <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
-        연결된 계정 정보는 현재 기기 및 딜러 프로필에 저장되며, 모바일 앱 공유 브릿지 및 비즈니스 자동 발행에 사용됩니다.
+        연결된 계정 정보는 현재 기기 및 카마스터 프로필에 저장되며, 모바일 앱 공유 브릿지 및 비즈니스 자동 발행에 사용됩니다.
       </p>
 
       <div class="space-y-3 text-[13px]">
@@ -1329,7 +1341,7 @@
       <!-- 로그인 / 신규가입 탭 -->
       <div class="grid grid-cols-2 gap-1 p-1 rounded-[8px] bg-[#0f0f10] border border-[var(--border)]">
         <button id="authTabLogin" type="button" onclick="switchAuthModalTab('login')" class="h-8 rounded-[6px] text-[12px] font-medium bg-[#232325] text-[#ededed] cursor-pointer">
-          기존 딜러 로그인
+          기존 카마스터 로그인
         </button>
         <button id="authTabSignup" type="button" onclick="switchAuthModalTab('signup')" class="h-8 rounded-[6px] text-[12px] font-normal text-[#85858b] hover:text-[#ededed] cursor-pointer">
           1분 신규 회원가입 (무료체험)
@@ -1337,7 +1349,7 @@
       </div>
 
       <p class="text-[12px] text-[#a1a1a6] leading-relaxed">
-        입력하신 <strong class="text-[#ededed] font-medium">휴대폰 번호</strong>가 로그인 아이디이자 영상 하단 명함에 고정되는 <strong class="text-[#ededed] font-medium">정품 바인딩 번호</strong>가 됩니다. (타 딜러와 계정 공유 불가)
+        입력하신 <strong class="text-[#ededed] font-medium">휴대폰 번호</strong>가 로그인 아이디이자 영상 하단 명함에 고정되는 <strong class="text-[#ededed] font-medium">정품 바인딩 번호</strong>가 됩니다. (타 카마스터와 계정 공유 불가)
       </p>
 
       <div class="space-y-3 text-[13px]">
@@ -1354,7 +1366,7 @@
         <div id="authSignupFields" class="hidden space-y-3 pt-2 border-t border-[var(--border)]">
           <div class="grid grid-cols-2 gap-2.5">
             <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1">딜러 성함</label>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1">카마스터 성함</label>
               <input id="authNameInput" type="text" value="정우성" placeholder="홍길동" class="studio-input w-full h-9 px-3 text-[13px]" />
             </div>
             <div>
@@ -1384,10 +1396,10 @@
         <div class="text-[11px] font-mono text-[#85858b]">빠른 시나리오 체험 (원클릭 전환)</div>
         <div class="grid grid-cols-2 gap-2">
           <button type="button" onclick="quickLoginDemoDealer('NEW_TRIAL')" class="btn-secondary h-8 px-2.5 text-[11px] cursor-pointer">
-            미결제 신규딜러로 접속 체험
+            미결제 신규카마스터로 접속 체험
           </button>
           <button type="button" onclick="quickLoginDemoDealer('PRO_MINJUN')" class="btn-secondary h-8 px-2.5 text-[11px] cursor-pointer">
-            PRO 결제딜러(김민준) 접속
+            PRO 결제카마스터(김민준) 접속
           </button>
         </div>
       </div>
@@ -1410,7 +1422,7 @@
       <!-- 라이선스 귀속 안내 -->
       <div class="studio-sub p-3.5 flex items-center justify-between gap-2 text-[12px]">
         <div>
-          <div class="text-[#85858b]">정품 라이선스 귀속 딜러 및 바인딩 번호</div>
+          <div class="text-[#85858b]">정품 라이선스 귀속 카마스터 및 바인딩 번호</div>
           <div id="billingTargetDealerText" class="text-[13px] font-medium text-[#ededed] mt-0.5">
             김민준 수석 카마스터 (010-4821-9032)
           </div>
@@ -1504,7 +1516,7 @@
         <button type="button" onclick="closeAdminAuthModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
       </div>
       <p class="text-[12px] text-[#85858b] leading-relaxed">
-        전체 딜러 계정 관리, DRM 라이선스 차단 시뮬레이션 및 매출 본부 콘솔에 접속하려면 관리자 암호를 입력해주세요.
+        전체 카마스터 계정 관리, DRM 라이선스 차단 시뮬레이션 및 매출 본부 콘솔에 접속하려면 관리자 암호를 입력해주세요.
       </p>
       <form onsubmit="submitAdminAuth(event)" class="space-y-3">
         <div>
@@ -1795,7 +1807,7 @@
     const PROCEDURAL_HOOKS = [
       '🚨 [긴급속보] 전국 잔여 취소차량 3대 즉시출고 배정!',
       '⚡ 오늘 계약 시 이번 주 자택 앞 무료 탁송 도착!',
-      '💸 최대 할인 + 딜러 비공식 지원금 풀패키지 방출',
+      '💸 최대 할인 + 카마스터 비공식 지원금 풀패키지 방출',
       '👑 단 1% VIP만을 위한 감성 플래그십 리미티드 에디션',
       '⚖️ 할부 vs 장기렌트, 아직도 비교 안 하면 500만원 손해!',
       '☕ 하루 커피 두 잔 값으로 시작하는 신차 오너의 꿈',
@@ -1805,7 +1817,7 @@
       '💬 "진짜 감동했습니다" 출고 고객 100% 실화 카톡 후기',
       '🏕️ 주말이 기다려지는 2열 풀플랫 차박 캠핑 에디션',
       '🔍 허위매물 0%! 성능점검 무사고 원본 직인 팩트 공개',
-      '🎁 딜러 마진 포기! 썬팅+블박+유리막 8종 풀패키지 증정',
+      '🎁 카마스터 마진 포기! 썬팅+블박+유리막 8종 풀패키지 증정',
       '🛸 1회 충전 500km+ 정부 보조금 잔여분 즉시 선점!',
       '📉 취등록세 0원 + 자동차세 0원 + 초기비용 0원 설계',
       '💎 압도적인 하차감과 풀옵션 프리미엄 시네마틱 화보',
@@ -1828,7 +1840,7 @@
       '⏱️ 서류 제출 없이 스마트폰으로 10분 즉시 승인',
       '🏕️ 주말 가족 힐링 2열 풀플랫 완벽 평탄화 공간',
       '🔍 국토부 공인 성능점검 무사고 완전 직인 확인',
-      '🎁 딜러 사비 180만원 투입! 신차 8종 풀패키지 시공',
+      '🎁 카마스터 사비 180만원 투입! 신차 8종 풀패키지 시공',
       '🔥 이번 달 마지막 특별 배정! 선착순 마감 임박',
       '💎 압도적 비주얼과 최고급 나파가죽 풀옵션',
       '📉 취등록세 0원 + 자동차세 0원 올인원 포함',
@@ -1856,13 +1868,13 @@
       '☕ 월 납입금 부담 제로! 전 금융사 실시간 최저금리 확정',
       '🌟 2열 통풍시트 & 독립 풀오토 에어컨 패밀리 맞춤형',
       '🚗 선점 물량 3대 확보! 계약 즉시 전용 트랜스포터 배송',
-      '🛡️ 제조사 공식 보증에 딜러 2년 추가 무상 안심 케어',
+      '🛡️ 제조사 공식 보증에 카마스터 2년 추가 무상 안심 케어',
       '💳 다이렉트 캐피탈 제휴로 최저 이율 견적서 실시간 산출',
-      '🥇 전국 딜러 판매 1위 공식 인증 카마스터의 프리미엄 케어'
+      '🥇 전국 카마스터 판매 1위 공식 인증 카마스터의 프리미엄 케어'
     ];
 
     const PROCEDURAL_CUT3 = [
-      '💸 최대 공식할인 + 딜러 비공식 특별지원 더블 혜택',
+      '💸 최대 공식할인 + 카마스터 비공식 특별지원 더블 혜택',
       '☕ 하루 커피 두 잔 값, 부담 없는 월 납입금 설계',
       '📈 신차가 대비 감가 혜택 종결자, 역대 최고 가성비',
       '🏛️ 법인 및 개인사업자 100% 합법 절세 컨설팅 적용',
@@ -1879,7 +1891,7 @@
       '✨ 출고 전 전문 디테일링 샵 외장 세라믹 코팅 완료',
       '🚙 기존 타시던 중고차 최고가 매입 + 대차 추가 할인',
       '🔥 선착순 3대 한정 특별 프로모션, 이번 주 마감',
-      '🏷️ 공식 카탈로그 가격 대비 파격적인 딜러 특가 적용',
+      '🏷️ 공식 카탈로그 가격 대비 파격적인 카마스터 특가 적용',
       '💳 무이자 분할 납부 프로모션 적용으로 이자 0원',
       '🤝 투명한 원가 공개로 거품 없는 정직한 실구매가 확정'
     ];
@@ -1896,7 +1908,7 @@
       '💼 비대면 10분 모바일 심사로 오늘 바로 승인 완료하세요',
       '⭐️ 전국 1,200대 출고 신화, 믿고 맡겨주시면 만족을 드립니다',
       '🚚 전국 어디든 제주도까지 무료 안전 캐리어 탁송 지원',
-      '📱 댓글 남겨주시면 딜러 비공식 시크릿 조건표를 보내드립니다',
+      '📱 댓글 남겨주시면 카마스터 비공식 시크릿 조건표를 보내드립니다',
       '🛡️ 결함 걱정 제로! 무결점 신차 출고 확인서 현장 교부',
       '☕ 친절하고 부담 없는 1:1 맞춤 견적 상담 지금 시작하세요',
       '🎉 오늘이 가장 저렴합니다! 이번 달 특판 혜택 놓치지 마세요',
@@ -1953,6 +1965,142 @@
     // 6개 카테고리 × 6개 고유 스타일 = 36종 큐레이션 프리셋 + 무제한 AI 커스텀 저장
     // ============================================================================
     const BASE_STORY_ARCHETYPES = {
+      vlog_delivery: {
+        id: 'vlog_delivery',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "🎬 출고 브이로그",
+        shortTitle: "출고VLOG",
+        tagline: "고객님 차 출고하는 하루를 브이로그로",
+        icon: "🎬",
+        themeId: 'royal',
+        accentColor: '#facc15',
+        hook: "오늘은 신차 출고하는 날! 같이 가보실래요?",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["오늘은 고객님 새 차 출고하는 날, 아침부터 설레요", "썬팅·블랙박스 시공까지 꼼꼼하게 마무리", "드디어 키 전달! 고객님 표정이 다 말해주네요", "다음 출고 주인공은 당신, 댓글에 [견적]"],
+        ttsLines: ["오늘은 고객님 새 차 출고하는 날이라 아침부터 설레네요.", "썬팅이랑 블랙박스까지 꼼꼼하게 마무리했습니다.", "드디어 키를 전달해 드렸어요. 고객님 표정이 다 말해주네요.", "다음 출고 주인공이 되고 싶으시면 댓글에 견적이라고 남겨주세요."]
+      },
+      vlog_day: {
+        id: 'vlog_day',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "☀️ 카마스터의 하루",
+        shortTitle: "하루VLOG",
+        tagline: "전시장 오픈부터 출고까지 하루 기록",
+        icon: "☀️",
+        themeId: 'royal',
+        accentColor: '#f97316',
+        hook: "카마스터의 하루, 이렇게 흘러갑니다",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["오전 9시, 전시장 문 열고 하루 시작", "시승 고객님 모시고 함께 드라이브", "오후엔 출고 차량 최종 점검 꼼꼼하게", "오늘도 출고 완료! 상담은 댓글로 편하게"],
+        ttsLines: ["오전 아홉 시, 전시장 문을 열고 하루를 시작합니다.", "시승 예약하신 고객님을 모시고 함께 드라이브를 다녀왔어요.", "오후에는 내일 출고할 차량을 꼼꼼하게 점검합니다.", "오늘도 출고 완료! 궁금한 점은 댓글로 편하게 물어봐 주세요."]
+      },
+      vlog_inspect: {
+        id: 'vlog_inspect',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "🔍 출고 전 점검",
+        shortTitle: "점검VLOG",
+        tagline: "출고 전날 차량을 하나하나 확인하는 과정",
+        icon: "🔍",
+        themeId: 'royal',
+        accentColor: '#16a34a',
+        hook: "출고 전날, 이렇게까지 확인합니다",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["출고 전날, 외관부터 하나하나 체크", "실내 옵션과 소모품까지 리스트대로 확인", "조명 켜고 작은 흠집까지 다시 확인", "이렇게 꼼꼼하게 출고해요, 댓글에 [견적]"],
+        ttsLines: ["출고 전날, 차량 외관부터 하나하나 확인합니다.", "실내 옵션과 소모품까지 체크리스트대로 점검해요.", "조명을 켜고 작은 흠집이 없는지 한 번 더 봅니다.", "이렇게 꼼꼼하게 출고해 드려요. 댓글에 견적이라고 남겨주세요."]
+      },
+      vlog_family: {
+        id: 'vlog_family',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "👨‍👩‍👧 가족 첫차 출고",
+        shortTitle: "가족첫차",
+        tagline: "가족의 첫 패밀리카 출고 이야기",
+        icon: "👨‍👩‍👧",
+        themeId: 'royal',
+        accentColor: '#ec4899',
+        hook: "우리 가족 첫 패밀리카 출고하는 날",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["온 가족이 함께 기다린 첫 패밀리카", "카시트 설치까지 직접 도와드렸어요", "첫 가족사진은 새 차 앞에서 찰칵", "우리 가족 차 상담도 댓글로 남겨주세요"],
+        ttsLines: ["온 가족이 함께 기다린 첫 패밀리카 출고 날입니다.", "카시트 설치까지 제가 직접 도와드렸어요.", "첫 가족사진은 새 차 앞에서 함께 찍었습니다.", "우리 가족 차도 상담받고 싶으시면 댓글로 남겨주세요."]
+      },
+      vlog_first: {
+        id: 'vlog_first',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "🔑 사회초년생 첫 차",
+        shortTitle: "첫차VLOG",
+        tagline: "생애 첫 차를 받는 순간",
+        icon: "🔑",
+        themeId: 'royal',
+        accentColor: '#2563eb',
+        hook: "생애 첫 차, 키 받는 순간",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["첫 월급 모아 생애 첫 차 계약한 고객님", "부담 줄인 월 납입 플랜으로 맞춤 설계", "키 받는 순간, 저까지 뭉클했어요", "첫 차 고민 중이라면 댓글에 [견적]"],
+        ttsLines: ["첫 월급을 모아 생애 첫 차를 계약하신 고객님입니다.", "부담을 줄인 월 납입 플랜으로 맞춤 설계해 드렸어요.", "키를 건네드리는 순간, 저까지 뭉클했습니다.", "첫 차 고민 중이시라면 댓글에 견적이라고 남겨주세요."]
+      },
+      vlog_long: {
+        id: 'vlog_long',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "🚚 장거리 직접 출고",
+        shortTitle: "장거리VLOG",
+        tagline: "먼 지역 고객님께 직접 찾아가는 출고",
+        icon: "🚚",
+        themeId: 'royal',
+        accentColor: '#0ea5e9',
+        hook: "먼 곳까지 직접 찾아가는 출고 브이로그",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["먼 지역 고객님께 차 전달하러 출발", "휴게소에서 잠깐, 차 상태 다시 확인", "도착! 직접 만나 인수 설명까지 완료", "전국 어디든 찾아갑니다, 댓글로 문의"],
+        ttsLines: ["먼 지역에 계신 고객님께 차를 전달하러 출발합니다.", "휴게소에서 잠깐 쉬면서 차 상태를 다시 확인했어요.", "도착해서 직접 만나 인수 설명까지 마쳤습니다.", "전국 어디든 찾아갑니다. 궁금하신 점은 댓글로 문의해 주세요."]
+      },
+      vlog_qa: {
+        id: 'vlog_qa',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "💬 출고 전 자주 묻는 질문",
+        shortTitle: "QnA VLOG",
+        tagline: "출고 전 고객님들이 많이 묻는 질문 정리",
+        icon: "💬",
+        themeId: 'royal',
+        accentColor: '#8b5cf6',
+        hook: "출고 전에 가장 많이 받는 질문 3가지",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["출고 전 가장 많이 받는 질문 모아봤어요", "Q. 계약부터 출고까지 얼마나 걸리나요?", "Q. 탁송이랑 직접 인수, 뭐가 나을까요?", "나머지 궁금증은 댓글로, [견적]도 함께"],
+        ttsLines: ["출고 전에 고객님들이 가장 많이 물어보시는 질문을 모아봤어요.", "계약부터 출고까지 기간은 차종과 재고에 따라 달라서 바로 확인해 드려요.", "탁송과 직접 인수는 일정과 거리에 맞춰 편한 쪽으로 정하시면 됩니다.", "나머지 궁금한 점은 댓글로 남겨주세요. 견적도 함께 보내드릴게요."]
+      },
+      vlog_night: {
+        id: 'vlog_night',
+        category: 'vlog',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: "🌙 퇴근 전 하루 정리",
+        shortTitle: "하루정리",
+        tagline: "출고 일정을 마치고 돌아보는 하루",
+        icon: "🌙",
+        themeId: 'royal',
+        accentColor: '#a855f7',
+        hook: "출고 일정 끝! 퇴근 전 하루 정리",
+        discountNum: 300,
+        discount: '출고 고객 감사 혜택',
+        scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+        cutCaptions: ["오늘 출고 일정 무사히 마무리", "내일 출고 차량 서류 미리 챙겨두기", "고객님 감사 문자에 피로가 싹", "내일의 출고 주인공, 댓글에 [견적]"],
+        ttsLines: ["오늘 출고 일정을 무사히 마무리했습니다.", "내일 출고할 차량 서류도 미리 챙겨둡니다.", "고객님이 보내주신 감사 문자에 피로가 싹 풀리네요.", "내일의 출고 주인공이 되고 싶으시면 댓글에 견적이라고 남겨주세요."]
+      },
       // ------------------------------------------------------------------------
       // [1] 특판 & 즉시출고 (category: 'special') - 6종
       // ------------------------------------------------------------------------
@@ -1978,7 +2126,7 @@
         cutCaptions: [
           '🚨 긴급 속보! 전국 잔여 재고 3대 한정 배정',
           '⚡ 선착순 재고 소진 임박! 취소차량 긴급 확보',
-          '💸 최대 -480만원 공식할인 + 딜러 비공식 지원',
+          '💸 최대 -480만원 공식할인 + 카마스터 비공식 지원',
           '🔑 계약 즉시 3일 이내 고객님 자택 당일 탁송!'
         ],
         ttsLines: [
@@ -2137,7 +2285,7 @@
         ],
         cutCaptions: [
           '⚡ 토·일 주말 상담 예약자 전원 모바일 주유권 100% 증정',
-          '📉 주말 한정 본사 비공개 딜러 프로모션 중복 적용',
+          '📉 주말 한정 본사 비공개 카마스터 프로모션 중복 적용',
           '🧾 실시간 영수증 견적 투명 비교! 부대비용 거품 제로',
           '💬 댓글에 [견적] 남기시고 주말 사은품 먼저 선점하세요'
         ],
@@ -2233,7 +2381,7 @@
         ],
         cutCaptions: [
           '🛍️ 1년에 딱 한 번! 연중 최대 할인율 블프 코드 전산 오픈',
-          '🎟️ 스크래치 시크릿 쿠폰 + 딜러 비공식 수수료 전액 환원',
+          '🎟️ 스크래치 시크릿 쿠폰 + 카마스터 비공식 수수료 전액 환원',
           '⚡ 인기 차종 3대 선착순! 먼저 긁으시는 분이 오너가 됩니다',
           '💬 댓글에 [블프] 남기시면 비공개 블프 쿠폰 즉시 발급'
         ],
@@ -2393,7 +2541,7 @@
         ],
         cutCaptions: [
           '🚨 긴급 전산 포착! 선호도 1위 옵션 조합 전국 잔여 단 1대',
-          '⏳ 다른 딜러가 잡기 전에 가계약금 10만원으로 전산 락 필수',
+          '⏳ 다른 카마스터가 잡기 전에 가계약금 10만원으로 전산 락 필수',
           '✨ 파노라마선루프+헤드업디스플레이 풀옵션 황금 스펙',
           '💬 댓글에 [선점] 남기시면 차량 전산 락 즉시 걸어드립니다'
         ],
@@ -2408,13 +2556,13 @@
         id: 'zero_margin',
         category: 'special',
         layoutMode: 'FLASH_DEAL',
-        title: '📉 딜러 마진 전액 환원형',
+        title: '📉 카마스터 마진 전액 환원형',
         shortTitle: '마진0원',
-        tagline: '딜러 영업수수료 0원 선언 · 최저마진 전산공개 · 고객 환원',
+        tagline: '카마스터 영업수수료 0원 선언 · 최저마진 전산공개 · 고객 환원',
         icon: '📉',
         themeId: 'deepblue',
         accentColor: '#3b82f6',
-        hook: '📉 [원가 공개] 딜러 수수료 0원! 남은 마진 전액 돌려드립니다',
+        hook: '📉 [원가 공개] 카마스터 수수료 0원! 남은 마진 전액 돌려드립니다',
         discountNum: 540,
         discount: '마진 전액 환원 특판',
         scenePlan: [
@@ -2591,13 +2739,13 @@
           '🛥️ 지중해 럭셔리 요트의 우드 데크를 재현한 실내 감성',
           '🌊 바다를 품은 딥오션 틸 컬러와 프리미엄 화이트 나파가죽',
           '🏖️ 주말 휴양지 드라이브를 위한 파노라마 와이드 뷰',
-          '🔑 공식 딜러 직영 출고 웰컴 패키지 무상 제공'
+          '🔑 공식 카마스터 직영 출고 웰컴 패키지 무상 제공'
         ],
         ttsLines: [
           '지중해 요트의 품격을 그대로 담아낸 우아한 실내 인테리어입니다.',
           '바다를 닮은 딥오션 틸 컬러와 화이트 나파 가죽의 환상적 조화입니다.',
           '주말 교외 드라이브를 위한 탁 트인 파노라마 뷰를 자랑합니다.',
-          '공식 딜러 직영 출고 웰컴 기프트 세트를 무상으로 증정합니다.'
+          '공식 카마스터 직영 출고 웰컴 기프트 세트를 무상으로 증정합니다.'
         ]
       },
       black_obsidian: {
@@ -3139,13 +3287,13 @@
           '🌐 12.3인치 듀얼 파노라믹 커브드 디스플레이 탑재',
           '🛫 앞 유리에 그래픽으로 투영되는 증강현실 헤드업 디스플레이',
           '🗣️ "에어컨 켜줘, 창문 열어줘" 음성인식 차량 스마트 제어',
-          '🔑 공식 딜러 테크놀로지 패키지 특별 출고'
+          '🔑 공식 카마스터 테크놀로지 패키지 특별 출고'
         ],
         ttsLines: [
           '십이점삼 인치 듀얼 파노라믹 커브드 디스플레이가 장착되었습니다.',
           '전면 유리에 그래픽으로 길을 안내하는 증강현실 헤드업 디스플레이입니다.',
           '자연어 음성 인식으로 차량의 모든 기능을 손쉽게 제어할 수 있습니다.',
-          '공식 딜러 전용 테크놀로지 풀옵션 특별 출고 모델입니다.'
+          '공식 카마스터 전용 테크놀로지 풀옵션 특별 출고 모델입니다.'
         ]
       },
       zero_emission: {
@@ -3655,13 +3803,13 @@
           '⛰️ 전자식 차동제한장치 e-LSD로 코너 탈출 가속력 극대화',
           '🎯 랙 타입 전동식 파워 스티어링의 직관적인 조향감',
           '⚖️ 50:50에 가까운 전후 무게 배분으로 롤링 억제',
-          '🔑 공식 딜러 특별 즉시 출고 배정'
+          '🔑 공식 카마스터 특별 즉시 출고 배정'
         ],
         ttsLines: [
           '전자식 차동제한장치가 코너 탈출 시 폭발적인 트랙션을 선사합니다.',
           '랙 타입 조향 시스템으로 한 치의 오차 없는 칼같은 핸들링을 완성합니다.',
           '완벽한 전후 무게 밸런스로 급격한 코너에서도 롤링을 완벽 억제합니다.',
-          '공식 딜러 전용 스포츠 모델, 지금 즉시 출고 가능합니다.'
+          '공식 카마스터 전용 스포츠 모델, 지금 즉시 출고 가능합니다.'
         ]
       },
       track_day_pilot: {
@@ -4652,7 +4800,7 @@
           { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
         ],
         cutCaptions: [
-          '🎖️ 15년간 한자리에서 1,200대 출고! 믿을 수 있는 딜러십',
+          '🎖️ 15년간 한자리에서 1,200대 출고! 믿을 수 있는 카마스터',
           '🤝 출고 후 5년 동안 소모품 교체 및 사고처리 24시간 직통 케어',
           '📞 신차 길들이기부터 중고차 매각까지 평생 카라이프 파트너',
           '💬 댓글에 [견적] 남기시면 15년 경력의 베테랑 1:1 상담 연결'
@@ -5228,7 +5376,7 @@
       const elFav = document.getElementById('favTabCount');
       if (elFav) elFav.textContent = `(${favCount})`;
 
-      const cats = ['special', 'luxury', 'ev_tech', 'sports', 'finance', 'trust'];
+      const cats = ['vlog', 'special', 'luxury', 'ev_tech', 'sports', 'finance', 'trust'];
       cats.forEach(c => {
         const el = document.getElementById(`catCount_${c}`);
         if (el) el.textContent = allKeys.filter(k => STORY_ARCHETYPES[k].category === c).length;
@@ -5241,7 +5389,7 @@
 
     function filterArchetypeCategory(catKey) {
       currentArchetypeCategory = catKey;
-      const cats = ['all', 'favorite', 'special', 'luxury', 'ev_tech', 'sports', 'finance', 'trust', 'custom'];
+      const cats = ['all', 'favorite', 'vlog', 'special', 'luxury', 'ev_tech', 'sports', 'finance', 'trust', 'custom'];
       cats.forEach((c) => {
         const btn = document.getElementById(`archCatBtn_${c}`);
         if (btn) {
@@ -5700,7 +5848,7 @@ function renderStoryArchetypesUI() {
     }, { passive: true });
 
     // ============================================================================
-    // 딜러별 스마트 자동 변주 (Smart Per-Dealer Variation & Anti-Duplicate Engine)
+    // 카마스터별 스마트 자동 변주 (Smart Per-Dealer Variation & Anti-Duplicate Engine)
     // ============================================================================
     const CUT_NAMES = ['외관 디자인', '파노라믹 운전석', '2열 독립 캡틴시트', '즉시출고 스마트키'];
     const CAMERA_NAMES = [
@@ -5810,7 +5958,7 @@ function renderStoryArchetypesUI() {
         label: '변주 D (패밀리 캡틴시트 & 무보증 금융형)',
         cutOrder: [2, 0, 1, 3],
         cameraOrder: [3, 2, 1, 0],
-        hook: '전국 딜러사 비교 완료! 11월 마지막 최대 할인',
+        hook: '전국 대리점 비교 완료! 11월 마지막 최대 할인',
         badgeTop: '전국 최저가',
         badgeBottom: '비교견적 보증',
         bullets: [
@@ -6429,7 +6577,50 @@ function renderStoryArchetypesUI() {
                    [82.41, 164.81, 207.65, 246.94, 329.63], [110.0, 220.0, 261.63, 329.63, 392.0]] },
         luxury: { bpm: 90, wave: 'sine', cutoff: 1800, kick: [0, 10], clap: [8], hat: 'sparse',
           chords: [[73.42, 220.0, 277.18, 329.63, 440.0], [61.74, 185.0, 246.94, 293.66, 369.99],
-                   [82.41, 196.0, 246.94, 329.63, 392.0], [55.0, 164.81, 220.0, 277.18, 329.63]] }
+                   [82.41, 196.0, 246.94, 329.63, 392.0], [55.0, 164.81, 220.0, 277.18, 329.63]] },
+        // ---- 추가 음악 9종 ----
+        lofi: { bpm: 80, wave: 'triangle', cutoff: 900, kick: [0, 7, 10], clap: [4, 12], hat: 'eighth', swing: 0.22, bass: 'sub',
+          arpWave: 'sine', arpEvery: 4, arpGain: 0.06, padGain: 0.12,
+          chords: [[87.31, 174.61, 220.0, 261.63, 329.63], [82.41, 164.81, 196.0, 246.94, 293.66],
+                   [73.42, 146.83, 174.61, 220.0, 261.63], [65.41, 130.81, 164.81, 196.0, 246.94]] },
+        vlog: { bpm: 104, wave: 'triangle', cutoff: 2200, kick: [0, 8], clap: [4, 12], hat: 'eighth', bass: 'saw',
+          arpWave: 'triangle', arpEvery: 1, arpGain: 0.045, arp: [1, 3, 2, 4, 3, 2, 4, 3],
+          chords: [[65.41, 261.63, 329.63, 392.0, 523.25], [98.0, 246.94, 293.66, 392.0, 493.88],
+                   [110.0, 261.63, 329.63, 440.0, 523.25], [87.31, 261.63, 349.23, 440.0, 523.25]] },
+        cinema: { bpm: 70, wave: 'sawtooth', cutoff: 700, kick: [0], kickGain: 1.0, clap: [], hat: 'none', bass: 'sub', padGain: 0.16,
+          arpWave: 'sine', arpEvery: 4, arpGain: 0.07, arp: [3, 4, 3, 2],
+          chords: [[73.42, 146.83, 174.61, 220.0, 293.66], [58.27, 116.54, 146.83, 174.61, 233.08],
+                   [87.31, 174.61, 220.0, 261.63, 349.23], [65.41, 130.81, 164.81, 196.0, 261.63]] },
+        drive: { bpm: 100, wave: 'sawtooth', cutoff: 1900, kick: [0, 4, 8, 12], clap: [4, 12], hat: 'offbeat', bass: 'eighth',
+          arpWave: 'square', arpEvery: 1, arpGain: 0.03, arp: [1, 2, 3, 4, 3, 2, 1, 2],
+          chords: [[110.0, 220.0, 261.63, 329.63, 440.0], [87.31, 174.61, 220.0, 261.63, 349.23],
+                   [65.41, 130.81, 164.81, 196.0, 261.63], [98.0, 196.0, 246.94, 293.66, 392.0]] },
+        edm: { bpm: 128, wave: 'sawtooth', cutoff: 3000, kick: [0, 4, 8, 12], clap: [4, 12], hat: 'offbeat', bass: 'offbeat', padGain: 0.1,
+          arpWave: 'sawtooth', arpEvery: 1, arpGain: 0.035, arp: [1, 4, 2, 4, 3, 4, 2, 4],
+          chords: [[92.5, 185.0, 220.0, 277.18, 369.99], [73.42, 146.83, 185.0, 220.0, 293.66],
+                   [110.0, 220.0, 277.18, 329.63, 440.0], [82.41, 164.81, 207.65, 246.94, 329.63]] },
+        funk: { bpm: 108, wave: 'square', cutoff: 1500, kick: [0, 3, 8, 10], clap: [4, 12], hat: 'sixteenth', swing: 0.1, bass: 'funk',
+          arpWave: 'square', arpEvery: 4, arpGain: 0.04, arp: [2, 3, 2, 4],
+          chords: [[82.41, 164.81, 196.0, 246.94, 293.66], [110.0, 220.0, 261.63, 329.63, 392.0],
+                   [82.41, 164.81, 196.0, 246.94, 293.66], [123.47, 246.94, 293.66, 369.99, 440.0]] },
+        ballad: { bpm: 72, wave: 'sine', cutoff: 1500, kick: [0, 10], kickGain: 0.6, clap: [8], hat: 'sparse', bass: 'sub', padGain: 0.12,
+          arpWave: 'sine', arpEvery: 2, arpGain: 0.09, arp: [1, 2, 3, 4, 3, 2, 1, 2],
+          chords: [[65.41, 261.63, 329.63, 392.0, 523.25], [61.74, 246.94, 293.66, 392.0, 493.88],
+                   [55.0, 220.0, 261.63, 329.63, 440.0], [87.31, 220.0, 261.63, 349.23, 440.0]] },
+        news: { bpm: 120, wave: 'square', cutoff: 1200, kick: [0, 6, 8, 14], clap: [4, 12], hat: 'sixteenth', bass: 'saw',
+          arpWave: 'square', arpEvery: 2, arpGain: 0.04, arp: [1, 1, 3, 1, 4, 1, 3, 2],
+          chords: [[65.41, 130.81, 155.56, 196.0, 261.63], [103.83, 207.65, 261.63, 311.13, 415.3],
+                   [77.78, 155.56, 196.0, 233.08, 311.13], [116.54, 233.08, 293.66, 349.23, 466.16]] },
+        jazz: { bpm: 92, wave: 'sine', cutoff: 1600, kick: [0, 10], kickGain: 0.55, clap: [], hat: 'eighth', swing: 0.28, bass: 'walk',
+          arpWave: 'sine', arpEvery: 4, arpGain: 0.06, arp: [2, 4, 3, 1],
+          chords: [[73.42, 146.83, 174.61, 220.0, 261.63], [98.0, 196.0, 246.94, 293.66, 349.23],
+                   [65.41, 130.81, 164.81, 196.0, 246.94], [110.0, 220.0, 277.18, 329.63, 392.0]] }
+      },
+      // 디자인 묶음별로 어울리는 기본 음악 (직접 불러온 음원·BGM 끄기는 바꾸지 않음)
+      BGM_LABELS: {
+        showroom: 'Chill House 쇼룸', urban: 'Phonk / Trap', bright: 'Upbeat City Pop', luxury: 'Luxury Lounge',
+        lofi: 'Lo-fi 감성', vlog: 'Acoustic Pop 브이로그', cinema: 'Cinematic 트레일러', drive: 'Synthwave 드라이브',
+        edm: 'EDM 페스티벌', funk: 'Funk 그루브', ballad: 'Piano 발라드', news: 'Breaking News', jazz: 'Jazz 라운지'
       },
       nextStepTime: 0,
 
@@ -6441,6 +6632,7 @@ function renderStoryArchetypesUI() {
         const bar = Math.floor(step / 16) % 4;
         const chord = S.chords[bar];
         const out = this.bgmGain;
+        if (S.swing && s16 % 4 === 2) when += S.swing * stepDur;
 
         // 1) 킥
         if (S.kick.includes(s16)) {
@@ -6448,7 +6640,7 @@ function renderStoryArchetypesUI() {
           o.type = 'sine';
           o.frequency.setValueAtTime(150, when);
           o.frequency.exponentialRampToValueAtTime(42, when + 0.14);
-          g.gain.setValueAtTime(0.9, when);
+          g.gain.setValueAtTime(S.kickGain || 0.9, when);
           g.gain.exponentialRampToValueAtTime(0.001, when + 0.28);
           o.connect(g); g.connect(out);
           o.start(when); o.stop(when + 0.3);
@@ -6469,7 +6661,8 @@ function renderStoryArchetypesUI() {
         const hatOn =
           S.hat === 'offbeat' ? s16 % 4 === 2 :
           S.hat === 'eighth' ? s16 % 2 === 0 :
-          S.hat === 'trap' ? true :
+          S.hat === 'trap' || S.hat === 'sixteenth' ? true :
+          S.hat === 'none' ? false :
           s16 % 8 === 4;
         if (hatOn && this.noiseBuf) {
           const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
@@ -6488,8 +6681,8 @@ function renderStoryArchetypesUI() {
           const f = ctx.createBiquadFilter(), g = ctx.createGain();
           f.type = 'lowpass'; f.frequency.value = S.cutoff; f.Q.value = 0.6;
           g.gain.setValueAtTime(0.0001, when);
-          g.gain.linearRampToValueAtTime(0.11, when + 0.25);
-          g.gain.setValueAtTime(0.11, when + barDur - 0.3);
+          g.gain.linearRampToValueAtTime(S.padGain || 0.11, when + 0.25);
+          g.gain.setValueAtTime(S.padGain || 0.11, when + barDur - 0.3);
           g.gain.linearRampToValueAtTime(0.0001, when + barDur);
           f.connect(g); g.connect(out);
           chord.slice(1, 4).forEach((hz, i) => {
@@ -6505,31 +6698,42 @@ function renderStoryArchetypesUI() {
         }
 
         // 5) 베이스라인
-        const bassHit = this.bgmStyle === 'urban' ? S.kick.includes(s16) : (s16 % 4 === 0 || s16 % 4 === 3);
+        const bassMode = S.bass || (this.bgmStyle === 'urban' ? 'sub' : 'saw');
+        const funkHits = [0, 3, 6, 8, 10, 14];
+        const bassHit =
+          bassMode === 'sub' ? S.kick.includes(s16) || (S.kick.length < 2 && s16 === 8) :
+          bassMode === 'offbeat' ? s16 % 4 === 2 :
+          bassMode === 'eighth' ? s16 % 2 === 0 :
+          bassMode === 'funk' ? funkHits.includes(s16) :
+          bassMode === 'walk' ? s16 % 4 === 0 :
+          (s16 % 4 === 0 || s16 % 4 === 3);
         if (bassHit) {
           const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
-          o.type = this.bgmStyle === 'urban' ? 'sine' : 'sawtooth';
-          o.frequency.value = chord[0];
-          f.type = 'lowpass'; f.frequency.value = 420;
-          const len = this.bgmStyle === 'urban' ? stepDur * 3.5 : stepDur * 1.6;
-          g.gain.setValueAtTime(0.38, when);
+          o.type = bassMode === 'sub' || bassMode === 'walk' ? 'sine' : bassMode === 'funk' ? 'square' : 'sawtooth';
+          o.frequency.value = bassMode === 'walk' ? chord[(s16 / 4) % 4] / (s16 === 0 ? 1 : 2) : chord[0];
+          f.type = 'lowpass'; f.frequency.value = bassMode === 'funk' ? 700 : 420;
+          const len = bassMode === 'sub' ? stepDur * 3.5 : bassMode === 'walk' ? stepDur * 3.2 : bassMode === 'eighth' || bassMode === 'offbeat' ? stepDur * 1.2 : stepDur * 1.6;
+          g.gain.setValueAtTime(bassMode === 'funk' ? 0.3 : 0.38, when);
           g.gain.exponentialRampToValueAtTime(0.001, when + len);
           o.connect(f); f.connect(g); g.connect(out);
           o.start(when); o.stop(when + len + 0.02);
         }
 
-        // 6) 아르페지오 멜로디 리프 (8분음표)
-        if (s16 % 2 === 0) {
-          const pattern = [1, 2, 3, 4, 3, 2, 4, 2];
-          const hz = chord[pattern[(s16 / 2) % pattern.length]] * 2;
+        // 6) 멜로디 리프 (음악마다 박자·음색이 다름)
+        const every = S.arpEvery === undefined ? 2 : S.arpEvery;
+        if (every && s16 % every === 0) {
+          const pattern = S.arp || [1, 2, 3, 4, 3, 2, 4, 2];
+          const hz = chord[pattern[(s16 / every) % pattern.length]] * 2;
           const o = ctx.createOscillator(), g = ctx.createGain();
-          o.type = this.bgmStyle === 'luxury' ? 'sine' : 'triangle';
+          o.type = S.arpWave || (this.bgmStyle === 'luxury' ? 'sine' : 'triangle');
           o.frequency.value = hz;
+          const ag = S.arpGain || (this.bgmStyle === 'urban' ? 0.05 : 0.075);
+          const al = stepDur * Math.max(1.8, every * 0.9);
           g.gain.setValueAtTime(0.0001, when);
-          g.gain.linearRampToValueAtTime(this.bgmStyle === 'urban' ? 0.05 : 0.075, when + 0.01);
-          g.gain.exponentialRampToValueAtTime(0.001, when + stepDur * 1.8);
+          g.gain.linearRampToValueAtTime(ag, when + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.001, when + al);
           o.connect(g); g.connect(out);
-          o.start(when); o.stop(when + stepDur * 2);
+          o.start(when); o.stop(when + al + 0.05);
         }
       },
 
@@ -7226,7 +7430,7 @@ function renderStoryArchetypesUI() {
     }
 
     // ============================================================================
-    // HyperFrames 캔버스 렌더러 (3D 쇼룸 + 키네틱 모션 + 3D 메탈 딜러 명함)
+    // HyperFrames 캔버스 렌더러 (3D 쇼룸 + 키네틱 모션 + 3D 메탈 카마스터 명함)
     // ============================================================================
     const canvas = document.getElementById('reelCanvas');
     const ctx = canvas.getContext('2d');
@@ -7245,7 +7449,7 @@ function renderStoryArchetypesUI() {
       ctx.closePath();
     }
 
-    // 딜러 고유 토큰으로 결정론적 QR 코드 패턴 그리기
+    // 카마스터 고유 토큰으로 결정론적 QR 코드 패턴 그리기
     function drawDeterministicQrCode(ctx, x, y, size, seedStr) {
       ctx.save();
       ctx.fillStyle = '#ffffff';
@@ -7585,7 +7789,7 @@ function renderStoryArchetypesUI() {
       }
     }
 
-    // ---------- 딜러 프로필 원 ----------
+    // ---------- 카마스터 프로필 원 ----------
     function drawGenreAvatar(c, d, cx, cy, r, ring, ringW) {
       c.save();
       c.beginPath();
@@ -7618,7 +7822,7 @@ function renderStoryArchetypesUI() {
       }
     }
 
-    // ---------- 본편 하단 딜러 칩 ----------
+    // ---------- 본편 하단 카마스터 칩 ----------
     function drawDealerChip(c, d, W, H, V, enter) {
       const chipH = 56;
       const y = H - chipH - 26 + (1 - enter) * 30;
@@ -8912,8 +9116,8 @@ function renderStoryArchetypesUI() {
     }
 
     // ==========================================================================
-    // ★ 기본 디자인 12종(장르 엔진) — 아래 디자인 키트 112종과 합쳐 모두 124종.
-    //   색상은 여기서 정하지 않고, 딜러가 아래 COLOR_PALETTES에서 따로 고릅니다.
+    // ★ 기본 디자인 12종(장르 엔진) — 아래 디자인 키트 124종과 합쳐 모두 136종.
+    //   색상은 여기서 정하지 않고, 카마스터가 아래 COLOR_PALETTES에서 따로 고릅니다.
     //   대본 템플릿(STORY_ARCHETYPES)은 문구만 바꾸고 디자인은 바꾸지 않습니다.
     // ==========================================================================
     const DESIGN_STYLES = [
@@ -9070,7 +9274,7 @@ function renderStoryArchetypesUI() {
     }
 
     // 화면 위쪽이 사진인 배치 (머리표·장식을 흰색으로)
-    const KIT_PHOTO_TOP = ['full', 'blinds', 'duo', 'split', 'diag', 'dim'];
+    const KIT_PHOTO_TOP = ['full', 'blinds', 'duo', 'split', 'diag', 'dim', 'handheld'];
 
     // ---------- 장면(사진·영상) 계산 ----------
     function kitScene(t, mainDuration, isOutro) {
@@ -9264,6 +9468,21 @@ function renderStoryArchetypesUI() {
         c.fillStyle = g2;
         c.fillRect(0, 760, W, 200);
         return { x: 30, y: 390, w: W - 60, h: 200, onPhoto: true };
+      }
+      if (L === 'handheld') {
+        // 손에 들고 찍은 듯한 흔들림 + 살짝 확대
+        const sx = Math.sin(t * 1.7) * 5 + Math.sin(t * 4.3) * 2;
+        const sy = Math.cos(t * 1.3) * 4 + Math.sin(t * 3.1) * 2;
+        const rot = Math.sin(t * 0.9) * 0.006;
+        c.save();
+        c.translate(W / 2 + sx, H / 2 + sy);
+        c.rotate(rot);
+        c.scale(1.06, 1.06);
+        c.translate(-W / 2, -H / 2);
+        kitPhoto(c, { x: 0, y: 0, w: W, h: H }, S, spec);
+        c.restore();
+        scrim(H * 0.5, 0.7);
+        return { x: 30, y: 640, w: W - 60, h: 210, onPhoto: true };
       }
       if (L === 'dim') {
         kitPhoto(c, { x: 0, y: 0, w: W, h: H }, S, spec, { filter: `${GENRE_FILTERS[spec.grade] || ''} brightness(0.42) saturate(0.85)`.trim() });
@@ -9520,7 +9739,7 @@ function renderStoryArchetypesUI() {
     }
 
     // ---------- 가격 강조 ----------
-    const KIT_STAR_CAPS = ['band', 'bubble', 'sticky', 'words', 'pill', 'stamp', 'outline', 'write', 'scribble', 'doodle', 'brush', 'stack', 'scroll', 'slam', 'knockout', 'marquee', 'longshadow'];
+    const KIT_STAR_CAPS = ['band', 'bubble', 'sticky', 'words', 'pill', 'stamp', 'outline', 'write', 'scribble', 'doodle', 'brush', 'stack', 'scroll', 'slam', 'knockout', 'marquee', 'longshadow', 'vsub', 'chapter', 'loctag', 'checkl', 'timestamp'];
     function kitPrice(c, W, zone, spec, V, K, e) {
       const txt = `-${campaign.discountNum}만원`;
       // 자막 자리가 좁은 배치에서는 자막을 밀어내지 않도록 별 스티커로
@@ -10361,6 +10580,145 @@ function renderStoryArchetypesUI() {
           c.fillText(ln, 0, y);
         });
         c.restore();
+      } else if (cap === 'vsub') {
+        // 유튜브 브이로그 자막: 줄마다 반투명 검은 상자
+        const r = kWrap(c, text, W - 120, 2, 32, 22, fk);
+        c.globalAlpha = gEase(e / 0.3);
+        c.textAlign = 'center';
+        const blockTop = zone.center ? top : zone.y + zone.h - r.lines.length * (r.lh + 12) - 6;
+        r.lines.forEach((ln, i) => {
+          const w = c.measureText(ln).width + 28;
+          const y = blockTop + i * (r.lh + 12);
+          gRoundRect(c, W / 2 - w / 2, y, w, r.lh + 8, 8);
+          c.fillStyle = 'rgba(0,0,0,0.62)';
+          c.fill();
+          c.fillStyle = i === 0 ? '#ffffff' : '#ffe58a';
+          c.textBaseline = 'middle';
+          c.fillText(ln, W / 2, y + (r.lh + 8) / 2 + 1);
+          c.textBaseline = 'alphabetic';
+        });
+      } else if (cap === 'chapter') {
+        // 챕터 카드: #01 번호 + 제목
+        const ee = gEase(e / 0.45);
+        const num = `#${kPad(cutIdx + 1)}`;
+        c.textAlign = 'left';
+        c.save();
+        c.globalAlpha = ee;
+        c.translate((1 - ee) * -60, 0);
+        c.fillStyle = hl;
+        kLine(c, num, zone.x, top + 64, 200, 72, 40, fk === 'pen' ? 'impact' : fk);
+        c.fillStyle = ink;
+        c.fillRect(zone.x, top + 84, 60 * ee, 3);
+        c.restore();
+        const r = kWrap(c, text, zone.w, 2, 36, 22, fk);
+        c.globalAlpha = gEase((e - 0.2) / 0.4);
+        c.fillStyle = ink;
+        shadowOn();
+        r.lines.forEach((ln, i) => c.fillText(ln, zone.x, top + 104 + r.lh * (i + 0.85)));
+        c.shadowColor = 'transparent';
+        c.globalAlpha = gEase((e - 0.35) / 0.4) * 0.75;
+        c.font = gFont(600, 13, GENRE_FONTS.mono);
+        c.fillText(`CHAPTER ${kPad(cutIdx + 1)} · ${K.label}`, zone.x, top + 116 + r.lh * r.lines.length + 10);
+      } else if (cap === 'loctag') {
+        // 위치 태그(핀 아이콘 + 지점) + 자막
+        const place = (K.dealer && K.dealer.branch) || K.label;
+        const ee = gBack(e / 0.4);
+        c.font = gFont(800, 16, GENRE_FONTS.sans);
+        const tw = Math.min(zone.w - 50, c.measureText(place).width) + 52;
+        c.save();
+        c.translate(zone.x, top);
+        c.scale(ee, ee);
+        gRoundRect(c, 0, 0, tw, 38, 19);
+        c.fillStyle = '#ffffff';
+        c.fill();
+        c.fillStyle = gReadableAccent(hl, true);
+        c.beginPath();
+        c.arc(22, 16, 8, Math.PI, 0);
+        c.lineTo(22, 30);
+        c.closePath();
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.beginPath();
+        c.arc(22, 16, 3, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = '#111111';
+        c.textAlign = 'left';
+        gDrawLine(c, place, 40, 25, tw - 52, 16, 11, GENRE_FONTS.sans, 800);
+        c.restore();
+        const r = kWrap(c, text, zone.w, 3, 38, 24, fk);
+        c.globalAlpha = gEase((e - 0.15) / 0.4);
+        c.fillStyle = ink;
+        c.textAlign = 'left';
+        shadowOn();
+        r.lines.forEach((ln, i) => c.fillText(ln, zone.x, top + 56 + r.lh * (i + 0.85)));
+      } else if (cap === 'checkl') {
+        // 출고 체크리스트: 지난 컷 문구는 체크된 채로 쌓이고, 지금 컷이 새로 체크됨
+        const items = [];
+        const caps = campaign.cutCaptions || [];
+        for (let i = Math.max(0, cutIdx - 2); i <= cutIdx; i++) items.push({ txt: i === cutIdx ? text : gCleanCaption(caps[i] || ''), now: i === cutIdx });
+        const rowH = 50;
+        const h = 58 + items.length * rowH;
+        const light = !(zone.onPhoto) || true;
+        gRoundRect(c, zone.x, top, zone.w, h, 16);
+        c.fillStyle = 'rgba(255,255,255,0.95)';
+        c.fill();
+        c.fillStyle = '#111111';
+        c.textAlign = 'left';
+        c.font = gFont(800, 15, GENRE_FONTS.sans);
+        c.fillText(K.label, zone.x + 20, top + 32);
+        c.fillStyle = '#999999';
+        c.font = gFont(600, 12, GENRE_FONTS.mono);
+        c.textAlign = 'right';
+        c.fillText(`${cutIdx + 1}/${(caps.length || 1)}`, zone.x + zone.w - 20, top + 32);
+        c.textAlign = 'left';
+        items.forEach((it, i) => {
+          const y = top + 48 + i * rowH;
+          const done = it.now ? gEase((e - 0.35) / 0.3) : 1;
+          gRoundRect(c, zone.x + 20, y + 10, 24, 24, 6);
+          c.strokeStyle = done > 0 ? gReadableAccent(hl, true) : '#bbbbbb';
+          c.lineWidth = 2;
+          c.stroke();
+          if (done > 0) {
+            c.fillStyle = gReadableAccent(hl, true);
+            c.globalAlpha = done;
+            c.fill();
+            c.strokeStyle = '#ffffff';
+            c.lineWidth = 3;
+            c.beginPath();
+            c.moveTo(zone.x + 26, y + 22);
+            c.lineTo(zone.x + 30, y + 27);
+            c.lineTo(zone.x + 38, y + 16);
+            c.stroke();
+            c.globalAlpha = 1;
+          }
+          c.fillStyle = it.now ? '#111111' : '#9a9a9a';
+          c.globalAlpha = it.now ? gEase(e / 0.3) : 1;
+          const FK = KIT_FONTS[fk] || KIT_FONTS.sans;
+          gDrawLine(c, it.txt, zone.x + 56, y + 31, zone.w - 76, Math.round((it.now ? 22 : 17) * FK.k), Math.round(12 * FK.k), FK.f, FK.w);
+          c.globalAlpha = 1;
+          if (!it.now) {
+            c.fillStyle = '#c4c4c4';
+            c.fillRect(zone.x + 56, y + 23, Math.min(zone.w - 76, c.measureText(it.txt).width), 1.5);
+          }
+        });
+      } else if (cap === 'timestamp') {
+        // 날짜·시각 + 자막 (일상 기록 느낌)
+        const hh = 9 + cutIdx * 2;
+        const ampm = hh < 12 ? 'AM' : 'PM';
+        const h12 = hh > 12 ? hh - 12 : hh;
+        const clock = `${ampm} ${h12}:${kPad((cutIdx * 17 + 5) % 60)}`;
+        c.textAlign = 'left';
+        c.globalAlpha = gEase(e / 0.35);
+        c.fillStyle = ink;
+        shadowOn();
+        kLine(c, clock, zone.x, top + 52, zone.w, 58, 34, fk === 'pen' || fk === 'gaegu' ? fk : 'sans');
+        c.fillStyle = hl;
+        c.font = gFont(700, 15, GENRE_FONTS.mono);
+        c.fillText(`DAY ${kPad(cutIdx + 1)} · ${K.label}`, zone.x + 2, top + 80);
+        const r = kWrap(c, text, zone.w, 2, 30, 20, fk);
+        c.globalAlpha = gEase((e - 0.2) / 0.4);
+        c.fillStyle = ink;
+        r.lines.forEach((ln, i) => c.fillText(ln, zone.x, top + 104 + r.lh * (i + 0.85)));
       } else if (cap === 'lower3') {
         const r = kWrap(c, text, W - 110, 2, 32, 20, fk);
         const tabE = gEase(e / 0.3);
@@ -10531,6 +10889,48 @@ function renderStoryArchetypesUI() {
         c.fillStyle = kTextOn(col);
         c.textAlign = 'center';
         c.fillText(K.label, W / 2, H - 12);
+      } else if (D === 'camera') {
+        // 카메라 앱 화면: 3분할 격자, 초점 상자, 녹화 시간, 화질
+        c.strokeStyle = 'rgba(255,255,255,0.22)';
+        c.lineWidth = 1;
+        [W / 3, (W * 2) / 3].forEach((x) => {
+          c.beginPath();
+          c.moveTo(x, 0);
+          c.lineTo(x, H);
+          c.stroke();
+        });
+        [H / 3, (H * 2) / 3].forEach((y) => {
+          c.beginPath();
+          c.moveTo(0, y);
+          c.lineTo(W, y);
+          c.stroke();
+        });
+        const pulse = 1 + 0.06 * Math.sin(t * 5);
+        const fs = 70 * pulse;
+        c.strokeStyle = '#facc15';
+        c.lineWidth = 2;
+        const fx = W / 2;
+        const fy = H * 0.42;
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => {
+          c.beginPath();
+          c.moveTo(fx + sx * fs, fy + sy * (fs - 16));
+          c.lineTo(fx + sx * fs, fy + sy * fs);
+          c.lineTo(fx + sx * (fs - 16), fy + sy * fs);
+          c.stroke();
+        });
+        c.save();
+        c.font = gFont(700, 15, GENRE_FONTS.mono);
+        c.textAlign = 'right';
+        c.shadowColor = 'rgba(0,0,0,0.6)';
+        c.shadowBlur = 6;
+        c.fillStyle = Math.floor(t * 1.5) % 2 ? '#ff3b30' : 'rgba(255,59,48,0.4)';
+        c.beginPath();
+        c.arc(W - 116, 66, 6, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.fillText(`00:${kPad(Math.floor(t))}`, W - 26, 72);
+        c.fillText('4K · 60', W - 26, H * 0.62);
+        c.restore();
       } else if (D === 'sparkle') {
         for (let i = 0; i < 12; i++) {
           const h = gHash('sp' + i);
@@ -10588,6 +10988,19 @@ function renderStoryArchetypesUI() {
         c.fillStyle = topInk;
         c.textAlign = 'right';
         c.fillText(K.label, W - 29, y + 20);
+      } else if (hd === 'profile') {
+        // 인스타 스토리처럼 프로필 사진 + 이름 + 시간
+        const dd = K.dealer || {};
+        drawGenreAvatar(c, dd, 36, y + 18, 16, col, 2);
+        c.textAlign = 'left';
+        c.fillStyle = topInk;
+        c.shadowColor = 'rgba(0,0,0,0.5)';
+        c.shadowBlur = 6;
+        gDrawLine(c, `${dd.name || ''} ${dd.title || ''}`, 60, y + 16, 260, 15, 11, GENRE_FONTS.sans, 800);
+        c.font = gFont(500, 12, GENRE_FONTS.sans);
+        c.fillStyle = topInk === '#ffffff' ? 'rgba(255,255,255,0.75)' : '#666666';
+        c.fillText(`${K.label} · 방금`, 60, y + 33);
+        c.shadowColor = 'transparent';
       } else if (hd === 'counter') {
         c.fillStyle = col;
         c.textAlign = 'left';
@@ -10601,10 +11014,10 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
-    // ---------- 본편 딜러 칩 3가지 ----------
+    // ---------- 본편 카마스터 칩 3가지 ----------
     function kitChip(c, d, W, H, spec, V, K, enter) {
-      const variant = { pill: 'round', counter: 'round', box: 'square', kicker: 'line', none: 'line' }[spec.head] || 'round';
-      const onPhoto = ['full', 'blinds', 'duo', 'dim'].includes(spec.layout);
+      const variant = { pill: 'round', counter: 'round', box: 'square', kicker: 'line', none: 'line', profile: 'square' }[spec.head] || 'round';
+      const onPhoto = ['full', 'blinds', 'duo', 'dim', 'handheld'].includes(spec.layout);
       const y = (spec.deco === 'bars' ? H - 124 : H - 82) + (1 - enter) * 30;
       const col = K.bgAccent ? K.hl : V.accent;
       c.save();
@@ -10702,6 +11115,68 @@ function renderStoryArchetypesUI() {
         c.restore();
       };
 
+      if (O === 'vlogend') {
+        // 유튜브 끝 화면 느낌: 다음 영상 두 칸 + 가운데 프로필 + 댓글 안내
+        c.fillStyle = 'rgba(8,8,10,0.86)';
+        c.fillRect(0, 0, W, H);
+        c.textAlign = 'center';
+        c.globalAlpha = a;
+        c.fillStyle = '#ffffff';
+        kLine(c, '오늘도 출고 완료!', W / 2, 150, W - 60, 46, 28, fk);
+        c.fillStyle = 'rgba(255,255,255,0.65)';
+        gDrawLine(c, `${veh} · ${disc}`, W / 2, 186, W - 80, 17, 12, GENRE_FONTS.sans, 600);
+        c.globalAlpha = 1;
+        [[-1, 1], [1, 2]].forEach(([side, k], i) => {
+          const p = gBack((local - 0.1 - i * 0.12) / 0.45);
+          if (p <= 0.01) return;
+          const bw = 220;
+          const bh = 300;
+          const x = W / 2 + side * 125 - bw / 2;
+          c.save();
+          c.translate(x + bw / 2, 250 + bh / 2);
+          c.scale(p, p);
+          c.translate(-(x + bw / 2), -(250 + bh / 2));
+          c.save();
+          gRoundRect(c, x, 250, bw, bh, 16);
+          c.clip();
+          kitCover(c, kitImg(S, k), x, 250, bw, bh, 1.05, 0, 0);
+          const g = c.createLinearGradient(0, 430, 0, 550);
+          g.addColorStop(0, 'rgba(0,0,0,0)');
+          g.addColorStop(1, 'rgba(0,0,0,0.75)');
+          c.fillStyle = g;
+          c.fillRect(x, 430, bw, 120);
+          c.restore();
+          gRoundRect(c, x, 250, bw, bh, 16);
+          c.strokeStyle = 'rgba(255,255,255,0.25)';
+          c.lineWidth = 1.5;
+          c.stroke();
+          c.fillStyle = '#ffffff';
+          c.textAlign = 'left';
+          gDrawLine(c, i === 0 ? '지난 출고 영상' : '다음 출고 예고', x + 14, 534, bw - 28, 16, 11, GENRE_FONTS.sans, 800);
+          c.beginPath();
+          c.arc(x + bw / 2, 400, 26, 0, Math.PI * 2);
+          c.fillStyle = 'rgba(255,255,255,0.85)';
+          c.fill();
+          c.fillStyle = '#111111';
+          c.beginPath();
+          c.moveTo(x + bw / 2 - 7, 388);
+          c.lineTo(x + bw / 2 + 12, 400);
+          c.lineTo(x + bw / 2 - 7, 412);
+          c.closePath();
+          c.fill();
+          c.restore();
+        });
+        c.globalAlpha = after(0.25);
+        drawGenreAvatar(c, d, W / 2, 640, 48, col, 4);
+        c.textAlign = 'center';
+        c.fillStyle = '#ffffff';
+        kLine(c, `${name} ${d.title}`, W / 2, 728, W - 80, 28, 18, fk);
+        c.fillStyle = 'rgba(255,255,255,0.6)';
+        gDrawLine(c, d.branch || '', W / 2, 756, W - 80, 14, 10, GENRE_FONTS.sans, 600);
+        c.globalAlpha = 1;
+        ctaButton(840, 64, 32, '#ff0033', '#ffffff');
+        return;
+      }
       if (O === 'bigname') {
         const g = c.createLinearGradient(0, 200, 0, H);
         g.addColorStop(0, 'rgba(0,0,0,0.15)');
@@ -11280,6 +11755,7 @@ function renderStoryArchetypesUI() {
     }
     function renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, spec, V) {
       const K = kitContext(spec, V);
+      K.dealer = d;
       const cutDur = mainDuration / totalCuts;
       if (t < mainDuration) {
         const S = kitScene(t, mainDuration, false);
@@ -11392,7 +11868,7 @@ function renderStoryArchetypesUI() {
       ['r_vertical', '아치 세로', '고급', 'arch', 'vertical', 'serif', 'sparkle', 'drop', 'ring', 'film', 'none', 'dark', '雅', '#d4af37', '#f5e6b8'],
       ['r_sticker', '아치 스티커', '재미', 'arch', 'pill', 'jua', 'dots', 'zoom', 'polaroid', 'pastel', 'pill', 'accent', '스윗 딜', '#f472b6', '#fce7f3'],
       ['r_glass', '아치 글래스', '테크', 'arch', 'glass', 'sans', 'leak', 'slide', 'card', 'cool', 'box', 'ink', 'GLASS', '#38bdf8', '#e0f2fe'],
-      ['r_memo', '아치 메모', '감성', 'arch', 'sticky', 'pen', 'grain', 'fade', 'chat', 'sepia', 'counter', 'paper', '딜러 노트', '#84cc16', '#ecfccb'],
+      ['r_memo', '아치 메모', '감성', 'arch', 'sticky', 'pen', 'grain', 'fade', 'chat', 'sepia', 'counter', 'paper', '카마스터 노트', '#84cc16', '#ecfccb'],
       ['r_marker', '아치 마커', '상담·정보', 'arch', 'marker', 'dohyeon', 'corners', 'wipe', 'receipt', 'none', 'kicker', 'white', '체크 포인트', '#facc15', '#fef9c3'],
       ['r_type', '아치 타이포', '스포츠', 'arch', 'words', 'impact', 'border', 'flash', 'split', 'vivid', 'counter', 'dark', 'ARCH', '#f97316', '#ffffff'],
 
@@ -11412,7 +11888,7 @@ function renderStoryArchetypesUI() {
       ['u_glass', '듀오 글래스', '테크', 'duo', 'glass', 'sans', 'grid', 'fade', 'badge', 'ev', 'box', 'dark', 'DUAL VIEW', '#22d3ee', '#a5f3fc'],
       ['u_words', '듀오 워드', '스포츠', 'duo', 'words', 'gugi', 'sparkle', 'flash', 'bigname', 'sports', 'counter', 'dark', 'DOUBLE', '#facc15', '#ffffff'],
 
-      ['h_diary', '연필 일기', '손글씨', 'notebook', 'write', 'pen', 'none', 'fade', 'polaroid', 'warm', 'none', 'cream', '딜러 일기', '#2563eb', '#dbeafe'],
+      ['h_diary', '연필 일기', '손글씨', 'notebook', 'write', 'pen', 'none', 'fade', 'polaroid', 'warm', 'none', 'cream', '카마스터 일기', '#2563eb', '#dbeafe'],
       ['h_letter', '편지지', '손글씨', 'notebook', 'letter', 'gaegu', 'leak', 'slide', 'card', 'pastel', 'kicker', 'cream', 'Dear 고객님', '#e11d48', '#ffe4e6'],
       ['h_chalk', '칠판 수업', '손글씨', 'chalkboard', 'chalk', 'gamja', 'none', 'fade', 'minimal', 'none', 'counter', 'chalk', '오늘의 수업', '#fde047', '#fef9c3'],
       ['h_circle', '동그라미 강조', '손글씨', 'full', 'scribble', 'himelody', 'grain', 'zoom', 'chat', 'none', 'pill', 'dark', '여기 주목', '#facc15', '#fef9c3'],
@@ -11436,12 +11912,25 @@ function renderStoryArchetypesUI() {
       ['t_postscroll', '스크롤 포스터', '타이포', 'poster', 'scroll', 'dongle', 'sparkle', 'slide', 'polaroid', 'pastel', 'pill', 'accent', 'SCROLL', '#ec4899', '#fce7f3'],
       ['t_banner', '배너 포스터', '타이포', 'poster', 'marquee', 'dohyeon', 'none', 'wipe', 'receipt', 'none', 'counter', 'ink', 'BANNER', '#22c55e', '#dcfce7'],
       ['t_depth', '입체 다크', '타이포', 'dim', 'longshadow', 'impact', 'grain', 'zoom', 'neon', 'noir', 'none', 'dark', 'DEPTH', '#a855f7', '#f0abfc'],
-      ['t_phototype', '사진 글씨', '타이포', 'split', 'knockout', 'gasoek', 'none', 'slide', 'card', 'none', 'pill', 'ink', 'PHOTO TYPE', '#facc15', '#ffffff']
+      ['t_phototype', '사진 글씨', '타이포', 'split', 'knockout', 'gasoek', 'none', 'slide', 'card', 'none', 'pill', 'ink', 'PHOTO TYPE', '#facc15', '#ffffff'],
+
+      ['v_delivery', '출고 브이로그', '브이로그', 'handheld', 'vsub', 'sans', 'none', 'fade', 'vlogend', 'warm', 'profile', 'dark', '출고 브이로그', '#facc15', '#fef9c3'],
+      ['v_camera', '카메라 앱', '브이로그', 'full', 'timestamp', 'sans', 'camera', 'slide', 'polaroid', 'none', 'none', 'dark', 'VLOG', '#facc15', '#ffffff'],
+      ['v_chapter', '챕터 브이로그', '브이로그', 'handheld', 'chapter', 'dohyeon', 'grain', 'wipe', 'card', 'film', 'kicker', 'dark', 'EP.03 출고', '#f97316', '#fed7aa'],
+      ['v_location', '위치 태그', '브이로그', 'handheld', 'loctag', 'jua', 'leak', 'zoom', 'chat', 'vivid', 'profile', 'dark', '출고 현장', '#38bdf8', '#e0f2fe'],
+      ['v_checklist', '출고 체크리스트', '브이로그', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'none', 'counter', 'white', '출고 체크리스트', '#16a34a', '#dcfce7'],
+      ['v_diary', '다이어리 브이로그', '브이로그', 'polaroid', 'timestamp', 'gaegu', 'sparkle', 'drop', 'vlogend', 'pastel', 'none', 'cream', 'DAY LOG', '#f472b6', '#fce7f3'],
+      ['v_story', '인스타 스토리', '브이로그', 'full', 'vsub', 'jua', 'none', 'slide', 'chat', 'vivid', 'profile', 'dark', '출고 스토리', '#ec4899', '#fce7f3'],
+      ['v_cine', '시네 브이로그', '브이로그', 'dim', 'chapter', 'serif', 'bars', 'fade', 'vlogend', 'film', 'kicker', 'dark', 'CHAPTER', '#f2c46d', '#ffffff'],
+      ['v_split', '분할 일상', '브이로그', 'duo', 'loctag', 'sans', 'camera', 'slide', 'vlogend', 'warm', 'none', 'dark', '오늘의 출고', '#facc15', '#ffffff'],
+      ['v_note', '점검 노트', '브이로그', 'notebook', 'checkl', 'pen', 'dots', 'fade', 'split', 'none', 'profile', 'cream', '인도 전 점검', '#2563eb', '#dbeafe'],
+      ['v_timelapse', '타임랩스', '브이로그', 'handheld', 'timestamp', 'mono', 'camera', 'flash', 'badge', 'teal', 'box', 'dark', 'TIMELAPSE', '#22d3ee', '#a5f3fc'],
+      ['v_handover', '키 전달 순간', '브이로그', 'arch', 'vsub', 'yeonsung', 'sparkle', 'fade', 'vlogend', 'warm', 'none', 'paper', '키 전달 순간', '#b45309', '#fef3c7']
     ];
     const KIT_PART_NAMES = {
-      layout: { full: '전체 화면', split: '위 사진·아래 패널', polaroid: '겹친 폴라로이드', film: '흐르는 필름', circle: '원형 렌즈', mat: '액자', diag: '사선 분할', cards: '겹친 카드', grid: '4분할 그리드', arch: '아치 창', blinds: '블라인드 전환', duo: '위아래 두 장', notebook: '공책', chalkboard: '칠판', dim: '어두운 사진 위 큰 글씨', poster: '타이포 포스터' },
-      cap: { band: '기울어진 띠', glass: '유리 카드', typer: '타자기', outline: '외곽선 글씨', marker: '형광펜', bubble: '말풍선', sticky: '포스트잇', cinema: '영화 자막', neon: '네온사인', stamp: '도장', words: '단어 팝', vertical: '세로쓰기', ticket: '영수증 쪽지', pill: '알약 칩', headline: '신문 헤드라인', lower3: '방송 하단 자막', write: '써지는 손글씨', letter: '편지지 손글씨', chalk: '분필 글씨', scribble: '동그라미 손글씨', brush: '붓글씨', doodle: '낙서 손글씨', stack: '꽉 찬 단어 쌓기', scroll: '흐르는 타이포', slam: '한 단어씩 쾅', knockout: '글자 속 사진', marquee: '무한 띠 타이포', longshadow: '입체 글씨' },
-      outro: { bigname: '큰 이름', card: '흰 명함 카드', ticket: '탑승권', badge: '사원증', receipt: '견적 영수증', chat: '메신저 대화', split: '컬러 블록', ring: '회전 글씨 원', polaroid: '폴라로이드', news: '신문 1면', neon: '네온 간판', minimal: '미니멀' }
+      layout: { full: '전체 화면', split: '위 사진·아래 패널', polaroid: '겹친 폴라로이드', film: '흐르는 필름', circle: '원형 렌즈', mat: '액자', diag: '사선 분할', cards: '겹친 카드', grid: '4분할 그리드', arch: '아치 창', blinds: '블라인드 전환', duo: '위아래 두 장', notebook: '공책', chalkboard: '칠판', dim: '어두운 사진 위 큰 글씨', poster: '타이포 포스터', handheld: '손에 든 카메라' },
+      cap: { band: '기울어진 띠', glass: '유리 카드', typer: '타자기', outline: '외곽선 글씨', marker: '형광펜', bubble: '말풍선', sticky: '포스트잇', cinema: '영화 자막', neon: '네온사인', stamp: '도장', words: '단어 팝', vertical: '세로쓰기', ticket: '영수증 쪽지', pill: '알약 칩', headline: '신문 헤드라인', lower3: '방송 하단 자막', write: '써지는 손글씨', letter: '편지지 손글씨', chalk: '분필 글씨', scribble: '동그라미 손글씨', brush: '붓글씨', doodle: '낙서 손글씨', stack: '꽉 찬 단어 쌓기', scroll: '흐르는 타이포', slam: '한 단어씩 쾅', knockout: '글자 속 사진', marquee: '무한 띠 타이포', longshadow: '입체 글씨', vsub: '브이로그 자막', chapter: '챕터 카드', loctag: '위치 태그', checkl: '출고 체크리스트', timestamp: '날짜·시각 기록' },
+      outro: { bigname: '큰 이름', card: '흰 명함 카드', ticket: '탑승권', badge: '사원증', receipt: '견적 영수증', chat: '메신저 대화', split: '컬러 블록', ring: '회전 글씨 원', polaroid: '폴라로이드', news: '신문 1면', neon: '네온 간판', minimal: '미니멀', vlogend: '유튜브 끝 화면' }
     };
     const KIT_DESIGNS = KIT_ROWS.map((r, i) => ({
       id: r[0],
@@ -11470,7 +11959,7 @@ function renderStoryArchetypesUI() {
       ds.cat = CLASSIC_CATS[ds.genre] || '특가';
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
-    const DESIGN_CATS = ['전체', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    const DESIGN_CATS = ['전체', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
 
     function loadDesignPrefs() {
       try {
@@ -11491,7 +11980,7 @@ function renderStoryArchetypesUI() {
     // 디자인 + 색상 → 그리기에 쓰는 값
     function buildDesignVariant(design, palette) {
       const lightBg = design.engine === 'kit'
-        ? (design.bg === 'paper' || design.bg === 'white' || design.bg === 'cream') && !['full', 'blinds', 'duo', 'dim'].includes(design.layout)
+        ? (design.bg === 'paper' || design.bg === 'white' || design.bg === 'cream') && !['full', 'blinds', 'duo', 'dim', 'handheld'].includes(design.layout)
         : design.genre === 'trust' || design.genre === 'finance';
       let accent = design.accent;
       let accent2 = design.accent2;
@@ -11571,6 +12060,32 @@ function renderStoryArchetypesUI() {
       designThumbJob = setTimeout(step, 0);
     }
 
+    // ---------- 디자인에 어울리는 배경음악 ----------
+    const DESIGN_BGM_BY_CAT = {
+      특가: ['urban', 'edm'], 고급: ['luxury', 'jazz', 'cinema'], 테크: ['drive', 'edm'], 스포츠: ['edm', 'urban'],
+      '상담·정보': ['showroom', 'bright'], 신뢰: ['ballad', 'showroom'], 감성: ['lofi', 'ballad'], 재미: ['funk', 'bright'],
+      '뉴스·방송': ['news'], 손글씨: ['lofi', 'ballad', 'jazz'], 타이포: ['urban', 'drive', 'edm'], 브이로그: ['vlog', 'lofi', 'bright']
+    };
+    function getDesignBgm(ds) {
+      if (!ds) return 'showroom';
+      if (ds.bgm) return ds.bgm;
+      if (ds.cap === 'cinema' || ds.layout === 'film' || /cinema|subtitle|credits|spot/.test(ds.id)) return 'cinema';
+      const opts = DESIGN_BGM_BY_CAT[ds.cat] || ['showroom'];
+      return opts[gHash(ds.id) % opts.length];
+    }
+    // 디자인을 바꾸면 배경음악도 바꿈. 직접 불러온 음원이나 'BGM 끄기'는 그대로 둠
+    function applyDesignBgm(ds, restart) {
+      if (typeof AudioEngine === 'undefined') return;
+      if (AudioEngine.bgmStyle === 'custom_mp3' || AudioEngine.bgmStyle === 'off') return;
+      const key = getDesignBgm(ds);
+      if (!AudioEngine.BGM_STYLES[key]) return;
+      const changed = AudioEngine.bgmStyle !== key;
+      AudioEngine.bgmStyle = key;
+      const sel = document.getElementById('bgmStyleSelect');
+      if (sel) sel.value = key;
+      if (changed && restart && AudioEngine.enabled) AudioEngine.startBgmLoop();
+    }
+
     function selectDesignCat(cat) {
       campaign.designCat = cat;
       renderDesignStylePicker();
@@ -11604,7 +12119,11 @@ function renderStoryArchetypesUI() {
       const nameEl = document.getElementById('activeDesignName');
       if (nameEl) nameEl.textContent = `${getActiveDesign().name} · ${getActivePalette().name}`;
       const descEl = document.getElementById('activeDesignDesc');
-      if (descEl) descEl.textContent = getActiveDesign().desc;
+      if (descEl) {
+        const bk = typeof AudioEngine !== 'undefined' && AudioEngine.bgmStyle ? AudioEngine.bgmStyle : getDesignBgm(getActiveDesign());
+        const bl = (typeof AudioEngine !== 'undefined' && AudioEngine.BGM_LABELS && AudioEngine.BGM_LABELS[bk]) || (bk === 'custom_mp3' ? '내가 불러온 음원' : bk === 'off' ? '끔' : bk);
+        descEl.textContent = `${getActiveDesign().desc}  ·  배경음악: ${bl}`;
+      }
       const countEl = document.getElementById('designStyleCount');
       if (countEl) countEl.textContent = String(DESIGN_STYLES.length);
       scheduleDesignThumbs();
@@ -11638,6 +12157,7 @@ function renderStoryArchetypesUI() {
       campaign.designStyle = id;
       try { localStorage.setItem('autoreels_design_style', id); } catch (e) {}
       const dsel = DESIGN_STYLES.find((d) => d.id === id);
+      applyDesignBgm(dsel, true);
       if (dsel && dsel.engine === 'kit') {
         kitEnsureFont(dsel.font).then(() => {
           if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
@@ -11717,6 +12237,7 @@ function renderStoryArchetypesUI() {
     loadDesignPrefs();
     (function () {
       const ds = getActiveDesign();
+      setTimeout(() => applyDesignBgm(ds, false), 0);
       if (ds && ds.engine === 'kit') kitEnsureFont(ds.font).then(() => {
         if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       });
@@ -11757,7 +12278,7 @@ function renderStoryArchetypesUI() {
         ctx.fillText(fitted + '…', x, y);
       }
       // ========================================================================
-      // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편(4~10컷) + AI 성우 자막 + 하단 딜러 실물바
+      // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편(4~10컷) + AI 성우 자막 + 하단 카마스터 실물바
       // ========================================================================
       if (USE_GENRE_ENGINE) {
         // 장르 엔진 v2 (위에서 정의). 아래 기존 그리기 코드는 USE_GENRE_ENGINE=false일 때만 사용
@@ -11767,7 +12288,7 @@ function renderStoryArchetypesUI() {
 
         const v = d.variation || VARIATION_RECIPES[0];
 
-        // 배경: 딜러마다 다른 사진 순서(cutOrder) 및 카메라 무빙 조합(cameraOrder) 적용
+        // 배경: 카마스터마다 다른 사진 순서(cutOrder) 및 카메라 무빙 조합(cameraOrder) 적용
         if (campaign.uploadedPhotos.length > 0) {
           const numPhotos = campaign.uploadedPhotos.length;
           const slideDuration = mainDuration / numPhotos;
@@ -11795,7 +12316,7 @@ function renderStoryArchetypesUI() {
 
           // ================================================================
           // ★ 시네마틱 모션 라이브러리 (GSAP 스타일 · seek(t) 결정론적)
-          //   카메라 무빙 14종 × 컷 전환 12종 — 딜러·컷마다 다른 조합
+          //   카메라 무빙 14종 × 컷 전환 12종 — 카마스터·컷마다 다른 조합
           // ================================================================
           const motionSeed = (campaign.motionSeed !== undefined)
             ? campaign.motionSeed
@@ -12701,7 +13222,7 @@ function renderStoryArchetypesUI() {
               ctx.textAlign = 'left';
               drawFittedText(textStr, -200, 6, 340, 16);
             } else {
-              // 딜러 답변 말풍선 (우측 밀착 노란색 카톡 버블)
+              // 카마스터 답변 말풍선 (우측 밀착 노란색 카톡 버블)
               ctx.fillStyle = '#FEE500';
               drawRoundedRect(ctx, -160, -26, 380, 52, 16);
               ctx.fill();
@@ -13480,7 +14001,7 @@ function renderStoryArchetypesUI() {
 
         // --------------------------------------------------------------------
         // 모드 1: EDITORIAL_VOGUE ★ [시네마틱 럭셔리 에디토리얼 풀스크린 모드]
-        // 2.39:1 시네마 레터박스 + 수직 워터마크 + 22종 위젯 자유 배치 + 하단 딜러 VIP 의전 바
+        // 2.39:1 시네마 레터박스 + 수직 워터마크 + 22종 위젯 자유 배치 + 하단 카마스터 VIP 의전 바
         // --------------------------------------------------------------------
         if (lMode === 'EDITORIAL_VOGUE' || lMode === 'CANNES_FILM' || lMode === 'MONACO_MARINE' || lMode === 'BLACK_OBSIDIAN' || lMode === 'VVIP_CONCIERGE') {
           // 상단 럭셔리 2.39:1 시네마틱 레터박스 (Y: 0 ~ 68)
@@ -13548,7 +14069,7 @@ function renderStoryArchetypesUI() {
           ctx.lineTo(W - 24, 885);
           ctx.stroke();
 
-          // 딜러 프로필 원형
+          // 카마스터 프로필 원형
           ctx.save();
           ctx.beginPath();
           ctx.arc(52, 922, 18, 0, Math.PI * 2);
@@ -14182,7 +14703,7 @@ function renderStoryArchetypesUI() {
           ctx.lineTo(160, -cardH / 2 + 56);
           ctx.stroke();
 
-          // 딜러 프로필: 우아한 오벌 카메오 포트레이트 (중심 y = -260, 반경 64)
+          // 카마스터 프로필: 우아한 오벌 카메오 포트레이트 (중심 y = -260, 반경 64)
           ctx.save();
           ctx.beginPath();
           ctx.arc(0, -260, 64, 0, Math.PI * 2);
@@ -14877,7 +15398,7 @@ function renderStoryArchetypesUI() {
           ctx.fillText(`🚘 현대·기아 1금융권 공식 제휴 카마스터 ${d.name} (${d.branch})`, -225, -250);
           ctx.fillStyle = '#cbd5e1';
           ctx.font = '12px sans-serif';
-          ctx.fillText('✨ 취등록세 0원 · 무보증 승인 전문 · 10만뷰 딜러 크리에이터', -225, -230);
+          ctx.fillText('✨ 취등록세 0원 · 무보증 승인 전문 · 10만뷰 카마스터 크리에이터', -225, -230);
           ctx.fillStyle = '#38bdf8';
           ctx.fillText('⚡ 실시간 비공개 특판 조건표 1:1 다이렉트 전송 중', -225, -210);
 
@@ -14927,7 +15448,7 @@ function renderStoryArchetypesUI() {
           ctx.font = '10px sans-serif';
           ctx.fillText('오후 2:15', 55, -50);
 
-          // 딜러 송신 말풍선 (우측 인스타 그라데이션)
+          // 카마스터 송신 말풍선 (우측 인스타 그라데이션)
           const dmGrad = ctx.createLinearGradient(-60, -25, 225, 55);
           dmGrad.addColorStop(0, '#ec4899');
           dmGrad.addColorStop(1, '#8b5cf6');
@@ -15028,7 +15549,7 @@ function renderStoryArchetypesUI() {
                                 : '★ 공식 인증 카마스터 품질 보증서 ★';
           ctx.fillText(trustCertHeader, 0, -cardH / 2 + 66);
 
-          // 딜러 대형 실사 얼굴 프로필 사진 (중심 y = -260, 반경 64)
+          // 카마스터 대형 실사 얼굴 프로필 사진 (중심 y = -260, 반경 64)
           ctx.save();
           ctx.beginPath();
           ctx.arc(0, -260, 64, 0, Math.PI * 2);
@@ -15344,7 +15865,7 @@ function renderStoryArchetypesUI() {
       }
     }
 
-    // 딜러 프로필 사진 업로드 핸들러
+    // 카마스터 프로필 사진 업로드 핸들러
     function handleDealerAvatarUpload(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -15367,7 +15888,7 @@ function renderStoryArchetypesUI() {
       campaign.uploadedPhotos = [];
     }
 
-    // --- 딜러별 스마트 자동 변주 & 랜덤 셔플 함수들 ---
+    // --- 카마스터별 스마트 자동 변주 & 랜덤 셔플 함수들 ---
     function shuffleArray(arr) {
       const copy = [...arr];
       for (let i = copy.length - 1; i > 0; i--) {
@@ -15671,7 +16192,7 @@ function renderStoryArchetypesUI() {
           if (hdrDotEl) hdrDotEl.style.background = '#4cc38a';
         } else if (drmCode === 3) {
           badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#e5484d]';
-          badgeEl.textContent = '타 딜러 번호 도용 감지 · 공유 차단됨';
+          badgeEl.textContent = '타 카마스터 번호 도용 감지 · 공유 차단됨';
           if (hdrDotEl) hdrDotEl.style.background = '#e5484d';
         } else {
           badgeEl.className = 'tag-chip px-2.5 py-1 text-[12px] font-medium text-[#d97706]';
@@ -16248,7 +16769,7 @@ function renderStoryArchetypesUI() {
         return;
       }
       if (drmCode !== 1) {
-        // 미구독(체험판) 딜러 → 결제창을 바로 띄워 결제 후 즉시 추출 가능하도록 연결
+        // 미구독(체험판) 카마스터 → 결제창을 바로 띄워 결제 후 즉시 추출 가능하도록 연결
         openBillingCheckoutModal(true);
         return;
       }
@@ -16287,7 +16808,7 @@ function renderStoryArchetypesUI() {
         AudioEngine.customBgmAudioEl.play().catch(() => {});
       }
 
-      // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 컷 + 마지막 딜러 명함) 녹화 시작
+      // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 컷 + 마지막 카마스터 명함) 녹화 시작
       window.__exportingVideo = true; // 녹화 중에는 끝에서 처음으로 되감지 않음
       window.__timelines['main'].seek(0);
       isPlaying = true;
@@ -16649,7 +17170,7 @@ function renderStoryArchetypesUI() {
       } catch (e) {}
 
       const steps = [
-        `[1] 딜러(${d.name} ${d.title}) 시안 검수 승인 완료 → 9:16 12초 마스터 영상 패키징`,
+        `[1] 카마스터(${d.name} ${d.title}) 시안 검수 승인 완료 → 9:16 12초 마스터 영상 패키징`,
         `[2] HyperFrames window.__timelines["main"].seek(frame/60) 720프레임 결정론적 인코딩 완료`
       ];
 
@@ -16736,7 +17257,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       document.getElementById('newDealerModal').classList.add('hidden');
     }
     function submitNewDealer() {
-      const name = document.getElementById('modalName').value.trim() || '신규딜러';
+      const name = document.getElementById('modalName').value.trim() || '신규카마스터';
       const title = document.getElementById('modalTitle').value.trim() || '카마스터';
       const branch = document.getElementById('modalBranch').value.trim() || '공식인증 전시장';
       const phone = document.getElementById('modalPhone').value.trim() || '010-0000-0000';
@@ -16833,7 +17354,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     }
 
     // ============================================================================
-    // 딜러 전용 모드 ↔ 본사 관리자 모드 분리 및 보안 인증
+    // 카마스터 전용 모드 ↔ 본사 관리자 모드 분리 및 보안 인증
     // ============================================================================
     let isAdminMode = false;
     const ADMIN_PASSWORD_HASH = 'admin7788!';
@@ -16901,7 +17422,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         window.history.pushState(null, '', '/');
       }
       applyRoleViewModeUI();
-      showMsg('딜러 전용 스튜디오 모드로 전환되었습니다.');
+      showMsg('카마스터 전용 스튜디오 모드로 전환되었습니다.');
     }
 
     function toggleRoleViewMode() {
@@ -16926,10 +17447,10 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       if (sim) sim.classList.toggle('hidden', !isAdminMode);
       if (btn) {
         btn.classList.toggle('hidden', !isAdminMode);
-        btn.textContent = isAdminMode ? '딜러 모드로 나가기' : '대표님 관리자 모드';
+        btn.textContent = isAdminMode ? '카마스터 모드로 나가기' : '대표님 관리자 모드';
       }
       if (badge) {
-        badge.textContent = isAdminMode ? '본사 대표님 관리자 콘솔' : '딜러 전용 스튜디오';
+        badge.textContent = isAdminMode ? '본사 대표님 관리자 콘솔' : '카마스터 전용 스튜디오';
         badge.className = `tag-chip px-2 py-0.5 text-[11px] font-mono ${isAdminMode ? 'text-[#d97706] border-[#d97706]/40' : 'text-[#4cc38a]'}`;
       }
       if (!isAdminMode) switchMainTab('preview');
@@ -16951,7 +17472,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     });
 
     // ============================================================================
-    // 딜러 로그인 · 1분 회원가입 (휴대폰 번호 = 로그인 ID = 정품 바인딩 번호)
+    // 카마스터 로그인 · 1분 회원가입 (휴대폰 번호 = 로그인 ID = 정품 바인딩 번호)
     // ============================================================================
     let authModalTab = 'login';
 
@@ -16991,7 +17512,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       try { localStorage.setItem('autoreels_dealer_accounts', JSON.stringify(map)); } catch (e) {}
     }
 
-    // 로그인된 딜러 계정을 스튜디오 딜러 목록에 반영하고 선택
+    // 로그인된 카마스터 계정을 스튜디오 카마스터 목록에 반영하고 선택
     function applyLoggedInDealer(acc) {
       let d = dealers.find((x) => extractPhoneLast8(x.licensedPhone || x.phone) === extractPhoneLast8(acc.phone));
       if (!d) {

@@ -1,5 +1,5 @@
 // Vercel Serverless Function: POST /api/auth-billing
-// 딜러 로그인/회원가입 및 카카오페이·토스페이·카드 정기구독 결제 완료 시 Rust Wasm 정품 라이선스 키 자동 발급
+// 카마스터 로그인/회원가입 및 카카오페이·토스페이·카드 정기구독 결제 완료 시 Rust Wasm 정품 라이선스 키 자동 발급
 
 function extractPhoneLast8(phoneStr) {
   const digits = String(phoneStr || '').replace(/\D/g, '');

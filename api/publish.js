@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function: POST /api/publish
  * ----------------------------------------------------------------------------
- * 딜러가 [승인 완료] 버튼을 누르면 선택한 멀티 SNS 채널(Instagram Reels, YouTube Shorts,
+ * 카마스터가 [승인 완료] 버튼을 누르면 선택한 멀티 SNS 채널(Instagram Reels, YouTube Shorts,
  * TikTok, Facebook Reels)로 동시 발행 파이프라인을 실행합니다.
  */
 const { publishToMultipleSns } = require('../multi-sns-publisher');

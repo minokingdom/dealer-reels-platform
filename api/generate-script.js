@@ -2,7 +2,7 @@
  * Vercel Serverless Function: POST /api/generate-script
  * ----------------------------------------------------------------------------
  * 방식 A (중앙 AI 씬 디렉터 & 카피라이팅 엔진):
- * 딜러가 한 줄 상황을 입력하거나 [AI 대본 · 씬 구도 새로 생성] 버튼을 누르면,
+ * 카마스터가 한 줄 상황을 입력하거나 [AI 대본 · 씬 구도 새로 생성] 버튼을 누르면,
  * 입력된 프롬프트에서 차종·타겟 고객·상황을 정확히 추출하여
  * 1) 차종 타이틀(vehicle), 할인액(discountNum), 월 납입 조건(discount)
  * 2) 1~4컷 스토리보드 대본(cutCaptions) 및 TTS 성우 내레이션 대본(ttsLines)
@@ -184,8 +184,8 @@ module.exports = async function handler(req, res) {
   );
 
   try {
-    const systemInstruction = `당신은 대한민국 자동차 딜러(카마스터) 전문 숏폼 AI 영상 감독(Scene Director)입니다.
-딜러가 입력한 상황(예: "30대 여성, 그랜저")에서 차종과 고객 특성을 정확히 반영하여 vehicle(차종명), discountNum(할인액), discount(월납입조건), themeId, scenePlan, cutCaptions(4컷 자막), ttsLines(4컷 성우 내레이션 대본), kakaoChat(4개 대화)을 JSON으로만 출력하세요.
+    const systemInstruction = `당신은 대한민국 자동차 카마스터 전문 숏폼 AI 영상 감독(Scene Director)입니다.
+카마스터가 입력한 상황(예: "30대 여성, 그랜저")에서 차종과 고객 특성을 정확히 반영하여 vehicle(차종명), discountNum(할인액), discount(월납입조건), themeId, scenePlan, cutCaptions(4컷 자막), ttsLines(4컷 성우 내레이션 대본), kakaoChat(4개 대화)을 JSON으로만 출력하세요.
 ttsLines의 각 문장은 숏폼 한 컷(약 2초) 안에 읽을 수 있도록 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요.
 "댓글에 견적" 안내는 영상 마지막 명함 화면에서 따로 나오므로 cutCaptions와 ttsLines에는 넣지 마세요.
 주의: "30대 여성"의 "30대"는 나이(연령대)이지 차량 30대가 아닙니다! 절대 혼동하지 마세요.
@@ -210,16 +210,16 @@ JSON 스키마:
   "ttsLines": ["1컷 성우 내레이션 문장", "2컷 성우 내레이션 문장", "3컷 성우 내레이션 문장", "4컷 성우 내레이션 문장"],
   "kakaoChat": [
     { "role": "customer", "text": "고객 질문 1" },
-    { "role": "dealer", "text": "딜러 답변 1" },
+    { "role": "dealer", "text": "카마스터 답변 1" },
     { "role": "customer", "text": "고객 질문 2" },
-    { "role": "dealer", "text": "딜러 답변 2" }
+    { "role": "dealer", "text": "카마스터 답변 2" }
   ],
   "bullets": ["✔ 혜택 1", "✔ 혜택 2", "✔ 혜택 3"],
   "ctaKeyword": "견적",
   "ctaBanner": "하단 댓글 유도 문구"
 }`;
 
-    const userMessage = `[딜러 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
+    const userMessage = `[카마스터 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
 [담당 카마스터]: ${dealerBranch} ${dealerName} ${dealerTitle} (사은품: ${dealerPromo})`;
 
     let aiResult = null;
