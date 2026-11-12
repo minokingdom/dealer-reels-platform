@@ -3967,6 +3967,111 @@
           ctx.fillText(text, x, y, maxWidth);
         }
 
+        // ★ [키네틱 타이포] 단어별 시차(Stagger) 팝업 리빌 헬퍼
+        function drawKineticWords(text, x, y, maxWidth, initialSize, localT, baseDelay = 0, color = '#ffffff') {
+          const str = String(text || '').trim();
+          if (!str) return;
+          const words = str.split(/\s+/);
+          let size = initialSize;
+          ctx.font = `900 ${size}px sans-serif`;
+          while (ctx.measureText(str).width > maxWidth && size > 14) {
+            size -= 0.5;
+            ctx.font = `900 ${size}px sans-serif`;
+          }
+          const totalW = ctx.measureText(str).width;
+          let curX = x - totalW / 2;
+          const spaceW = ctx.measureText(' ').width;
+
+          words.forEach((w, wIdx) => {
+            const wordDelay = baseDelay + wIdx * 0.08;
+            const wProg = Easing.clamp((localT - wordDelay) / 0.28, 0, 1);
+            const wPop = Easing.backOut(wProg);
+            const wAlpha = Easing.power3InOut(wProg);
+            const wordW = ctx.measureText(w).width;
+
+            ctx.save();
+            ctx.globalAlpha = wAlpha;
+            const wordCenterX = curX + wordW / 2;
+            ctx.translate(wordCenterX, y);
+            ctx.scale(wPop, wPop);
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(w, 0, 0);
+            ctx.restore();
+
+            curX += wordW + spaceW;
+          });
+        }
+
+        // ★ [시네마틱 마스크] 아래에서 수직으로 솟구치는 마스크 리빌 헬퍼
+        function drawMaskedRiseText(text, x, y, maxWidth, initialSize, localT, height = 48, color = '#ffffff') {
+          const str = String(text || '').trim();
+          if (!str) return;
+          let size = initialSize;
+          ctx.font = `900 ${size}px sans-serif`;
+          while (ctx.measureText(str).width > maxWidth && size > 14) {
+            size -= 0.5;
+            ctx.font = `900 ${size}px sans-serif`;
+          }
+          const riseProg = Easing.power4Out(Easing.clamp(localT / 0.42, 0, 1));
+          const offsetY = (1 - riseProg) * height;
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x - maxWidth / 2, y - height, maxWidth, height + 10);
+          ctx.clip();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = color;
+          ctx.globalAlpha = riseProg;
+          ctx.fillText(str, x, y + offsetY);
+          ctx.restore();
+        }
+
+        // ★ [대각선 스탬프] 화면을 가로지르는 각도로 쾅 찍히는 임팩트 헬퍼
+        function drawSlantedStamp(text, x, y, angleDeg, size, localT, bgColor = '#e11d48', textColor = '#ffffff') {
+          const str = String(text || '').trim();
+          if (!str) return;
+          const prog = Easing.clamp(localT / 0.35, 0, 1);
+          const slamScale = 1 + (1 - Easing.backOut(prog)) * 1.6;
+          const alpha = Easing.clamp(localT / 0.12, 0, 1);
+
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate((angleDeg * Math.PI) / 180);
+          ctx.scale(slamScale, slamScale);
+          ctx.globalAlpha = alpha;
+
+          ctx.font = `900 ${size}px sans-serif`;
+          const textW = ctx.measureText(str).width;
+          const padX = 24;
+          const padY = 14;
+
+          // 배경 리본
+          ctx.fillStyle = bgColor;
+          drawRoundedRect(ctx, -textW / 2 - padX, -size / 2 - padY, textW + padX * 2, size + padY * 2, 8);
+          ctx.fill();
+
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // 텍스트
+          ctx.textAlign = 'center';
+          ctx.fillStyle = textColor;
+          ctx.fillText(str, 0, size * 0.35);
+
+          // 충격파 링 효과 (초반 0.2초간 퍼져나감)
+          if (localT > 0.15 && localT < 0.55) {
+            const ringProg = (localT - 0.15) / 0.4;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - ringProg})`;
+            ctx.lineWidth = 3 * (1 - ringProg);
+            ctx.strokeRect(-textW / 2 - padX - ringProg * 25, -size / 2 - padY - ringProg * 15, textW + padX * 2 + ringProg * 50, size + padY * 2 + ringProg * 30);
+          }
+
+          ctx.restore();
+        }
+
         const currentCutSlot = Math.min(totalCuts - 1, Math.floor(t / cutDuration));
         const cutLocalT = t - currentCutSlot * cutDuration;
         const activePhotoIndex = currentCutSlot;
@@ -4015,148 +4120,245 @@
         const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 535 : 475;
 
         // --------------------------------------------------------------------
-        // 위젯 1: BREAKING_NEWS (긴급 속보 티커 + 대형 헤드라인 보드)
+        // 위젯 1: BREAKING_NEWS ★ [화면 하단 풀와이드 방송국 2단 속보 티커]
+        // (가운데 박스를 완전히 없애고 하단에 밀착된 정통 방송 뉴스룸 레이아웃!)
         // --------------------------------------------------------------------
         if (widgetType === 'BREAKING_NEWS') {
+          const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 0.9));
+          const tickerY = 560;
+
+          // 1단: 상단 LIVE 속보 빨간색 뱃지 + 차종 헤더
           ctx.save();
-          ctx.translate(W / 2, 68);
-          ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = theme.badge;
-          drawRoundedRect(ctx, -185, -20, 370, 40, 20);
+          ctx.translate(24, tickerY);
+          ctx.globalAlpha = slideIn;
+          
+          // 빨간색 LIVE 펄싱 뱃지
+          const pulse = 1 + Math.sin(t * 8) * 0.05;
+          ctx.fillStyle = '#ef4444';
+          drawRoundedRect(ctx, 0, -28, 92, 28, 6);
           ctx.fill();
           ctx.fillStyle = '#ffffff';
+          ctx.font = '900 13px sans-serif';
           ctx.textAlign = 'center';
-          drawFittedText(`BREAKING · ${campaign.vehicle}`, 0, 7, 340, 17);
+          ctx.fillText('● LIVE 속보', 46, -10);
+
+          // 헤더 바
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+          drawRoundedRect(ctx, 98, -28, W - 146, 28, 6);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'left';
+          drawFittedText(`[단독 긴급배정] ${campaign.vehicle}`, 112, -10, W - 170, 13);
           ctx.restore();
 
+          // 2단: 풀와이드 메인 뉴스 자막 바
           ctx.save();
+          ctx.translate(24, tickerY + 6);
           ctx.globalAlpha = slideIn;
-          ctx.translate(W / 2, anchorY + (1 - slideIn) * 36);
-          ctx.fillStyle = 'rgba(7, 11, 22, 0.88)';
+          ctx.fillStyle = 'rgba(7, 11, 22, 0.94)';
           ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 3;
-          drawRoundedRect(ctx, -242, -76, 484, 152, 22);
+          ctx.lineWidth = 2.5;
+          drawRoundedRect(ctx, 0, 0, W - 48, 88, 12);
           ctx.fill();
           ctx.stroke();
 
-          ctx.textAlign = 'center';
-          ctx.fillStyle = theme.accent;
-          drawFittedText(subLine, 0, -24, 448, 25);
-          const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 1.0));
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(`최대 -${cnt.toLocaleString()}만 원 특판 혜택`, 0, 20, 448, 31);
+          // 메인 자막 (키네틱 타이포)
+          drawKineticWords(subLine, (W - 48) / 2, 34, W - 80, 24, cutLocalT, 0.05, '#ffffff');
+
+          // 하단 혜택 캡슐 라인
           ctx.fillStyle = theme.sub;
-          drawFittedText(campaign.discount, 0, 54, 440, 18);
+          ctx.textAlign = 'center';
+          drawFittedText(`최대 -${cnt.toLocaleString()}만 원 공식할인  |  ${campaign.discount}`, (W - 48) / 2, 68, W - 80, 16);
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 2: MAGAZINE_COVER (모터트렌드 매거진 커버 프레임 & 에디토리얼 타이포)
+        // 위젯 2: MAGAZINE_COVER ★ [보그 스타일 초대형 에디토리얼 타이포 & 미니멀 레터박스]
+        // (답답한 네모 상자 완전 제거! 사진 위에 직접 얹히는 하이패션 매거진 레이아웃!)
         // --------------------------------------------------------------------
         else if (widgetType === 'MAGAZINE_COVER') {
+          // 상하단 얇은 골드 시네마틱 라인
           ctx.save();
-          ctx.strokeStyle = 'rgba(255,255,255,0.45)';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, 24, 42, W - 48, H - 214, 20);
+          ctx.strokeStyle = theme.accent;
+          ctx.globalAlpha = 0.55;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(32, 54);
+          ctx.lineTo(W - 32, 54);
+          ctx.moveTo(32, H - 180);
+          ctx.lineTo(W - 32, H - 180);
           ctx.stroke();
 
-          ctx.globalAlpha = slideIn;
-          ctx.fillStyle = theme.primary;
-          drawRoundedRect(ctx, 42, 62, 230, 36, 8);
-          ctx.fill();
-          ctx.fillStyle = theme.accent;
-          ctx.textAlign = 'left';
-          drawFittedText(`AUTOREELS EDITION · 0${currentCutSlot + 1}`, 56, 86, 204, 14);
-
-          ctx.fillStyle = 'rgba(9, 13, 22, 0.84)';
-          drawRoundedRect(ctx, 42, 520, W - 84, 142, 18);
-          ctx.fill();
-          ctx.fillStyle = theme.accent;
-          ctx.fillRect(42, 520, 8, 142);
-
+          // 상단 에디토리얼 헤더
           ctx.fillStyle = '#ffffff';
-          drawFittedText(campaign.vehicle, 68, 564, 410, 28);
+          ctx.font = '700 13px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(`AUTOREELS SHOWROOM · VOL. 0${currentCutSlot + 1}`, 36, 44);
+          ctx.textAlign = 'right';
           ctx.fillStyle = theme.accent;
-          drawFittedText(subLine, 68, 604, 410, 22);
-          ctx.fillStyle = theme.sub;
-          drawFittedText(`${campaign.discount}  |  -${campaign.discountNum.toLocaleString()}만원`, 68, 640, 410, 17);
+          ctx.fillText('SPECIAL EDITION', W - 36, 44);
+          ctx.restore();
+
+          // 중앙: 배경 박스 없이 사진 위에 직접 솟구쳐 올라오는 46px 초대형 타이포!
+          ctx.save();
+          ctx.translate(W / 2, 380);
+          
+          // 1행: 차종명 (마스크 리빌)
+          drawMaskedRiseText(campaign.vehicle, 0, 0, W - 64, 40, cutLocalT, 44, '#ffffff');
+          
+          // 2행: 메인 훅 자막 (키네틱 팝)
+          drawKineticWords(subLine, 0, 48, W - 64, 25, cutLocalT, 0.15, theme.accent);
+
+          // 3행: 얇은 골드 디바이더 & 견적
+          const lineProg = Easing.power3InOut(Easing.clamp(cutLocalT / 0.45, 0, 1));
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-160 * lineProg, 78);
+          ctx.lineTo(160 * lineProg, 78);
+          ctx.stroke();
+
+          ctx.fillStyle = '#e2e8f0';
+          ctx.textAlign = 'center';
+          ctx.globalAlpha = lineProg;
+          drawFittedText(`${campaign.discount}  |  최대 -${campaign.discountNum.toLocaleString()}만원 특판`, 0, 108, W - 80, 17);
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 3: GIANT_DISCOUNT_STAMP (초대형 슬롯머신 특가 스탬프)
+        // 위젯 3: GIANT_DISCOUNT_STAMP ★ [대각선 -8° 슬래시 다이내믹 리본 & 도장 슬램]
+        // (네모 박스 완전 탈피! 화면을 가로지르는 레이싱 리본 + 쾅 찍히는 스탬프 충격파!)
         // --------------------------------------------------------------------
         else if (widgetType === 'GIANT_DISCOUNT_STAMP') {
           const cnt = Math.round(campaign.discountNum * Easing.power4Out(cutLocalT / 0.95));
+
+          // 1. 화면 전체를 가로지르는 -8도 대각선 슬래시 리본 배경 바
           ctx.save();
-          ctx.translate(W / 2, anchorY);
-          ctx.scale(cutPop, cutPop);
+          ctx.translate(W / 2, 430);
+          ctx.rotate((-8 * Math.PI) / 180);
+          ctx.globalAlpha = slideIn;
 
-          ctx.fillStyle = theme.primary;
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 4;
-          drawRoundedRect(ctx, -238, -92, 476, 184, 28);
-          ctx.fill();
-          ctx.stroke();
+          // 리본 배경
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+          ctx.fillRect(-W, -56, W * 2, 112);
 
-          ctx.fillStyle = theme.badge;
-          drawRoundedRect(ctx, -140, -112, 280, 40, 20);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'center';
-          drawFittedText(`${campaign.vehicle} 당월 특판`, 0, -86, 250, 17);
-
+          // 상하단 옐로우/테마 체커 스트라이프 라인
           ctx.fillStyle = theme.accent;
-          drawFittedText(`-${cnt.toLocaleString()}만 원`, 0, -12, 430, 52);
+          ctx.fillRect(-W, -56, W * 2, 6);
+          ctx.fillRect(-W, 50, W * 2, 6);
+
+          // 리본 내부 서브 텍스트
+          ctx.textAlign = 'center';
           ctx.fillStyle = '#ffffff';
-          drawFittedText(subLine, 0, 34, 436, 22);
-          ctx.fillStyle = theme.sub;
-          drawFittedText(campaign.discount, 0, 68, 420, 18);
+          drawFittedText(`${campaign.vehicle} 공식 당월 특판 · ${campaign.discount}`, 0, -22, W - 60, 18);
+          ctx.restore();
+
+          // 2. 리본 위에 쾅 찍히는 초대형 스탬프 (충격파 슬램)
+          drawSlantedStamp(`-${cnt.toLocaleString()}만 원`, W / 2, 452, -8, 48, cutLocalT, theme.badge, '#ffffff');
+
+          // 3. 하단에 깔끔하게 안착하는 서브 자막
+          ctx.save();
+          ctx.translate(W / 2, 560);
+          ctx.globalAlpha = slideIn;
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+          drawRoundedRect(ctx, -200, -18, 400, 36, 18);
+          ctx.fill();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'center';
+          drawFittedText(subLine, 0, 6, 380, 17);
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 4: SPEC_FLOATING_TAGS (좌우 비대칭 3단 옵션·트림 플로팅 캡슐)
+        // 위젯 4: SPEC_FLOATING_TAGS ★ [3D 미래형 HUD 타겟 조준선 & 3단 비대칭 핀]
+        // (단일 박스 제거! 차량 주요 부위를 타겟팅하는 원형 조준선 + 리더라인 + 비대칭 캡슐)
         // --------------------------------------------------------------------
         else if (widgetType === 'SPEC_FLOATING_TAGS') {
+          // 좌측 차체 타겟 조준선 (Reticle)
           ctx.save();
-          ctx.translate(30, 54);
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
-          drawRoundedRect(ctx, 0, 0, 390, 68, 16);
+          const targetX = 78;
+          const targetY = 310;
+          const reticleProg = Easing.backOut(Easing.clamp(cutLocalT / 0.35, 0, 1));
+          
+          ctx.translate(targetX, targetY);
+          ctx.scale(reticleProg, reticleProg);
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 2;
+
+          // 원형 조준 링
+          ctx.beginPath();
+          ctx.arc(0, 0, 22, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // 중심 십자선
+          ctx.beginPath();
+          ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+          ctx.moveTo(12, 0);  ctx.lineTo(30, 0);
+          ctx.moveTo(0, -30); ctx.lineTo(0, -12);
+          ctx.moveTo(0, 12);  ctx.lineTo(0, 30);
+          ctx.stroke();
+
+          // 중심 펄싱 점
+          const pDot = 1 + Math.sin(t * 9) * 0.2;
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(0, 0, 5 * pDot, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = theme.accent;
-          ctx.textAlign = 'left';
-          drawFittedText(`KEY POINT · ${CUT_NAMES[activePhotoIndex % 4]}`, 18, 26, 354, 14);
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(subLine, 18, 54, 354, 21);
+
+          // 조준선에서 우측으로 뻗어나가는 리더 라인 (꺾임선)
+          ctx.beginPath();
+          ctx.moveTo(22, 0);
+          ctx.lineTo(55, -28);
+          ctx.lineTo(110, -28);
+          ctx.strokeStyle = theme.accent;
+          ctx.stroke();
           ctx.restore();
 
+          // 우측 상단 메인 헤드라인 캡슐
+          ctx.save();
+          ctx.translate(145, 270);
+          ctx.globalAlpha = slideIn;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, 0, -20, W - 170, 42, 10);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = theme.accent;
+          ctx.textAlign = 'left';
+          drawFittedText(`KEY SPEC · ${CUT_NAMES[activePhotoIndex % 4]}`, 14, 6, W - 200, 15);
+          ctx.restore();
+
+          // 우측 하단 3단 비대칭 플로팅 칩 (순차적 팝업)
           const tags = [
-            `✦ ${campaign.vehicle} 인기 트림 선점`,
-            activeBullets[0] || '✔ 대기 없는 즉시출고 물량 확보',
-            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 + 저금리 금융`
+            `✦ ${campaign.vehicle} 선점 즉시배정`,
+            activeBullets[0] || '✔ 36가지 정밀검수 도장결함 제로',
+            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 특판 할인`
           ];
           tags.forEach((tg, i) => {
-            const tp = Easing.backOut((cutLocalT - i * 0.12) / 0.4);
+            const tp = Easing.backOut((cutLocalT - i * 0.12) / 0.38);
             if (tp <= 0) return;
             ctx.save();
-            const xOffset = i % 2 === 0 ? -16 : 16;
-            ctx.translate(W / 2 + xOffset + (1 - tp) * 50, 495 + i * 64);
-            ctx.fillStyle = i === 0 ? theme.primary : 'rgba(255, 255, 255, 0.95)';
-            ctx.strokeStyle = theme.accent;
-            ctx.lineWidth = i === 0 ? 2.5 : 0;
-            drawRoundedRect(ctx, -226, -24, 452, 48, 24);
+            const yPos = 490 + i * 56;
+            ctx.translate(W / 2 + (1 - tp) * 40, yPos);
+            ctx.scale(tp, tp);
+            ctx.fillStyle = i === 0 ? theme.primary : 'rgba(15, 23, 42, 0.92)';
+            ctx.strokeStyle = i === 0 ? theme.accent : 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2;
+            drawRoundedRect(ctx, -220, -22, 440, 44, 12);
             ctx.fill();
-            if (i === 0) ctx.stroke();
+            ctx.stroke();
+
             ctx.textAlign = 'left';
-            ctx.fillStyle = i === 0 ? theme.accent : '#0f172a';
-            drawFittedText(tg, -200, 7, 400, 18);
+            ctx.fillStyle = i === 0 ? theme.accent : '#ffffff';
+            drawFittedText(tg, -196, 6, 390, 16);
             ctx.restore();
           });
         }
 
         // --------------------------------------------------------------------
-        // 위젯 5: KAKAO_CHAT_PAIR (실제 고객 ↔ 카마스터 카톡 대화 말풍선)
+        // 위젯 5: KAKAO_CHAT_PAIR ★ [스마트폰 다이내믹 아일랜드 캡슐 & 리얼 카톡 버블 팝업]
         // --------------------------------------------------------------------
         else if (widgetType === 'KAKAO_CHAT_PAIR') {
           const chats = campaign.kakaoChat && campaign.kakaoChat.length >= 2
@@ -4171,319 +4373,393 @@
             chats[(pairOffset + 1) % chats.length]
           ];
 
-          // 상단 카톡 헤더 캡슐
+          // 상단: 스마트폰 다이내믹 아일랜드 알림 캡슐 (스르륵 떨어지는 모션)
           ctx.save();
-          ctx.translate(W / 2, 62);
-          ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
-          drawRoundedRect(ctx, -236, -24, 472, 48, 24);
+          const islandProg = Easing.backOut(Easing.clamp(cutLocalT / 0.38, 0, 1));
+          ctx.translate(W / 2, 60);
+          ctx.scale(islandProg, islandProg);
+          ctx.fillStyle = '#000000';
+          drawRoundedRect(ctx, -140, -18, 280, 36, 18);
           ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // 캡슐 내부 알림 뱃지
           ctx.fillStyle = '#FEE500';
           ctx.beginPath();
-          ctx.arc(-202, 0, 14, 0, Math.PI * 2);
+          ctx.arc(-114, 0, 9, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#0f172a';
-          ctx.font = 'bold 11px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('TALK', -202, 4);
           ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px sans-serif';
           ctx.textAlign = 'left';
-          drawFittedText(`${d.name} ${d.title} 1:1 실시간 출고상담`, -176, 6, 390, 17);
+          ctx.fillText(`카카오톡 · ${d.name} 실시간 상담`, -96, 4);
           ctx.restore();
 
+          // 하단: 실제 모바일 메신저 말풍선 2단 스택 (시간차 팝업)
           pair.forEach((msg, idx) => {
-            const p = Easing.backOut((cutLocalT - idx * 0.28) / 0.42);
+            const p = Easing.backOut((cutLocalT - 0.12 - idx * 0.22) / 0.38);
             if (p <= 0) return;
             const isCust = msg.role === 'customer';
-            const yPos = 470 + idx * 125;
+            const yPos = 490 + idx * 88;
 
             ctx.save();
             ctx.translate(W / 2, yPos);
             ctx.scale(p, p);
 
             const textStr = msg.text || subLine;
-            const mid = Math.ceil(textStr.length / 2);
-            const splitIdx = textStr.indexOf(' ', mid - 4);
-            const line1 = splitIdx > 0 && textStr.length > 21 ? textStr.slice(0, splitIdx) : textStr;
-            const line2 = splitIdx > 0 && textStr.length > 21 ? textStr.slice(splitIdx + 1) : '';
 
             if (isCust) {
-              ctx.fillStyle = '#e2e8f0';
-              ctx.font = 'bold 13px sans-serif';
-              ctx.textAlign = 'left';
-              ctx.fillText('🙋‍♂️ 구매 문의 고객님', -236, -28);
+              // 고객 말풍선 (좌측 밀착)
               ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-              drawRoundedRect(ctx, -236, -18, 420, line2 ? 74 : 52, 18);
-              ctx.fill();
-              ctx.fillStyle = '#0f172a';
-              drawFittedText(line1, -216, 10, 384, 17);
-              if (line2) drawFittedText(line2, -216, 36, 384, 17);
-            } else {
-              ctx.fillStyle = '#fde047';
-              ctx.font = 'bold 13px sans-serif';
-              ctx.textAlign = 'right';
-              ctx.fillText(`👔 ${d.name} ${d.title}`, 236, -28);
-              ctx.fillStyle = '#FEE500';
-              drawRoundedRect(ctx, -184, -18, 420, line2 ? 74 : 52, 18);
+              drawRoundedRect(ctx, -220, -26, 380, 52, 16);
               ctx.fill();
               ctx.fillStyle = '#0f172a';
               ctx.textAlign = 'left';
-              drawFittedText(line1, -164, 10, 384, 17);
-              if (line2) drawFittedText(line2, -164, 36, 384, 17);
+              drawFittedText(textStr, -200, 6, 340, 16);
+            } else {
+              // 딜러 답변 말풍선 (우측 밀착 노란색 카톡 버블)
+              ctx.fillStyle = '#FEE500';
+              drawRoundedRect(ctx, -160, -26, 380, 52, 16);
+              ctx.fill();
+              ctx.fillStyle = '#0f172a';
+              ctx.textAlign = 'left';
+              drawFittedText(textStr, -140, 6, 340, 16);
             }
             ctx.restore();
           });
         }
 
         // --------------------------------------------------------------------
-        // 위젯 6: RECEIPT_QUOTE (공식 견적서/영수증 명세표 보드)
+        // 위젯 6: RECEIPT_QUOTE ★ [실제 영수증 롤 톱니바닥 & 도트프린터 명세표]
         // --------------------------------------------------------------------
         else if (widgetType === 'RECEIPT_QUOTE') {
-          ctx.save();
-          ctx.translate(W / 2, 535);
-          ctx.scale(cutPop, cutPop);
+          const rollProg = Easing.power3InOut(Easing.clamp(cutLocalT / 0.42, 0, 1));
+          const receiptH = 220 * rollProg;
 
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.97)';
-          ctx.strokeStyle = theme.primary;
-          ctx.lineWidth = 3;
-          drawRoundedRect(ctx, -236, -115, 472, 220, 20);
+          ctx.save();
+          ctx.translate(W / 2, 530);
+
+          // 영수증 본체
+          ctx.fillStyle = '#ffffff';
+          drawRoundedRect(ctx, -220, -110, 440, receiptH, 10);
+          ctx.fill();
+
+          // 하단 지그재그 톱니 바닥 (Sawtooth edge)
+          if (receiptH > 40) {
+            ctx.fillStyle = '#ffffff';
+            const teeth = 20;
+            const toothW = 440 / teeth;
+            const bottomY = -110 + receiptH;
+            ctx.beginPath();
+            ctx.moveTo(-220, bottomY);
+            for (let i = 0; i < teeth; i++) {
+              ctx.lineTo(-220 + (i + 0.5) * toothW, bottomY + 8);
+              ctx.lineTo(-220 + (i + 1) * toothW, bottomY);
+            }
+            ctx.fill();
+          }
+
+          // 영수증 헤더
+          ctx.fillStyle = '#0f172a';
+          ctx.textAlign = 'center';
+          ctx.font = '900 16px monospace';
+          ctx.fillText(`== ${campaign.vehicle} 공식 견적서 ==`, 0, -80);
+
+          if (rollProg > 0.45) {
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.fillText('• 특별 프로모션 할인', -190, -42);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#e11d48';
+            drawFittedText(`-${campaign.discountNum.toLocaleString()}만 원`, 190, -42, 160, 20);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#475569';
+            ctx.fillText('• 월 납입금 조건', -190, -10);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#0f172a';
+            drawFittedText(campaign.discount, 190, -10, 210, 17);
+
+            // 점선 구분선
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(-190, 18); ctx.lineTo(190, 18);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#2563eb';
+            drawFittedText(subLine, 0, 50, 380, 17);
+            ctx.fillStyle = '#64748b';
+            drawFittedText(`🎁 ${d.promoTag}`, 0, 74, 380, 14);
+          }
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 위젯 7: VS_FINANCE_BATTLE ★ [좌우 듀얼 분할 대비 카드 배틀]
+        // --------------------------------------------------------------------
+        else if (widgetType === 'VS_FINANCE_BATTLE') {
+          const splitProg = Easing.backOut(Easing.clamp(cutLocalT / 0.42, 0, 1));
+          const cardY = 540;
+
+          // 1. 좌측 카드: [일반 신차 할부 ❌] (어둡고 회색빛)
+          ctx.save();
+          ctx.translate(135 - (1 - splitProg) * 60, cardY);
+          ctx.scale(splitProg, splitProg);
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+          ctx.strokeStyle = '#64748b';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -105, -75, 210, 150, 14);
           ctx.fill();
           ctx.stroke();
 
-          ctx.fillStyle = theme.primary;
-          drawRoundedRect(ctx, -236, -115, 472, 50, 20);
-          ctx.fill();
-          ctx.fillStyle = theme.accent;
           ctx.textAlign = 'center';
-          drawFittedText(`OFFICIAL QUOTE · ${campaign.vehicle}`, 0, -83, 436, 19);
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#475569';
-          ctx.font = 'bold 16px sans-serif';
-          ctx.fillText('• 당월 특별 프로모션 혜택', -210, -34);
-          ctx.textAlign = 'right';
-          ctx.fillStyle = '#e11d48';
-          drawFittedText(`-${campaign.discountNum.toLocaleString()}만 원`, 210, -34, 180, 22);
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#475569';
-          ctx.font = 'bold 16px sans-serif';
-          ctx.fillText('• 월 납입금 / 출고 조건', -210, 4);
-          ctx.textAlign = 'right';
-          ctx.fillStyle = '#0f172a';
-          drawFittedText(campaign.discount, 210, 4, 230, 18);
-
-          ctx.fillStyle = '#f1f5f9';
-          drawRoundedRect(ctx, -214, 28, 428, 56, 12);
-          ctx.fill();
-          ctx.textAlign = 'center';
-          ctx.fillStyle = theme.primary;
-          drawFittedText(subLine, 0, 54, 404, 18);
-          ctx.fillStyle = '#475569';
-          drawFittedText(`🎁 ${d.promoTag}`, 0, 76, 404, 14);
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '900 15px sans-serif';
+          ctx.fillText('일반 신차할부 ❌', 0, -42);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('• 대기 6개월 지연', 0, -12);
+          ctx.fillText('• 취등록세 7% 별도', 0, 14);
+          ctx.fillText('• 자동차세/보험료 X', 0, 40);
           ctx.restore();
-        }
 
-        // --------------------------------------------------------------------
-        // 위젯 7: VS_FINANCE_BATTLE (할부 vs 장기렌트 vs 리스 3단 비교 보드)
-        // --------------------------------------------------------------------
-        else if (widgetType === 'VS_FINANCE_BATTLE') {
-          const baseMonthly = parseInt((campaign.discount.match(/\d+/) || [46])[0], 10) || 46;
-          const rows = [
-            { name: '신차 할부', desc: `월 ${baseMonthly + 11}만원대 · 취등록세 7% 별도`, best: false },
-            { name: '무보증 장기렌트 BEST', desc: `${campaign.discount} · 세금/보험 0원`, best: true },
-            { name: '법인·사업자 리스', desc: `월 ${Math.max(29, baseMonthly - 3)}만원대 · 연 1,500만 절세`, best: false }
-          ];
-
+          // 2. 우측 카드: [선점 즉시출고 👑] (화려한 테마 네온 하이라이트 + 스케일 1.05)
           ctx.save();
-          ctx.translate(W / 2, 68);
-          ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = theme.primary;
-          drawRoundedRect(ctx, -236, -24, 472, 48, 14);
+          ctx.translate(405 + (1 - splitProg) * 60, cardY);
+          ctx.scale(splitProg * 1.05, splitProg * 1.05);
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.96)';
+          ctx.strokeStyle = theme.accent;
+          ctx.lineWidth = 3;
+          drawRoundedRect(ctx, -105, -75, 210, 150, 14);
           ctx.fill();
-          ctx.fillStyle = theme.accent;
+          ctx.stroke();
+
           ctx.textAlign = 'center';
-          drawFittedText(`📊 ${subLine}`, 0, 6, 440, 19);
+          ctx.fillStyle = theme.accent;
+          ctx.font = '900 15px sans-serif';
+          ctx.fillText('선점 즉시출고 👑', 0, -42);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText('• 3일 이내 자택탁송', 0, -12);
+          ctx.fillStyle = '#fde047';
+          ctx.fillText('• 취등록세 0원 전액', 0, 14);
+          ctx.fillStyle = theme.sub;
+          drawFittedText(campaign.discount, 0, 42, 190, 14);
           ctx.restore();
 
-          rows.forEach((r, idx) => {
-            const rp = Easing.backOut((cutLocalT - idx * 0.14) / 0.42);
-            if (rp <= 0) return;
-            ctx.save();
-            ctx.translate(W / 2, 465 + idx * 78);
-            ctx.scale(rp, rp);
-            ctx.fillStyle = r.best ? 'rgba(255,255,255,0.97)' : 'rgba(15, 23, 42, 0.9)';
-            ctx.strokeStyle = r.best ? theme.accent : 'rgba(255,255,255,0.18)';
-            ctx.lineWidth = r.best ? 3 : 1.5;
-            drawRoundedRect(ctx, -236, -32, 472, 64, 16);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.textAlign = 'left';
-            ctx.fillStyle = r.best ? '#0f172a' : theme.accent;
-            drawFittedText(r.name, -214, -4, 210, 18);
-            ctx.fillStyle = r.best ? '#e11d48' : '#ffffff';
-            drawFittedText(r.desc, -214, 22, 428, 16);
-            ctx.restore();
-          });
+          // 3. 중앙 VS 네온 뱃지
+          ctx.save();
+          ctx.translate(W / 2, cardY);
+          const vsPop = Easing.backOut(Easing.clamp((cutLocalT - 0.1) / 0.35, 0, 1));
+          ctx.scale(vsPop, vsPop);
+          ctx.fillStyle = '#e11d48';
+          ctx.beginPath();
+          ctx.arc(0, 0, 24, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('VS', 0, 6);
+          ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 8: CHECKLIST_GLASS (글래스모피즘 핵심 혜택 체크리스트)
+        // 위젯 8: CHECKLIST_GLASS ★ [스마트 글래스 HUD & 녹색 체크마크 찰칵 연출]
         // --------------------------------------------------------------------
         else if (widgetType === 'CHECKLIST_GLASS') {
+          // 상단 투명 헤더
           ctx.save();
-          ctx.translate(W / 2, 92);
-          ctx.scale(cutPop, cutPop);
-          ctx.textAlign = 'center';
-          ctx.fillStyle = theme.accent;
-          drawFittedText(subLine, 0, -12, 460, 23);
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(campaign.vehicle, 0, 28, 460, 34);
+          ctx.translate(W / 2, 380);
+          drawMaskedRiseText(subLine, 0, -20, W - 60, 26, cutLocalT, 36, theme.accent);
+          drawKineticWords(campaign.vehicle, 0, 24, W - 60, 36, cutLocalT, 0.1, '#ffffff');
           ctx.restore();
 
           const items = [
-            activeBullets[0] || '✔ 선점 재고 즉시출고 가능',
-            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 특별 할인`,
+            activeBullets[0] || '✔ 선점 재고 3일 이내 즉시출고 가능',
+            activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 특판 할인 혜택`,
             `✔ ${d.promoTag}`
           ];
+
+          // 3단 글래스 체크리스트 바
           items.forEach((it, idx) => {
-            const ip = Easing.backOut((cutLocalT - idx * 0.14) / 0.42);
+            const ip = Easing.backOut((cutLocalT - 0.15 - idx * 0.12) / 0.36);
             if (ip <= 0) return;
             ctx.save();
-            ctx.translate(W / 2, 495 + idx * 64);
+            ctx.translate(W / 2, 500 + idx * 58);
             ctx.scale(1, ip);
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-            ctx.strokeStyle = theme.accent;
+
+            // 반투명 글래스 바
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1.5;
-            drawRoundedRect(ctx, -236, -25, 472, 50, 14);
+            drawRoundedRect(ctx, -220, -22, 440, 44, 10);
             ctx.fill();
             ctx.stroke();
+
+            // 녹색 체크마크 원
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(-195, 0, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 13px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✓', -195, 4);
+
+            // 텍스트
             ctx.textAlign = 'left';
             ctx.fillStyle = '#ffffff';
-            drawFittedText(it, -212, 7, 424, 18);
+            drawFittedText(it.replace(/^[✔\s]+/, ''), -172, 6, 370, 16);
             ctx.restore();
           });
         }
 
         // --------------------------------------------------------------------
-        // 위젯 9: STOCK_COUNTDOWN (선점 재고 잔여 대수 긴급 게이지 바)
+        // 위젯 9: STOCK_COUNTDOWN ★ [사이버네틱 타코미터 & 네온 게이지 보드]
         // --------------------------------------------------------------------
         else if (widgetType === 'STOCK_COUNTDOWN') {
+          const cntProg = Easing.clamp(cutLocalT / 0.9, 0, 1);
+          const gaugeAngle = Math.PI * (0.8 + cntProg * 0.85);
+
           ctx.save();
-          ctx.translate(W / 2, anchorY);
+          ctx.translate(W / 2, 460);
           ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = 'rgba(9, 13, 22, 0.92)';
+
+          // 다크 보드
+          ctx.fillStyle = 'rgba(9, 13, 22, 0.94)';
           ctx.strokeStyle = theme.accent;
           ctx.lineWidth = 3;
-          drawRoundedRect(ctx, -238, -86, 476, 172, 22);
+          drawRoundedRect(ctx, -220, -110, 440, 220, 24);
           ctx.fill();
           ctx.stroke();
 
+          // 반원형 타코미터 아크 게이지 트랙
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.arc(0, -10, 68, Math.PI * 0.8, Math.PI * 2.2);
+          ctx.stroke();
+
+          // 활성 게이지 아크
+          ctx.strokeStyle = theme.accent;
+          ctx.beginPath();
+          ctx.arc(0, -10, 68, Math.PI * 0.8, gaugeAngle);
+          ctx.stroke();
+
+          // 중앙 긴급 재고 숫자
           ctx.textAlign = 'center';
-          ctx.fillStyle = theme.accent;
-          drawFittedText(`⏳ 실시간 선점 물량 마감 임박 · ${campaign.vehicle}`, 0, -44, 440, 19);
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '900 24px sans-serif';
+          ctx.fillText('잔여 3대', 0, -6);
           ctx.fillStyle = '#ffffff';
-          drawFittedText(subLine, 0, -4, 440, 26);
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText('실시간 배정 마감', 0, 14);
 
-          // 게이지 바 애니메이션
-          ctx.fillStyle = 'rgba(255,255,255,0.15)';
-          drawRoundedRect(ctx, -200, 22, 400, 22, 11);
-          ctx.fill();
-          const barFill = 400 * Easing.clamp(0.82 - cutLocalT * 0.22, 0.28, 0.85);
-          ctx.fillStyle = theme.badge;
-          drawRoundedRect(ctx, -200, 22, barFill, 22, 11);
-          ctx.fill();
-
+          // 하단 텍스트
+          ctx.fillStyle = theme.accent;
+          drawFittedText(subLine, 0, 52, 400, 19);
           ctx.fillStyle = theme.sub;
-          drawFittedText(`특판가 -${campaign.discountNum.toLocaleString()}만원  |  ${campaign.discount}`, 0, 68, 430, 17);
+          drawFittedText(`최대 -${campaign.discountNum.toLocaleString()}만원 특판  |  ${campaign.discount}`, 0, 84, 400, 15);
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 10: SMARTKEY_DELIVERY (스마트키 인도 & 전국 캐리어 무상 탁송 배너)
+        // 위젯 10: SMARTKEY_DELIVERY ★ [하단 풀와이드 핸드오버 패스포트 배너]
         // --------------------------------------------------------------------
         else if (widgetType === 'SMARTKEY_DELIVERY') {
           ctx.save();
-          ctx.translate(W / 2, 76);
+          ctx.translate(W / 2, 540);
           ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = theme.badge;
-          drawRoundedRect(ctx, -210, -22, 420, 44, 22);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'center';
-          drawFittedText('🔑 신차 검수 완료 · 전국 무료 캐리어 탁송', 0, 7, 390, 18);
-          ctx.restore();
 
-          ctx.save();
-          ctx.translate(W / 2, 555);
-          ctx.scale(cutPop, cutPop);
           ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
           ctx.strokeStyle = theme.primary;
           ctx.lineWidth = 3;
-          drawRoundedRect(ctx, -238, -72, 476, 144, 22);
+          drawRoundedRect(ctx, -230, -80, 460, 160, 20);
           ctx.fill();
           ctx.stroke();
 
+          // 금색 스마트키 인장
+          ctx.fillStyle = '#f59e0b';
+          drawRoundedRect(ctx, -200, -66, 92, 28, 6);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 13px sans-serif';
           ctx.textAlign = 'center';
+          ctx.fillText('🔑 출고완료', -154, -48);
+
           ctx.fillStyle = theme.primary;
-          drawFittedText(subLine, 0, -22, 440, 24);
+          ctx.textAlign = 'left';
+          drawFittedText(`${campaign.vehicle} 신차 인도`, -96, -46, 280, 17);
+
+          ctx.fillStyle = '#0f172a';
+          ctx.textAlign = 'center';
+          drawFittedText(subLine, 0, 4, 410, 24);
+
           ctx.fillStyle = '#e11d48';
-          drawFittedText(`${campaign.vehicle} · ${campaign.discount}`, 0, 16, 440, 21);
-          ctx.fillStyle = '#334155';
-          drawFittedText(`🎁 ${d.promoTag}`, 0, 50, 440, 16);
+          drawFittedText(`전국 무료 캐리어 탁송 · ${campaign.discount}`, 0, 36, 410, 18);
+          ctx.fillStyle = '#475569';
+          drawFittedText(`🎁 ${d.promoTag}`, 0, 62, 410, 14);
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 11: MONTHLY_PAYMENT_HERO (월 납입금 집중 히어로 보드)
+        // 위젯 11: MONTHLY_PAYMENT_HERO ★ [네이키드 초대형 네온 볼드 타이포그래피]
+        // (네모 박스 완전 제거! 화면 중앙에 52px 초대형 숫자가 팡- 팡- 튀어오름!)
         // --------------------------------------------------------------------
         else if (widgetType === 'MONTHLY_PAYMENT_HERO') {
           ctx.save();
-          ctx.translate(W / 2, anchorY);
-          ctx.scale(cutPop, cutPop);
-          ctx.fillStyle = theme.primary;
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 2.5;
-          drawRoundedRect(ctx, -238, -82, 476, 164, 24);
-          ctx.fill();
-          ctx.stroke();
+          ctx.translate(W / 2, 440);
 
-          ctx.textAlign = 'center';
+          // 상단: 캡슐 배지
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          drawRoundedRect(ctx, -160, -86, 320, 34, 17);
+          ctx.fill();
           ctx.fillStyle = theme.sub;
-          drawFittedText(`${campaign.vehicle} · 초기비용 0원 맞춤 설계`, 0, -42, 436, 18);
-          ctx.fillStyle = theme.accent;
-          drawFittedText(campaign.discount, 0, 4, 436, 34);
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(subLine, 0, 48, 436, 20);
+          ctx.textAlign = 'center';
+          drawFittedText(`${campaign.vehicle} · 초기비용 0원 설계`, 0, -64, 300, 14);
+
+          // 중앙: 화면을 뒤덮는 초대형 네온 타이포그래피 (키네틱 팝)
+          drawKineticWords(campaign.discount, 0, 0, W - 60, 52, cutLocalT, 0.05, theme.accent);
+
+          // 하단: 서브 헤드라인 (마스크 리빌)
+          drawMaskedRiseText(subLine, 0, 64, W - 60, 24, cutLocalT, 30, '#ffffff');
           ctx.restore();
         }
 
         // --------------------------------------------------------------------
-        // 위젯 12: COMMENT_DM_MAGNET (댓글 키워드 자동 DM 유도 마그넷 배너)
+        // 위젯 12: COMMENT_DM_MAGNET ★ [인스타그램 네온 그라디언트 DM 콜아웃 버블]
         // --------------------------------------------------------------------
         else {
           ctx.save();
-          const pulse = 1 + Math.sin(t * 7) * 0.025;
-          ctx.translate(W / 2, 565);
+          const pulse = 1 + Math.sin(t * 7) * 0.03;
+          ctx.translate(W / 2, 550);
           ctx.scale(cutPop * pulse, cutPop * pulse);
+
           ctx.fillStyle = '#FEE500';
           ctx.strokeStyle = '#0f172a';
           ctx.lineWidth = 3.5;
-          drawRoundedRect(ctx, -242, -70, 484, 140, 26);
+          drawRoundedRect(ctx, -230, -65, 460, 130, 24);
           ctx.fill();
           ctx.stroke();
 
           ctx.textAlign = 'center';
           ctx.fillStyle = '#0f172a';
-          drawFittedText(subLine, 0, -18, 446, 24);
+          drawFittedText(subLine, 0, -18, 420, 23);
           ctx.fillStyle = '#e11d48';
           drawFittedText(
             v.ctaBanner || `💬 댓글에 [${v.ctaKeyword || '견적'}] 남기시면 1:1 비밀 조건표 DM 발송!`,
             0,
-            28,
-            446,
-            20
+            24,
+            420,
+            18
           );
           ctx.restore();
         }
