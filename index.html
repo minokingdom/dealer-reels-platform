@@ -239,6 +239,54 @@
     /* flex 자식이 내용 때문에 부모 밖으로 밀려나지 않게 */
     .flex > *, .grid > * { min-width: 0; }
     .flex > .rounded-full, .flex > svg, .flex > img, .flex > input[type="checkbox"], .flex > input[type="radio"] { flex-shrink: 0; }
+
+    /* 모바일 실시간 라이브 스튜디오 도크 */
+    #mobileLiveDock {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .theme-swatch-chip {
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .theme-swatch-chip.active {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      border-color: #ffffff !important;
+    }
+    .story-arc-card {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .story-arc-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+    .story-arc-card.active {
+      border-color: var(--accent, #facc15) !important;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.4), inset 0 0 0 1.5px var(--accent, #facc15);
+    }
+    .storyboard-track-card {
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .storyboard-track-card:hover {
+      background: #232325;
+    }
+    .storyboard-track-card.active {
+      border-color: #38bdf8 !important;
+      background: #141f2e;
+    }
+    .killer-copy-chip {
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .killer-copy-chip:hover {
+      background: #27272a;
+      border-color: #71717a;
+      color: #ededed;
+    }
   </style>
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
@@ -328,11 +376,54 @@
     </div>
 
     <!-- ========================================================================= -->
+    <!-- 모바일 전용: 상단 고정 라이브 스튜디오 도크 (화면 스크롤 시 실시간 캔버스 & 8종 테마 상시 노출) -->
+    <!-- ========================================================================= -->
+    <div id="mobileLiveDock" class="block lg:hidden sticky top-2 z-40 mb-3 bg-[#0d0d10]/95 backdrop-blur-md border border-[var(--border)] rounded-[14px] p-2.5 shadow-2xl">
+      <div class="flex items-center justify-between gap-2.5">
+        <!-- 좌측: 9:16 실시간 미니 프리뷰 미러 캔버스 -->
+        <div class="relative w-[50px] h-[88px] rounded-[8px] overflow-hidden bg-black border border-[var(--border)] shrink-0 shadow-lg cursor-pointer group" onclick="scrollToMainMonitor()" title="터치하여 메인 모니터로 이동">
+          <canvas id="mobileMiniCanvas" width="270" height="480" class="w-full h-full object-cover"></canvas>
+          <div class="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors flex items-end justify-end p-1">
+            <span class="px-1 py-0.2 bg-[#4cc38a] text-[8px] text-black font-bold font-mono rounded">LIVE</span>
+          </div>
+        </div>
+
+        <!-- 중앙 & 우측: 상태 + 컨트롤 + 8종 테마 스와치 팔레트 -->
+        <div class="flex-1 min-w-0 flex flex-col justify-between h-[88px] py-0.5">
+          <!-- 상단: 컷 배지 & 재생/사운드/모니터 이동 -->
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5 truncate">
+              <span class="w-2 h-2 rounded-full bg-[#4cc38a] animate-pulse shrink-0"></span>
+              <span id="mobileDockCutBadge" class="text-[11px] font-semibold text-[#ededed] truncate">1컷 · 오프닝 훅</span>
+              <span id="mobileDockTimeBadge" class="text-[10px] font-mono text-[#85858b] shrink-0">0.0s</span>
+            </div>
+            <div class="flex items-center gap-1 shrink-0">
+              <button type="button" onclick="togglePlayPause()" class="h-6 px-2 bg-[#232325] text-[#ededed] rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" id="mobileDockPlayBtn">⏸</button>
+              <button type="button" onclick="toggleAudioMaster()" class="h-6 px-2 bg-[#232325] text-[#ededed] rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" id="mobileDockSoundBtn">🔇 사운드</button>
+              <button type="button" onclick="scrollToMainMonitor()" class="h-6 px-1.5 bg-[#1a2333] text-[#38bdf8] border border-[#38bdf8]/40 rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" title="모니터로 스크롤">⛶ 모니터</button>
+            </div>
+          </div>
+
+          <!-- 하단: 8종 테마 컬러 스와치 팔레트 (가로 스크롤) -->
+          <div>
+            <div class="flex items-center justify-between text-[10px] text-[#a1a1a6] mb-1">
+              <span class="flex items-center gap-1">🎨 <strong class="text-[#ededed]">테마 무드 덱</strong> (터치 즉시 변경)</span>
+              <span id="mobileActiveThemeName" class="text-[#facc15] font-semibold text-[10px]">로얄 골드</span>
+            </div>
+            <div id="mobileThemeSwatches" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+              <!-- 8종 컬러 버튼 동적 렌더링 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
     <!-- 탭 1: 스튜디오 제작 화면 -->
     <!-- ========================================================================= -->
     <section id="viewPreview" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       <!-- 좌측: 9:16 프리뷰 모니터 (화면의 유일한 고채도 포인트 요소) -->
-      <div class="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6">
+      <div id="mainMonitorColumn" class="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6">
         <div class="w-full max-w-[300px] lg:max-w-[368px] monitor-frame p-4 space-y-3">
           <!-- 상단 상태 바 -->
           <div class="flex items-center justify-between text-[12px]">
@@ -410,6 +501,19 @@
             </div>
             <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-[#ededed] cursor-pointer" />
           </div>
+
+          <!-- 데스크탑 쇼룸 8종 테마 무드 덱 (Mood Palette) -->
+          <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
+            <div class="flex items-center justify-between text-[12px]">
+              <span class="flex items-center gap-1.5 text-[#ededed] font-medium">
+                <span>🎨</span> 쇼룸 테마 무드 덱
+              </span>
+              <span id="desktopActiveThemeName" class="text-[11px] font-mono text-[#facc15] font-semibold">로얄 골드</span>
+            </div>
+            <div id="desktopThemeSwatches" class="grid grid-cols-4 gap-1.5 pt-0.5">
+              <!-- 8종 테마 카드 버튼 동적 렌더링 -->
+            </div>
+          </div>
         </div>
       </div>
 
@@ -460,6 +564,56 @@
             </select>
           </div>
 
+          <!-- ================================================================= -->
+          <!-- ★ [루틴 탈피] 영상 스토리 스타일 4대 아키타입 (Story Arc Presets) -->
+          <!-- ================================================================= -->
+          <div class="studio-sub p-4 space-y-3 border border-[var(--border)] rounded-[12px] bg-[#111113]">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed] flex items-center gap-1.5">
+                  <span>✨</span> 영상 스토리 스타일 선택
+                  <span class="tag-chip px-2 py-0.5 text-[10px] font-mono text-[#38bdf8] border-[#38bdf8]/30">4대 세일즈 아키타입</span>
+                </h3>
+                <p class="text-[11px] text-[#85858b] mt-0.5">매번 똑같은 루틴 탈피! 타깃 고객과 판매 목적에 맞춘 4가지 차별화 전개 스타일</p>
+              </div>
+              <span id="activeArchetypeBadge" class="tag-chip px-2.5 py-1 text-[11px] font-mono text-[#4cc38a] border-[#4cc38a]/40">
+                ⚡ 긴급 한정특판형
+              </span>
+            </div>
+
+            <!-- 4종 아키타입 카드 덱 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="storyArchetypeCardsContainer">
+              <!-- JS 동적 렌더링 -->
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- ★ 인터랙티브 컷 스토리보드 타임라인 트랙 & 킬러 카피 인젝터 -->
+          <!-- ================================================================= -->
+          <div class="studio-sub p-3.5 space-y-2.5 border border-[var(--border)] rounded-[12px] bg-[#121214]">
+            <div class="flex items-center justify-between text-[12px]">
+              <span class="font-medium text-[#ededed] flex items-center gap-1.5">
+                <span>🎬</span> 스토리보드 컷 트랙 (탭하여 해당 구간 즉시 확인·수정)
+              </span>
+              <span class="text-[11px] font-mono text-[#85858b]" id="storyboardTrackTotalBadge">총 4컷 · 12초 구성</span>
+            </div>
+            <!-- 가로형 인터랙티브 컷 트랙 -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="visualStoryboardTrack">
+              <!-- JS 동적 렌더링: 컷별 시작초, 배지, 위젯명 표시 & 클릭 시 seekToTime() -->
+            </div>
+
+            <!-- 실전 킬러 세일즈 카피 원클릭 인젝터 -->
+            <div class="pt-1.5 border-t border-[var(--border)] space-y-1.5">
+              <div class="flex items-center justify-between text-[11px] text-[#a1a1a6]">
+                <span class="flex items-center gap-1 font-medium text-[#ededed]">🔥 실전 킬러 카피 칩 (터치 시 대본에 즉시 주입)</span>
+                <span class="text-[#85858b]">원클릭 완성</span>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap" id="killerCopyChipsContainer">
+                <!-- JS 동적 렌더링: 8종 킬러 문구 칩 -->
+              </div>
+            </div>
+          </div>
+
           <!-- 생성형 씬 디렉터 & 레이아웃 엔진 -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
@@ -471,7 +625,7 @@
                 <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
               </div>
               <button type="button" onclick="proceduralRestyleCurrentScene()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                테마 바꾸기
+                테마 셔플 🎲
               </button>
             </div>
 
@@ -1526,6 +1680,394 @@
       hasCustomVideo: false,
       uploadedPhotos: [] // Image 객체 배열 (다중 사진 3D Ken Burns 슬라이드용)
     };
+
+    // ============================================================================
+    // ★ 4대 영상 스토리 아키타입 (Story Arc Presets - 뻔하고 지루한 루틴 전면 탈피!)
+    // ============================================================================
+    const STORY_ARCHETYPES = {
+      clearance: {
+        id: 'clearance',
+        title: '⚡ 긴급 한정특판형',
+        shortTitle: '한정특판',
+        tagline: '선착순 배정 · 취소차 긴급 확보 · 카운트다운 게이지',
+        icon: '⚡',
+        themeId: 'crimson',
+        accentColor: '#f43f5e',
+        hook: '🚨 [긴급배정] 선착순 취소차량 3대 즉시출고!',
+        discountNum: 480,
+        discount: '월 39만원대 · 선착순 마감임박',
+        scenePlan: [
+          { cut: 1, widget: 'BREAKING_NEWS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🚨 긴급 속보! 전국 잔여 재고 3대 한정 배정',
+          '⚡ 선착순 재고 소진 임박! 취소차량 긴급 확보',
+          '💸 최대 -480만원 공식할인 + 딜러 비공식 지원',
+          '🔑 계약 즉시 3일 이내 고객님 자택 당일 탁송!'
+        ],
+        ttsLines: [
+          '긴급 속보! 전국 잔여 취소 차량 석 대가 한정 배정되었습니다.',
+          '선착순 소진 임박! 이번 주 마감 전 즉시 배정됩니다.',
+          '최대 사백팔십만 원 공식 특판 혜택을 놓치지 마세요.',
+          '계약 즉시 삼 일 이내 고객님 자택으로 당일 탁송해 드립니다.'
+        ]
+      },
+      luxury: {
+        id: 'luxury',
+        title: '🎬 시네마틱 프리미엄형',
+        shortTitle: '시네마틱',
+        tagline: '도로 위의 예술품 · 최고급 나파가죽 · VIP 프라이빗 컨시어지',
+        icon: '🎬',
+        themeId: 'royal',
+        accentColor: '#facc15',
+        hook: '👑 단 한 분의 VIP를 위한 프리미엄 에디션',
+        discountNum: 620,
+        discount: '월 58만원대 · VIP 프라이빗 컨시어지',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'MONTHLY_PAYMENT_HERO', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '👑 도로 위의 예술품, 감성 플래그십 에디션',
+          '✨ 최고급 나파가죽 · 서라운드뷰 · 풀옵션 사양',
+          '🏛️ 법인 및 개인사업자 100% 비용처리 세무 컨설팅',
+          '🎩 공식 인증 카마스터의 1:1 VIP 프라이빗 인도'
+        ],
+        ttsLines: [
+          '도로 위의 예술품, 당신의 품격을 완성할 플래그십 에디션입니다.',
+          '최고급 나파 가죽과 서라운드 뷰 풀옵션이 적용되었습니다.',
+          '법인 및 개인사업자 전액 비용처리가 가능한 맞춤 컨설팅을 제공합니다.',
+          '공식 인증 카마스터가 직접 최고급 인도를 약속드립니다.'
+        ]
+      },
+      finance: {
+        id: 'finance',
+        title: '⚖️ 월 납입금 실속 비교형',
+        shortTitle: '금융배틀',
+        tagline: '할부 vs 장기렌트 · 취등록세 0원 · 하루 커피 한잔 값',
+        icon: '⚖️',
+        themeId: 'cyber',
+        accentColor: '#38bdf8',
+        hook: '⚖️ 할부 vs 렌트! 모르면 500만원 손해봅니다',
+        discountNum: 390,
+        discount: '월 32만원대 · 초기비용 0원 무보증',
+        scenePlan: [
+          { cut: 1, widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⚖️ 할부 vs 장기렌트, 아직도 모르면 수백만원 손해!',
+          '📉 취등록세 0원 + 자동차세 0원 + 보험료 0원 혜택',
+          '☕ 하루 커피 한잔 값! 월 32만원대 다이내믹 견적',
+          '📱 무보증·무소득 비대면 10분 즉시 승인 심사 진행'
+        ],
+        ttsLines: [
+          '할부와 장기렌트, 아직도 비교 없이 구매하시나요?',
+          '취등록세와 자동차세, 보험료까지 초기비용 영 원으로 시작하세요.',
+          '하루 커피 한잔 값, 월 삼십이만 원대로 부담 없이 출고하세요.',
+          '무보증 비대면 십 분 간편 심사로 빠르게 승인 도와드립니다.'
+        ]
+      },
+      trust: {
+        id: 'trust',
+        title: '🤝 카마스터 찐 감동·인도형',
+        shortTitle: '신뢰인도',
+        tagline: '출고 고객 5.0 리뷰 · 36가지 신차검수 · 평생 사후관리',
+        icon: '🤝',
+        themeId: 'emerald',
+        accentColor: '#34d399',
+        hook: '💬 "출고 3일 만에 고객님이 직접 보내주신 실화 카톡"',
+        discountNum: 420,
+        discount: '월 44만원대 · 10년 사후관리 보증',
+        scenePlan: [
+          { cut: 1, widget: 'KAKAO_CHAT_PAIR', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '💬 "진짜 감동했습니다" 출고 고객님의 리얼 카톡 후기',
+          '🔍 단차·도장 결함 제로! 36가지 신차 정밀 검수 완료',
+          '⭐️ 고객 만족도 5.0 만점, 1,200대 누적 출고 실적',
+          '🤝 평생 든든한 자동차 주치의, 10년 사후 관리 보증'
+        ],
+        ttsLines: [
+          '출고 삼 일 만에 고객님이 보내주신 감동의 메시지입니다.',
+          '단차와 도장 결함 제로를 위해 서른여섯 가지 정밀 검수를 완료했습니다.',
+          '만족도 오 점 만점, 천이백 대 누적 출고 경험으로 보증합니다.',
+          '평생 든든한 자동차 주치의로서 십 년간 사후 관리를 약속합니다.'
+        ]
+      }
+    };
+
+    let activeStoryArchetypeKey = 'clearance';
+
+    const STORY_KILLER_COPIES = [
+      '🔥 선점 재고 3대 즉시출고',
+      '💸 최대 -480만원 특별할인',
+      '☕ 하루 커피 한잔 월 32만원',
+      '⚖️ 취등록세 0원 무보증 승인',
+      '🔍 36가지 신차 무결점 검수',
+      '⭐️ 고객 출고후기 만족도 5.0',
+      '🚚 계약 즉시 3일 이내 자택탁송',
+      '🤝 10년 든든한 평생 사후관리'
+    ];
+
+    function selectTheme(themeId) {
+      if (!DIRECTOR_THEMES[themeId]) return;
+      campaign.themeId = themeId;
+      const themeObj = DIRECTOR_THEMES[themeId];
+
+      const mobileNameEl = document.getElementById('mobileActiveThemeName');
+      if (mobileNameEl) {
+        mobileNameEl.textContent = themeObj.name;
+        mobileNameEl.style.color = themeObj.accent;
+      }
+      const deskNameEl = document.getElementById('desktopActiveThemeName');
+      if (deskNameEl) {
+        deskNameEl.textContent = themeObj.name;
+        deskNameEl.style.color = themeObj.accent;
+      }
+
+      syncScenePlanUI();
+      renderThemeSwatches();
+
+      if (window.__timelines && window.__timelines['main']) {
+        window.__timelines['main'].seek(window.__timelines['main'].currentTime);
+      }
+    }
+
+    function renderThemeSwatches() {
+      const currentTheme = campaign.themeId || 'royal';
+      const themeKeys = Object.keys(DIRECTOR_THEMES);
+
+      // 1. 모바일 도크 스와치
+      const mobileContainer = document.getElementById('mobileThemeSwatches');
+      if (mobileContainer) {
+        mobileContainer.innerHTML = themeKeys.map((k) => {
+          const t = DIRECTOR_THEMES[k];
+          const isActive = k === currentTheme;
+          return `
+            <button type="button" onclick="selectTheme('${k}')" class="theme-swatch-chip shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-[10px] font-medium border ${isActive ? 'active bg-[#232325] border-white text-white' : 'bg-[#18181b] border-[#2e2e32] text-[#a1a1a6] hover:text-[#ededed]'}">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${t.accent}; box-shadow: 0 0 6px ${t.accent}88"></span>
+              <span>${t.name}</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      // 2. 데스크탑 모니터 하단 스와치
+      const deskContainer = document.getElementById('desktopThemeSwatches');
+      if (deskContainer) {
+        deskContainer.innerHTML = themeKeys.map((k) => {
+          const t = DIRECTOR_THEMES[k];
+          const isActive = k === currentTheme;
+          return `
+            <button type="button" onclick="selectTheme('${k}')" class="theme-swatch-chip flex items-center gap-1.5 p-1.5 rounded-[6px] text-[11px] font-medium border transition-all text-left ${isActive ? 'active bg-[#232325] border-white text-white' : 'bg-[#141416] border-[#27272a] text-[#a1a1a6] hover:bg-[#1c1c1f] hover:text-[#ededed]'}">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${t.accent}; box-shadow: 0 0 6px ${t.accent}88"></span>
+              <span class="truncate">${t.name}</span>
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    function applyStoryArchetype(archKey) {
+      const arch = STORY_ARCHETYPES[archKey];
+      if (!arch) return;
+      activeStoryArchetypeKey = archKey;
+
+      const d = getSelectedDealer();
+      campaign.themeId = arch.themeId;
+      campaign.hook = arch.hook;
+      campaign.discountNum = arch.discountNum;
+      campaign.discount = arch.discount;
+      campaign.scenePlan = JSON.parse(JSON.stringify(arch.scenePlan));
+      campaign.cutCaptions = [...arch.cutCaptions];
+      campaign.ttsLines = [...arch.ttsLines];
+
+      if (d.variation) {
+        d.variation.hook = arch.hook;
+      }
+
+      const vInput = document.getElementById('inputVehicle');
+      if (vInput) vInput.value = campaign.vehicle;
+      const numInput = document.getElementById('inputDiscountNum');
+      if (numInput) numInput.value = campaign.discountNum;
+      const dInput = document.getElementById('inputDiscount');
+      if (dInput) dInput.value = campaign.discount;
+
+      const badge = document.getElementById('activeArchetypeBadge');
+      if (badge) {
+        badge.textContent = `${arch.icon} ${arch.title}`;
+        badge.style.borderColor = arch.accentColor;
+        badge.style.color = arch.accentColor;
+      }
+
+      renderStoryArchetypesUI();
+      renderDynamicCutCardsUI();
+      renderVisualStoryboardTrack();
+      selectTheme(arch.themeId);
+
+      isPlaying = true;
+      if (audioEngineReady() && AudioEngine.enabled) {
+        AudioEngine.lastSpokenCut = -1;
+        AudioEngine.prefetchTtsBuffers();
+      }
+      if (window.__timelines && window.__timelines['main']) {
+        window.__timelines['main'].seek(0.08);
+      }
+    }
+
+    function renderStoryArchetypesUI() {
+      const container = document.getElementById('storyArchetypeCardsContainer');
+      if (!container) return;
+
+      const keys = Object.keys(STORY_ARCHETYPES);
+      container.innerHTML = keys.map((k) => {
+        const arch = STORY_ARCHETYPES[k];
+        const isActive = k === activeStoryArchetypeKey;
+        return `
+          <div onclick="applyStoryArchetype('${k}')" class="story-arc-card p-3 rounded-[10px] border ${isActive ? 'active' : 'bg-[#18181a] border-[#27272a] hover:border-[#3f3f46]'}" style="--accent: ${arch.accentColor}">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="text-[12px] font-bold text-[#ededed] flex items-center gap-1.5">
+                <span>${arch.icon}</span>
+                <span>${arch.shortTitle}</span>
+              </span>
+              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium" style="background: ${arch.accentColor}22; color: ${arch.accentColor}; border: 1px solid ${arch.accentColor}44">
+                ${arch.themeId}
+              </span>
+            </div>
+            <p class="text-[11px] text-[#a1a1a6] leading-snug line-clamp-2">${arch.tagline}</p>
+            <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between text-[10px] text-[#85858b]">
+              <span class="truncate">${arch.cutCaptions[0].replace(/^[^\s]+\s*/, '')}</span>
+              <span class="font-bold text-[#ededed] shrink-0 ml-1">선택 →</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderVisualStoryboardTrack() {
+      const trackContainer = document.getElementById('visualStoryboardTrack');
+      if (!trackContainer) return;
+      const totalCuts = getTargetCutCount();
+      const cutLengths = getCutLengths();
+
+      let html = '';
+      for (let i = 0; i < totalCuts; i++) {
+        const s = getCutStart(i).toFixed(1).replace(/\.0$/, '');
+        const e = (getCutStart(i) + cutLengths[i]).toFixed(1).replace(/\.0$/, '');
+        const wKey = campaign.scenePlan[i]?.widget || WIDGET_POOL[i % WIDGET_POOL.length];
+        const wLabel = WIDGET_LABELS[wKey] || wKey;
+        const caption = (campaign.cutCaptions[i] || `CUT ${i + 1}`).replace(/"/g, '&quot;');
+
+        html += `
+          <div onclick="seekToCutIndex(${i})" class="storyboard-track-card p-2 rounded-[8px] bg-[#17171a] border border-[#27272a] hover:border-[#38bdf8] transition-all text-left group">
+            <div class="flex items-center justify-between text-[11px] mb-1">
+              <span class="font-mono font-bold text-[#38bdf8]">CUT ${i + 1}</span>
+              <span class="text-[10px] font-mono text-[#85858b]">${s}~${e}s</span>
+            </div>
+            <div class="text-[10px] font-medium text-[#ededed] truncate group-hover:text-white" title="${caption}">
+              ${caption}
+            </div>
+            <div class="mt-1 flex items-center justify-between text-[9px] text-[#71717a]">
+              <span class="truncate">${wLabel}</span>
+              <span class="text-[#38bdf8] opacity-0 group-hover:opacity-100 transition-opacity">▶ 점프</span>
+            </div>
+          </div>
+        `;
+      }
+      trackContainer.innerHTML = html;
+
+      const badge = document.getElementById('storyboardTrackTotalBadge');
+      if (badge) badge.textContent = `총 ${totalCuts}컷 · ${TOTAL_DURATION}초 구성`;
+    }
+
+    function seekToCutIndex(cutIdx) {
+      const targetTime = getCutStart(cutIdx) + 0.05;
+      seekToTime(targetTime);
+
+      const inputEl = document.getElementById(`cutSub${cutIdx}`);
+      if (inputEl) {
+        inputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        inputEl.focus();
+        inputEl.classList.add('ring-2', 'ring-[#38bdf8]');
+        setTimeout(() => inputEl.classList.remove('ring-2', 'ring-[#38bdf8]'), 1200);
+      }
+    }
+
+    function renderKillerCopyChips() {
+      const container = document.getElementById('killerCopyChipsContainer');
+      if (!container) return;
+      container.innerHTML = STORY_KILLER_COPIES.map((copy) => `
+        <button type="button" onclick="injectKillerCopy('${copy.replace(/'/g, "\\'")}')" class="killer-copy-chip px-2.5 py-1 rounded-[6px] bg-[#1a1a1e] text-[#a1a1a6] text-[11px] border border-[#27272a] hover:border-[#52525b] hover:text-white transition-colors" title="현재 컷에 이 카피를 즉시 반영합니다">
+          ${copy}
+        </button>
+      `).join('');
+    }
+
+    function injectKillerCopy(text) {
+      const curT = (window.__timelines && window.__timelines['main']) ? window.__timelines['main'].currentTime : 0;
+      const cutIdx = getCutIndexAt(curT);
+      const subInput = document.getElementById(`cutSub${cutIdx}`);
+      if (subInput) {
+        subInput.value = text;
+        campaign.cutCaptions[cutIdx] = text;
+        updateCustomCutCaptions();
+        renderVisualStoryboardTrack();
+      }
+    }
+
+    function scrollToMainMonitor() {
+      const mon = document.getElementById('mainMonitorColumn');
+      if (mon) {
+        mon.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function syncMobileDockUI(t) {
+      const dock = document.getElementById('mobileLiveDock');
+      if (!dock) return;
+
+      const totalCuts = getTargetCutCount();
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutIdx = t < mainDur ? getCutIndexAt(t) : totalCuts - 1;
+      const wKey = campaign.scenePlan[cutIdx]?.widget || WIDGET_POOL[cutIdx % WIDGET_POOL.length];
+      const wLabel = WIDGET_LABELS[wKey] || wKey;
+
+      const cutBadge = document.getElementById('mobileDockCutBadge');
+      if (cutBadge) {
+        if (t >= mainDur) {
+          cutBadge.textContent = '엔딩 · 카마스터 명함';
+        } else {
+          cutBadge.textContent = `${cutIdx + 1}컷 · ${wLabel}`;
+        }
+      }
+
+      const timeBadge = document.getElementById('mobileDockTimeBadge');
+      if (timeBadge) {
+        timeBadge.textContent = `${t.toFixed(1)}s / ${TOTAL_DURATION}s`;
+      }
+
+      const playBtn = document.getElementById('mobileDockPlayBtn');
+      if (playBtn) {
+        playBtn.textContent = isPlaying ? '⏸ 일시정지' : '▶ 재생';
+      }
+
+      const soundBtn = document.getElementById('mobileDockSoundBtn');
+      if (soundBtn) {
+        soundBtn.textContent = (AudioEngine && AudioEngine.enabled) ? '🔊 소리켬' : '🔇 음소거';
+        soundBtn.style.color = (AudioEngine && AudioEngine.enabled) ? '#4cc38a' : '#ededed';
+      }
+    }
 
     // ============================================================================
     // 딜러별 스마트 자동 변주 (Smart Per-Dealer Variation & Anti-Duplicate Engine)
@@ -4191,6 +4733,16 @@
         ctx.fillText('Protected by AutoReels Rust WebAssembly DRM v1.0', 0, 50);
         ctx.restore();
       }
+
+      // 모바일 미니 캔버스 실시간 미러 렌더링 & 도크 UI 동기화
+      const miniCanvas = document.getElementById('mobileMiniCanvas');
+      if (miniCanvas) {
+        const mCtx = miniCanvas.getContext('2d');
+        if (mCtx) {
+          mCtx.drawImage(canvas, 0, 0, miniCanvas.width, miniCanvas.height);
+        }
+      }
+      syncMobileDockUI(t);
     }
 
     // 애니메이션 루프 (재생 중일 때만 window.__timelines.main.seek 호출)
@@ -4873,6 +5425,9 @@
           }
         }
       }
+      if (typeof renderVisualStoryboardTrack === 'function') {
+        renderVisualStoryboardTrack();
+      }
     }
 
     function proceduralRestyleCurrentScene() {
@@ -4926,6 +5481,7 @@
         if (ttsEl) campaign.ttsLines[i] = ttsEl.value;
       }
       if (AudioEngine.enabled) AudioEngine.schedulePrefetch();
+      if (typeof renderVisualStoryboardTrack === 'function') renderVisualStoryboardTrack();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
     }
 
@@ -6236,6 +6792,11 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     } catch (e) {}
     renderQuickSelector();
     renderAdminDealerList();
+    renderThemeSwatches();
+    renderStoryArchetypesUI();
+    renderVisualStoryboardTrack();
+    renderKillerCopyChips();
+    applyStoryArchetype('clearance');
     syncPreviewPanel();
     syncTechPanel();
     applyRoleViewModeUI();
