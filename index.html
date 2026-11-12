@@ -541,7 +541,7 @@
               </div>
             </div>
             <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">상담 직통 연락처 (등록 번호와 다르면 자동 잠금)</label>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">상담 연락처 · 로그인 번호 (영상에는 표시되지 않음)</label>
               <input id="dlrInputPhone" type="tel" placeholder="010-4821-9032" oninput="updateCurrentDealerFromPreview()" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
             </div>
             <div>
@@ -3292,17 +3292,18 @@
         ctx.font = 'bold 23px sans-serif';
         ctx.fillText(`${d.name} ${d.title}`, 126, H - 72, 194);
 
-        // 우측: 직통 전화번호 전용 네이비 박스 (x=328 ~ 522)
+        // 우측: 상담 안내 네이비 박스 (x=328 ~ 522)
         ctx.fillStyle = HYUNDAI_NAVY;
         drawRoundedRect(ctx, 328, H - 128, 194, 66, 12);
         ctx.fill();
         ctx.textAlign = 'center';
         ctx.fillStyle = '#93c5fd';
         ctx.font = 'bold 13px sans-serif';
-        ctx.fillText('24시간 직통 견적상담', 425, H - 104);
+        // 영상에는 전화번호를 넣지 않고 댓글·DM 상담으로 안내
+        ctx.fillText('1:1 견적상담', 425, H - 104);
         ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 18px sans-serif';
-        ctx.fillText(`📞 ${d.phone}`, 425, H - 76, 180);
+        ctx.fillText('💬 댓글에 [견적]', 425, H - 76, 180);
 
         // 하단 전폭: 출고 서비스 혜택 바 (x=126 ~ 522)
         ctx.fillStyle = '#f1f5f9';
@@ -3393,13 +3394,13 @@
         ctx.font = 'bold 40px sans-serif';
         ctx.fillText(`${d.name} ${d.title}`, 0, -26);
 
-        // 직통 상담 전화번호 대형 네이비 박스
+        // 상담 안내 대형 네이비 박스 (영상에는 전화번호를 넣지 않음)
         ctx.fillStyle = HYUNDAI_NAVY;
         drawRoundedRect(ctx, -204, 2, 408, 76, 18);
         ctx.fill();
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 32px sans-serif';
-        ctx.fillText(`📞 ${d.phone}`, 0, 51);
+        ctx.font = 'bold 28px sans-serif';
+        ctx.fillText('🔗 프로필 링크로 1:1 상담', 0, 50, 384);
 
         // ★ 댓글 [견적] 자동 DM 안내 강조 박스
         ctx.fillStyle = '#FEE500';
@@ -3432,7 +3433,7 @@
         ctx.fillText(d.promoTag, 0, 238, 384);
 
         // 하단 카카오톡/인스타 QR 코드 + 상담 안내
-        drawDeterministicQrCode(ctx, -204, 268, 106, d.token + d.phone);
+        drawDeterministicQrCode(ctx, -204, 268, 106, d.token);
         ctx.textAlign = 'left';
         ctx.fillStyle = HYUNDAI_NAVY;
         ctx.font = 'bold 19px sans-serif';
