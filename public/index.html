@@ -6952,7 +6952,7 @@ function renderStoryArchetypesUI() {
           // 문장 경계: 글자 위치로 추정한 경계 근처(±0.4초)에서 실제로 가장 조용한 지점을 찾아 자름
           //   (추정 경계가 말끝·말머리에 걸리면 문장 끝 발음이 잘리거나 다음 문장 첫 소리가 섞임)
           const sr = full.sampleRate;
-          const win = Math.max(1, Math.floor(sr * 0.02));
+          const win = Math.max(1, Math.floor(sr * 0.06));
           const rmsAt = (t) => {
             const a = Math.max(0, Math.floor(t * sr) - (win >> 1));
             const b = Math.min(mono.length, a + win);
@@ -6974,9 +6974,11 @@ function renderStoryArchetypesUI() {
           };
           const bounds = [Math.max(0, body.lines[0].start - 0.08)];
           for (let i = 0; i < lines.length - 1; i++) {
+            // Fish 시각 정보는 문장 마지막 낱말을 짧게 잡는 경향이 있어 (예: 실제보다 0.5초 일찍 끝남)
+            // 추정 경계보다 뒤쪽을 더 넓게(최대 1초) 살펴 실제 숨 쉬는 자리를 찾음
             const mid = (body.lines[i].end + body.lines[i + 1].start) / 2;
-            const lo = Math.max(bounds[i] + 0.3, mid - 0.4);
-            const hi = Math.min(full.duration - 0.1, mid + 0.4);
+            const lo = Math.max(bounds[i] + 0.3, mid - 0.25);
+            const hi = Math.min(full.duration - 0.1, mid + 1.0, body.lines[i + 1].end - 0.4);
             bounds.push(lo < hi ? quietest(mid, lo, hi) : mid);
           }
           // 마지막 문장은 녹음 끝까지 (말끝 여운이 잘리지 않게)
