@@ -853,7 +853,7 @@
     <div class="studio-card max-w-md w-full p-6 space-y-4">
       <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
         <div>
-          <h3 class="text-[15px] font-medium text-[#ededed]">12초 프로모션 영상 추출 완료</h3>
+          <h3 class="text-[15px] font-medium text-[#ededed]">영상 완성</h3>
           <p id="exportedVideoMeta" class="text-[12px] text-[#4cc38a] mt-0.5">0~8초 차량 본편 + 8~12초 카마스터 명함 합성 완료</p>
         </div>
         <button onclick="closeExportedVideoModal()" class="btn-secondary h-7 px-2.5 text-[12px]">닫기</button>
@@ -864,17 +864,19 @@
       </div>
 
       <div class="flex flex-col gap-2 pt-1">
-        <button type="button" onclick="shareRecordedVideoMobile()" class="btn-primary w-full h-10 px-4 text-[13px] cursor-pointer">
-          모바일 공유창 열기 (인스타 · 쇼츠 · 틱톡 · 카톡)
+        <button type="button" onclick="saveRecordedVideoToDisk()" class="btn-primary w-full h-10 px-4 text-[13px] cursor-pointer">
+          영상 저장
         </button>
-        <button type="button" onclick="saveRecordedVideoToDisk()" class="btn-secondary w-full h-9 px-4 text-[12px] cursor-pointer">
-          기기에 영상 파일 직접 다운로드
-        </button>
-        <button type="button" onclick="copyDealerCaption()" class="btn-secondary w-full h-9 px-4 text-[12px] cursor-pointer">
-          SNS 본문 및 해시태그 복사
-        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="shareVideoBtn" onclick="shareRecordedVideoMobile()" class="btn-secondary w-full h-9 px-3 text-[12px] cursor-pointer">
+            앱으로 공유
+          </button>
+          <button type="button" onclick="copyDealerCaption()" class="btn-secondary w-full h-9 px-3 text-[12px] cursor-pointer">
+            본문 복사
+          </button>
+        </div>
         <p id="saveStatusNotice" class="text-[12px] text-[#85858b] text-center leading-relaxed pt-1">
-          모바일에서는 공유창 열기를 누르면 연결된 SNS 앱으로 영상과 본문이 전달됩니다.
+          영상 저장을 누르면 다운로드 폴더(휴대폰은 파일·갤러리)에 바로 저장됩니다.
         </p>
       </div>
     </div>
@@ -4703,6 +4705,8 @@
 
       const chunks = [];
       const candidateTypes = [
+        'video/mp4;codecs="avc1.42E01E,mp4a.40.2"', // H.264 + AAC: 인스타·아이폰·카톡에서 그대로 재생
+        'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
         'video/mp4;codecs=avc1',
         'video/mp4',
         'video/webm;codecs=vp9,opus',
@@ -4836,41 +4840,23 @@
         return;
       }
 
-      // 1) 크롬/엣지 File System Access API (다른 이름으로 저장 대화상자) 시도
-      if (window.showSaveFilePicker) {
-        try {
-          const ext = filename.endsWith('.mp4') ? '.mp4' : '.webm';
-          const handle = await window.showSaveFilePicker({
-            suggestedName: filename,
-            types: [{
-              description: 'Shortform Video File',
-              accept: { [mime]: [ext] }
-            }]
-          });
-          const writable = await handle.createWritable();
-          await writable.write(blob);
-          await writable.close();
-          if (notice) {
-            notice.textContent = `✅ [${filename}] 파일이 지정하신 폴더에 정상 저장되었습니다!`;
-            notice.className = 'text-xs text-emerald-400 font-bold text-center leading-relaxed';
-          }
-          return;
-        } catch (err) {
-          if (err && err.name === 'AbortError') return;
-        }
-      }
-
-      // 2) 일반 브라우저 <a download> 다운로드 폴백
+      // 저장 위치를 묻지 않고 브라우저의 다운로드 폴더로 바로 저장
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = window.lastRecordedVideoUrl || URL.createObjectURL(blob);
+      a.href = url;
       a.download = filename;
+      a.rel = 'noopener';
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+      }, 60000);
 
       if (notice) {
-        notice.textContent = `📥 브라우저 다운로드 요청을 보냈습니다 (${filename}). 만약 이 미리보기 창에서 다운로드가 차단된다면 일반 크롬(Chrome) 창에서 열어 저장해주세요.`;
-        notice.className = 'text-xs text-amber-300 font-semibold text-center leading-relaxed';
+        notice.textContent = `다운로드 폴더에 ${filename} 저장을 시작했습니다. 저장되지 않으면 앱 안의 미리보기 창에서는 다운로드가 막힐 수 있으니 크롬·엣지·사파리에서 열어 주세요.`;
+        notice.className = 'text-[12px] text-[#4cc38a] text-center leading-relaxed pt-1';
       }
     }
 
