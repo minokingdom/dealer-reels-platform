@@ -162,7 +162,7 @@
     html, body {
       width: 100%;
       max-width: 100vw;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
     /* 한글이 단어 중간에서 끊기지 않도록 (띄어쓰기 단위로만 줄바꿈) */
     body {
@@ -242,8 +242,23 @@
 
     /* 모바일 실시간 라이브 스튜디오 도크 */
     #mobileLiveDock {
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      position: -webkit-sticky;
+      position: sticky;
+      top: 8px;
+      z-index: 45;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    #mobileLiveDock.dock-fixed-mode {
+      position: fixed;
+      top: 8px;
+      left: 12px;
+      right: 12px;
+      width: calc(100% - 24px);
+      margin-left: auto;
+      margin-right: auto;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.85);
     }
     .theme-swatch-chip {
       transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
@@ -2068,6 +2083,21 @@
         soundBtn.style.color = (AudioEngine && AudioEngine.enabled) ? '#4cc38a' : '#ededed';
       }
     }
+
+    // 모바일 스크롤 시 라이브 도크 완벽 상단 락 (스크롤 다운 시 fixed 모드 전환)
+    window.addEventListener('scroll', () => {
+      const dock = document.getElementById('mobileLiveDock');
+      if (!dock || window.innerWidth >= 1024) {
+        if (dock) dock.classList.remove('dock-fixed-mode');
+        return;
+      }
+      const scrollY = window.scrollY || window.pageYOffset;
+      if (scrollY > 120) {
+        dock.classList.add('dock-fixed-mode');
+      } else {
+        dock.classList.remove('dock-fixed-mode');
+      }
+    }, { passive: true });
 
     // ============================================================================
     // 딜러별 스마트 자동 변주 (Smart Per-Dealer Variation & Anti-Duplicate Engine)
