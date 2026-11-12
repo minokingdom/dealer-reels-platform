@@ -4445,6 +4445,7 @@
       const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const totalCuts = getTargetCutCount();
       const cutDuration = mainDuration / totalCuts;
+      const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
 
       // ========================================================================
       // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편(4~10컷) + AI 성우 자막 + 하단 딜러 실물바
@@ -4802,7 +4803,6 @@
         // ====================================================================
         // ★ 무한 생성형 씬 그래프 렌더러 (8종 컬러 테마 × 12종 위젯 × 동적 N컷)
         // ====================================================================
-        const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
         const plan = (campaign.scenePlan && campaign.scenePlan[currentCutSlot]) || {
           cut: currentCutSlot + 1,
           widget: WIDGET_POOL[currentCutSlot % WIDGET_POOL.length],
