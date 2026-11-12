@@ -103,14 +103,14 @@ function parsePromptAndBuildSmartScene(prompt, fallbackVehicle, fallbackDiscount
     `${persona} 강력 추천 · ${shortCarName}`,
     `인기 컬러 선점 물량 ${stockCount}대 대기 없이 즉시 배정`,
     `최대 -${discountNum.toLocaleString()}만원 특판 혜택 · ${discount}`,
-    `${dealerName} ${dealerTitle} 직통 출고 · 댓글에 [견적] 남겨주세요`
+    `${dealerName} ${dealerTitle} 직통 출고`
   ];
 
   const ttsLines = [
     `${shortCarName}, 아직도 기다리세요?`,
     `선점 물량 ${stockCount}대, 이번 주 바로 출고.`,
     `최대 ${discountNum}만 원 할인 받으세요.`,
-    `댓글에 견적 두 글자만 남겨주세요!`
+    `계약하면 바로 출고해 드립니다.`
   ];
 
   const kakaoChat = [
@@ -187,6 +187,7 @@ module.exports = async function handler(req, res) {
     const systemInstruction = `당신은 대한민국 자동차 딜러(카마스터) 전문 숏폼 AI 영상 감독(Scene Director)입니다.
 딜러가 입력한 상황(예: "30대 여성, 그랜저")에서 차종과 고객 특성을 정확히 반영하여 vehicle(차종명), discountNum(할인액), discount(월납입조건), themeId, scenePlan, cutCaptions(4컷 자막), ttsLines(4컷 성우 내레이션 대본), kakaoChat(4개 대화)을 JSON으로만 출력하세요.
 ttsLines의 각 문장은 숏폼 한 컷(약 2초) 안에 읽을 수 있도록 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요.
+"댓글에 견적" 안내는 영상 마지막 명함 화면에서 따로 나오므로 cutCaptions와 ttsLines에는 넣지 마세요.
 주의: "30대 여성"의 "30대"는 나이(연령대)이지 차량 30대가 아닙니다! 절대 혼동하지 마세요.
 
 [themeId 선택지]: "crimson" | "emerald" | "royal" | "cyber" | "cobalt" | "sunset" | "violet" | "obsidian"

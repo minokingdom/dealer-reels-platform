@@ -1377,13 +1377,13 @@
         '대기 6개월? 선점 재고 4대 즉시출고 확정!',
         '파노라믹 디스플레이 & 2열 독립 캡틴시트 완비',
         '최대 -480만원 혜택 · 월 46만원대 최저금리',
-        '계약 즉시 스마트키 인도! 댓글에 [견적] 남겨주세요'
+        '계약 즉시 스마트키 인도!'
       ],
       ttsLines: [
         '쏘렌토 하이브리드, 이번 달 비밀 조건!',
         '선점 재고 4대, 이번 주 바로 출고.',
         '최대 480만 원 할인, 월 46만 원대.',
-        '댓글에 견적 두 글자만 남겨주세요!'
+        '계약하면 바로 출고해 드립니다.'
       ],
       kakaoChat: [
         { role: 'customer', text: '팀장님! 쏘렌토 하브 지금 계약하면 진짜 6개월 기다려야 하나요? 😭' },
@@ -4475,13 +4475,13 @@
           `🚨 ${newHook}`,
           `✨ 인기 색상 선점 ${parsedLocal.stockNum}대 대기 없이 즉시 배정!`,
           `💰 최대 -${campaign.discountNum.toLocaleString()}만원 혜택 · ${campaign.discount}`,
-          `🔑 ${d.name} ${d.title} 책임출고! 댓글에 [견적] 남겨주세요`
+          `🔑 ${d.name} ${d.title} 책임출고!`
         ];
         campaign.ttsLines = [
           `${campaign.vehicle}, 이번 달 특별 조건!`,
           `선점 재고 ${parsedLocal.stockNum}대, 이번 주 바로 출고.`,
           `최대 ${campaign.discountNum}만 원 할인 받으세요.`,
-          `댓글에 견적 두 글자만 남겨주세요!`
+          `계약하면 바로 출고해 드립니다.`
         ];
         campaign.kakaoChat = [
           { role: 'customer', text: `팀장님! ${parsedLocal.targetPersona ? parsedLocal.targetPersona + '이 타기 좋은 ' : ''}${campaign.vehicle} 즉시출고 되나요? 😭` },
@@ -4536,13 +4536,13 @@
         p.hook,
         (p.bullets[0] || '').replace('✔ ', ''),
         `최대 -${p.discountNum.toLocaleString()}만원 혜택 · ${p.discount}`,
-        `계약 즉시 출고 가능! 댓글에 [견적] 남겨주세요`
+        `계약 즉시 출고 가능!`
       ];
       campaign.ttsLines = [
         `${p.vehicle}, 이번 달 특별 조건!`,
         `인기 색상 선점 물량, 바로 출고됩니다.`,
         `최대 ${p.discountNum}만 원 할인 받으세요.`,
-        `댓글에 견적 두 글자만 남겨주세요!`
+        `계약하면 바로 출고해 드립니다.`
       ];
       campaign.kakaoChat = [
         { role: 'customer', text: `팀장님! ${p.vehicle} 지금 계약하면 대기 기간이 얼마나 걸리나요? 😭` },
