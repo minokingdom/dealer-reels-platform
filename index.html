@@ -5399,6 +5399,28 @@ function renderStoryArchetypesUI() {
       const cutDuration = mainDuration / totalCuts;
       const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
 
+      // 텍스트가 절대 잘리거나 박스 밖으로 삐져나가지 않도록 폰트 크기를 자동 조절하는 범용 헬퍼 (본편 & 명함 공통)
+      function drawFittedText(text, x, y, maxWidth, initialSize, minSize = 9) {
+        const str = String(text || '').trim();
+        if (!str) return;
+        let size = initialSize;
+        ctx.font = `bold ${size}px sans-serif`;
+        while (ctx.measureText(str).width > maxWidth && size > minSize) {
+          size -= 0.5;
+          ctx.font = `bold ${size}px sans-serif`;
+        }
+        if (ctx.measureText(str).width <= maxWidth) {
+          ctx.fillText(str, x, y);
+          return;
+        }
+        // minSize에서도 넘치면 끝에 말줄임표(…)를 붙여 완벽히 박스 내부에 가둠!
+        let fitted = str;
+        while (ctx.measureText(fitted + '…').width > maxWidth && fitted.length > 1) {
+          fitted = fitted.slice(0, -1);
+        }
+        ctx.fillText(fitted + '…', x, y);
+      }
+
       // ========================================================================
       // 구간 1 & 2 (0.0s ~ mainDuration): 프로모션 본편(4~10컷) + AI 성우 자막 + 하단 딜러 실물바
       // ========================================================================
@@ -5628,28 +5650,6 @@ function renderStoryArchetypesUI() {
         } else {
           ctx.fillStyle = '#f8fafc';
           ctx.fillRect(0, 0, W, H);
-        }
-
-        // 텍스트가 절대 잘리거나 박스 밖으로 삐져나가지 않도록 폰트 크기를 자동 조절하는 헬퍼
-        function drawFittedText(text, x, y, maxWidth, initialSize, minSize = 9) {
-          const str = String(text || '').trim();
-          if (!str) return;
-          let size = initialSize;
-          ctx.font = `bold ${size}px sans-serif`;
-          while (ctx.measureText(str).width > maxWidth && size > minSize) {
-            size -= 0.5;
-            ctx.font = `bold ${size}px sans-serif`;
-          }
-          if (ctx.measureText(str).width <= maxWidth) {
-            ctx.fillText(str, x, y);
-            return;
-          }
-          // minSize에서도 넘치면 끝에 말줄임표(…)를 붙여 완벽히 박스 내부에 가둠!
-          let fitted = str;
-          while (ctx.measureText(fitted + '…').width > maxWidth && fitted.length > 1) {
-            fitted = fitted.slice(0, -1);
-          }
-          ctx.fillText(fitted + '…', x, y);
         }
 
         // ★ [키네틱 타이포] 단어별 시차(Stagger) 팝업 리빌 헬퍼 (박스 오버플로우 방지 + 오버슈트 댐핑 완벽 적용)
