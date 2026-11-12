@@ -6325,27 +6325,36 @@ function renderStoryArchetypesUI() {
       let outro = baseOutro;
       let lengths = [];
       if (audioEngineReady() && AudioEngine.enabled && AudioEngine.ttsVoice !== 'off') {
+        const secs = AudioEngine.getNarrationSeconds();
+        const cutSecs = secs.slice(0, cuts);
+        const outroSec = secs[cuts] || 0;
+
+        if (cutSecs.length === cuts && cutSecs.every((x) => x > 0)) {
+          lengths = cutSecs.map((x) => Math.max(1.5, x + 0.25));
+          const need = lengths.reduce((p, q) => p + q, 0);
+          if (need < mainDur) {
+            lengths = lengths.map((x) => (x * mainDur) / need);
+          } else {
+            mainDur = need;
+          }
+        } else {
+          const longestCut = Math.max(0, ...cutSecs);
+          if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.3));
+        }
+
+        // 마지막 엔딩 명함 멘트 길이 확보 (음성이 완전히 끝나고도 1.5초 이상 유지 -> 절대 잘리지 않음!)
+        if (outroSec > 0) {
+          outro = Math.max(outro, outroSec + 1.5);
+        } else {
+          outro = Math.max(outro, 3.8); // 멘트 길이를 아직 모를 때도 3.8초 이상 확보
+        }
+
         // 원테이크 마스터 음성이 있을 때:
         if (AudioEngine.masterBuffer && AudioEngine.masterDuration > 0) {
           const masterDur = AudioEngine.masterDuration;
-          // 음성이 완전히 끝나고 엔딩 카드를 1.5~2초간 편안하게 볼 수 있는 안전 여유시간 확보 (음성 잘림 원천 차단!)
           const targetTotal = Math.max(BASE_DURATION, masterDur + 1.8);
-          outro = Math.max(3.2, targetTotal - masterDur + 0.8);
-          mainDur = Math.max(4.0, targetTotal - outro);
-        } else {
-          const secs = AudioEngine.getNarrationSeconds();
-          const cutSecs = secs.slice(0, cuts);
-          if (cutSecs.length === cuts && cutSecs.every((x) => x > 0)) {
-            lengths = cutSecs.map((x) => Math.max(1.5, x + 0.25));
-            const need = lengths.reduce((p, q) => p + q, 0);
-            if (need < mainDur) {
-              lengths = lengths.map((x) => (x * mainDur) / need);
-            } else {
-              mainDur = need;
-            }
-          } else {
-            const longestCut = Math.max(0, ...cutSecs);
-            if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.3));
+          if (mainDur + outro < targetTotal) {
+            outro = Math.max(outro, targetTotal - mainDur);
           }
         }
       }
@@ -6832,7 +6841,8 @@ function renderStoryArchetypesUI() {
             (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) ||
             campaign.hook;
         } else {
-          text = ''; // 4번째 컷에 이미 클로징 CTA가 있으므로 충돌하는 중복 멘트를 제거하여 음성 잘림 원천 차단
+          // 마지막 엔딩 카드(명함) 클로징 멘트: 딜러 소개 및 견적 문의
+          text = `${d.name} ${d.title}입니다. 댓글에 견적 남겨주세요!`;
         }
         return String(text || '')
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
@@ -7130,7 +7140,8 @@ function renderStoryArchetypesUI() {
         }
         const totalCuts = getTargetCutCount();
         const lines = [];
-        for (let i = 0; i < totalCuts; i++) {
+        // 본편 컷들(0..totalCuts-1) + 마지막 엔딩 명함 멘트(totalCuts)
+        for (let i = 0; i <= totalCuts; i++) {
           const text = this.getCutNarration(i);
           if (text) lines.push(text);
         }
@@ -7142,6 +7153,11 @@ function renderStoryArchetypesUI() {
           (result) => {
             if (this.scriptPending === job) this.scriptPending = null;
             refitDurationToNarration();
+            // 재생 중에 마스터 음성이 도착하면 즉시 타임라인 현재 시간에 맞춰 재생
+            if (isPlaying && this.enabled && this.masterBuffer) {
+              const curT = (window.__timelines && window.__timelines['main']) ? (window.__timelines['main'].currentTime || 0) : 0;
+              this.playMasterAt(curT);
+            }
             return result;
           }
         );
@@ -7337,8 +7353,9 @@ function renderStoryArchetypesUI() {
           } else {
             this.lastSpokenCut = -1;
             const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
-            const slot = curT < mainDur ? getCutIndexAt(curT) : -1;
-            if (slot >= 0) this.speakCutLine(slot, false);
+            const totalCuts = getTargetCutCount();
+            const slot = curT < mainDur ? getCutIndexAt(curT) : totalCuts;
+            this.speakCutLine(slot, false);
           }
         } else {
           if (this.customBgmAudioEl) {
@@ -7364,9 +7381,8 @@ function renderStoryArchetypesUI() {
         // 2. 마스터 오디오가 준비되지 않은 개별 문장 폴백:
         const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
         const totalCuts = getTargetCutCount();
-        const slot = t < mainDur ? getCutIndexAt(t) : -1;
-        // 엔딩 구간(slot === -1)에서는 이전 4번째 컷 음성을 중간에 강제로 자르지 않고 끝까지 나오게 유지!
-        if (slot >= 0 && slot !== this.lastSpokenCut) {
+        const slot = t < mainDur ? getCutIndexAt(t) : totalCuts;
+        if (slot !== this.lastSpokenCut) {
           this.speakCutLine(slot, false);
         }
       }
@@ -7405,7 +7421,8 @@ function renderStoryArchetypesUI() {
       }
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const totalCuts = getTargetCutCount();
-      window.__timelines['main'].seek(getCutStart(cutIdx) + 0.1);
+      const seekT = cutIdx < totalCuts ? (getCutStart(cutIdx) + 0.1) : (mainDur + 0.1);
+      window.__timelines['main'].seek(seekT);
       AudioEngine.speakCutLine(cutIdx, true);
     }
 
@@ -7413,7 +7430,7 @@ function renderStoryArchetypesUI() {
       const t = window.__timelines['main'].currentTime || 0;
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const totalCuts = getTargetCutCount();
-      const slot = t < mainDur ? getCutIndexAt(t) : 0;
+      const slot = t < mainDur ? getCutIndexAt(t) : totalCuts;
       testCutTts(slot);
     }
 
