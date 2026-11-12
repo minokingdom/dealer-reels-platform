@@ -422,7 +422,7 @@
           <!-- 하단: 8종 테마 컬러 스와치 팔레트 (가로 스크롤) -->
           <div>
             <div class="flex items-center justify-between text-[10px] text-[#a1a1a6] mb-1">
-              <span class="flex items-center gap-1">🎨 <strong class="text-[#ededed]">테마 무드 덱</strong> (터치 즉시 변경)</span>
+              <span class="flex items-center gap-1">🎨 <strong class="text-[#ededed]">색상</strong></span>
               <span id="mobileActiveThemeName" class="text-[#facc15] font-semibold text-[10px]">로얄 골드</span>
             </div>
             <div id="mobileThemeSwatches" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
@@ -521,11 +521,11 @@
           <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between text-[12px]">
               <span class="flex items-center gap-1.5 text-[#ededed] font-medium">
-                <span>🎨</span> 쇼룸 테마 무드 덱 (24종 컬러그레이드)
+                <span>🎨</span> 색상
               </span>
               <span id="desktopActiveThemeName" class="text-[11px] font-mono text-[#facc15] font-semibold">로얄 골드</span>
             </div>
-            <div id="desktopThemeSwatches" class="grid grid-cols-4 gap-1.5 pt-0.5 max-h-[148px] overflow-y-auto pr-1">
+            <div id="desktopThemeSwatches" class="flex items-center gap-1.5 flex-wrap pt-0.5">
               <!-- 24종 테마 카드 버튼 동적 렌더링 -->
             </div>
           </div>
@@ -580,23 +580,42 @@
           </div>
 
           <!-- ================================================================= -->
+          <!-- ★ 디자인 스타일 (12종, 서로 완전히 다른 화면) + 색상 (따로 선택) -->
+          <!-- ================================================================= -->
+          <div class="studio-sub p-4 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h3 class="text-[13px] font-semibold text-[#ededed]">디자인 스타일</h3>
+                <p class="text-[11px] text-[#85858b] mt-0.5">화면 구성·글꼴·자막·움직임·명함이 서로 다른 12가지 디자인입니다.</p>
+              </div>
+              <span id="activeDesignName" class="tag-chip px-2.5 py-1 text-[11px] text-[#ededed]"></span>
+            </div>
+            <div id="designStyleGrid" class="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-6 gap-2"></div>
+            <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6]"></p>
+            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
+              <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
+              <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
           <!-- ★ [루틴 완전 탈피] 12대 프로 세일즈 아키타입 & AI 무한 씬 믹서 (4,213,440+ 조합 엔진) -->
           <!-- ================================================================= -->
           <div class="studio-sub p-4 space-y-3.5 border border-[var(--border)] rounded-[12px] bg-[#111113]">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h3 class="text-[13px] font-semibold text-[#ededed] flex items-center gap-1.5">
-                  <span>✨</span> 영상 스토리 스타일 라이브러리
-                  <span class="tag-chip px-2 py-0.5 text-[10px] font-mono text-[#38bdf8] border-[#38bdf8]/30">4,213,440+ 조합 엔진</span>
+                  <span>📝</span> 대본 템플릿
+                  <span class="tag-chip px-2 py-0.5 text-[10px] font-mono text-[#a1a1a6]">문구 96종</span>
                 </h3>
-                <p class="text-[11px] text-[#85858b] mt-0.5">24종 테마 × 22종 위젯 비복원 순열 × 8대 카메라 모션 (만 개 이상 완전 무중복 보증)</p>
+                <p class="text-[11px] text-[#85858b] mt-0.5">상황별 홍보 문구·성우 대본 모음입니다. 고르면 대본만 바뀌고 디자인과 색상은 그대로입니다.</p>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 <button type="button" onclick="randomizeCustomStyle()" class="btn-secondary h-7 px-3 text-[11px] text-[#38bdf8] border-[#38bdf8]/40 hover:bg-[#38bdf8]/10 cursor-pointer flex items-center gap-1.5 font-bold shadow-sm">
-                  <span>🎲</span> AI 무한 씬 믹서 (420만+ 조합)
+                  <span>🎲</span> 문구 무작위 조합
                 </button>
                 <button type="button" onclick="generateBatchCustomArchetypes(10)" class="h-7 px-2.5 rounded-[6px] text-[11px] bg-[#1e293b] hover:bg-[#334155] text-[#38bdf8] border border-[#38bdf8]/40 flex items-center gap-1 shrink-0 font-medium transition-colors cursor-pointer" title="AI가 즉석에서 10가지 완전히 새로운 스타일을 합성하여 라이브러리에 추가합니다">
-                  <span>⚡</span> 10종 일괄 생성
+                  <span>⚡</span> 문구 10종 생성
                 </button>
                 <span id="activeArchetypeBadge" class="tag-chip px-2.5 py-1 text-[11px] font-mono text-[#4cc38a] border-[#4cc38a]/40 truncate max-w-[200px]">
                   ⚡ 긴급 한정특판형
@@ -612,7 +631,7 @@
               <span id="aiMixerPermText" class="text-[10px] text-[#93c5fd]">4,213,440 조합 중 #--</span>
               <span id="aiMixerRecipeText" class="text-[10px] text-[#ededed] truncate max-w-[340px]">테마: -- | 4컷: --</span>
               <button type="button" onclick="saveCurrentAiMixerStyle()" class="h-6 px-2.5 rounded-[5px] text-[11px] bg-[#3b82f6] hover:bg-[#2563eb] text-white font-bold transition-colors flex items-center gap-1 cursor-pointer">
-                💾 이 AI 스타일 영구 저장
+                💾 이 문구 저장
               </button>
             </div>
 
@@ -688,11 +707,8 @@
                 <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
                 </span>
-                <span id="activeSceneRecipeBadge" class="tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
+                <span id="activeSceneRecipeBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
               </div>
-              <button type="button" onclick="proceduralRestyleCurrentScene()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
-                테마 셔플 🎲
-              </button>
             </div>
 
             <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
@@ -5287,7 +5303,6 @@
         `${PROCEDURAL_CUT4[c4Idx].replace(/^[^\s]+\s*/, '')}`
       ];
 
-      campaign.themeId = randomTheme;
       campaign.hook = randomHook;
       campaign.discountNum = randomDiscountNum;
       campaign.discount = `월 ${monthlyPay}만원대 · 비공식 지원`;
@@ -5344,7 +5359,6 @@
       renderStoryArchetypesUI();
       renderDynamicCutCardsUI();
       renderVisualStoryboardTrack();
-      selectTheme(randomTheme);
 
       isPlaying = true;
       if (audioEngineReady() && AudioEngine.enabled) {
@@ -5391,39 +5405,9 @@
       }
     }
 
+    // 예전 '테마' 스와치 자리에 색상 고르기를 그림 (색상은 디자인 수에 세지 않음)
     function renderThemeSwatches() {
-      const currentTheme = campaign.themeId || 'royal';
-      const themeKeys = Object.keys(DIRECTOR_THEMES);
-
-      // 1. 모바일 도크 스와치
-      const mobileContainer = document.getElementById('mobileThemeSwatches');
-      if (mobileContainer) {
-        mobileContainer.innerHTML = themeKeys.map((k) => {
-          const t = DIRECTOR_THEMES[k];
-          const isActive = k === currentTheme;
-          return `
-            <button type="button" onclick="selectTheme('${k}')" class="theme-swatch-chip shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-[10px] font-medium border ${isActive ? 'active bg-[#232325] border-white text-white' : 'bg-[#18181b] border-[#2e2e32] text-[#a1a1a6] hover:text-[#ededed]'}">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${t.accent}; box-shadow: 0 0 6px ${t.accent}88"></span>
-              <span>${t.name}</span>
-            </button>
-          `;
-        }).join('');
-      }
-
-      // 2. 데스크탑 모니터 하단 스와치
-      const deskContainer = document.getElementById('desktopThemeSwatches');
-      if (deskContainer) {
-        deskContainer.innerHTML = themeKeys.map((k) => {
-          const t = DIRECTOR_THEMES[k];
-          const isActive = k === currentTheme;
-          return `
-            <button type="button" onclick="selectTheme('${k}')" class="theme-swatch-chip flex items-center gap-1.5 p-1.5 rounded-[6px] text-[11px] font-medium border transition-all text-left ${isActive ? 'active bg-[#232325] border-white text-white' : 'bg-[#141416] border-[#27272a] text-[#a1a1a6] hover:bg-[#1c1c1f] hover:text-[#ededed]'}">
-              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${t.accent}; box-shadow: 0 0 6px ${t.accent}88"></span>
-              <span class="truncate">${t.name}</span>
-            </button>
-          `;
-        }).join('');
-      }
+      renderColorPalettePicker();
     }
 
     function applyStoryArchetype(archKey) {
@@ -5432,8 +5416,7 @@
       activeStoryArchetypeKey = archKey;
 
       const d = getSelectedDealer();
-      campaign.themeId = arch.themeId;
-      campaign.layoutMode = arch.layoutMode || 'CLASSIC_SHOWROOM';
+      campaign.layoutMode = arch.layoutMode || 'CLASSIC_SHOWROOM'; // 예전 그리기 코드용. 장르 엔진의 디자인은 바뀌지 않음
       campaign.hook = arch.hook;
       campaign.discountNum = arch.discountNum;
       campaign.discount = arch.discount;
@@ -5465,7 +5448,7 @@
       renderStoryArchetypesUI();
       renderDynamicCutCardsUI();
       renderVisualStoryboardTrack();
-      selectTheme(arch.themeId);
+      if (typeof renderDesignStylePicker === 'function') renderDesignStylePicker();
 
       isPlaying = true;
       if (audioEngineReady() && AudioEngine.enabled) {
@@ -5549,9 +5532,6 @@ function renderStoryArchetypesUI() {
                 <button type="button" onclick="toggleFavoriteArchetype(event, '${k}')" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-[14px] ${isFav ? 'text-[#facc15]' : 'text-[#52525b] hover:text-[#facc15]'}" title="${isFav ? '즐겨찾기 해제' : '즐겨찾기 추가'}">
                   ${isFav ? '★' : '☆'}
                 </button>
-                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-medium" style="background: ${arch.accentColor}22; color: ${arch.accentColor}; border: 1px solid ${arch.accentColor}44">
-                  ${arch.themeId}
-                </span>
               </div>
             </div>
             <p class="text-[11px] text-[#a1a1a6] leading-snug line-clamp-2 min-h-[30px]">${arch.tagline}</p>
@@ -6232,6 +6212,9 @@ function renderStoryArchetypesUI() {
       TOTAL_DURATION = fitted.total;
       OUTRO_DURATION = fitted.outro;
       CUT_LENGTHS = fitted.lengths;
+      setTimeout(() => {
+        try { renderDesignStylePicker(); } catch (e) {}
+      }, 0);
       const fitNotice = document.getElementById('narrationFitNotice');
       if (fitNotice) {
         if (TOTAL_DURATION > BASE_DURATION + 0.4) {
@@ -7368,6 +7351,10 @@ function renderStoryArchetypesUI() {
       if (!document.fonts || !document.fonts.load) return;
       const specs = ['400 40px "Black Han Sans"', '700 40px "Noto Serif KR"', '900 40px "Noto Serif KR"', '500 20px "JetBrains Mono"'];
       Promise.all(specs.map((s) => document.fonts.load(s, '가A1').catch(() => null))).then(() => {
+        window.__genreFontsReady = true;
+        try {
+          if (typeof renderDesignStylePicker === 'function') renderDesignStylePicker();
+        } catch (e) {}
         try {
           if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
         } catch (e) {}
@@ -8264,7 +8251,7 @@ function renderStoryArchetypesUI() {
 
     function drawFinanceMain(c, W, H, t, info) {
       const { V, d, cutIdx, local, caption, isPrice, cutDur, totalCuts } = info;
-      const split = (V.sig === 'split') !== !!info.high; // 스타일에 따라 위아래 분할 화면 여부를 바꿈
+      const split = V.sig === 'split';
       const top = split ? 430 : 0;
       // 아래쪽을 밝은 앱 화면으로
       c.fillStyle = '#f8fafc';
@@ -8903,10 +8890,42 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
-    // 같은 구성을 쓰는 스타일끼리 겹치지 않게: 구성 안에서 몇 번째 스타일인지에 따라
-    // 자막 위치(high) · 자막 모양(alt) · 명함 디자인(cover)을 조합하고, 스타일 고유 색을 씀
-    const STYLE_RECIPE_ORDER = [0b000, 0b111, 0b010, 0b101, 0b001, 0b110, 0b100, 0b011];
-    let styleRecipeCache = { key: null, mode: null, recipe: null };
+    // ==========================================================================
+    // ★ 디자인 스타일 12종 — 화면 구성·글꼴·자막 모양·움직임·명함이 서로 완전히 다른 디자인.
+    //   색상은 여기서 정하지 않고, 딜러가 아래 COLOR_PALETTES에서 따로 고릅니다.
+    //   대본 템플릿(STORY_ARCHETYPES)은 문구만 바꾸고 디자인은 바꾸지 않습니다.
+    // ==========================================================================
+    const DESIGN_STYLES = [
+      { id: 'sale_coupon', name: '특가 쿠폰', desc: '기울어진 노란 띠 · 할인 숫자 카운트업 · 절취선 쿠폰 명함', genre: 'sale', label: '특가 진행중', sig: 'countdown', high: false, alt: false, cover: false, accent: '#ef4444', accent2: '#facc15' },
+      { id: 'sale_news', name: '뉴스 속보', desc: '상단 속보 띠와 흐르는 자막 · 검은 띠 자막 · 표지형 명함', genre: 'sale', label: 'LIVE 특가속보', sig: 'ticker', high: true, alt: true, cover: true, accent: '#dc2626', accent2: '#fde047' },
+      { id: 'lux_editorial', name: '에디토리얼', desc: '흑백 화보 · 명조체 가운데 자막 · 금테 액자 명함', genre: 'luxury', label: 'THE EDITORIAL', sig: 'masthead', grade: 'mono', high: false, alt: false, cover: false, accent: '#e7d8b5', accent2: '#ffffff' },
+      { id: 'lux_cinema', name: '시네마', desc: '영화 비율 검은 띠 · 필름 질감 · 왼쪽 정렬 자막 · 표지형 명함', genre: 'luxury', label: 'CINÉMA', sig: 'film', grade: 'film', high: true, alt: true, cover: true, accent: '#f2c46d', accent2: '#ffffff' },
+      { id: 'ev_hud', name: '글래스 HUD', desc: '모서리 표시 · 스캔선 · 유리 패널 자막 · ID 카드 명함', genre: 'ev', label: 'EV SYSTEM', sig: 'grid', high: false, alt: false, cover: false, accent: '#22d3ee', accent2: '#a5f3fc' },
+      { id: 'ev_terminal', name: '터미널', desc: '레이더 원 · 글자가 타이핑되는 자막 · 표지형 명함', genre: 'ev', label: 'AUTOPILOT', sig: 'radar', high: true, alt: true, cover: true, accent: '#38bdf8', accent2: '#e0f2fe' },
+      { id: 'sport_race', name: '레이스', desc: '연석 무늬 · 속도선 · 비스듬한 색 블록 자막 · 레이서 카드', genre: 'sports', label: 'RACE MODE', sig: 'checker', high: false, alt: false, cover: false, accent: '#ef4444', accent2: '#ffffff' },
+      { id: 'sport_outline', name: '퍼포먼스', desc: '0→100 타이머 · 거대한 외곽선 글씨 · 표지형 명함', genre: 'sports', label: 'LAUNCH', sig: 'timer', high: true, alt: true, cover: true, accent: '#facc15', accent2: '#ffffff' },
+      { id: 'fin_chat', name: '채팅 상담', desc: '위 사진 · 아래 메신저 말풍선 · 견적서 카드 · DM 명함', genre: 'finance', label: '1:1 견적상담', sig: 'split', high: false, alt: false, cover: false, accent: '#6366f1', accent2: '#e0e7ff' },
+      { id: 'fin_notice', name: '알림 카드', desc: '사진 전체 화면 · 푸시 알림 자막 · 표지형 명함', genre: 'finance', label: '견적 알림', sig: 'receipt', high: false, alt: true, cover: true, accent: '#0ea5e9', accent2: '#e0f2fe' },
+      { id: 'trust_card', name: '화이트 카드', desc: '밝은 톤 · 아래 흰 카드 자막 · 인증서 명함', genre: 'trust', label: '인증 카마스터', sig: 'seal', high: false, alt: false, cover: false, accent: '#1d4ed8', accent2: '#dbeafe' },
+      { id: 'trust_check', name: '체크리스트', desc: '검수 진행 표시 · 위쪽 체크 카드 자막 · 표지형 명함', genre: 'trust', label: '정밀 검수 완료', sig: 'checklist', high: true, alt: true, cover: true, accent: '#0284c7', accent2: '#e0f2fe' }
+    ];
+
+    // 색상 — 어떤 디자인에도 적용되는 포인트 색 (디자인 수에 세지 않음)
+    const COLOR_PALETTES = [
+      { id: 'default', name: '디자인 기본색' },
+      { id: 'red', name: '레드', accent: '#ef4444', accent2: '#fde047' },
+      { id: 'orange', name: '오렌지', accent: '#f97316', accent2: '#fed7aa' },
+      { id: 'gold', name: '골드', accent: '#d4af37', accent2: '#f5e6b8' },
+      { id: 'yellow', name: '옐로', accent: '#facc15', accent2: '#fef9c3' },
+      { id: 'green', name: '그린', accent: '#22c55e', accent2: '#bbf7d0' },
+      { id: 'teal', name: '틸', accent: '#14b8a6', accent2: '#ccfbf1' },
+      { id: 'sky', name: '스카이', accent: '#38bdf8', accent2: '#e0f2fe' },
+      { id: 'blue', name: '블루', accent: '#2563eb', accent2: '#dbeafe' },
+      { id: 'purple', name: '퍼플', accent: '#8b5cf6', accent2: '#ede9fe' },
+      { id: 'pink', name: '핑크', accent: '#ec4899', accent2: '#fce7f3' },
+      { id: 'silver', name: '실버', accent: '#cbd5e1', accent2: '#ffffff' }
+    ];
+
     function gLuminance(hex) {
       const m = String(hex || '').match(/^#?([0-9a-f]{6})$/i);
       if (!m) return -1;
@@ -8917,28 +8936,150 @@ function renderStoryArchetypesUI() {
       });
       return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
     }
-    function getStyleRecipe(V) {
-      let key = '';
-      try { key = activeStoryArchetypeKey || ''; } catch (e) {}
-      const mode = campaign.layoutMode;
-      if (styleRecipeCache.key === key && styleRecipeCache.mode === mode && styleRecipeCache.genre === V.genre) return styleRecipeCache.recipe;
-      let idx = 0;
-      let accent = null;
+    // 색을 흰색(amount>0) 또는 검은색(amount<0) 쪽으로 섞음
+    function gMix(hex, amount) {
+      const n = parseInt(String(hex).replace('#', ''), 16);
+      const to = amount > 0 ? 255 : 0;
+      const k = Math.abs(amount);
+      const mix = (v) => Math.round(v + (to - v) * k);
+      const r = mix((n >> 16) & 255);
+      const g = mix((n >> 8) & 255);
+      const b = mix(n & 255);
+      return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+    }
+    // 바탕이 밝은 디자인에는 충분히 진하게, 어두운 디자인에는 충분히 밝게 맞춤 (글씨가 안 보이는 일 방지)
+    function gReadableAccent(hex, lightBg) {
+      let c = hex;
+      for (let i = 0; i < 8; i++) {
+        const l = gLuminance(c);
+        if (lightBg && l > 0.32) c = gMix(c, -0.15);
+        else if (!lightBg && l < 0.16) c = gMix(c, 0.18);
+        else break;
+      }
+      return c;
+    }
+
+    function loadDesignPrefs() {
       try {
-        const arch = STORY_ARCHETYPES[key];
-        if (arch && arch.layoutMode === mode) {
-          idx = Math.max(0, Object.keys(STORY_ARCHETYPES).filter((k) => STORY_ARCHETYPES[k].layoutMode === mode).indexOf(key));
-          accent = arch.accentColor || null;
-        }
+        const s = localStorage.getItem('autoreels_design_style');
+        const c = localStorage.getItem('autoreels_color');
+        if (s && DESIGN_STYLES.some((d) => d.id === s)) campaign.designStyle = s;
+        if (c && COLOR_PALETTES.some((p) => p.id === c)) campaign.colorKey = c;
       } catch (e) {}
-      // 밝은 바탕(신뢰·금융)에는 너무 밝은 색, 어두운 바탕에는 너무 어두운 색을 쓰지 않음
-      const lum = gLuminance(accent);
-      const lightBg = V.genre === 'trust' || V.genre === 'finance';
-      if (lum < 0 || (lightBg && lum > 0.45) || (!lightBg && lum < 0.12)) accent = null;
-      const bits = STYLE_RECIPE_ORDER[idx % STYLE_RECIPE_ORDER.length];
-      const recipe = { idx, high: !!(bits & 1), alt: !!(bits & 2), cover: !!(bits & 4), accent };
-      styleRecipeCache = { key, mode, genre: V.genre, recipe };
-      return recipe;
+      if (!campaign.designStyle) campaign.designStyle = DESIGN_STYLES[0].id;
+      if (!campaign.colorKey) campaign.colorKey = 'default';
+    }
+    function getActiveDesign() {
+      return DESIGN_STYLES.find((d) => d.id === campaign.designStyle) || DESIGN_STYLES[0];
+    }
+    function getActivePalette() {
+      return COLOR_PALETTES.find((p) => p.id === campaign.colorKey) || COLOR_PALETTES[0];
+    }
+    // 디자인 + 색상 → 그리기에 쓰는 값
+    function buildDesignVariant(design, palette) {
+      const lightBg = design.genre === 'trust' || design.genre === 'finance';
+      let accent = design.accent;
+      let accent2 = design.accent2;
+      if (palette && palette.accent) {
+        accent = gReadableAccent(palette.accent, lightBg);
+        accent2 = palette.accent2;
+      }
+      return { genre: design.genre, label: design.label, sig: design.sig, grade: design.grade, accent, accent2 };
+    }
+
+    // ---------- 디자인 스타일 · 색상 고르기 화면 ----------
+    let designThumbCache = { key: '', urls: {} };
+    // 실제 그리기 함수로 각 디자인의 한 장면을 그려 작은 미리보기 이미지를 만듦
+    function buildDesignThumbnails() {
+      if (!window.__timelines || !window.__timelines.main) return designThumbCache.urls;
+      const photoKey = (campaign.uploadedPhotos || []).map((p) => (p && (p._label || p.src || '').slice(-24)) || '').join('|');
+      const key = `${window.__genreFontsReady ? 'F' : 'f'}|${campaign.colorKey}|${photoKey}|${getSelectedDealer().id}|${campaign.cutCaptions && campaign.cutCaptions[0]}`;
+      if (designThumbCache.key === key) return designThumbCache.urls;
+      const ready = (campaign.uploadedPhotos || []).every((p) => !p || p._isVideo || (p.complete && p.naturalWidth > 0));
+      if (!ready) return designThumbCache.urls;
+      const saved = campaign.designStyle;
+      const mainDuration = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const totalCuts = getTargetCutCount();
+      const thumb = document.createElement('canvas');
+      thumb.width = 162;
+      thumb.height = 288;
+      const tctx = thumb.getContext('2d');
+      const urls = {};
+      try {
+        DESIGN_STYLES.forEach((ds) => {
+          campaign.designStyle = ds.id;
+          renderGenreFrame((mainDuration / totalCuts) * 0.9, mainDuration, totalCuts, getSelectedDealer());
+          tctx.drawImage(canvas, 0, 0, thumb.width, thumb.height);
+          urls[ds.id] = thumb.toDataURL('image/jpeg', 0.72);
+        });
+      } catch (e) {}
+      campaign.designStyle = saved;
+      window.__timelines.main.seek(window.__timelines.main.currentTime);
+      designThumbCache = { key, urls };
+      return urls;
+    }
+
+    function renderDesignStylePicker() {
+      const grid = document.getElementById('designStyleGrid');
+      if (!grid) return;
+      const urls = buildDesignThumbnails();
+      const active = getActiveDesign().id;
+      grid.innerHTML = DESIGN_STYLES.map((ds) => {
+        const on = ds.id === active;
+        const img = urls[ds.id]
+          ? `<img src="${urls[ds.id]}" alt="" class="w-full aspect-[9/16] object-cover rounded-[6px] bg-black" />`
+          : `<div class="w-full aspect-[9/16] rounded-[6px] bg-[#0f0f10]"></div>`;
+        return `
+          <button type="button" onclick="selectDesignStyle('${ds.id}')" title="${ds.desc}"
+            class="text-left p-1.5 rounded-[9px] border transition-colors cursor-pointer ${on ? 'border-[#ededed] bg-[#232325]' : 'border-[var(--border)] bg-[#141415] hover:border-[rgba(237,237,237,0.3)]'}">
+            ${img}
+            <div class="mt-1.5 px-0.5 text-[12px] font-medium ${on ? 'text-white' : 'text-[#d4d4d8]'} truncate">${ds.name}</div>
+          </button>`;
+      }).join('');
+      const nameEl = document.getElementById('activeDesignName');
+      if (nameEl) nameEl.textContent = `${getActiveDesign().name} · ${getActivePalette().name}`;
+      const descEl = document.getElementById('activeDesignDesc');
+      if (descEl) descEl.textContent = getActiveDesign().desc;
+    }
+
+    function renderColorPalettePicker() {
+      const design = getActiveDesign();
+      const html = COLOR_PALETTES.map((p) => {
+        const on = p.id === campaign.colorKey;
+        const sw = p.accent || design.accent;
+        const dot = p.id === 'default'
+          ? `<span class="w-3 h-3 rounded-full shrink-0" style="background: conic-gradient(${design.accent} 0 50%, ${design.accent2} 50% 100%)"></span>`
+          : `<span class="w-3 h-3 rounded-full shrink-0" style="background:${sw}"></span>`;
+        return `<button type="button" onclick="selectColorPalette('${p.id}')" class="theme-swatch-chip shrink-0 flex items-center gap-1.5 px-2 py-1 rounded-[6px] text-[11px] font-medium border cursor-pointer ${on ? 'border-[#ededed] bg-[#232325] text-white' : 'border-[var(--border)] text-[#a1a1a6] hover:text-[#ededed]'}">${dot}<span class="truncate">${p.name}</span></button>`;
+      }).join('');
+      ['desktopThemeSwatches', 'mobileThemeSwatches', 'designColorSwatches'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+      });
+      ['desktopActiveThemeName', 'mobileActiveThemeName'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = getActivePalette().name;
+          el.style.color = getActivePalette().accent || design.accent;
+        }
+      });
+    }
+
+    function selectDesignStyle(id) {
+      if (!DESIGN_STYLES.some((d) => d.id === id)) return;
+      campaign.designStyle = id;
+      try { localStorage.setItem('autoreels_design_style', id); } catch (e) {}
+      renderDesignStylePicker();
+      renderColorPalettePicker();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+    }
+    function selectColorPalette(id) {
+      if (!COLOR_PALETTES.some((p) => p.id === id)) return;
+      campaign.colorKey = id;
+      try { localStorage.setItem('autoreels_color', id); } catch (e) {}
+      renderColorPalettePicker();
+      renderDesignStylePicker();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
     }
 
     // ==========================================================================
@@ -8948,9 +9089,8 @@ function renderStoryArchetypesUI() {
       const c = ctx;
       const W = canvas.width;
       const H = canvas.height;
-      const baseV = getGenreVariant(campaign.layoutMode);
-      const recipe = getStyleRecipe(baseV);
-      const V = recipe.accent ? Object.assign({}, baseV, { accent: recipe.accent }) : baseV;
+      const design = getActiveDesign();
+      const V = buildDesignVariant(design, getActivePalette());
       const cutDur = mainDuration / totalCuts;
       c.save();
       c.textBaseline = 'alphabetic';
@@ -8975,8 +9115,8 @@ function renderStoryArchetypesUI() {
           isPrice: gIsPriceCut(raw),
           cutDur,
           totalCuts,
-          high: recipe.high,
-          alt: recipe.alt
+          high: design.high,
+          alt: design.alt
         };
         if (V.genre === 'sale') drawSaleMain(c, W, H, t, info);
         else if (V.genre === 'luxury') drawLuxuryMain(c, W, H, t, info);
@@ -8989,11 +9129,13 @@ function renderStoryArchetypesUI() {
         syncCutVideos(-1, 0);
         drawGenreBackground(c, W, H, t, mainDuration, V, true);
         const local = Math.min(1, (t - mainDuration) / 1.2);
-        if (recipe.cover) drawCoverOutro(c, W, H, t, local, V, d);
+        if (design.cover) drawCoverOutro(c, W, H, t, local, V, d);
         else drawGenreOutro(c, W, H, t, local, V, d);
       }
       c.restore();
     }
+
+    loadDesignPrefs();
 
     function renderHyperFramesComposition(t) {
       const d = getSelectedDealer();
@@ -14512,6 +14654,9 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     renderAdminDealerList();
     renderThemeSwatches();
     renderStoryArchetypesUI();
+    setTimeout(() => {
+      try { renderDesignStylePicker(); } catch (e) {}
+    }, 800);
     renderVisualStoryboardTrack();
     renderKillerCopyChips();
     const initPinned = getPinnedArchetype();
