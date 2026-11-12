@@ -335,6 +335,15 @@
     .pd-item { text-align: left; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); background: #18181b; cursor: pointer; transition: border-color .15s, background .15s; }
     .pd-item:hover { border-color: rgba(255,255,255,0.22); }
     .pd-item.on { border-color: #ededed; background: #232326; }
+    .pd-cats { display: flex; gap: 5px; overflow-x: auto; padding: 8px 10px 4px; scrollbar-width: none; }
+    .pd-cats::-webkit-scrollbar { display: none; }
+    .pd-cat { flex: 0 0 auto; height: 24px; padding: 0 9px; border-radius: 6px; font-size: 11px; color: #a1a1a6; border: 1px solid rgba(255,255,255,0.08); background: #18181b; }
+    .pd-cat.on { color: #fff; border-color: #ededed; background: #232326; }
+    .pd-grid { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px; align-content: start; }
+    .pd-card { padding: 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.07); background: #18181b; text-align: left; cursor: pointer; }
+    .pd-card.on { border-color: #ededed; background: #232326; }
+    .pd-card img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 6px; background: #0f0f10; display: block; }
+    .pd-card div { margin-top: 4px; padding: 0 2px; font-size: 11px; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pd-handle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 2px;
       padding: 10px 5px; border-radius: 10px 0 0 10px; background: rgba(0,0,0,0.45); color: #ededed; font-size: 10px; font-weight: 600; writing-mode: horizontal-tb;
       -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.12); border-right: 0; opacity: 0.75; }
@@ -501,19 +510,20 @@
           <!-- 9:16 렌더링 뷰포트 -->
           <div id="previewViewport" class="relative w-full aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
             <canvas id="reelCanvas" width="540" height="960" class="w-full h-full object-cover"></canvas>
-            <!-- ★ 미리보기를 옆으로 밀면 나오는 차종 프리셋 사이드바 -->
-            <button type="button" id="presetHandle" onclick="openPresetDrawer('right')" class="pd-handle" aria-label="차종 프리셋 열기">
-              <span>차종</span><span class="pd-chev">‹</span>
+            <!-- ★ 미리보기를 옆으로 밀면 나오는 디자인 스타일 사이드바 -->
+            <button type="button" id="presetHandle" onclick="openPresetDrawer('right')" class="pd-handle" aria-label="디자인 스타일 열기">
+              <span>디자인</span><span class="pd-chev">‹</span>
             </button>
             <div id="presetDrawer" class="preset-drawer" aria-hidden="true">
               <div class="pd-head">
                 <div>
-                  <div class="text-[13px] font-semibold text-[#ededed]">차종 프리셋</div>
+                  <div class="text-[13px] font-semibold text-[#ededed]">디자인 스타일 <span id="pdCount" class="text-[#85858b] font-normal"></span></div>
                   <div class="text-[11px] text-[#85858b]">고르면 바로 미리보기에 반영돼요</div>
                 </div>
                 <button type="button" onclick="closePresetDrawer()" class="pd-close" aria-label="닫기">✕</button>
               </div>
-              <div id="presetDrawerList" class="pd-list"></div>
+              <div id="pdCats" class="pd-cats"></div>
+              <div id="presetDrawerList" class="pd-list pd-grid"></div>
             </div>
             <video id="hiddenCustomVideo" class="hidden" muted playsinline loop crossorigin="anonymous"></video>
           </div>
@@ -621,7 +631,7 @@
         <div id="studioPanel_script" role="tabpanel" aria-labelledby="studioTabBtn_script" class="studio-panel p-5 sm:p-6 space-y-5">
           <div>
             <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 프리셋</label>
-            <select id="presetSelect" onchange="applyPreset(this.value); renderPresetDrawer();" class="studio-input w-full h-9 px-3 text-[13px] cursor-pointer">
+            <select id="presetSelect" onchange="applyPreset(this.value)" class="studio-input w-full h-9 px-3 text-[13px] cursor-pointer">
               <option value="sorento">2026 쏘렌토 하이브리드 (할인 480만원)</option>
               <option value="grandeur">2026 디 올 뉴 그랜저 하이브리드 (할인 450만원)</option>
               <option value="santafe">디 올 뉴 싼타페 하이브리드 (할인 420만원)</option>
@@ -12459,6 +12469,8 @@ function renderStoryArchetypesUI() {
           designThumbCache.fresh[ds.id] = true;
           const el = document.getElementById('dthumb_' + ds.id);
           if (el) el.src = url;
+          const el2 = document.getElementById('pdthumb_' + ds.id);
+          if (el2) el2.src = url;
         });
       } catch (e) {}
       campaign.designStyle = saved;
@@ -12553,6 +12565,8 @@ function renderStoryArchetypesUI() {
       const countEl = document.getElementById('designStyleCount');
       if (countEl) countEl.textContent = String(DESIGN_STYLES.length);
       scheduleDesignThumbs();
+      const pd = document.getElementById('presetDrawer');
+      if (pd && pd.classList.contains('open') && typeof renderPresetDrawer === 'function') renderPresetDrawer();
     }
 
     function renderColorPalettePicker() {
@@ -17120,22 +17134,30 @@ function renderStoryArchetypesUI() {
     // ==========================================================================
     // ★ 차종 프리셋 사이드바: 미리보기를 왼쪽/오른쪽으로 밀면 그 쪽에서 미리보기 높이만큼 열림
     // ==========================================================================
+    // 사이드바 목록 = 디자인 스타일 (묶음 탭 + 미리보기 그림)
+    let pdCat = '전체';
+    function selectPdCat(cat) {
+      pdCat = cat;
+      renderPresetDrawer();
+    }
     function renderPresetDrawer() {
       const list = document.getElementById('presetDrawerList');
-      if (!list) return;
-      const cur = campaign.presetKey || (document.getElementById('presetSelect') || {}).value;
-      list.innerHTML = Object.keys(presets).map((key) => {
-        const p = presets[key];
-        const on = key === cur;
-        return `<button type="button" class="pd-item ${on ? 'on' : ''}" onclick="choosePresetFromDrawer('${key}')">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full shrink-0" style="background:${p.neonColor || '#ededed'}"></span>
-              <span class="text-[13px] font-medium text-[#ededed] truncate">${p.vehicle}</span>
-              ${on ? '<span class="ml-auto text-[11px] text-[#4cc38a] shrink-0">선택됨</span>' : ''}
-            </div>
-            <div class="mt-1 pl-4 text-[11px] text-[#a1a1a6] truncate">최대 -${Number(p.discountNum).toLocaleString()}만원 · ${p.discount}</div>
-          </button>`;
-      }).join('');
+      if (!list || typeof DESIGN_STYLES === 'undefined') return;
+      const cats = document.getElementById('pdCats');
+      if (cats) {
+        cats.innerHTML = DESIGN_CATS.map((c) => `<button type="button" class="pd-cat ${c === pdCat ? 'on' : ''}" onclick="selectPdCat('${c}')">${c}</button>`).join('');
+      }
+      const cnt = document.getElementById('pdCount');
+      if (cnt) cnt.textContent = String(DESIGN_STYLES.length);
+      const active = getActiveDesign().id;
+      const urls = (typeof designThumbCache !== 'undefined' && designThumbCache.urls) || {};
+      const blank = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      const items = pdCat === '전체' ? DESIGN_STYLES : DESIGN_STYLES.filter((d) => d.cat === pdCat);
+      list.innerHTML = items.map((d) => `<button type="button" class="pd-card ${d.id === active ? 'on' : ''}" onclick="choosePresetFromDrawer('${d.id}')" title="${d.desc}">
+          <img id="pdthumb_${d.id}" src="${urls[d.id] || blank}" alt="" loading="lazy" />
+          <div>${d.name}</div>
+        </button>`).join('');
+      if (typeof scheduleDesignThumbs === 'function') scheduleDesignThumbs();
     }
     function openPresetDrawer(side) {
       const dr = document.getElementById('presetDrawer');
@@ -17143,6 +17165,14 @@ function renderStoryArchetypesUI() {
       renderPresetDrawer();
       dr.classList.toggle('from-left', side === 'left');
       // 방향을 바꾼 직후에도 미끄러져 들어오도록 한 프레임 쉬었다가 열기
+      // 모바일: 위쪽 고정 바(라이브 도크)에 사이드바 윗부분이 가려지지 않도록 미리보기를 그 아래로 맞춤
+      const dock = document.getElementById('mobileLiveDock');
+      const vp = document.getElementById('previewViewport');
+      if (dock && vp && getComputedStyle(dock).display !== 'none' && dock.getBoundingClientRect().height > 0) {
+        const dockBottom = dock.getBoundingClientRect().bottom;
+        const top = vp.getBoundingClientRect().top;
+        if (top < dockBottom + 8) window.scrollBy({ top: top - (dockBottom + 8), behavior: 'smooth' });
+      }
       void dr.offsetWidth;
       dr.classList.add('open');
       dr.setAttribute('aria-hidden', 'false');
@@ -17153,10 +17183,8 @@ function renderStoryArchetypesUI() {
       dr.classList.remove('open');
       dr.setAttribute('aria-hidden', 'true');
     }
-    function choosePresetFromDrawer(key) {
-      const sel = document.getElementById('presetSelect');
-      if (sel) sel.value = key;
-      applyPreset(key);
+    function choosePresetFromDrawer(id) {
+      selectDesignStyle(id);
       renderPresetDrawer();
       setTimeout(closePresetDrawer, 260);
     }
