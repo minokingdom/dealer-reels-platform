@@ -2215,6 +2215,21 @@
         }
       },
 
+      // Fish Audio 요청은 한 번에 2개까지만 보냄 (한꺼번에 몰리면 일부가 거절되어 음성이 빠짐)
+      ttsActive: 0,
+      ttsWaiters: [],
+      async runTtsRequest(fn) {
+        if (this.ttsActive >= 2) await new Promise((resolve) => this.ttsWaiters.push(resolve));
+        this.ttsActive++;
+        try {
+          return await fn();
+        } finally {
+          this.ttsActive--;
+          const next = this.ttsWaiters.shift();
+          if (next) next();
+        }
+      },
+
       // 문장 하나의 Fish Audio 음성을 받아 AudioBuffer로 디코딩 (성우·문장별 캐시)
       fetchTtsBuffer(text) {
         const voice = this.ttsVoice;
@@ -2227,7 +2242,12 @@
         const job = (async () => {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
-          const res = await fetch(`/api/tts?voice=${encodeURIComponent(voice)}&text=${encodeURIComponent(text)}`);
+          const url = `/api/tts?voice=${encodeURIComponent(voice)}&text=${encodeURIComponent(text)}`;
+          let res = await this.runTtsRequest(() => fetch(url));
+          if (!res.ok && (res.status === 429 || res.status >= 500) && res.status !== 503) {
+            await new Promise((r) => setTimeout(r, 900));
+            res = await this.runTtsRequest(() => fetch(url));
+          }
           if (!res.ok) {
             let code = `http_${res.status}`;
             try {
@@ -2251,7 +2271,7 @@
             if (['fish_api_key_missing', 'http_401', 'http_402', 'offline'].includes(code)) {
               this.ttsBlockedUntil = Date.now() + 60000;
             }
-            this.setTtsProvider('browser', code);
+            if (Date.now() < this.ttsBlockedUntil || this.ttsProvider !== 'fish') this.setTtsProvider('browser', code);
           }
         );
         return job;
@@ -2327,6 +2347,11 @@
       playTtsBuffer(buffer, cutIdx) {
         const ctx = this.ctx;
         if (!ctx || !buffer) return;
+        if (this.ttsSource) {
+          try { this.ttsSource.stop(); } catch (e) {}
+          this.ttsSource = null;
+          this.ttsSourceGain = null;
+        }
         const src = ctx.createBufferSource();
         const g = ctx.createGain();
         src.buffer = buffer;
@@ -2409,7 +2434,9 @@
           },
           () => {
             if (token !== this.ttsSpeakToken) return;
-            this.speakWithBrowserVoice(text);
+            // 키 미설정·크레딧 부족 등 Fish Audio를 아예 못 쓸 때만 브라우저 음성으로 대체.
+            // 한 문장만 일시적으로 실패한 경우에는 다른 목소리가 섞이지 않게 그 컷은 건너뜀
+            if (Date.now() < this.ttsBlockedUntil) this.speakWithBrowserVoice(text);
           }
         );
       },
@@ -3602,7 +3629,10 @@
       if (isPlaying) {
         const tl = window.__timelines['main'];
         let nextT = tl.currentTime + dt;
-        if (nextT >= tl.duration) nextT = 0;
+        if (nextT >= tl.duration) {
+          // 녹화 중에는 마지막 화면에서 멈춰, 첫 컷 음성이 영상 끝에 섞여 들어가지 않게 함
+          nextT = window.__exportingVideo ? Math.max(0, tl.duration - 0.001) : 0;
+        }
         tl.seek(nextT);
       }
       requestAnimationFrame(tick);
@@ -4606,6 +4636,7 @@
       }
 
       // 0.0초부터 TOTAL_DURATION까지 전 구간(본편 컷 + 마지막 딜러 명함) 녹화 시작
+      window.__exportingVideo = true; // 녹화 중에는 끝에서 처음으로 되감지 않음
       window.__timelines['main'].seek(0);
       isPlaying = true;
       AudioEngine.lastSpokenCut = -1;
@@ -4677,6 +4708,13 @@
         const player = document.getElementById('exportedVideoPlayer');
         const metaText = document.getElementById('exportedVideoMeta');
         const modal = document.getElementById('exportedVideoModal');
+
+        // 추출된 영상이 재생되는 동안 미리보기 소리가 겹치지 않도록 미리보기를 멈춤
+        window.__exportingVideo = false;
+        isPlaying = false;
+        AudioEngine.onPlayStateChange(false);
+        const ppBtnAfter = document.getElementById('playPauseBtn');
+        if (ppBtnAfter) ppBtnAfter.textContent = '▶️ 재생';
 
         if (player) {
           player.src = videoUrl;
