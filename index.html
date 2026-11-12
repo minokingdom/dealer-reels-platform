@@ -1730,7 +1730,7 @@
               </div>
             </div>
             <input id="cutSub${i}" type="text" value="${subVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 성우 대사 (짧을수록 영상이 짧아집니다)" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 성우 대사 (짧을수록 영상이 짧아집니다)" title="숫자가 다르게 읽히면 한글로 적어 주세요. 예: 네 대" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
           </div>
         `;
       }
@@ -2254,7 +2254,8 @@
         const job = (async () => {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
-          const url = `/api/tts?speed=${speed}` + (voice !== 'auto' ? `&ref=${encodeURIComponent(voice)}` : '') + `&text=${encodeURIComponent(text)}`;
+          // v: 서버의 읽기 규칙이 바뀌면 올려서, 예전에 저장된 음성 대신 새 음성을 받게 함
+          const url = `/api/tts?v=2&speed=${speed}` + (voice !== 'auto' ? `&ref=${encodeURIComponent(voice)}` : '') + `&text=${encodeURIComponent(text)}`;
           let res = await this.runTtsRequest(() => fetch(url));
           if (!res.ok && (res.status === 429 || res.status >= 500) && res.status !== 503) {
             await new Promise((r) => setTimeout(r, 900));

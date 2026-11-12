@@ -18,6 +18,7 @@
  */
 
 const { isValidVoiceId, CURATED_VOICE_IDS } = require('../lib/fish-voices');
+const { normalizeKoreanNumbers } = require('../lib/korean-numbers');
 
 // 말투: S2 모델은 문장 앞의 [대괄호] 지시어로 감정을 조절합니다. 기본은 밝은 톤
 const TONE_TAGS = { bright: '[happy]', excited: '[excited]', plain: '' };
@@ -93,7 +94,8 @@ module.exports = async function handler(req, res) {
   const speed = requestedSpeed >= 0.8 && requestedSpeed <= 1.5 ? requestedSpeed : preset.speed;
 
   const payload = {
-    text: toneTag ? `${toneTag} ${text}` : text,
+    // "4대"를 "네 대"로 읽도록 숫자 읽기를 보정한 뒤 말투 지시어를 붙임
+    text: (toneTag ? `${toneTag} ` : '') + normalizeKoreanNumbers(text),
     format: 'mp3',
     latency: 'normal',
     prosody: { speed }
