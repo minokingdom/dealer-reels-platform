@@ -322,7 +322,26 @@
       border-color: #71717a;
       color: #ededed;
     }
-  </style>
+  
+    /* ★ 차종 프리셋 사이드바 (미리보기 위로 옆에서 밀려 나옴) */
+    .preset-drawer { position: absolute; top: 0; bottom: 0; right: 0; width: 84%; z-index: 30; display: flex; flex-direction: column;
+      background: rgba(14, 14, 16, 0.94); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+      border-left: 1px solid rgba(255,255,255,0.08); transform: translateX(104%); transition: transform 0.28s cubic-bezier(.2,.8,.2,1); }
+    .preset-drawer.from-left { right: auto; left: 0; border-left: 0; border-right: 1px solid rgba(255,255,255,0.08); transform: translateX(-104%); }
+    .preset-drawer.open { transform: translateX(0); }
+    .pd-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .pd-close { width: 28px; height: 28px; border-radius: 8px; color: #a1a1a6; background: #1b1b1e; }
+    .pd-list { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; -webkit-overflow-scrolling: touch; }
+    .pd-item { text-align: left; padding: 11px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); background: #18181b; cursor: pointer; transition: border-color .15s, background .15s; }
+    .pd-item:hover { border-color: rgba(255,255,255,0.22); }
+    .pd-item.on { border-color: #ededed; background: #232326; }
+    .pd-handle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 2px;
+      padding: 10px 5px; border-radius: 10px 0 0 10px; background: rgba(0,0,0,0.45); color: #ededed; font-size: 10px; font-weight: 600; writing-mode: horizontal-tb;
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.12); border-right: 0; opacity: 0.75; }
+    .pd-handle:hover { opacity: 1; }
+    .pd-handle span:first-child { writing-mode: vertical-rl; letter-spacing: 2px; }
+    .pd-chev { font-size: 14px; line-height: 1; }
+</style>
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
   <div class="max-w-[1440px] mx-auto space-y-6">
@@ -480,8 +499,22 @@
           </div>
 
           <!-- 9:16 렌더링 뷰포트 -->
-          <div class="relative w-full aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
+          <div id="previewViewport" class="relative w-full aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
             <canvas id="reelCanvas" width="540" height="960" class="w-full h-full object-cover"></canvas>
+            <!-- ★ 미리보기를 옆으로 밀면 나오는 차종 프리셋 사이드바 -->
+            <button type="button" id="presetHandle" onclick="openPresetDrawer('right')" class="pd-handle" aria-label="차종 프리셋 열기">
+              <span>차종</span><span class="pd-chev">‹</span>
+            </button>
+            <div id="presetDrawer" class="preset-drawer" aria-hidden="true">
+              <div class="pd-head">
+                <div>
+                  <div class="text-[13px] font-semibold text-[#ededed]">차종 프리셋</div>
+                  <div class="text-[11px] text-[#85858b]">고르면 바로 미리보기에 반영돼요</div>
+                </div>
+                <button type="button" onclick="closePresetDrawer()" class="pd-close" aria-label="닫기">✕</button>
+              </div>
+              <div id="presetDrawerList" class="pd-list"></div>
+            </div>
             <video id="hiddenCustomVideo" class="hidden" muted playsinline loop crossorigin="anonymous"></video>
           </div>
 
@@ -588,7 +621,7 @@
         <div id="studioPanel_script" role="tabpanel" aria-labelledby="studioTabBtn_script" class="studio-panel p-5 sm:p-6 space-y-5">
           <div>
             <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 프리셋</label>
-            <select id="presetSelect" onchange="applyPreset(this.value)" class="studio-input w-full h-9 px-3 text-[13px] cursor-pointer">
+            <select id="presetSelect" onchange="applyPreset(this.value); renderPresetDrawer();" class="studio-input w-full h-9 px-3 text-[13px] cursor-pointer">
               <option value="sorento">2026 쏘렌토 하이브리드 (할인 480만원)</option>
               <option value="grandeur">2026 디 올 뉴 그랜저 하이브리드 (할인 450만원)</option>
               <option value="santafe">디 올 뉴 싼타페 하이브리드 (할인 420만원)</option>
@@ -17082,6 +17115,95 @@ function renderStoryArchetypesUI() {
       window.__timelines['main'].seek(0.12);
       AudioEngine.speakCutLine(0, true);
     }
+
+
+    // ==========================================================================
+    // ★ 차종 프리셋 사이드바: 미리보기를 왼쪽/오른쪽으로 밀면 그 쪽에서 미리보기 높이만큼 열림
+    // ==========================================================================
+    function renderPresetDrawer() {
+      const list = document.getElementById('presetDrawerList');
+      if (!list) return;
+      const cur = campaign.presetKey || (document.getElementById('presetSelect') || {}).value;
+      list.innerHTML = Object.keys(presets).map((key) => {
+        const p = presets[key];
+        const on = key === cur;
+        return `<button type="button" class="pd-item ${on ? 'on' : ''}" onclick="choosePresetFromDrawer('${key}')">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background:${p.neonColor || '#ededed'}"></span>
+              <span class="text-[13px] font-medium text-[#ededed] truncate">${p.vehicle}</span>
+              ${on ? '<span class="ml-auto text-[11px] text-[#4cc38a] shrink-0">선택됨</span>' : ''}
+            </div>
+            <div class="mt-1 pl-4 text-[11px] text-[#a1a1a6] truncate">최대 -${Number(p.discountNum).toLocaleString()}만원 · ${p.discount}</div>
+          </button>`;
+      }).join('');
+    }
+    function openPresetDrawer(side) {
+      const dr = document.getElementById('presetDrawer');
+      if (!dr) return;
+      renderPresetDrawer();
+      dr.classList.toggle('from-left', side === 'left');
+      // 방향을 바꾼 직후에도 미끄러져 들어오도록 한 프레임 쉬었다가 열기
+      requestAnimationFrame(() => {
+        dr.classList.add('open');
+        dr.setAttribute('aria-hidden', 'false');
+      });
+    }
+    function closePresetDrawer() {
+      const dr = document.getElementById('presetDrawer');
+      if (!dr) return;
+      dr.classList.remove('open');
+      dr.setAttribute('aria-hidden', 'true');
+    }
+    function choosePresetFromDrawer(key) {
+      const sel = document.getElementById('presetSelect');
+      if (sel) sel.value = key;
+      applyPreset(key);
+      renderPresetDrawer();
+      setTimeout(closePresetDrawer, 260);
+    }
+    (function setupPresetSwipe() {
+      const vp = document.getElementById('previewViewport');
+      if (!vp) return;
+      let sx = 0;
+      let sy = 0;
+      let tracking = false;
+      const start = (x, y) => {
+        sx = x;
+        sy = y;
+        tracking = true;
+      };
+      const end = (x, y) => {
+        if (!tracking) return;
+        tracking = false;
+        const dx = x - sx;
+        const dy = y - sy;
+        if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        const dr = document.getElementById('presetDrawer');
+        const isOpen = dr && dr.classList.contains('open');
+        const fromLeft = dr && dr.classList.contains('from-left');
+        if (isOpen) {
+          // 열린 쪽으로 다시 밀어 넣으면 닫힘
+          if ((fromLeft && dx < 0) || (!fromLeft && dx > 0)) closePresetDrawer();
+          return;
+        }
+        openPresetDrawer(dx < 0 ? 'right' : 'left');
+      };
+      vp.addEventListener('touchstart', (ev) => {
+        if (ev.target.closest && ev.target.closest('.pd-list')) return;
+        const t = ev.touches[0];
+        start(t.clientX, t.clientY);
+      }, { passive: true });
+      vp.addEventListener('touchend', (ev) => {
+        const t = ev.changedTouches[0];
+        end(t.clientX, t.clientY);
+      }, { passive: true });
+      // 데스크톱: 마우스로 끌어도 동작
+      vp.addEventListener('mousedown', (ev) => {
+        if (ev.target.closest && (ev.target.closest('.preset-drawer') || ev.target.closest('.pd-handle'))) return;
+        start(ev.clientX, ev.clientY);
+      });
+      window.addEventListener('mouseup', (ev) => end(ev.clientX, ev.clientY));
+    })();
 
     function applyPreset(key) {
       const p = presets[key];
