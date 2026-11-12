@@ -5877,7 +5877,8 @@ function renderStoryArchetypesUI() {
         // ★ 6대 레이아웃 모드 전체에서 22개 고유 씬 위젯이 매 컷마다 생생하게 살아 움직이도록 전면 활성화!
         const showCenterWidget = true;
 
-        // 레이아웃 모드별 최적 앵커 Y좌표 계산 (위젯이 헤더/푸터와 겹치지 않고 모드별 스테이지 중앙에 시원하게 안착)
+        if (showCenterWidget) {
+          // 레이아웃 모드별 최적 앵커 Y좌표 계산 (위젯이 헤더/푸터와 겹치지 않고 모드별 스테이지 중앙에 시원하게 안착)
         let baseAnchorY = 475;
         if (lMode === 'TIKTOK_VIRAL_SPLIT') {
           baseAnchorY = 690; // 하단 50% 분할 영역 중심
