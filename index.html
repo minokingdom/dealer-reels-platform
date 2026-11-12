@@ -7324,6 +7324,7 @@ function renderStoryArchetypesUI() {
       const totalCuts = getTargetCutCount();
       const cutDuration = mainDuration / totalCuts;
       const theme = DIRECTOR_THEMES[campaign.themeId] || DIRECTOR_THEMES.royal;
+      const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
 
       // 텍스트가 절대 잘리거나 박스 밖으로 삐져나가지 않도록 폰트 크기를 자동 조절하는 범용 헬퍼 (본편 & 명함 공통)
       function drawFittedText(text, x, y, maxWidth, initialSize, minSize = 9, fontFamily = 'sans-serif') {
@@ -7563,7 +7564,7 @@ function renderStoryArchetypesUI() {
           }
 
           // ★ 6대 장르별 맞춤형 배경 비네트 (장르 고유의 톤앤매너 100% 반영)
-          const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
+        // lMode hoisted to function root
           if (lMode === 'EDITORIAL_VOGUE') {
             // 시네마틱 2.39:1 레터박스 전용: 영화 스크린 톤앤매너
             const vig = ctx.createLinearGradient(0, 0, 0, H);
@@ -7854,7 +7855,7 @@ function renderStoryArchetypesUI() {
           ctx.restore();
         }
 
-        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
+        // lMode hoisted to function root
 
         // ★ TIKTOK_VIRAL_SPLIT: 하단 50% 분할 스테이지 배경을 위젯보다 먼저 선행 렌더링
         if (lMode === 'TIKTOK_VIRAL_SPLIT') {
@@ -9634,7 +9635,7 @@ function renderStoryArchetypesUI() {
           }
         }
 
-        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
+        // lMode hoisted to function root
 
         // 장르별 배경 톤앤매너 분기 (모든 엔딩에 동일한 네이비 비네트 강제하지 않음!)
         if (lMode === 'EDITORIAL_VOGUE') {
