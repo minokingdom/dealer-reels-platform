@@ -580,24 +580,48 @@
           </div>
 
           <!-- ================================================================= -->
-          <!-- ★ [루틴 탈피] 영상 스토리 스타일 4대 아키타입 (Story Arc Presets) -->
+          <!-- ★ [루틴 완전 탈피] 12대 프로 세일즈 스토리 스타일 아키타입 라이브러리 -->
           <!-- ================================================================= -->
-          <div class="studio-sub p-4 space-y-3 border border-[var(--border)] rounded-[12px] bg-[#111113]">
+          <div class="studio-sub p-4 space-y-3.5 border border-[var(--border)] rounded-[12px] bg-[#111113]">
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h3 class="text-[13px] font-semibold text-[#ededed] flex items-center gap-1.5">
-                  <span>✨</span> 영상 스토리 스타일 선택
-                  <span class="tag-chip px-2 py-0.5 text-[10px] font-mono text-[#38bdf8] border-[#38bdf8]/30">4대 세일즈 아키타입</span>
+                  <span>✨</span> 영상 스토리 스타일 라이브러리
+                  <span class="tag-chip px-2 py-0.5 text-[10px] font-mono text-[#38bdf8] border-[#38bdf8]/30">12대 프로 세일즈 아키타입</span>
                 </h3>
-                <p class="text-[11px] text-[#85858b] mt-0.5">매번 똑같은 루틴 탈피! 타깃 고객과 판매 목적에 맞춘 4가지 차별화 전개 스타일</p>
+                <p class="text-[11px] text-[#85858b] mt-0.5">차종·타깃 고객·판매 목적에 맞춘 12가지 실전 릴스 전개 스타일 & AI 무한 믹서</p>
               </div>
-              <span id="activeArchetypeBadge" class="tag-chip px-2.5 py-1 text-[11px] font-mono text-[#4cc38a] border-[#4cc38a]/40">
-                ⚡ 긴급 한정특판형
-              </span>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="randomizeCustomStyle()" class="btn-secondary h-7 px-2.5 text-[11px] text-[#38bdf8] border-[#38bdf8]/40 hover:bg-[#38bdf8]/10 cursor-pointer flex items-center gap-1">
+                  <span>🎲</span> AI 무한 씬 믹서
+                </button>
+                <span id="activeArchetypeBadge" class="tag-chip px-2.5 py-1 text-[11px] font-mono text-[#4cc38a] border-[#4cc38a]/40">
+                  ⚡ 긴급 한정특판형
+                </span>
+              </div>
             </div>
 
-            <!-- 4종 아키타입 카드 덱 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5" id="storyArchetypeCardsContainer">
+            <!-- 카테고리 필터 탭 바 -->
+            <div class="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]" id="archetypeCategoryFilterBar">
+              <button type="button" onclick="filterArchetypeCategory('all')" id="archCatBtn_all" class="h-6 px-2.5 rounded-[5px] font-medium bg-[#232325] text-white border border-white/30 shrink-0">
+                전체 (12)
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('special')" id="archCatBtn_special" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
+                ⚡ 특판·즉시출고 (3)
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('luxury')" id="archCatBtn_luxury" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
+                👑 프리미엄·법인 (3)
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('finance')" id="archCatBtn_finance" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
+                💰 금융·실속·가성비 (3)
+              </button>
+              <button type="button" onclick="filterArchetypeCategory('trust')" id="archCatBtn_trust" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
+                🔍 패밀리·신뢰·중고 (3)
+              </button>
+            </div>
+
+            <!-- 12종 아키타입 카드 덱 (그리드 & 스크롤) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 max-h-[460px] overflow-y-auto pr-1" id="storyArchetypeCardsContainer">
               <!-- JS 동적 렌더링 -->
             </div>
           </div>
@@ -1697,11 +1721,13 @@
     };
 
     // ============================================================================
-    // ★ 4대 영상 스토리 아키타입 (Story Arc Presets - 뻔하고 지루한 루틴 전면 탈피!)
+    // ★ 12대 프로 세일즈 스토리 스타일 아키타입 (Story Arc Presets - 루틴 완전 탈피!)
     // ============================================================================
     const STORY_ARCHETYPES = {
+      // 1. [특판·즉시출고] 긴급 한정특판형
       clearance: {
         id: 'clearance',
+        category: 'special',
         title: '⚡ 긴급 한정특판형',
         shortTitle: '한정특판',
         tagline: '선착순 배정 · 취소차 긴급 확보 · 카운트다운 게이지',
@@ -1730,8 +1756,74 @@
           '계약 즉시 삼 일 이내 고객님 자택으로 당일 탁송해 드립니다.'
         ]
       },
+      // 2. [특판·즉시출고] 미래형 테크 & EV 전기차형
+      ev_future: {
+        id: 'ev_future',
+        category: 'special',
+        title: '⚡ 미래형 테크 & EV 전기차형',
+        shortTitle: '미래테크EV',
+        tagline: '사이버네틱 타겟 · 정부 보조금 선점 · 제로백 게이지',
+        icon: '🛸',
+        themeId: 'ice',
+        accentColor: '#38bdf8',
+        hook: '⚡ [전기차 보조금 마감] 올해 마지막 최대 지원 혜택!',
+        discountNum: 750,
+        discount: '국고+지자체 최대 750만원 지원',
+        scenePlan: [
+          { cut: 1, widget: 'TECH_HUD', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'NEON_TITLE', pos: 'top', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛸 1회 충전 500km+ 차세대 스마트 EV 테크',
+          '⚡ 2026 전기차 국고·지자체 보조금 잔여분 선착순 배정',
+          '🔋 최대 750만원 지원금 즉시 차감 + 비공식 충전카드 증정',
+          '⚡ 10분 초급속 충전 80% 달성, 이번 주 즉시 출고 가능!'
+        ],
+        ttsLines: [
+          '차세대 스마트 EV 테크, 일 회 충전으로 오백 킬로미터 이상 주행합니다.',
+          '전기차 국고와 지자체 보조금 잔여분, 지금 선착순으로 배정됩니다.',
+          '최대 칠백오십만 원 지원금 즉시 차감 혜택을 놓치지 마세요.',
+          '초급속 충전 지원 모델, 이번 주 즉시 고객님께 인도됩니다.'
+        ]
+      },
+      // 3. [특판·즉시출고] 출고 사은품 8종 폭탄형
+      gift_bonanza: {
+        id: 'gift_bonanza',
+        category: 'special',
+        title: '🎁 출고 사은품 8종 폭탄형',
+        shortTitle: '사은품폭탄',
+        tagline: '프리미엄 썬팅+블박+유리막+PPF 풀패키지 무상 시공',
+        icon: '🎁',
+        themeId: 'sunset',
+        accentColor: '#fb7185',
+        hook: '🎁 딜러 마진 포기! 출고 사은품 8종 풀패키지 쏩니다',
+        discountNum: 350,
+        discount: '180만원 상당 8종 신차패키지 전액 무상',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🎁 딜러 사비 180만원 투입! 신차 프리미엄 8종 풀패키지',
+          '✨ 최고급 반사 썬팅 + QHD 블랙박스 + 세라믹 유리막 코팅',
+          '🛡️ 생활보호 PPF 4종 필름 무상 시공 + 코일매트 풀세트',
+          '🔑 지금 계약하시면 주유상품권 20만원권 추가 즉시 지급!'
+        ],
+        ttsLines: [
+          '딜러 사비 일백팔십만 원 투입! 프리미엄 팔 종 신차 풀패키지입니다.',
+          '최고급 썬팅과 큐에이치디 블랙박스, 세라믹 유리막 코팅이 기본 시공됩니다.',
+          '생활보호 피피에프 필름과 고급 코일매트까지 꼼꼼하게 챙겨드립니다.',
+          '지금 계약하시는 고객님께 주유상품권 이십만 원권을 추가 증정합니다.'
+        ]
+      },
+      // 4. [프리미엄·법인] 시네마틱 프리미엄형
       luxury: {
         id: 'luxury',
+        category: 'luxury',
         title: '🎬 시네마틱 프리미엄형',
         shortTitle: '시네마틱',
         tagline: '도로 위의 예술품 · 최고급 나파가죽 · VIP 프라이빗 컨시어지',
@@ -1760,8 +1852,74 @@
           '공식 인증 카마스터가 직접 최고급 인도를 약속드립니다.'
         ]
       },
+      // 5. [프리미엄·법인] CEO 법인·개인사업자 절세형
+      corporate_tax: {
+        id: 'corporate_tax',
+        category: 'luxury',
+        title: '🏢 CEO 법인·개인사업자 절세형',
+        shortTitle: 'CEO법인절세',
+        tagline: '연 1,500만 전액 비용처리 · 부가세 환급 · 절세 명세서',
+        icon: '🏢',
+        themeId: 'monochrome',
+        accentColor: '#e2e8f0',
+        hook: '🏢 대표님! 올해 세금 1,500만원 아끼는 마지막 기회',
+        discountNum: 880,
+        discount: '연 1,500만원 전액 경비처리',
+        scenePlan: [
+          { cut: 1, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'MAGAZINE_COVER', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'MONTHLY_PAYMENT_HERO', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏢 대표님 주목! 연간 1,500만원 100% 합법적 비용처리',
+          '💼 세무사 검증 완벽 절세 플랜 + 전자세금계산서 자동발행',
+          '📊 감가상각 걱정 제로! 부가세 환급 및 운용리스 특판',
+          '🎩 법인 VIP 전담팀 1:1 맞춤 계약 & 무상 탁송 지원'
+        ],
+        ttsLines: [
+          '대표님 주목! 연간 천오백만 원 합법적 비용처리가 가능한 최적의 플랜입니다.',
+          '세무사가 검증한 완벽한 절세 설계와 매월 자동 세금계산서 발행을 지원합니다.',
+          '감가상각 걱정 없이 부가세 환급과 운용리스 특판 혜택을 누리세요.',
+          '법인 브이아이피 전담팀이 일대일 맞춤 계약과 무상 탁송을 책임집니다.'
+        ]
+      },
+      // 6. [프리미엄·법인] 고성능 스포츠 다이내믹형
+      high_performance: {
+        id: 'high_performance',
+        category: 'luxury',
+        title: '🏎️ 고성능 스포츠 다이내믹형',
+        shortTitle: '스포츠퍼포먼스',
+        tagline: 'RPM 배기음 게이지 · 서킷 퍼포먼스 · 슬랜티드 레이싱 리본',
+        icon: '🏎️',
+        themeId: 'crimson',
+        accentColor: '#ef4444',
+        hook: '🏎️ 심장을 뛰게 하는 배기음, 단 1초 만에 매료되다',
+        discountNum: 550,
+        discount: '고성능 배기 & 에어로 패키지 장착',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'TECH_HUD', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'NEON_TITLE', pos: 'top', cam: 2 },
+          { cut: 4, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏎️ 심장을 뛰게 하는 레이싱 DNA! 최고출력 380마력',
+          '🏁 제로백 4초대 주파 & 전자식 가변배기 사운드 시스템',
+          '⚡ 서킷 전용 퍼포먼스 패키지 무상 장착 프로모션',
+          '🏆 단 2대 한정 입고! 계약 즉시 전용 트랜스포터 배송'
+        ],
+        ttsLines: [
+          '심장을 뛰게 하는 레이싱 디엔에이, 폭발적인 퍼포먼스를 경험하세요.',
+          '제로백 사 초대 주파와 전자식 가변 배기 사운드가 완벽히 조화됩니다.',
+          '퍼포먼스 패키지 무상 장착 특별 프로모션이 지금 진행 중입니다.',
+          '단 두 대 한정 입고! 전용 트랜스포터로 신속하게 배송됩니다.'
+        ]
+      },
+      // 7. [금융·실속·가성비] 월 납입금 실속 비교형
       finance: {
         id: 'finance',
+        category: 'finance',
         title: '⚖️ 월 납입금 실속 비교형',
         shortTitle: '금융배틀',
         tagline: '할부 vs 장기렌트 · 취등록세 0원 · 하루 커피 한잔 값',
@@ -1790,8 +1948,74 @@
           '무보증 비대면 십 분 간편 심사로 빠르게 승인 도와드립니다.'
         ]
       },
+      // 8. [금융·실속·가성비] 사회초년생 첫차 가성비형
+      entry_firstcar: {
+        id: 'entry_firstcar',
+        category: 'finance',
+        title: '💼 사회초년생 첫차 가성비형',
+        shortTitle: '첫차가성비',
+        tagline: '초기비용 0원 무보증 · 하루 1만원대 · 운전연수 무상',
+        icon: '💼',
+        themeId: 'sunset',
+        accentColor: '#f97316',
+        hook: '💼 사회초년생 첫차! 모아둔 돈 없어도 오늘 바로 출고',
+        discountNum: 290,
+        discount: '월 24만원대 · 초기비용 0원 무보증',
+        scenePlan: [
+          { cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 3 }
+        ],
+        cutCaptions: [
+          '💼 보증금 0원 + 선수금 0원! 목돈 한 푼 없이 바로 시작',
+          '☕ 하루 커피 두 잔 값, 월 20만원대 실속 납입금',
+          '🛡️ 만 21세·만 26세 누구나 종합보험 및 취등록세 올인원 포함',
+          '🔰 초보운전 안심 혜택! 베테랑 1:1 방문 운전연수 10시간 지원'
+        ],
+        ttsLines: [
+          '보증금과 선수금 모두 영 원! 목돈 한 푼 없이 첫차를 시작하세요.',
+          '하루 커피 두 잔 값이면 충분한 월 이십만 원대 실속 납입금입니다.',
+          '취등록세와 자동차세, 종합보험까지 모두 포함되어 부담이 없습니다.',
+          '초보운전자를 위한 일대일 방문 운전연수 혜택까지 모두 챙겨드립니다.'
+        ]
+      },
+      // 9. [금융·실속·가성비] 비대면 10분 간편 승인형
+      instant_approval: {
+        id: 'instant_approval',
+        category: 'finance',
+        title: '⏱️ 비대면 10분 간편 승인형',
+        shortTitle: '비대면승인',
+        tagline: '무서류 비대면 모바일 심사 · 신용점수 무관 · 당일 승인 패스',
+        icon: '⏱️',
+        themeId: 'cyber',
+        accentColor: '#06b6d4',
+        hook: '⏱️ 서류 필요 없이 스마트폰으로 10분 만에 즉시 승인!',
+        discountNum: 330,
+        discount: '모바일 다이렉트 무서류 심사 패스',
+        scenePlan: [
+          { cut: 1, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⏱️ 복잡한 서류 제출 NO! 스마트폰 터치 몇 번으로 10분 승인',
+          '💳 프리랜서·주부·신규사업자도 거절 없이 맞춤 심사 통과',
+          '📉 캐피탈 전 금융사 실시간 금리 비교 최저 이율 확정',
+          '📲 지금 "승인" 댓글 남기시면 1분 비공식 견적서 발송'
+        ],
+        ttsLines: [
+          '복잡한 서류 없이 스마트폰으로 십 분 만에 빠른 승인을 도와드립니다.',
+          '프리랜서와 개인사업자도 걱정 없이 최적의 심사 조건을 찾아드립니다.',
+          '전 금융사 실시간 금리 비교로 가장 유리한 최저 이율을 확정하세요.',
+          '지금 댓글을 남기시면 일 분 안에 비공식 맞춤 견적서를 보내드립니다.'
+        ]
+      },
+      // 10. [패밀리·신뢰·중고] 카마스터 찐 감동·인도형
       trust: {
         id: 'trust',
+        category: 'trust',
         title: '🤝 카마스터 찐 감동·인도형',
         shortTitle: '신뢰인도',
         tagline: '출고 고객 5.0 리뷰 · 36가지 신차검수 · 평생 사후관리',
@@ -1819,10 +2043,153 @@
           '만족도 오 점 만점, 천이백 대 누적 출고 경험으로 보증합니다.',
           '평생 든든한 자동차 주치의로서 십 년간 사후 관리를 약속합니다.'
         ]
+      },
+      // 11. [패밀리·신뢰·중고] 패밀리 차박 & 아웃도어형
+      family_camping: {
+        id: 'family_camping',
+        category: 'trust',
+        title: '👨‍👩‍👧‍👦 패밀리 차박 & 아웃도어형',
+        shortTitle: '패밀리차박',
+        tagline: '2열 풀플랫 차박 · 파노라마 선루프 · 안전패키지 풀옵션',
+        icon: '🏕️',
+        themeId: 'emerald',
+        accentColor: '#10b981',
+        hook: '👨‍👩‍👧‍👦 우리가족 주말 힐링 차박, 이 차 하나면 끝납니다',
+        discountNum: 460,
+        discount: '월 42만원대 · 차박 텐트 패키지 증정',
+        scenePlan: [
+          { cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏕️ 주말이 기다려지는 2열 풀플랫 완벽 평탄화 공간',
+          '👨‍👩‍👧‍👦 아이들 안전 최우선! 9에어백 & 첨단 ADAS 주행보조',
+          '✨ 파노라마 선루프 + 대용량 트렁크 유모차 2대 적재',
+          '🎁 이번 주 계약 고객 전원 고급 에어매트+차박텐트 세트 증정'
+        ],
+        ttsLines: [
+          '가족과 함께하는 주말 힐링, 이열 풀플랫 완벽 평탄화 공간을 누려보세요.',
+          '아이들의 안전을 최우선으로, 첨단 주행 보조 시스템이 기본 적용되었습니다.',
+          '광활한 파노라마 선루프와 유모차 두 대가 거뜬한 대용량 트렁크입니다.',
+          '이번 주 계약 고객 전원에게 프리미엄 차박 캠핑 세트를 무상 증정합니다.'
+        ]
+      },
+      // 12. [패밀리·신뢰·중고] 무사고 인증 중고차 팩트체크형
+      certified_used: {
+        id: 'certified_used',
+        category: 'trust',
+        title: '🔍 무사고 인증 중고차 팩트체크형',
+        shortTitle: '인증중고팩트',
+        tagline: '성능점검 무사고 직인 · 침수·전손 0원 공개 · 1년 2만km 보증',
+        icon: '🔍',
+        themeId: 'stealth',
+        accentColor: '#a1a1aa',
+        hook: '🔍 허위매물 0%! 성능점검표 원본 그대로 팩트체크 공개',
+        discountNum: 510,
+        discount: '신차가 대비 -1,850만원 감가 혜택',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'TECH_HUD', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🔍 국토부 공인 성능점검 무사고 완전 직인 확인 완료',
+          '💧 침수·전손·도난 이력 0건! 하부 부식 및 누유 올 양호',
+          '📉 신차 출고가 대비 1,800만원 절약된 감가 가성비 종결자',
+          '🛡️ 출고 후 1년 20,000km 엔진·미션 무상 안심 보증 제공'
+        ],
+        ttsLines: [
+          '국토부 공인 성능점검 무사고 원본을 투명하게 공개합니다.',
+          '침수나 전손 이력 제로, 하부 부식과 미세 누유 없이 완벽합니다.',
+          '신차 출고가 대비 천팔백만 원 절약된 최고의 실속 매물입니다.',
+          '출고 후 일 년 이만 킬로미터 엔진과 미션 무상 보증을 약속합니다.'
+        ]
       }
     };
 
     let activeStoryArchetypeKey = 'clearance';
+    let currentArchetypeCategory = 'all';
+
+    function filterArchetypeCategory(catKey) {
+      currentArchetypeCategory = catKey;
+      const cats = ['all', 'special', 'luxury', 'finance', 'trust'];
+      cats.forEach((c) => {
+        const btn = document.getElementById(`archCatBtn_${c}`);
+        if (btn) {
+          if (c === catKey) {
+            btn.className = 'h-6 px-2.5 rounded-[5px] font-medium bg-[#232325] text-white border border-white/30 shrink-0';
+          } else {
+            btn.className = 'h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0';
+          }
+        }
+      });
+      renderStoryArchetypesUI();
+    }
+
+    function randomizeCustomStyle() {
+      // 1. Random theme from 8 DIRECTOR_THEMES
+      const themeKeys = Object.keys(DIRECTOR_THEMES);
+      const randomTheme = themeKeys[Math.floor(Math.random() * themeKeys.length)];
+
+      // 2. Random 4 distinct widgets from all 16 available widgets
+      const WIDGET_OPTIONS = [
+        'MAGAZINE_COVER', 'RACING_RIBBON', 'LOWER_THIRD', 'NEON_TITLE',
+        'DYNAMIC_ISLAND', 'VS_FINANCE_BATTLE', 'TECH_HUD', 'STOCK_COUNTDOWN',
+        'GIANT_DISCOUNT_STAMP', 'CHECKLIST_GLASS', 'RECEIPT_QUOTE', 'SMARTKEY_DELIVERY',
+        'KAKAO_CHAT_PAIR', 'COMMENT_DM_MAGNET', 'SPEC_FLOATING_TAGS', 'MONTHLY_PAYMENT_HERO'
+      ];
+      const shuffledWidgets = [...WIDGET_OPTIONS].sort(() => Math.random() - 0.5);
+
+      const customScenePlan = [
+        { cut: 1, widget: shuffledWidgets[0], pos: 'center', cam: 0 },
+        { cut: 2, widget: shuffledWidgets[1], pos: 'center', cam: 1 },
+        { cut: 3, widget: shuffledWidgets[2], pos: 'center', cam: 2 },
+        { cut: 4, widget: shuffledWidgets[3], pos: 'bottom', cam: 3 }
+      ];
+
+      // 3. Dynamic pricing & hook
+      const discountOptions = [320, 390, 450, 520, 680, 800];
+      const randomDiscountNum = discountOptions[Math.floor(Math.random() * discountOptions.length)];
+      const randomHooks = [
+        '⚡ [AI 추천] 이번 달 가장 인기 높은 초특가 릴스 플랜',
+        '🔥 단 3대 남은 한정 재고! 비공식 딜러 프로모션 대공개',
+        '💎 압도적 비주얼과 파격 조건, 지금 놓치면 1년 대기',
+        '⚖️ 최저 월 납입금 & 초기비용 0원 다이렉트 출고'
+      ];
+      const randomHook = randomHooks[Math.floor(Math.random() * randomHooks.length)];
+
+      campaign.themeId = randomTheme;
+      campaign.hook = randomHook;
+      campaign.discountNum = randomDiscountNum;
+      campaign.discount = `월 ${Math.floor(randomDiscountNum / 10)}만원대 · AI 추천 플랜`;
+      campaign.scenePlan = customScenePlan;
+
+      const numInput = document.getElementById('inputDiscountNum');
+      if (numInput) numInput.value = campaign.discountNum;
+      const dInput = document.getElementById('inputDiscount');
+      if (dInput) dInput.value = campaign.discount;
+
+      const badge = document.getElementById('activeArchetypeBadge');
+      if (badge) {
+        badge.textContent = `🎲 AI 커스텀 믹스 (${DIRECTOR_THEMES[randomTheme].name})`;
+        badge.style.borderColor = DIRECTOR_THEMES[randomTheme].accent;
+        badge.style.color = DIRECTOR_THEMES[randomTheme].accent;
+      }
+
+      activeStoryArchetypeKey = 'custom_ai';
+      renderStoryArchetypesUI();
+      renderDynamicCutCardsUI();
+      renderVisualStoryboardTrack();
+      selectTheme(randomTheme);
+
+      isPlaying = true;
+      if (window.__timelines && window.__timelines['main']) {
+        window.__timelines['main'].seek(0.08);
+      }
+    }
 
     const STORY_KILLER_COPIES = [
       '🔥 선점 재고 3대 즉시출고',
@@ -1945,25 +2312,41 @@
       const container = document.getElementById('storyArchetypeCardsContainer');
       if (!container) return;
 
-      const keys = Object.keys(STORY_ARCHETYPES);
+      const keys = Object.keys(STORY_ARCHETYPES).filter((k) => {
+        if (currentArchetypeCategory === 'all') return true;
+        return STORY_ARCHETYPES[k].category === currentArchetypeCategory;
+      });
+
       container.innerHTML = keys.map((k) => {
         const arch = STORY_ARCHETYPES[k];
         const isActive = k === activeStoryArchetypeKey;
+        const catBadgeLabel = {
+          special: '⚡특판',
+          luxury: '👑프리미엄',
+          finance: '💰금융',
+          trust: '🔍신뢰'
+        }[arch.category] || '';
+
         return `
-          <div onclick="applyStoryArchetype('${k}')" class="story-arc-card p-3 rounded-[10px] border ${isActive ? 'active' : 'bg-[#18181a] border-[#27272a] hover:border-[#3f3f46]'}" style="--accent: ${arch.accentColor}">
+          <div onclick="applyStoryArchetype('${k}')" class="story-arc-card p-3 rounded-[10px] border cursor-pointer transition-all ${isActive ? 'active' : 'bg-[#18181a] border-[#27272a] hover:border-[#3f3f46]'}" style="--accent: ${arch.accentColor}">
             <div class="flex items-center justify-between gap-1 mb-1.5">
-              <span class="text-[12px] font-bold text-[#ededed] flex items-center gap-1.5">
+              <span class="text-[12px] font-bold text-[#ededed] flex items-center gap-1.5 truncate">
                 <span>${arch.icon}</span>
-                <span>${arch.shortTitle}</span>
+                <span class="truncate">${arch.shortTitle}</span>
               </span>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium" style="background: ${arch.accentColor}22; color: ${arch.accentColor}; border: 1px solid ${arch.accentColor}44">
-                ${arch.themeId}
-              </span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#27272a] text-[#a1a1a6]">
+                  ${catBadgeLabel}
+                </span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-mono font-medium" style="background: ${arch.accentColor}22; color: ${arch.accentColor}; border: 1px solid ${arch.accentColor}44">
+                  ${arch.themeId}
+                </span>
+              </div>
             </div>
-            <p class="text-[11px] text-[#a1a1a6] leading-snug line-clamp-2">${arch.tagline}</p>
+            <p class="text-[11px] text-[#a1a1a6] leading-snug line-clamp-2 min-h-[30px]">${arch.tagline}</p>
             <div class="mt-2 pt-2 border-t border-[var(--border)] flex items-center justify-between text-[10px] text-[#85858b]">
-              <span class="truncate">${arch.cutCaptions[0].replace(/^[^\s]+\s*/, '')}</span>
-              <span class="font-bold text-[#ededed] shrink-0 ml-1">선택 →</span>
+              <span class="truncate pr-1">${arch.cutCaptions[0].replace(/^[^\s]+\s*/, '')}</span>
+              <span class="font-bold text-[#ededed] shrink-0">선택 →</span>
             </div>
           </div>
         `;
