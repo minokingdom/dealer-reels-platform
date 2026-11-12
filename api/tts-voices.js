@@ -1,8 +1,8 @@
 /**
  * Vercel Serverless Function: GET /api/tts-voices
- * Fish Audio에서 고를 수 있는 한국어 성우 목록 (id, 이름, 태그)
+ * 서비스에서 고를 수 있는 성우 목록 (id, 이름)
  */
-const { listKoreanVoices } = require('../lib/fish-voices');
+const { listCuratedVoices } = require('../lib/fish-voices');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -14,8 +14,9 @@ module.exports = async function handler(req, res) {
     return res.status(503).json({ ok: false, error: 'fish_api_key_missing' });
   }
   try {
-    const voices = await listKoreanVoices(apiKey);
-    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=3600');
+    const voices = await listCuratedVoices(apiKey);
+    const allNamed = voices.every((v) => v.named);
+    res.setHeader('Cache-Control', allNamed ? 'public, max-age=600, s-maxage=3600' : 'no-store');
     return res.status(200).json({ ok: true, voices });
   } catch (err) {
     res.setHeader('Cache-Control', 'no-store');

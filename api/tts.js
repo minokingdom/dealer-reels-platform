@@ -12,11 +12,15 @@
  *   FISH_VOICE_FEMALE     선택. 여성 성우 보이스 모델 ID (reference_id)
  *   FISH_VOICE_MALE       선택. 남성 성우 보이스 모델 ID
  *   FISH_VOICE_ENERGETIC  선택. 쇼호스트 성우 보이스 모델 ID (없으면 여성 보이스 + 빠른 속도)
- *   보이스 ID를 비워두면 한국어 인기 1위 보이스 하나로 고정해 합성합니다.
+ *   보이스 ID를 비워두면 lib/fish-voices.js 의 기본 성우 하나로 고정해 합성합니다.
+ *   말투는 ?tone=bright(기본, 밝게) | excited | plain
  *   화면에서 성우를 고르면 ?ref=<보이스 ID>, 속도는 ?speed=0.8~1.5 로 전달됩니다.
  */
 
-const { listKoreanVoices, isValidVoiceId } = require('../lib/fish-voices');
+const { isValidVoiceId, CURATED_VOICE_IDS } = require('../lib/fish-voices');
+
+// 말투: S2 모델은 문장 앞의 [대괄호] 지시어로 감정을 조절합니다. 기본은 밝은 톤
+const TONE_TAGS = { bright: '[happy]', excited: '[excited]', plain: '' };
 
 const FISH_TTS_URL = 'https://api.fish.audio/v1/tts';
 const MAX_TEXT_LENGTH = 200;
@@ -78,25 +82,18 @@ module.exports = async function handler(req, res) {
   if (!text) {
     return res.status(400).json({ ok: false, error: 'text_required' });
   }
-  // 보이스 결정 순서: 화면에서 고른 보이스(ref) → 환경변수 보이스 → 한국어 인기 1위 보이스
+  // 보이스 결정 순서: 화면에서 고른 보이스(ref) → 환경변수 보이스 → 기본 성우(목록의 첫 번째)
   // 보이스를 지정하지 않으면 Fish Audio가 문장마다 다른 목소리(남/여)를 골라 섞이므로 반드시 하나로 고정합니다.
   const preset = resolveVoice(String(input.voice || 'female'));
   let referenceId = isValidVoiceId(String(input.ref || '')) ? String(input.ref) : preset.referenceId;
-  if (!referenceId) {
-    try {
-      const voices = await listKoreanVoices(apiKey);
-      if (voices.length > 0) referenceId = voices[0].id;
-    } catch (e) {}
-  }
-  if (!referenceId) {
-    res.setHeader('Cache-Control', 'no-store');
-    return res.status(502).json({ ok: false, error: 'fish_no_voice_available' });
-  }
+  if (!referenceId) referenceId = CURATED_VOICE_IDS[0];
+  const toneKey = Object.prototype.hasOwnProperty.call(TONE_TAGS, String(input.tone)) ? String(input.tone) : 'bright';
+  const toneTag = TONE_TAGS[toneKey];
   const requestedSpeed = Number(input.speed);
   const speed = requestedSpeed >= 0.8 && requestedSpeed <= 1.5 ? requestedSpeed : preset.speed;
 
   const payload = {
-    text,
+    text: toneTag ? `${toneTag} ${text}` : text,
     format: 'mp3',
     latency: 'normal',
     prosody: { speed }

@@ -498,7 +498,10 @@
               <div>
                 <label for="ttsVoiceSelect" class="block text-[12px] text-[#a1a1a6] mb-1">성우 목소리 (Fish Audio)</label>
                 <select id="ttsVoiceSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
-                  <option value="auto" selected>기본 한국어 성우</option>
+                  <option value="4e118bfbb83e401c84699c09b5f08257" selected>성우 1</option>
+                  <option value="8cf5ee4cb0224c109852a206f185a05f">성우 2</option>
+                  <option value="9a50287ddd26414690b538539ad52d61">성우 3</option>
+                  <option value="8748b1f032e2418183a6ffb920724755">성우 4</option>
                   <option value="off">성우 끄기</option>
                 </select>
               </div>
@@ -1866,7 +1869,7 @@
       streamDest: null,
       enabled: false,
       bgmStyle: 'showroom',
-      ttsVoice: 'auto', // 'auto'(서버 기본 한국어 보이스) | Fish Audio 보이스 ID | 'off'
+      ttsVoice: '4e118bfbb83e401c84699c09b5f08257', // Fish Audio 보이스 ID | 'off'
       ttsSpeed: 1.1,
       voiceListLoaded: false,
       bgmTimer: null,
@@ -2208,19 +2211,16 @@
           const body = await res.json();
           const sel = document.getElementById('ttsVoiceSelect');
           if (!sel || !Array.isArray(body.voices) || body.voices.length === 0) return;
-          let saved = '';
-          try { saved = localStorage.getItem('autoreels_tts_voice') || ''; } catch (e) {}
           const offOpt = sel.querySelector('option[value="off"]');
           body.voices.forEach((v) => {
-            const opt = document.createElement('option');
-            opt.value = v.id;
+            let opt = sel.querySelector(`option[value="${v.id}"]`);
+            if (!opt) {
+              opt = document.createElement('option');
+              opt.value = v.id;
+              sel.insertBefore(opt, offOpt);
+            }
             opt.textContent = v.title;
-            sel.insertBefore(opt, offOpt);
           });
-          if (saved && body.voices.some((v) => v.id === saved) && this.ttsVoice === 'auto') {
-            sel.value = saved;
-            onAudioConfigChange();
-          }
         } catch (e) {
           this.voiceListLoaded = false; // 다음에 다시 시도
         }
@@ -2499,6 +2499,16 @@
         }
       }
     };
+
+    // 지난번에 고른 성우를 다시 선택
+    try {
+      const savedVoice = localStorage.getItem('autoreels_tts_voice');
+      const voiceSel = document.getElementById('ttsVoiceSelect');
+      if (savedVoice && voiceSel && [...voiceSel.options].some((o) => o.value === savedVoice)) {
+        voiceSel.value = savedVoice;
+        AudioEngine.ttsVoice = savedVoice;
+      }
+    } catch (e) {}
 
     // 브라우저 자동재생 정책 대응: 화면을 처음 터치/클릭하는 순간 오디오 엔진 잠금 해제
     ['pointerdown', 'touchend', 'keydown'].forEach((evt) => {
