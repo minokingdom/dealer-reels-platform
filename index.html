@@ -1775,8 +1775,8 @@
       if (audioEngineReady() && AudioEngine.enabled && AudioEngine.ttsVoice !== 'off') {
         const secs = AudioEngine.getNarrationSeconds();
         const longestCut = Math.max(0, ...secs.slice(0, cuts));
-        if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.3));
-        if (secs[cuts] > 0) outro = Math.max(outro, secs[cuts] + 0.45);
+        if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.2));
+        if (secs[cuts] > 0) outro = Math.max(outro, secs[cuts] + 0.35);
       }
       return { total: Math.round((mainDur + outro) * 10) / 10, outro: Math.round(outro * 10) / 10 };
     }
@@ -2258,7 +2258,25 @@
           }
           const bytes = await res.arrayBuffer();
           const buffer = await ctx.decodeAudioData(bytes);
-          this.ttsSeconds.set(key, buffer.duration);
+          // 앞뒤 무음 구간을 잘라 실제 말하는 구간만 사용 (컷 길이를 불필요하게 늘리지 않도록)
+          const data = buffer.getChannelData(0);
+          let peak = 0;
+          for (let i = 0; i < data.length; i += 4) {
+            const v = Math.abs(data[i]);
+            if (v > peak) peak = v;
+          }
+          const threshold = peak * 0.04;
+          let first = 0;
+          let last = data.length - 1;
+          while (first < last && Math.abs(data[first]) < threshold) first++;
+          while (last > first && Math.abs(data[last]) < threshold) last--;
+          const pad = Math.floor(buffer.sampleRate * 0.04);
+          first = Math.max(0, first - pad);
+          last = Math.min(data.length - 1, last + pad);
+          buffer.__peak = peak;
+          buffer.__start = first / buffer.sampleRate;
+          buffer.__len = Math.max(0.2, (last - first) / buffer.sampleRate);
+          this.ttsSeconds.set(key, buffer.__len);
           return buffer;
         })();
 
@@ -2360,7 +2378,8 @@
         const totalCuts = getTargetCutCount();
         const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
         const slotDur = cutIdx < totalCuts ? mainDur / totalCuts : OUTRO_DURATION;
-        const fit = buffer.duration / Math.max(0.5, slotDur - 0.15);
+        const speechLen = typeof buffer.__len === 'number' ? buffer.__len : buffer.duration;
+        const fit = speechLen / Math.max(0.5, slotDur - 0.1);
         src.playbackRate.value = Math.min(1.12, Math.max(1.0, fit));
 
         // 성우 음량 자동 보정: 음성마다 녹음 크기가 달라 BGM에 묻히지 않게 최대 음량 기준으로 맞춤 (최대 4배)
@@ -2384,7 +2403,7 @@
             this.ttsSourceGain = null;
           }
         };
-        src.start();
+        src.start(0, buffer.__start || 0, speechLen + 0.05);
         this.ttsSource = src;
         this.ttsSourceGain = g;
       },
