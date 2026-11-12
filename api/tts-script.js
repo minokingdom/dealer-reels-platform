@@ -69,7 +69,10 @@ module.exports = async function handler(req, res) {
   const toneTag = TONE_TAGS[toneKey];
 
   const spoken = lines.map((l) => normalizeKoreanNumbers(l));
-  const fullText = spoken.map((l) => (toneTag ? `${toneTag} ${l}` : l)).join('\n');
+  // 문장 사이에 [pause]를 넣어 실제로 숨 쉬는 틈을 만듦 (문장을 잘라 쓸 때 말끝이 잘리지 않도록)
+  const fullText = spoken
+    .map((l, i) => (toneTag ? `${toneTag} ${l}` : l) + (i < spoken.length - 1 ? ' [pause]' : ''))
+    .join('\n');
 
   const callFish = (model) =>
     fetch(FISH_TS_URL, {

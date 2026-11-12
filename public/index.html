@@ -6922,7 +6922,7 @@ function renderStoryArchetypesUI() {
         const job = (async () => {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
-          const url = `/api/tts-script?v=3&speed=${speed}&ref=${encodeURIComponent(voice)}&lines=${encodeURIComponent(JSON.stringify(lines))}`;
+          const url = `/api/tts-script?v=4&speed=${speed}&ref=${encodeURIComponent(voice)}&lines=${encodeURIComponent(JSON.stringify(lines))}`;
           const res = await this.runTtsRequest(() => fetch(url));
           if (!res.ok) {
             let code = `http_${res.status}`;
