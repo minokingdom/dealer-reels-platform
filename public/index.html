@@ -5630,44 +5630,59 @@ function renderStoryArchetypesUI() {
           ctx.fillRect(0, 0, W, H);
         }
 
-        // 텍스트가 절대 잘리거나 박스 밖으로 삐져나가지 않도록 폰트 크기를 자동 조절하는 헬퍼
-        function drawFittedText(text, x, y, maxWidth, initialSize, minSize = 12) {
+        // 텍스트가 절대 잘리거나 박스 밖으로 삐져나가지 않도록 폰트 크기를 자동 조절하고 말줄임표(...) 처리하는 헬퍼
+        function drawFittedText(text, x, y, maxWidth, initialSize, minSize = 9) {
+          const str = String(text || '').trim();
+          if (!str) return;
           let size = initialSize;
-          ctx.font = `bold ${size}px sans-serif`;
-          while (ctx.measureText(text).width > maxWidth && size > minSize) {
+          ctx.font = old px sans-serif;
+          while (ctx.measureText(str).width > maxWidth && size > minSize) {
             size -= 0.5;
-            ctx.font = `bold ${size}px sans-serif`;
+            ctx.font = old px sans-serif;
           }
-          ctx.fillText(text, x, y, maxWidth);
+          if (ctx.measureText(str).width <= maxWidth) {
+            ctx.fillText(str, x, y);
+            return;
+          }
+          // minSize에서도 넘치면 끝에 말줄임표(…)를 붙여 완벽히 박스 내부에 가둠!
+          let fitted = str;
+          while (ctx.measureText(fitted + '…').width > maxWidth && fitted.length > 1) {
+            fitted = fitted.slice(0, -1);
+          }
+          ctx.fillText(fitted + '…', x, y);
         }
 
-        // ★ [키네틱 타이포] 단어별 시차(Stagger) 팝업 리빌 헬퍼
+        // ★ [키네틱 타이포] 단어별 시차(Stagger) 팝업 리빌 헬퍼 (박스 오버플로우 방지 + 오버슈트 댐핑 완벽 적용)
         function drawKineticWords(text, x, y, maxWidth, initialSize, localT, baseDelay = 0, color = '#ffffff') {
           const str = String(text || '').trim();
           if (!str) return;
           const words = str.split(/\s+/);
           let size = initialSize;
-          ctx.font = `900 ${size}px sans-serif`;
-          while (ctx.measureText(str).width > maxWidth && size > 14) {
+          ctx.font = 900 px sans-serif;
+          while (ctx.measureText(str).width > maxWidth && size > 11) {
             size -= 0.5;
-            ctx.font = `900 ${size}px sans-serif`;
+            ctx.font = 900 px sans-serif;
           }
           const totalW = ctx.measureText(str).width;
-          let curX = x - totalW / 2;
-          const spaceW = ctx.measureText(' ').width;
+          // 11px에서도 넘치면 비례 압축 스케일링으로 박스 절대 이탈 방지
+          const scaleRatio = totalW > maxWidth && maxWidth > 50 ? maxWidth / totalW : 1;
+          const spaceW = ctx.measureText(' ').width * scaleRatio;
+          let curX = x - (totalW * scaleRatio) / 2;
 
           words.forEach((w, wIdx) => {
-            const wordDelay = baseDelay + wIdx * 0.08;
+            const wordDelay = baseDelay + wIdx * 0.07;
             const wProg = Easing.clamp((localT - wordDelay) / 0.28, 0, 1);
-            const wPop = Easing.backOut(wProg);
+            // Easing.backOut 오버슈트(최대 1.7배 팽창)로 인한 박스 탈출 버그 수정 -> 1.15배 이내로 댐핑!
+            const rawPop = Easing.backOut(wProg);
+            const wPop = 1 + (rawPop - 1) * 0.25;
             const wAlpha = Easing.power3InOut(wProg);
-            const wordW = ctx.measureText(w).width;
+            const wordW = ctx.measureText(w).width * scaleRatio;
 
             ctx.save();
             ctx.globalAlpha = wAlpha;
             const wordCenterX = curX + wordW / 2;
             ctx.translate(wordCenterX, y);
-            ctx.scale(wPop, wPop);
+            ctx.scale(wPop * scaleRatio, wPop);
             ctx.fillStyle = color;
             ctx.textAlign = 'center';
             ctx.fillText(w, 0, 0);
@@ -5677,15 +5692,22 @@ function renderStoryArchetypesUI() {
           });
         }
 
-        // ★ [시네마틱 마스크] 아래에서 수직으로 솟구치는 마스크 리빌 헬퍼
+        // ★ [시네마틱 마스크] 아래에서 수직으로 솟구치는 마스크 리빌 헬퍼 (길이 자동 압축/말줄임 완벽 방어)
         function drawMaskedRiseText(text, x, y, maxWidth, initialSize, localT, height = 48, color = '#ffffff') {
           const str = String(text || '').trim();
           if (!str) return;
           let size = initialSize;
-          ctx.font = `900 ${size}px sans-serif`;
-          while (ctx.measureText(str).width > maxWidth && size > 14) {
+          ctx.font = 900 px sans-serif;
+          while (ctx.measureText(str).width > maxWidth && size > 11) {
             size -= 0.5;
-            ctx.font = `900 ${size}px sans-serif`;
+            ctx.font = 900 px sans-serif;
+          }
+          let fitted = str;
+          if (ctx.measureText(fitted).width > maxWidth) {
+            while (ctx.measureText(fitted + '…').width > maxWidth && fitted.length > 1) {
+              fitted = fitted.slice(0, -1);
+            }
+            fitted += '…';
           }
           const riseProg = Easing.power4Out(Easing.clamp(localT / 0.42, 0, 1));
           const offsetY = (1 - riseProg) * height;
@@ -5698,7 +5720,7 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'center';
           ctx.fillStyle = color;
           ctx.globalAlpha = riseProg;
-          ctx.fillText(str, x, y + offsetY);
+          ctx.fillText(fitted, x, y + offsetY);
           ctx.restore();
         }
 
@@ -5707,7 +5729,7 @@ function renderStoryArchetypesUI() {
           const str = String(text || '').trim();
           if (!str) return;
           const prog = Easing.clamp(localT / 0.35, 0, 1);
-          const slamScale = 1 + (1 - Easing.backOut(prog)) * 1.6;
+          const slamScale = Math.max(1, 1 + (1 - prog) * 1.2);
           const alpha = Easing.clamp(localT / 0.12, 0, 1);
 
           ctx.save();
@@ -5716,8 +5738,8 @@ function renderStoryArchetypesUI() {
           ctx.scale(slamScale, slamScale);
           ctx.globalAlpha = alpha;
 
-          ctx.font = `900 ${size}px sans-serif`;
-          const textW = ctx.measureText(str).width;
+          ctx.font = 900 px sans-serif;
+          const textW = Math.min(ctx.measureText(str).width, 240);
           const padX = 24;
           const padY = 14;
 
@@ -5733,12 +5755,12 @@ function renderStoryArchetypesUI() {
           // 텍스트
           ctx.textAlign = 'center';
           ctx.fillStyle = textColor;
-          ctx.fillText(str, 0, size * 0.35);
+          drawFittedText(str, 0, size * 0.35, textW, size);
 
           // 충격파 링 효과 (초반 0.2초간 퍼져나감)
           if (localT > 0.15 && localT < 0.55) {
             const ringProg = (localT - 0.15) / 0.4;
-            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - ringProg})`;
+            ctx.strokeStyle = gba(255, 255, 255, );
             ctx.lineWidth = 3 * (1 - ringProg);
             ctx.strokeRect(-textW / 2 - padX - ringProg * 25, -size / 2 - padY - ringProg * 15, textW + padX * 2 + ringProg * 50, size + padY * 2 + ringProg * 30);
           }
@@ -5840,8 +5862,656 @@ function renderStoryArchetypesUI() {
           ctx.restore();
         }
 
-        // 동적 Y 좌표 앵커 계산 (AI가 지정한 pos: 'top' | 'center' | 'bottom' 반영)
-        const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 535 : 475;
+        // ====================================================================
+        // ★ 화면 전체 레이아웃 6대 모드 (Screen Composition Engine)
+        // 획일적인 가운데 사각 박스 구조를 완전히 탈피하여, 모드마다 화면 전체 구성/문법이 180도 완전히 달라짐!
+        // ====================================================================
+        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
+        const narrationLine =
+          (campaign.ttsLines && campaign.ttsLines[currentCutSlot]) ||
+          subLine ||
+          \ · \;
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 1: TIKTOK_VIRAL_SPLIT ★ [50:50 상하 2분할 숏폼 바이럴 모드]
+        // 상단 1:1 카메라 뷰파인더(REC 타임코드+배터리+4K) + 하단 100% 리얼 카카오톡 1:1 상담창
+        // (가운데 네모 박스 완전 제거! 실제 인스타 릴스 / 틱톡에서 터지는 50:50 분할 화면)
+        // --------------------------------------------------------------------
+        if (lMode === 'TIKTOK_VIRAL_SPLIT') {
+          // 상단 50% (Y: 0 ~ 475): 1:1 카메라 뷰파인더 & REC 타임코드
+          ctx.save();
+          const recDot = Math.sin(t * 8) > 0 ? 1 : 0.2;
+          ctx.fillStyle = gba(239, 68, 68, \);
+          ctx.beginPath();
+          ctx.arc(36, 42, 7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.font = '900 13px monospace';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.fillText(REC  [00:0\:24], 50, 47);
+          ctx.textAlign = 'right';
+          ctx.font = 'bold 12px monospace';
+          ctx.fillText('4K 60FPS · 🔋 89%', W - 32, 47);
+
+          // 뷰파인더 화이트 코너 브래킷
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          const bk = 18;
+          [[24, 60, bk, bk], [W - 24, 60, -bk, bk], [24, 460, bk, -bk], [W - 24, 460, -bk, -bk]].forEach(([bx, by, dx, dy]) => {
+            ctx.beginPath();
+            ctx.moveTo(bx, by + dy);
+            ctx.lineTo(bx, by);
+            ctx.lineTo(bx + dx, by);
+            ctx.stroke();
+          });
+
+          // 상단 차량 배정 태그
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.68)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, 24, 420, W - 48, 38, 19);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px sans-serif';
+          ctx.textAlign = 'center';
+          drawFittedText(🚗 공식 신차배정 // \, W / 2, 444, W - 70, 14);
+          ctx.restore();
+
+          // 중앙 분할선 (Y: 475)
+          ctx.save();
+          ctx.fillStyle = '#fee500';
+          ctx.fillRect(0, 472, W, 4);
+          ctx.restore();
+
+          // 하단 50% (Y: 476 ~ 960): 100% 리얼 카카오톡 1:1 상담창
+          ctx.save();
+          ctx.fillStyle = '#1e222d';
+          ctx.fillRect(0, 476, W, H - 476);
+
+          // 카카오톡 상단 헤더 (Y: 476 ~ 534)
+          ctx.fillStyle = '#171a23';
+          ctx.fillRect(0, 476, W, 58);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(44, 505, 18, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, 26, 487, 36, 36);
+          else {
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(26, 487, 36, 36);
+          }
+          ctx.restore();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 15px sans-serif';
+          drawFittedText(\ 카마스터 (\), 72, 499, 280, 15);
+          ctx.fillStyle = '#22c55e';
+          ctx.font = '11px sans-serif';
+          ctx.fillText('● 실시간 1:1 견적 상담 중', 72, 518);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#fee500';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('카카오톡 채널', W - 20, 509);
+
+          // 말풍선 1: 고객 문의 (좌측 흰색 말풍선)
+          const bubble1P = Easing.backOut(Easing.clamp(cutLocalT / 0.35, 0, 1));
+          if (bubble1P > 0) {
+            ctx.save();
+            ctx.translate(20, 550);
+            ctx.scale(bubble1P, bubble1P);
+            ctx.fillStyle = '#ffffff';
+            drawRoundedRect(ctx, 0, 0, W - 140, 52, 14);
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.textAlign = 'left';
+            drawFittedText(카마스터님! \ 이번 달 특판 맞나요?, 16, 32, W - 170, 14);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('오후 2:15', W - 132, 46);
+            ctx.restore();
+          }
+
+          // 말풍선 2: 딜러 즉시 답변 (우측 옐로우 말풍선)
+          const bubble2P = Easing.backOut(Easing.clamp((cutLocalT - 0.18) / 0.35, 0, 1));
+          if (bubble2P > 0) {
+            ctx.save();
+            ctx.translate(120, 614);
+            ctx.scale(bubble2P, bubble2P);
+            ctx.fillStyle = '#fee500';
+            drawRoundedRect(ctx, 0, 0, W - 140, 58, 14);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.textAlign = 'left';
+            drawFittedText([단독 승인] 네! \ 즉시 적용, 16, 26, W - 170, 14);
+            drawFittedText(전국 선점 3대 즉시출고 배정 가능합니다!, 16, 46, W - 170, 12);
+            ctx.fillStyle = '#fee500';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('1', -8, 52);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('오후 2:15', -18, 52);
+            ctx.restore();
+          }
+
+          // 말풍선 3: 추가 혜택 (우측 옐로우 말풍선)
+          const bubble3P = Easing.backOut(Easing.clamp((cutLocalT - 0.36) / 0.35, 0, 1));
+          if (bubble3P > 0) {
+            ctx.save();
+            ctx.translate(120, 684);
+            ctx.scale(bubble3P, bubble3P);
+            ctx.fillStyle = '#fee500';
+            drawRoundedRect(ctx, 0, 0, W - 140, 48, 14);
+            ctx.fill();
+            ctx.fillStyle = '#000000';
+            ctx.textAlign = 'left';
+            drawFittedText(비공식 추가지원 + 8종 프리미엄 사은품 🎁, 16, 30, W - 170, 13);
+            ctx.fillStyle = '#fee500';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('1', -8, 42);
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('오후 2:16', -18, 42);
+            ctx.restore();
+          }
+
+          // 화면 중앙 바이럴 펀치라인 자막 (키네틱 팝)
+          ctx.save();
+          ctx.translate(W / 2, 775);
+          drawKineticWords(narrationLine, 0, 0, W - 60, 24, cutLocalT, 0.1, '#ffffff');
+          ctx.restore();
+
+          // 하단 카카오톡 메시지 입력창 (Y: 865 ~ 925)
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, 20, 865, W - 40, 52, 26);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#94a3b8';
+          drawFittedText('💬 댓글에 [견적] 남기시면 비밀조건표 즉시 발송...', 42, 896, W - 140, 14);
+
+          // 전송 노란색 원형 버튼
+          ctx.fillStyle = '#fee500';
+          ctx.beginPath();
+          ctx.arc(W - 48, 891, 18, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 15px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('➤', W - 48, 896);
+
+          // 스마트폰 홈바
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          drawRoundedRect(ctx, W / 2 - 60, 942, 120, 4, 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 2: EDITORIAL_VOGUE ★ [보그 매거진 에디토리얼 풀스크린 모드]
+        // 사각 박스 100% 제거! 2.39:1 시네마 레터박스 + 수직 워터마크 + 플로팅 세리프 헤드라인 + 골드 캡슐
+        // --------------------------------------------------------------------
+        else if (lMode === 'EDITORIAL_VOGUE') {
+          // 상단 럭셔리 2.39:1 시네마틱 레터박스 (Y: 0 ~ 68)
+          ctx.save();
+          ctx.fillStyle = '#07080c';
+          ctx.fillRect(0, 0, W, 68);
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(24, 68);
+          ctx.lineTo(W - 24, 68);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '700 12px serif';
+          ctx.textAlign = 'left';
+          ctx.fillText('AUTOREELS COUTURE · 2026 SPECIAL EDITION', 30, 42);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = theme.accent || '#d4af37';
+          ctx.fillText('VOGUE MOTORS', W - 30, 42);
+          ctx.restore();
+
+          // 좌측 수직 워터마크 브랜딩
+          ctx.save();
+          ctx.translate(28, 450);
+          ctx.rotate(-Math.PI / 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.font = '700 11px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(AUTOREELS SHOWROOM // \ EDITION, 0, 0);
+          ctx.restore();
+
+          // 중앙: 네모 상자 완전 0개! 사진 위에 직접 얹히는 초대형 골드/화이트 럭셔리 타이포그래피!
+          ctx.save();
+          ctx.translate(W / 2, 400);
+
+          // 1행: 차종명 마스크 리빌
+          drawMaskedRiseText(campaign.vehicle, 0, 0, W - 64, 42, cutLocalT, 46, '#ffffff');
+
+          // 2행: 메인 훅 자막 (키네틱 골드 타이포)
+          drawKineticWords(narrationLine, 0, 52, W - 70, 26, cutLocalT, 0.12, theme.accent || '#f1c40f');
+
+          // 3행: 얇은 골드 헤어라인 디바이더
+          const lineProg = Easing.power3InOut(Easing.clamp(cutLocalT / 0.45, 0, 1));
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(-160 * lineProg, 84);
+          ctx.lineTo(160 * lineProg, 84);
+          ctx.stroke();
+
+          // 4행: 플로팅 다크 글래스 VIP 캡슐
+          ctx.fillStyle = 'rgba(7, 10, 18, 0.82)';
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, -190, 102, 380, 42, 21);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          drawFittedText(★ VIP PRIVILEGE : \, 0, 128, 350, 15);
+          ctx.restore();
+
+          // 하단 럭셔리 시네마틱 레터박스 (Y: 885 ~ 960)
+          ctx.save();
+          ctx.fillStyle = '#07080c';
+          ctx.fillRect(0, 885, W, 75);
+          ctx.strokeStyle = theme.accent || '#d4af37';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(24, 885);
+          ctx.lineTo(W - 24, 885);
+          ctx.stroke();
+
+          // 딜러 프로필 원형
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(52, 922, 18, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, 34, 904, 36, 36);
+          else {
+            ctx.fillStyle = theme.accent || '#d4af37';
+            ctx.fillRect(34, 904, 36, 36);
+          }
+          ctx.restore();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 14px sans-serif';
+          drawFittedText(\ \, 80, 917, 240, 14);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '11px sans-serif';
+          drawFittedText(\ · VIP 컨시어지, 80, 933, 240, 11);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = theme.accent || '#d4af37';
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('💬 1:1 VIP 상담', W - 30, 925);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 3: BROADCAST_NEWS ★ [24시 방송국 LIVE 뉴스룸 속보 모드]
+        // 상단 풀와이드 LIVE 속보 티커 + 중앙 무방해 차량 뷰 + 하단 2단 방송국 뉴스 자막 & 실시간 시황 티커
+        // --------------------------------------------------------------------
+        else if (lMode === 'BROADCAST_NEWS') {
+          // 상단 풀와이드 빨간색 LIVE 속보 헤더 바 (Y: 0 ~ 48)
+          ctx.save();
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(0, 0, W, 48);
+
+          // 펄싱 LIVE 비콘
+          const p = 1 + Math.sin(t * 9) * 0.15;
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(32, 24, 6 * p, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = '900 14px sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          ctx.fillText('● LIVE 속보', 48, 29);
+
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('|  24시 보도국 단독 뉴스룸', 135, 29);
+
+          // 우측 방송국 채널 버그
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+          drawRoundedRect(ctx, W - 110, 8, 96, 32, 6);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('NEWS 24', W - 62, 29);
+          ctx.restore();
+
+          // 하단 2단 정통 방송국 뉴스 하단서드 (Y: 710 ~ 920)
+          ctx.save();
+          // 1단 헤더 바 (네이비)
+          ctx.fillStyle = '#0f1d3a';
+          ctx.fillRect(0, 715, W, 38);
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(0, 715, 68, 38);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 13px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('속보', 34, 739);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.textAlign = 'left';
+          drawFittedText([단독 긴급배정] \ 특별 프로모션 전격 돌입, 78, 739, W - 90, 13);
+
+          // 2단 메인 뉴스 자막 바 (다크 블루)
+          ctx.fillStyle = 'rgba(7, 12, 24, 0.95)';
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1.5;
+          ctx.fillRect(0, 753, W, 100);
+
+          // 좌측 현장 기자/카마스터 배지
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(46, 792, 22, 0, Math.PI * 2);
+          ctx.clip();
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, 24, 770, 44, 44);
+          else {
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(24, 770, 44, 44);
+          }
+          ctx.restore();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#e2e8f0';
+          ctx.font = '10px sans-serif';
+          ctx.fillText('현장취재', 78, 780);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 15px sans-serif';
+          drawFittedText(\ 카마스터, 78, 802, 140, 15);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '10px sans-serif';
+          drawFittedText(d.branch, 78, 820, 140, 10);
+
+          // 메인 속보 자막 (키네틱 팝)
+          ctx.save();
+          drawKineticWords(narrationLine, (W + 200) / 2, 800, W - 220, 22, cutLocalT, 0.05, '#ffffff');
+          ctx.restore();
+
+          // 3단 시황 스크롤 티커 바 (옐로우 하이콘트라스트)
+          ctx.fillStyle = '#eab308';
+          ctx.fillRect(0, 853, W, 42);
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.textAlign = 'left';
+          drawFittedText(▶ 전국 잔여 3대 즉시출고  ▶ \  ▶ 비공식 지원금 최대  ▶ 댓글 [견적] 남기시면 비밀조건표 즉시 발송, 16, 879, W - 32, 13);
+
+          // 타임스탬프
+          ctx.fillStyle = '#0f172a';
+          ctx.fillRect(0, 895, W, 28);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '11px monospace';
+          ctx.fillText(14:32:05 KST · 전국 동시 생중계 // \, 16, 913);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 4: CYBER_HUD ★ [초미래형 사이버펑크 콕핏 HUD 모드]
+        // 4코너 L자 브래킷 + 좌측 고도/배터리 래더 + 우측 홀로그램 속도계 + 중앙 락온 조준선 + 사이버 터미널
+        // --------------------------------------------------------------------
+        else if (lMode === 'CYBER_HUD') {
+          // 4코너 네온 시안 L자 타겟 브래킷
+          ctx.save();
+          const cs = 26;
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 2.5;
+          [[24, 24], [W - 24, 24], [24, H - 24], [W - 24, H - 24]].forEach(([cx, cy]) => {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy + (cy < 100 ? cs : -cs));
+            ctx.lineTo(cx, cy);
+            ctx.lineTo(cx + (cx < 100 ? cs : -cs), cy);
+            ctx.stroke();
+          });
+
+          // 상단 디지털 텔레메트리 바
+          ctx.fillStyle = 'rgba(4, 9, 21, 0.88)';
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1;
+          drawRoundedRect(ctx, 32, 28, W - 64, 34, 6);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#06b6d4';
+          ctx.textAlign = 'left';
+          ctx.fillText('SYS // CYBER_AI_RADAR [ACTIVE]', 44, 50);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillText(SUBSIDY: -\0,000 KRW, W - 44, 50);
+
+          // 좌측 수직 고도/배터리 래더 미터 (Y: 180 ~ 520)
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
+          ctx.lineWidth = 1.5;
+          for (let i = 0; i < 12; i++) {
+            const ty = 200 + i * 26;
+            const tw = i % 3 === 0 ? 22 : 12;
+            const active = (t * 8 + i) % 12 > 4;
+            ctx.fillStyle = active ? '#06b6d4' : 'rgba(6, 182, 212, 0.2)';
+            ctx.fillRect(28, ty, tw, 3);
+          }
+          ctx.font = '9px monospace';
+          ctx.fillStyle = '#06b6d4';
+          ctx.textAlign = 'left';
+          ctx.fillText('PWR 98%', 28, 535);
+
+          // 우측 홀로그램 속도계 & RPM 원형 게이지
+          const speed = Math.round(112 + Math.sin(t * 3) * 28);
+          ctx.save();
+          ctx.translate(W - 55, 340);
+          ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(0, 0, 34, -Math.PI * 0.8, Math.PI * 0.8);
+          ctx.stroke();
+
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(0, 0, 34, -Math.PI * 0.8, -Math.PI * 0.8 + (Math.PI * 1.6 * (speed / 180)));
+          ctx.stroke();
+
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 16px monospace';
+          ctx.fillText(\, 0, 2);
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '8px monospace';
+          ctx.fillText('KM/H', 0, 14);
+          ctx.restore();
+
+          // 중앙 락온 조준선 (Targeting Reticle)
+          ctx.save();
+          ctx.translate(W / 2, 380);
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, 48, 0, Math.PI * 2);
+          ctx.stroke();
+
+          const rot = t * 1.5;
+          ctx.beginPath();
+          ctx.arc(0, 0, 56, rot, rot + Math.PI * 0.5);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0, 0, 56, rot + Math.PI, rot + Math.PI * 1.5);
+          ctx.stroke();
+
+          ctx.font = 'bold 10px monospace';
+          ctx.fillStyle = '#38bdf8';
+          ctx.textAlign = 'center';
+          ctx.fillText([TARGET LOCKED: \], 0, -64);
+          ctx.restore();
+
+          // 하단 사이버 터미널 콘솔 박스 (Y: 740 ~ 915)
+          ctx.fillStyle = 'rgba(3, 7, 18, 0.94)';
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, 20, 740, W - 40, 175, 12);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = 'bold 11px monospace';
+          ctx.fillStyle = '#06b6d4';
+          ctx.textAlign = 'left';
+          ctx.fillText(OPERATOR: \ // DEPT: \, 36, 766);
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#22c55e';
+          ctx.fillText('● 100% ONLINE PASS', W - 36, 766);
+
+          // 메인 네온 자막 (키네틱 팝)
+          ctx.save();
+          drawKineticWords(narrationLine, W / 2, 815, W - 80, 22, cutLocalT, 0.05, '#ffffff');
+          ctx.restore();
+
+          // 콘솔 하단 데이터 스트림
+          ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
+          drawRoundedRect(ctx, 36, 845, W - 72, 54, 8);
+          ctx.fill();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '12px monospace';
+          drawFittedText(BENEFIT: \, 48, 868, W - 96, 12);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '11px monospace';
+          drawFittedText(STATUS: 당일 선점 즉시출고 승인완료 (댓글 [견적]), 48, 888, W - 96, 11);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 5: RACING_ACTION ★ [모터스포츠 -8도 사선 레이싱 서킷 모드]
+        // 좌우 적백 연석(Kerb) + 상단 체커기 랩타임 + -8도 사선 카본 스트라이프 + 우하단 타코미터 RPM 게이지
+        // --------------------------------------------------------------------
+        else if (lMode === 'RACING_ACTION') {
+          // 좌우 적백 레이싱 연석(Kerb) 스트라이프
+          ctx.save();
+          const kerbW = 12;
+          const kerbBlockH = 24;
+          for (let y = 0; y < H; y += kerbBlockH) {
+            const isRed = (Math.floor(y / kerbBlockH) + Math.floor(t * 12)) % 2 === 0;
+            ctx.fillStyle = isRed ? '#ef4444' : '#ffffff';
+            ctx.fillRect(0, y, kerbW, kerbBlockH);
+            ctx.fillRect(W - kerbW, y, kerbW, kerbBlockH);
+          }
+
+          // 상단 체커기 랩타임 리본 (Y: 20 ~ 58)
+          ctx.fillStyle = '#0a0a0d';
+          ctx.fillRect(kerbW, 20, W - kerbW * 2, 40);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(kerbW, 20, W - kerbW * 2, 40);
+
+          ctx.font = '900 13px sans-serif';
+          ctx.fillStyle = '#ef4444';
+          ctx.textAlign = 'left';
+          ctx.fillText(🏁 MOTORSPORTS // LAP 0\, kerbW + 16, 45);
+
+          ctx.textAlign = 'right';
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 12px monospace';
+          ctx.fillText('01:23.84 · TOP SPEED', W - kerbW - 16, 45);
+          ctx.restore();
+
+          // 중앙/하단 -8도 사선 카본 스트라이프 배너 (Y: 700)
+          ctx.save();
+          ctx.translate(W / 2, 700);
+          ctx.rotate((-8 * Math.PI) / 180);
+
+          // 카본 블랙 사선 배너
+          ctx.fillStyle = 'rgba(10, 10, 14, 0.96)';
+          ctx.fillRect(-W, -45, W * 2, 90);
+          ctx.fillStyle = '#ef4444';
+          ctx.fillRect(-W, -45, W * 2, 5);
+          ctx.fillRect(-W, 40, W * 2, 5);
+
+          // 사선 자막 (키네틱)
+          drawKineticWords(narrationLine, 0, 8, W - 60, 24, cutLocalT, 0.05, '#ffffff');
+          ctx.restore();
+
+          // 우하단 아날로그 타코미터 RPM 게이지
+          ctx.save();
+          ctx.translate(W - 75, 830);
+          ctx.fillStyle = '#0f172a';
+          ctx.beginPath();
+          ctx.arc(0, 0, 42, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 2.5;
+          ctx.stroke();
+
+          // 눈금 및 레드존
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, 35, Math.PI * 0.7, Math.PI * 2.1);
+          ctx.stroke();
+          ctx.strokeStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(0, 0, 35, Math.PI * 1.8, Math.PI * 2.1);
+          ctx.stroke();
+
+          // 바운싱 바늘 (RPM 5,000 ~ 7,500)
+          const revAngle = Math.PI * 0.7 + Math.PI * 1.3 * (0.65 + Math.sin(t * 12) * 0.28);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(revAngle) * 32, Math.sin(revAngle) * 32);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(0, 0, 5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.font = 'bold 9px monospace';
+          ctx.fillStyle = '#ef4444';
+          ctx.textAlign = 'center';
+          ctx.fillText('RPM x1000', 0, 24);
+          ctx.restore();
+
+          // 하단 파일럿 라이선스 플레이트 (Y: 865 ~ 930)
+          ctx.save();
+          ctx.translate(24, 865);
+          ctx.fillStyle = 'rgba(15, 15, 20, 0.95)';
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, 0, 0, W - 145, 65, 10);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.textAlign = 'left';
+          ctx.fillStyle = '#ef4444';
+          ctx.font = '900 13px sans-serif';
+          drawFittedText(🏁 TEAM HYUNDAI // PILOT \, 16, 26, W - 170, 13);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 11px sans-serif';
+          drawFittedText(\ · 최고출력 퍼포먼스 패키지, 16, 48, W - 170, 11);
+          ctx.restore();
+        }
+
+        // --------------------------------------------------------------------
+        // 레이아웃 모드 6: CLASSIC_SHOWROOM ★ [정통 현대·기아 공식 쇼룸 모드]
+        // 22종의 절차적 위젯(영수증, 계약서, 점검표 등)을 중앙에 배치하고 정통 쇼룸 하단 명함 카드 렌더링
+        // --------------------------------------------------------------------
+        else {
+          const anchorY = posMode === 'top' ? 195 : posMode === 'bottom' ? 535 : 475;
 
         // --------------------------------------------------------------------
         // 위젯 1: BREAKING_NEWS ★ [화면 하단 풀와이드 방송국 2단 속보 티커]
@@ -6909,335 +7579,8 @@ function renderStoryArchetypesUI() {
           ctx.restore();
         }
 
-        // ====================================================================
-        // ★ 화면 전체 레이아웃 6대 모드 (Screen Composition Engine)
-        // 하단 152px 흰색 박스 강제성을 완전 탈피하여, 모드마다 화면 구성 자체가 완전히 뒤바뀜!
-        // ====================================================================
-        const lMode = campaign.layoutMode || 'CLASSIC_SHOWROOM';
-        const narrationLine =
-          (campaign.ttsLines && campaign.ttsLines[currentCutSlot]) ||
-          subLine ||
-          `${campaign.vehicle} · ${campaign.discount}`;
 
-        // --------------------------------------------------------------------
-        // 모드 1: EDITORIAL_VOGUE ★ [보그 매거진 에디토리얼 풀스크린 모드]
-        // 하단 흰색 바 100% 제거! 9:16 사진 완전 개방 + 미니멀 골드 레터박스 + 플로팅 글래스 캡슐
-        // --------------------------------------------------------------------
-        if (lMode === 'EDITORIAL_VOGUE') {
-          // 상단: 럭셔리 매거진 얇은 레터박스 라인 & 헤더
-          ctx.save();
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(30, 48);
-          ctx.lineTo(W - 30, 48);
-          ctx.stroke();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '700 12px serif';
-          ctx.textAlign = 'left';
-          ctx.fillText('AUTOREELS COUTURE · 2026 SPECIAL EDITION', 32, 40);
-          ctx.textAlign = 'right';
-          ctx.fillStyle = theme.accent;
-          ctx.fillText('EXCLUSIVE', W - 32, 40);
-          ctx.restore();
 
-          // 중앙/하단 자막: 박스 없이 사진 위에 직접 얹히는 초대형 38px 골드/화이트 타이포그래피!
-          ctx.save();
-          ctx.translate(W / 2, H - 150);
-          drawKineticWords(narrationLine, 0, 0, W - 60, 34, cutLocalT, 0.08, '#ffffff');
-          ctx.restore();
-
-          // 하단 딜러 시그니처: 무거운 흰색 바 대신 초경량 플로팅 글래스 캡슐
-          ctx.save();
-          ctx.translate(W / 2, H - 55);
-          ctx.fillStyle = 'rgba(10, 14, 23, 0.82)';
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 1.5;
-          drawRoundedRect(ctx, -220, -25, 440, 50, 25);
-          ctx.fill();
-          ctx.stroke();
-
-          // 딜러 프로필 원형
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(-185, 0, 18, 0, Math.PI * 2);
-          ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -203, -18, 36, 36);
-          else {
-            ctx.fillStyle = theme.accent;
-            ctx.fillRect(-203, -18, 36, 36);
-          }
-          ctx.restore();
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 14px sans-serif';
-          ctx.fillText(`${d.name} ${d.title}`, -155, -3);
-          ctx.fillStyle = theme.sub;
-          ctx.font = '11px sans-serif';
-          ctx.fillText(`${d.branch} · 1:1 VIP 프라이빗 컨시어지`, -155, 13);
-
-          ctx.textAlign = 'right';
-          ctx.fillStyle = theme.accent;
-          ctx.font = 'bold 12px sans-serif';
-          ctx.fillText('💬 VIP 상담', 200, 5);
-          ctx.restore();
-        }
-
-        // --------------------------------------------------------------------
-        // 모드 2: BROADCAST_NEWS ★ [24시 방송국 LIVE 뉴스룸 속보 모드]
-        // 상단 풀와이드 LIVE 속보 티커 + 하단 정통 방송국 2단 뉴스 하단서드
-        // --------------------------------------------------------------------
-        else if (lMode === 'BROADCAST_NEWS') {
-          // 상단: 풀와이드 빨간색 LIVE 속보 헤더 바
-          ctx.save();
-          ctx.fillStyle = '#dc2626';
-          ctx.fillRect(0, 0, W, 48);
-          const p = 1 + Math.sin(t * 9) * 0.15;
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(36, 24, 7 * p, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.font = '900 15px sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText('LIVE 뉴스특보', 54, 30);
-          ctx.font = 'bold 13px sans-serif';
-          ctx.textAlign = 'right';
-          ctx.fillText('전국 잔여물량 긴급배정 현장 // 24시 단독', W - 24, 30);
-          ctx.restore();
-
-          // 하단: 방송국 2단 풀와이드 뉴스룸 로어서드
-          ctx.save();
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(0, H - 140, W, 52);
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillRect(0, H - 140, W, 4);
-
-          // 좌측 기자/카마스터 배지
-          ctx.fillStyle = '#2563eb';
-          drawRoundedRect(ctx, 16, H - 132, 130, 36, 6);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 12px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(`🎤 ${d.name} 특파원`, 81, H - 109);
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(`[단독 현장보도] ${campaign.vehicle} 공식 당월 특판`, 158, H - 108, W - 176, 17);
-
-          // 2단: 적색/골드 롤링 자막 바
-          ctx.fillStyle = 'rgba(7, 11, 22, 0.96)';
-          ctx.fillRect(0, H - 88, W, 88);
-          ctx.fillStyle = '#ef4444';
-          drawRoundedRect(ctx, 16, H - 76, 70, 26, 4);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '900 12px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('속보', 51, H - 58);
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#ffffff';
-          drawFittedText(narrationLine, 98, H - 58, W - 118, 18);
-          ctx.fillStyle = '#fbbf24';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.fillText(`최대 -${campaign.discountNum}만원 특별할인 · 취등록세 0원 무보증 즉시출고`, 98, H - 24);
-          ctx.restore();
-        }
-
-        // --------------------------------------------------------------------
-        // 모드 3: CYBER_HUD ★ [3D 사이버네틱 HUD 테크 모드]
-        // 4코너 L자 타겟 브래킷 + 사이버 그리드 + 터미널 에이전트 뱃지
-        // --------------------------------------------------------------------
-        else if (lMode === 'CYBER_HUD') {
-          ctx.save();
-          const cs = 22;
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 2.5;
-          [[20, 20], [W - 20, 20], [20, H - 20], [W - 20, H - 20]].forEach(([cx, cy]) => {
-            ctx.beginPath();
-            ctx.moveTo(cx, cy + (cy < 100 ? cs : -cs));
-            ctx.lineTo(cx, cy);
-            ctx.lineTo(cx + (cx < 100 ? cs : -cs), cy);
-            ctx.stroke();
-          });
-
-          // 상단 디지털 텔레메트리 바
-          ctx.fillStyle = 'rgba(6, 11, 25, 0.85)';
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 1;
-          drawRoundedRect(ctx, 28, 28, W - 56, 32, 6);
-          ctx.fill();
-          ctx.stroke();
-          ctx.font = 'bold 11px monospace';
-          ctx.fillStyle = theme.accent;
-          ctx.textAlign = 'left';
-          ctx.fillText('SYS // ONLINE  [RADAR: 100%]', 40, 48);
-          ctx.textAlign = 'right';
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillText(`SUBSIDY // -${campaign.discountNum}0,000 KRW`, W - 40, 48);
-
-          // 중앙/하단 네온 발광 자막 바
-          ctx.fillStyle = 'rgba(5, 8, 18, 0.92)';
-          ctx.strokeStyle = theme.accent;
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, 20, H - 180, W - 40, 56, 12);
-          ctx.fill();
-          ctx.stroke();
-          ctx.textAlign = 'center';
-          drawKineticWords(narrationLine, W / 2, H - 146, W - 70, 20, cutLocalT, 0.05, '#ffffff');
-
-          // 하단 사이버 에이전트 ID 플레이트
-          ctx.fillStyle = 'rgba(6, 11, 25, 0.95)';
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-          ctx.lineWidth = 1;
-          drawRoundedRect(ctx, 20, H - 110, W - 40, 90, 10);
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = theme.accent;
-          ctx.font = 'bold 13px monospace';
-          ctx.fillText(`AGENT // ${d.name.toUpperCase()} (CARMASTER)`, 40, H - 82);
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '12px sans-serif';
-          ctx.fillText('STATUS: PRE-APPROVED // 당일 즉시출고 승인', 40, H - 60);
-          ctx.fillStyle = '#94a3b8';
-          ctx.font = '11px monospace';
-          ctx.fillText(`DEPT: HYUNDAI OFFICIAL [${d.branch}]`, 40, H - 38);
-
-          ctx.textAlign = 'right';
-          ctx.fillStyle = '#22c55e';
-          ctx.font = 'bold 14px monospace';
-          ctx.fillText('● 100% ONLINE PASS', W - 40, H - 60);
-          ctx.restore();
-        }
-
-        // --------------------------------------------------------------------
-        // 모드 4: TIKTOK_VIRAL_SPLIT ★ [바이럴 숏폼 REC & 크리에이터 모드]
-        // 상단 REC 타임코드 + 볼드 옐로우 바이럴 텍스트 + 우측 틱톡 아바타 팔로우 뱃지
-        // --------------------------------------------------------------------
-        else if (lMode === 'TIKTOK_VIRAL_SPLIT') {
-          // 상단 REC 인디케이터
-          ctx.save();
-          const recDot = Math.sin(t * 8) > 0 ? 1 : 0.2;
-          ctx.fillStyle = `rgba(239, 68, 68, ${recDot})`;
-          ctx.beginPath();
-          ctx.arc(36, 42, 7, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.font = '900 13px monospace';
-          ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'left';
-          ctx.fillText(`REC  [00:0${currentCutSlot + 1}:18]`, 50, 47);
-          ctx.textAlign = 'right';
-          ctx.font = 'bold 12px monospace';
-          ctx.fillText('4K 60FPS 🔋89%', W - 32, 47);
-          ctx.restore();
-
-          // 중앙: 화면을 뒤덮는 틱톡 스타일 초대형 볼드 옐로우 자막! (검은 테두리)
-          ctx.save();
-          ctx.translate(W / 2, H - 210);
-          ctx.font = '900 32px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 6;
-          ctx.strokeText(narrationLine, 0, 0, W - 60);
-          ctx.fillStyle = '#FEE500';
-          ctx.fillText(narrationLine, 0, 0, W - 60);
-          ctx.restore();
-
-          // 하단: 크리에이터 스타일 플로팅 카드 + 우측 원형 아바타 (팔로우 뱃지)
-          ctx.save();
-          ctx.translate(24, H - 110);
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.78)';
-          drawRoundedRect(ctx, 0, 0, W - 140, 76, 16);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 15px sans-serif';
-          ctx.textAlign = 'left';
-          ctx.fillText(`@${d.name} 카마스터`, 20, 30);
-          ctx.fillStyle = '#e2e8f0';
-          ctx.font = '12px sans-serif';
-          drawFittedText('💬 댓글에 [견적] 남기시면 비밀조건표 발송!', 20, 54, W - 180, 13);
-
-          ctx.save();
-          ctx.translate(W - 85, 28);
-          ctx.beginPath();
-          ctx.arc(0, 0, 26, 0, Math.PI * 2);
-          ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -26, -26, 52, 52);
-          else {
-            ctx.fillStyle = '#2563eb';
-            ctx.fillRect(-26, -26, 52, 52);
-          }
-          ctx.restore();
-
-          ctx.fillStyle = '#ef4444';
-          ctx.beginPath();
-          ctx.arc(W - 85, 52, 10, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText('+', W - 85, 57);
-          ctx.restore();
-        }
-
-        // --------------------------------------------------------------------
-        // 모드 5: RACING_ACTION ★ [-8도 사선 레이싱 서킷 모드]
-        // 사선 카본 스트라이프 + 레이싱 드라이버 패스포트 뱃지
-        // --------------------------------------------------------------------
-        else if (lMode === 'RACING_ACTION') {
-          ctx.save();
-          ctx.translate(W / 2, H - 180);
-          ctx.rotate((-8 * Math.PI) / 180);
-          ctx.fillStyle = 'rgba(15, 15, 20, 0.96)';
-          ctx.fillRect(-W, -40, W * 2, 80);
-          ctx.fillStyle = '#ef4444';
-          ctx.fillRect(-W, -40, W * 2, 5);
-          ctx.fillRect(-W, 35, W * 2, 5);
-
-          ctx.textAlign = 'center';
-          drawKineticWords(narrationLine, 0, 6, W - 60, 22, cutLocalT, 0.05, '#ffffff');
-          ctx.restore();
-
-          // 하단: 레이싱 드라이버 패스포트 뱃지
-          ctx.save();
-          ctx.translate(W / 2, H - 65);
-          ctx.fillStyle = 'rgba(20, 20, 26, 0.95)';
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -220, -28, 440, 56, 12);
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(-185, 0, 18, 0, Math.PI * 2);
-          ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -203, -18, 36, 36);
-          else {
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(-203, -18, 36, 36);
-          }
-          ctx.restore();
-
-          ctx.textAlign = 'left';
-          ctx.fillStyle = '#ef4444';
-          ctx.font = '900 13px sans-serif';
-          ctx.fillText(`🏁 TEAM HYUNDAI // PILOT ${d.name.toUpperCase()}`, -155, -6);
-          ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 11px sans-serif';
-          ctx.fillText(`최고출력 퍼포먼스 패키지 · ${campaign.discount}`, -155, 12);
-          ctx.restore();
-        }
-
-        // --------------------------------------------------------------------
-        // 모드 6: CLASSIC_SHOWROOM ★ [정통 현대·기아 공식 쇼룸 모드]
-        // 기존 신뢰감 넘치는 화이트 & 네이비 공식 카마스터 명함 카드
-        // --------------------------------------------------------------------
-        else {
           ctx.save();
           ctx.fillStyle = 'rgba(10, 14, 23, 0.90)';
           ctx.strokeStyle = theme.accent;
@@ -7310,6 +7653,7 @@ function renderStoryArchetypesUI() {
           ctx.fillText(`🎁 ${d.promoTag}`, 138, H - 27, 372);
           ctx.restore();
         }
+
       } else {
         // ========================================================================
         // Scene 3 (mainDuration ~ TOTAL_DURATION): 현대·기아자동차 공식 카마스터 클린 화이트&네이비 명함 엔딩
