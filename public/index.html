@@ -619,28 +619,28 @@
             <!-- 카테고리 필터 탭 바 (즐겨찾기 및 확장 카테고리 포함) -->
             <div class="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none text-[11px]" id="archetypeCategoryFilterBar">
               <button type="button" onclick="filterArchetypeCategory('all')" id="archCatBtn_all" class="h-6 px-2.5 rounded-[5px] font-medium bg-[#232325] text-white border border-white/30 shrink-0">
-                전체 (<span id="catCount_all">36</span>)
+                전체 (<span id="catCount_all">96</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('favorite')" id="archCatBtn_favorite" class="h-6 px-2.5 rounded-[5px] text-[#facc15] hover:text-[#fde047] shrink-0 flex items-center gap-1 font-semibold">
                 <span>⭐</span> 즐겨찾기 <span id="favTabCount" class="text-[10px] opacity-80">(0)</span>
               </button>
               <button type="button" onclick="filterArchetypeCategory('special')" id="archCatBtn_special" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                ⚡ 특판·즉시 (6)
+                ⚡ 특판·즉시 (<span id="catCount_special">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('luxury')" id="archCatBtn_luxury" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                🎬 럭셔리 (6)
+                🎬 럭셔리 (<span id="catCount_luxury">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('ev_tech')" id="archCatBtn_ev_tech" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                🛸 EV·테크 (6)
+                🛸 EV·테크 (<span id="catCount_ev_tech">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('sports')" id="archCatBtn_sports" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                🏎️ 스포츠 (6)
+                🏎️ 스포츠 (<span id="catCount_sports">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('finance')" id="archCatBtn_finance" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                💳 금융·0원 (6)
+                💳 금융·0원 (<span id="catCount_finance">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('trust')" id="archCatBtn_trust" class="h-6 px-2.5 rounded-[5px] text-[#a1a1a6] hover:text-[#ededed] shrink-0">
-                🛡️ 신뢰·패밀리 (6)
+                🛡️ 신뢰·패밀리 (<span id="catCount_trust">16</span>)
               </button>
               <button type="button" onclick="filterArchetypeCategory('custom')" id="archCatBtn_custom" class="h-6 px-2.5 rounded-[5px] text-[#38bdf8] hover:text-[#7dd3fc] shrink-0 flex items-center gap-1 font-semibold">
                 <span>✨</span> 내 AI 커스텀 <span id="customTabCount" class="text-[10px] opacity-80">(0)</span>
@@ -2111,9 +2111,329 @@
           '댓글에 견적이라고 남기시고 주말 한정 사은품을 먼저 챙겨가세요.'
         ]
       },
+      exhibition_car: {
+        id: 'exhibition_car',
+        category: 'special',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🏢 전시장 전시차 파격할인형',
+        shortTitle: '전시차특가',
+        tagline: '무주행 0km 전시장 실물 전시차 · 단독 500만원 추가할인 · 즉시출고',
+        icon: '🏢',
+        themeId: 'deepblue',
+        accentColor: '#2563eb',
+        hook: '🏢 [전시차 특별방출] 실주행 0km 전시차 500만원 파격 할인!',
+        discountNum: 520,
+        discount: '전시차 전용 -500만 추가할인',
+        scenePlan: [
+          { cut: 1, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏢 전시장 로테이션 전시차량 딱 1대! 무주행 신차 상태 보증',
+          '🔍 잔기스 하나 없는 36개 항목 정밀 외관 광택 검수 완료',
+          '📉 신차 가격에서 전시차 전용 500만원 즉시 차감 적용',
+          '🔑 계약 당일 번호판 등록 및 자택 캐리어 직송 가능'
+        ],
+        ttsLines: [
+          '전시장 교체 주기 도래로 무주행 전시차량을 특별 방출합니다.',
+          '외관 검수와 광택 케어를 완벽하게 마친 무결점 상태입니다.',
+          '정상 출고가에서 전시차 특별 할인 오백만 원을 즉시 깎아드립니다.',
+          '계약 즉시 당일 번호판 등록과 함께 집 앞까지 배송해 드립니다.'
+        ]
+      },
+      pre_registered: {
+        id: 'pre_registered',
+        category: 'special',
+        layoutMode: 'BROADCAST_NEWS',
+        title: '🔑 대리점 선등록 신차 특판형',
+        shortTitle: '선등록신차',
+        tagline: '실주행 없는 선등록 서류상 중고 · 취등록세 지원 · 번개배정',
+        icon: '🔑',
+        themeId: 'crimson',
+        accentColor: '#dc2626',
+        hook: '🔑 [선등록 특판] 실주행 10km 미만 신차급! 취등록세 100% 지원',
+        discountNum: 560,
+        discount: '취등록세 100% 전액 지원',
+        scenePlan: [
+          { cut: 1, widget: 'BREAKING_NEWS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🚨 지점 실적용 선등록 완료! 서류상 중고, 실물은 100% 새차',
+          '⚖️ 할부·리스 대비 취등록세 300만원 지점 대납 전액 지원',
+          '⏳ 서류 이전만 하면 끝! 대기기간 0일 번개 즉시출고',
+          '💬 댓글에 [선등록] 남기시면 등록증 및 옵션표 즉시 전송'
+        ],
+        ttsLines: [
+          '지점 실적 달성을 위해 등록만 해둔 완벽한 새 차입니다.',
+          '취등록세를 지점에서 전액 지원하여 초기비용을 아껴드립니다.',
+          '복잡한 대기 없이 서류 이전 즉시 당일 인도가 가능합니다.',
+          '댓글에 선등록이라고 남겨주시면 실제 차량 등록증을 보내드립니다.'
+        ]
+      },
+      black_friday: {
+        id: 'black_friday',
+        category: 'special',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '🛍️ 카마스터 블랙프라이데이형',
+        shortTitle: '블프특판',
+        tagline: '연중 최대 할인 폭탄 · 본사 공식 프로모션 더블 중복 · 선착순',
+        icon: '🛍️',
+        themeId: 'obsidian',
+        accentColor: '#f59e0b',
+        hook: '🛍️ 1년에 단 한 번! 카마스터 블랙프라이데이 전산 오픈',
+        discountNum: 630,
+        discount: '연중 최대 -630만원 블프 특판',
+        scenePlan: [
+          { cut: 1, widget: 'SCRATCH_COUPON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛍️ 1년에 딱 한 번! 연중 최대 할인율 블프 코드 전산 오픈',
+          '🎟️ 스크래치 시크릿 쿠폰 + 딜러 비공식 수수료 전액 환원',
+          '⚡ 인기 차종 3대 선착순! 먼저 긁으시는 분이 오너가 됩니다',
+          '💬 댓글에 [블프] 남기시면 비공개 블프 쿠폰 즉시 발급'
+        ],
+        ttsLines: [
+          '일 년에 단 한 번뿐인 블랙프라이데이 전산 코드가 열렸습니다.',
+          '시크릿 할인 쿠폰과 수수료 전액을 차감해 최대 혜택을 드립니다.',
+          '인기 모델 선착순 세 대, 먼저 선점하시는 분이 주인공입니다.',
+          '댓글에 블프라고 남겨주시면 비공개 할인 쿠폰을 발급해 드립니다.'
+        ]
+      },
+      fleet_discount: {
+        id: 'fleet_discount',
+        category: 'special',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🏢 대기업 임직원 특판 승계형',
+        shortTitle: '임직원특판',
+        tagline: '대기업 제휴 단체 할인율 · 최우수 우대금리 · 일반인 승계 배정',
+        icon: '🏢',
+        themeId: 'deepblue',
+        accentColor: '#0ea5e9',
+        hook: '🏢 대기업 임직원 전용 단체특판 잔여분! 일반 고객 특별 배정',
+        discountNum: 490,
+        discount: '월 37만원대 · 제휴 우대금리',
+        scenePlan: [
+          { cut: 1, widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏢 대기업 제휴 단체 납품 계약 잔여 물량 2대 긴급 배정',
+          '📊 일반 고객님께도 임직원 전용 특별 우대 금리 그대로 적용',
+          '🧾 불필요한 부대비용 제로! 투명한 실견적서 발행',
+          '🎁 최고급 틴팅+유리막+블랙박스 기업 패키지 무상 시공'
+        ],
+        ttsLines: [
+          '대기업 단체 제휴 계약에서 남은 잔여 물량을 긴급 배정합니다.',
+          '일반 고객님께도 기업 임직원 전용 최저 우대 금리를 적용해 드립니다.',
+          '거품 없는 투명한 실견적서로 최상의 조건을 확인하세요.',
+          '신차 출고에 필요한 모든 프리미엄 시공을 무상 지원합니다.'
+        ]
+      },
+      quota_rush: {
+        id: 'quota_rush',
+        category: 'special',
+        layoutMode: 'BROADCAST_NEWS',
+        title: '⏳ 본사 배정 쿼터 마감형',
+        shortTitle: '쿼터마감',
+        tagline: '지점 월 배정 쿼터 소진 임박 · 마진 0% 전산 방출 · 막차 탑승',
+        icon: '⏳',
+        themeId: 'crimson',
+        accentColor: '#e11d48',
+        hook: '⏳ [쿼터 마감 2시간 전] 본사 추가 쿼터 소진 시 즉시 종료!',
+        discountNum: 510,
+        discount: '월 40만원대 · 쿼터 긴급 소진',
+        scenePlan: [
+          { cut: 1, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'BREAKING_NEWS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⏳ 이번 달 본사 직영 배정 쿼터 마지막 잔여분 소진 돌입',
+          '🚨 지금 놓치면 다음 분기까지 최소 4개월 출고 대기',
+          '💰 지점 마진 0% 선언! 오직 실적을 위해 전액 할인 반영',
+          '💬 댓글에 [견적] 남기시고 마지막 쿼터 슬롯을 잡으세요'
+        ],
+        ttsLines: [
+          '이번 달 본사 직영 쿼터의 마지막 잔여분 소진이 임박했습니다.',
+          '지금 기회를 놓치시면 다음 분기까지 네 달을 기다리셔야 합니다.',
+          '지점 마진을 전혀 남기지 않고 전액 할인으로 돌려드립니다.',
+          '댓글에 견적이라고 남기시고 마지막 출고 슬롯을 선점하세요.'
+        ]
+      },
+      holiday_express: {
+        id: 'holiday_express',
+        category: 'special',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '🏖️ 명절 연휴 즉시출고 배정형',
+        shortTitle: '연휴특급',
+        tagline: '명절 귀성길 신차 타고 고향 가기 · 연휴 전 100% 자택 인도',
+        icon: '🏖️',
+        themeId: 'solar',
+        accentColor: '#ea580c',
+        hook: '🏖️ 이번 연휴 고향길은 새 차로! 연휴 전 완벽 인도 보증',
+        discountNum: 460,
+        discount: '연휴 전 100% 자택 배송',
+        scenePlan: [
+          { cut: 1, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'SMARTPHONE_NOTIF_STACK', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏖️ 연휴 귀성길, 가족들과 새 차 타고 편안하고 당당하게 출발',
+          '⚡ 당일 전자계약 체결 시 연휴 전 무조건 자택 도착 보증',
+          '🛡️ 장거리 안전 주행 패키지 무상 점검 및 시공 완료',
+          '🔑 스마트키 들고 고향으로 떠나는 행복한 신차 인도'
+        ],
+        ttsLines: [
+          '이번 연휴에는 가족들과 반짝이는 새 차를 타고 고향으로 떠나보세요.',
+          '당일 전자계약으로 연휴 전 무조건 자택 인도를 보증합니다.',
+          '장거리 안전 운전을 위한 필수 용품 시공까지 꼼꼼히 마쳤습니다.',
+          '스마트키를 들고 떠나는 설레는 신차 라이프를 선물해 드립니다.'
+        ]
+      },
+      end_of_year: {
+        id: 'end_of_year',
+        category: 'special',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '❄️ 연말 총결산 창고 대방출형',
+        shortTitle: '연말총결산',
+        tagline: '연말 마감 대량 털기 · 마진 전액 포기 · 1년 중 최대 조건',
+        icon: '❄️',
+        themeId: 'emerald',
+        accentColor: '#059669',
+        hook: '❄️ [연말 총결산] 1년 치 남은 재고 원가 이하 총력 방출!',
+        discountNum: 680,
+        discount: '연말 결산 최대 -680만원',
+        scenePlan: [
+          { cut: 1, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '❄️ 연말 지점 총결산! 해 넘어가기 전 전산 재고 100% 털어냅니다',
+          '📉 마진을 남기지 않고 원가 이하로 깎아주는 1년 중 유일한 타이밍',
+          '🧾 영수증 투명 견적 공개! 숨은 부대비용 1원도 없음',
+          '💬 댓글에 [연말] 남겨주시면 총결산 시크릿 조건표 발송'
+        ],
+        ttsLines: [
+          '연말 총결산을 맞아 해가 넘어가기 전 잔여 재고를 모두 털어냅니다.',
+          '마진을 포기하고 원가 이하로 드리는 일 년 중 가장 좋은 타이밍입니다.',
+          '영수증 투명 견적으로 부대비용 없는 깔끔한 출고를 약속합니다.',
+          '댓글에 연말이라고 남겨주시면 결산 전용 조건표를 보내드립니다.'
+        ]
+      },
+      last_chance: {
+        id: 'last_chance',
+        category: 'special',
+        layoutMode: 'BROADCAST_NEWS',
+        title: '🚨 전국 단 1대 잔여스펙 선점형',
+        shortTitle: '단1대선점',
+        tagline: '가장 인기 있는 색상·풀옵션 전국 1대 잔여 · 빠른 손 승리',
+        icon: '🚨',
+        themeId: 'crimson',
+        accentColor: '#f43f5e',
+        hook: '🚨 [전국 단 1대] 선호옵션 풀장착 인기 컬러 즉시 선점!',
+        discountNum: 470,
+        discount: '월 38만원대 · 전국 1대 한정',
+        scenePlan: [
+          { cut: 1, widget: 'BREAKING_NEWS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'SPEC_FLOATING_TAGS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🚨 긴급 전산 포착! 선호도 1위 옵션 조합 전국 잔여 단 1대',
+          '⏳ 다른 딜러가 잡기 전에 가계약금 10만원으로 전산 락 필수',
+          '✨ 파노라마선루프+헤드업디스플레이 풀옵션 황금 스펙',
+          '💬 댓글에 [선점] 남기시면 차량 전산 락 즉시 걸어드립니다'
+        ],
+        ttsLines: [
+          '전국 전산에서 포착된 선호도 일등 황금 옵션 조합 단 한 대입니다.',
+          '다른 곳에서 채가기 전에 전산 락을 걸어야만 잡으실 수 있습니다.',
+          '선루프와 헤드업 디스플레이까지 완벽하게 갖춘 인기 스펙입니다.',
+          '댓글에 선점이라고 남겨주시면 즉시 차량 락을 잡아드립니다.'
+        ]
+      },
+      zero_margin: {
+        id: 'zero_margin',
+        category: 'special',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '📉 딜러 마진 전액 환원형',
+        shortTitle: '마진0원',
+        tagline: '딜러 영업수수료 0원 선언 · 최저마진 전산공개 · 고객 환원',
+        icon: '📉',
+        themeId: 'deepblue',
+        accentColor: '#3b82f6',
+        hook: '📉 [원가 공개] 딜러 수수료 0원! 남은 마진 전액 돌려드립니다',
+        discountNum: 540,
+        discount: '마진 전액 환원 특판',
+        scenePlan: [
+          { cut: 1, widget: 'VS_FINANCE_BATTLE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📉 영업사원 판매 수당 전액을 고객님 할인으로 100% 환원',
+          '🧾 공식 전산 원가표를 투명하게 공개하는 양심 견적',
+          '✍️ 본사 정식 계약서 날인 기준으로 철저한 품질 보증',
+          '🔑 전국 어디서나 추가 수수료 없는 무방문 당일 출고'
+        ],
+        ttsLines: [
+          '영업사원 판매 수당을 전액 깎아서 고객님께 돌려드립니다.',
+          '공식 전산 원가표를 가감 없이 투명하게 공개합니다.',
+          '본사 정식 계약서 날인 기준으로 안심하고 출고하실 수 있습니다.',
+          '추가 수수료 없이 전국 어디서든 집 앞 배송을 받아보세요.'
+        ]
+      },
+      secret_coupon: {
+        id: 'secret_coupon',
+        category: 'special',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '🎟️ 게릴라 시크릿 쿠폰 즉시할인형',
+        shortTitle: '시크릿쿠폰',
+        tagline: '영상 시청자 전용 비공개 할인 쿠폰 · 바코드 즉시 전송',
+        icon: '🎟️',
+        themeId: 'solar',
+        accentColor: '#f59e0b',
+        hook: '🎟️ [영상 시청자 전용] 70만원 추가할인 시크릿 바코드 증정',
+        discountNum: 590,
+        discount: '시크릿 쿠폰 70만원 즉시적용',
+        scenePlan: [
+          { cut: 1, widget: 'SCRATCH_COUPON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'DYNAMIC_ISLAND', pos: 'top', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🎟️ 인스타 릴스 영상 시청 고객님께만 열리는 시크릿 할인 바코드',
+          '📱 댓글 작성 시 70만원 추가 할인 쿠폰이 DM으로 자동 발송',
+          '💥 기존 공식 할인에 쿠폰 할인까지 더블 중복 차감 적용',
+          '💬 댓글에 [쿠폰] 두 글자만 남기시면 바코드 즉시 쏴드립니다'
+        ],
+        ttsLines: [
+          '릴스 영상을 시청해 주신 고객님께만 드리는 비밀 할인 바코드입니다.',
+          '댓글을 남기시면 칠십만 원 추가 할인 쿠폰이 디엠으로 자동 발송됩니다.',
+          '기존 공식 할인에 쿠폰까지 중복으로 혜택을 챙겨가실 수 있습니다.',
+          '댓글에 쿠폰이라고 두 글자만 남겨주시면 즉시 바코드를 쏴드립니다.'
+        ]
+      },
 
       // ------------------------------------------------------------------------
-      // [2] 시네마틱 & 럭셔리 (category: 'luxury') - 6종
+      // [2] 시네마틱 & 럭셔리 (category: 'luxury') - 16종
       // ------------------------------------------------------------------------
       luxury: {
         id: 'luxury',
@@ -2307,9 +2627,329 @@
           '공식 카마스터가 품격 있는 당신만의 출고 스토리를 전합니다.'
         ]
       },
+      presidential_armored: {
+        id: 'presidential_armored',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🛡️ 방탄 VIP 프레지덴셜형',
+        shortTitle: '방탄프레지덴셜',
+        tagline: '국빈 의전 리무진 · 최고 등급 방탄 및 프라이빗 보안 · 절대적 안락함',
+        icon: '🛡️',
+        themeId: 'royal',
+        accentColor: '#d4af37',
+        hook: '🛡️ 국빈급 의전의 품격! 프라이빗 세이프티 리무진 에디션',
+        discountNum: 950,
+        discount: '월 98만원대 · VIP 국빈 의전 플랜',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛡️ 국빈 의전 차량에 준하는 최고 등급 프라이빗 세이프티 설계',
+          '🔒 3중 차음 이중접합 라미네이티드 글래스로 완성한 무소음 정숙성',
+          '🛋️ 퍼스트 클래스 리클라이너와 최고급 세미 아닐린 가죽의 조화',
+          '🔑 VVIP 전문 프라이빗 컨시어지가 1:1 방문 인도를 약속드립니다'
+        ],
+        ttsLines: [
+          '국빈 의전 차량에 준하는 최고 등급 프라이빗 세이프티 설계가 적용되었습니다.',
+          '삼중 차음 글래스로 외부 소음을 완벽히 차단하여 절대적 정숙을 선사합니다.',
+          '퍼스트 클래스 리클라이너 시트로 최상의 편안함을 경험해 보세요.',
+          '브이 브이 아이 피 전문 컨시어지가 고객님을 위해 직접 방문 인도해 드립니다.'
+        ]
+      },
+      maybach_two_tone: {
+        id: 'maybach_two_tone',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '👑 투톤 비스포크 마이바흐형',
+        shortTitle: '비스포크투톤',
+        tagline: '핸드페인팅 듀얼 코트 · 장인 정신의 정점 · 독보적 아우라',
+        icon: '👑',
+        themeId: 'royal',
+        accentColor: '#fbbf24',
+        hook: '👑 장인의 붓끝에서 완성된 투톤 비스포크의 독보적 아우라',
+        discountNum: 880,
+        discount: '월 89만원대 · 마이바흐 투톤 한정배정',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '👑 숙련된 장인의 핸드페인팅으로 완성되는 마이바흐 듀얼 톤 바디',
+          '✨ 도로 위 시선을 압도하는 품격 있는 골드 앤 블랙 코트',
+          '🥂 센터 콘솔 전용 샴페인 쿨러와 냉온 컵홀더 풀 옵션',
+          '💬 댓글에 [견적] 남기시면 투톤 에디션 즉시 출고 재고 배정'
+        ],
+        ttsLines: [
+          '숙련된 장인의 핸드페인팅으로 완성되는 독보적인 마이바흐 투톤 바디입니다.',
+          '도로 위 모든 시선을 압도하는 최상위 클래스의 품격을 보여줍니다.',
+          '센터 콘솔 냉온 컵홀더와 샴페인 쿨러가 탑재된 최고급 사양입니다.',
+          '댓글에 견적이라고 남겨주시면 즉시 출고 가능한 투톤 재고를 안내해 드립니다.'
+        ]
+      },
+      golf_country_club: {
+        id: 'golf_country_club',
+        category: 'luxury',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '⛳ 프라이빗 컨트리클럽 라운딩형',
+        shortTitle: '골프라운딩',
+        tagline: '골프백 4개 완벽 적재 트렁크 · 필드 라운딩 의전 · 하이엔드 주말 라이프',
+        icon: '⛳',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '⛳ 골프백 4개 거뜬한 광활한 트렁크! 주말 라운딩 전용 플래그십',
+        discountNum: 720,
+        discount: '월 68만원대 · CC 라운딩 스페셜',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'LOWER_THIRD', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⛳ 캐디백 4개와 보스턴백이 여유롭게 들어가는 광활한 러기지 스페이스',
+          '🏌️ 주말 명문 골프장 클럽하우스 정문에서 돋보이는 웅장한 실루엣',
+          '💆 라운딩 후 피로를 풀어주는 18-웨이 에르고 모션 안마 시트',
+          '💬 댓글에 [골프] 남기시면 명품 항공커버 및 타이틀리스트 골프공 증정'
+        ],
+        ttsLines: [
+          '골프백 네 개와 보스턴백이 넉넉하게 들어가는 광활한 트렁크 공간을 제공합니다.',
+          '주말 명문 골프장 클럽하우스 앞에서 압도적인 존재감을 뽐내 보세요.',
+          '라운딩 후 지친 피로를 풀어주는 에르고 모션 마사지 시트가 기본 탑재됩니다.',
+          '댓글에 골프라고 남겨주시면 프리미엄 골프 기프트 패키지를 함께 챙겨드립니다.'
+        ]
+      },
+      champagne_gold: {
+        id: 'champagne_gold',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🍾 샴페인 골드 에디션형',
+        shortTitle: '샴페인골드',
+        tagline: '은은한 로즈골드 앰비언트 · 샴페인 쿨러 탑재 · 황금빛 럭셔리',
+        icon: '🍾',
+        themeId: 'royal',
+        accentColor: '#f59e0b',
+        hook: '🍾 황금빛 샴페인 한 잔의 여유, 최고급 실내 앰비언트 라운지',
+        discountNum: 650,
+        discount: '월 62만원대 · 샴페인 에디션',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🍾 은은하고 따뜻하게 실내를 감싸는 64색 샴페인 골드 앰비언트',
+          '🥂 뒷좌석 전용 접이식 테이블과 리얼 알루미늄 콘솔 마감',
+          '✨ 렉시콘 17스피커 서라운드 사운드로 즐기는 프라이빗 콘서트',
+          '🔑 프리미엄 카마스터가 직접 전달하는 샴페인 패키지 출고'
+        ],
+        ttsLines: [
+          '은은한 샴페인 골드 앰비언트 라이트가 실내를 따뜻하게 감싸줍니다.',
+          '뒷좌석 전용 테이블과 고급 마감재로 최고급 라운지 공간을 완성했습니다.',
+          '렉시콘 서라운드 사운드로 이동 중에도 나만의 음악회를 즐기실 수 있습니다.',
+          '공식 카마스터가 품격 있는 샴페인 패키지와 함께 차량을 전달해 드립니다.'
+        ]
+      },
+      first_class_cabin: {
+        id: 'first_class_cabin',
+        category: 'luxury',
+        layoutMode: 'CYBER_HUD',
+        title: '✈️ 퍼스트 클래스 에어로 캐빈형',
+        shortTitle: '일등석캐빈',
+        tagline: '항공기 일등석 리클라이너 · 무중력 릴렉션 시트 · 미래형 프리미엄',
+        icon: '✈️',
+        themeId: 'cyber',
+        accentColor: '#38bdf8',
+        hook: '✈️ 지상에서 즐기는 일등석! 원터치 무중력 릴렉션 시트',
+        discountNum: 790,
+        discount: '월 74만원대 · 퍼스트클래스 패키지',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '✈️ 버튼 하나로 누워 쉬는 원터치 무중력 릴렉션 릴리프 모드',
+          '🌌 파노라믹 글래스 루프와 스타라이트 헤드라이너의 은하수 야경',
+          '🔇 능동형 노면소음 저감 기술(ANC-R)로 실내 데시벨 최소화',
+          '💬 댓글에 [일등석] 남기시면 VIP 전용 조건표 즉시 발송'
+        ],
+        ttsLines: [
+          '원터치 버튼 하나로 항공기 일등석처럼 누워 쉴 수 있는 릴렉션 시트입니다.',
+          '스타라이트 헤드라이너가 밤하늘 은하수 같은 환상적인 야경을 연출합니다.',
+          '능동형 소음 저감 기술로 고속 주행 중에도 도서관 같은 정숙함을 유지합니다.',
+          '댓글에 일등석이라고 남겨주시면 브이아이피 전용 조건표를 즉시 보내드립니다.'
+        ]
+      },
+      sunset_boulevard: {
+        id: 'sunset_boulevard',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🌅 선셋 블러바드 골든아워형',
+        shortTitle: '선셋블러바드',
+        tagline: '노을빛 골든아워 시네마틱 · 해안도로 크루징 · 소프트 오픈에어링',
+        icon: '🌅',
+        themeId: 'amber',
+        accentColor: '#f97316',
+        hook: '🌅 붉게 물드는 석양 속을 달리는 낭만, 골든아워 크루징 에디션',
+        discountNum: 610,
+        discount: '월 55만원대 · 선셋 에디션',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'LOWER_THIRD', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🌅 해안도로를 따라 펼쳐지는 영화 같은 석양의 황금빛 실루엣',
+          '🌬️ 윈드 디플렉터와 넥워머로 사계절 쾌적한 오픈 드라이빙',
+          '🎵 프리미엄 오디오 튜닝으로 바람 소리 속에서도 선명한 보컬',
+          '🔑 로맨틱한 드라이브를 위한 전담 카마스터의 스페셜 딜'
+        ],
+        ttsLines: [
+          '황금빛 노을을 배경으로 영화 같은 해안도로 드라이브를 즐겨보세요.',
+          '넥워머와 윈드 디플렉터로 쌀쌀한 날씨에도 쾌적하게 오픈 드라이빙이 가능합니다.',
+          '고급 튜닝 오디오로 바람 소리 속에서도 맑고 선명한 음악을 감상할 수 있습니다.',
+          '로맨틱한 드라이빙 라이프를 전담 카마스터가 특별한 조건으로 안내해 드립니다.'
+        ]
+      },
+      art_gallery: {
+        id: 'art_gallery',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🏛️ 프라이빗 아트 갤러리형',
+        shortTitle: '아트갤러리',
+        tagline: '모던 미니멀리즘 큐레이션 · 미술관 쇼룸 전시 · 절제된 디자인 미학',
+        icon: '🏛️',
+        themeId: 'royal',
+        accentColor: '#e2e8f0',
+        hook: '🏛️ 달리는 현대 미술관! 절제된 미니멀리즘과 하이엔드 인테리어',
+        discountNum: 700,
+        discount: '월 66만원대 · 아트 큐레이션 팩',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'LOWER_THIRD', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏛️ 불필요한 장식을 덜어내고 선과 면의 완벽한 비례를 살린 익스테리어',
+          '🪵 천연 오픈포어 리얼 우드 가니시와 알루미늄 다이얼의 하모니',
+          '🎨 예술 작품처럼 소장 가치를 지닌 하이엔드 플래그십 세단',
+          '💬 댓글에 [갤러리] 남기시면 미술관 도슨트급 1:1 상담 연결'
+        ],
+        ttsLines: [
+          '불필요한 장식을 덜어내고 선과 면의 비례미를 극대화한 현대 미술 같은 디자인입니다.',
+          '천연 원목 가니시와 정교한 알루미늄 다이얼이 감각적인 촉감을 전합니다.',
+          '달리는 예술 작품처럼 오랫동안 소장하고 싶은 특별한 가치를 선물합니다.',
+          '댓글에 갤러리라고 남겨주시면 미술관 도슨트처럼 차량을 상세히 안내해 드립니다.'
+        ]
+      },
+      penthouse_valet: {
+        id: 'penthouse_valet',
+        category: 'luxury',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🏙️ 펜트하우스 프라이빗 발렛형',
+        shortTitle: '펜트하우스발렛',
+        tagline: '하이엔드 주거 전용 발렛 서비스 · 프리미엄 도어투도어 · VIP 전용 출고',
+        icon: '🏙️',
+        themeId: 'deepblue',
+        accentColor: '#38bdf8',
+        hook: '🏙️ 펜트하우스 로비 앞에 서는 순간, 최고급 발렛 전담 플랜',
+        discountNum: 830,
+        discount: '월 79만원대 · 펜트하우스 발렛 팩',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'LOWER_THIRD', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏙️ 최고급 레지던스 로비에서 가장 완벽하게 어우러지는 기품 있는 자세',
+          '📲 스마트폰으로 주차 위치 확인 및 원격 시동 공조 제어 풀 지원',
+          '🏎️ 발렛 전용 모드로 최고속도 및 개인정보 보호 잠금 기능 탑재',
+          '💬 댓글에 [발렛] 남기시면 전담 카매니저가 자택 주차장으로 방문'
+        ],
+        ttsLines: [
+          '최고급 펜트하우스 로비에 어울리는 기품 있고 당당한 실루엣을 자랑합니다.',
+          '스마트폰으로 사전에 실내 온도를 완벽하게 맞추고 원격으로 시동을 걸 수 있습니다.',
+          '발렛 전용 모드로 소중한 개인정보와 주행 데이터를 안전하게 보호합니다.',
+          '댓글에 발렛이라고 남겨주시면 전담 매니저가 계신 곳으로 찾아가 차량을 안내해 드립니다.'
+        ]
+      },
+      acoustic_hall: {
+        id: 'acoustic_hall',
+        category: 'luxury',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🎼 콘서트홀 하이파이 오디오형',
+        shortTitle: '하이파이오디오',
+        tagline: '23스피커 뱅앤올룹슨 3D 사운드 · 3중 차음 유리 · 콘서트홀 사운드 스테이지',
+        icon: '🎼',
+        themeId: 'royal',
+        accentColor: '#d4af37',
+        hook: '🎼 달리는 링컨센터 콘서트홀! 23개 스피커 3D 입체 음향 시스템',
+        discountNum: 670,
+        discount: '월 63만원대 · 하이파이 사운드팩',
+        scenePlan: [
+          { cut: 1, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🎼 뱅앤올룹슨 23채널 3D 서라운드 스피커로 재현하는 공연장의 현장감',
+          '🎻 바이올린의 현 떨림까지 생생하게 전달하는 초고해상도 음원 재생',
+          '🔇 액티브 노이즈 캔슬링이 구현한 압도적인 정막 속 순수한 선율',
+          '💬 댓글에 [오디오] 남기시면 청음 전용 시승차 예약 배정'
+        ],
+        ttsLines: [
+          '뱅앤올룹슨 이십삼 개 스피커가 콘서트홀 무대 정중앙에 앉은 듯한 감동을 선사합니다.',
+          '현악기의 미세한 숨결까지 생생하게 살아나는 초고해상도 음질을 감상해 보세요.',
+          '외부 소음을 지워주는 노이즈 캔슬링으로 음악에만 완벽히 몰입할 수 있습니다.',
+          '댓글에 오디오라고 남겨주시면 청음 전용 시승차를 빠르게 예약해 드립니다.'
+        ]
+      },
+      bespoke_couture: {
+        id: 'bespoke_couture',
+        category: 'luxury',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🪡 비스포크 오뜨 꾸뛰르형',
+        shortTitle: '오뜨꾸뛰르',
+        tagline: '1:1 맞춤형 가죽 스티치 · 나만의 퍼스널 컬러 빌드 · 세상 단 한 대의 차',
+        icon: '🪡',
+        themeId: 'royal',
+        accentColor: '#fbbf24',
+        hook: '🪡 장인의 한 땀 한 땀, 세상에 단 한 대뿐인 비스포크 꾸뛰르',
+        discountNum: 920,
+        discount: '월 91만원대 · 비스포크 인디비주얼',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🪡 고객님의 취향에 맞춘 수제 파이핑 스티치와 최고급 나파 가죽',
+          '🎨 50여 가지 비스포크 외장 컬러 조합으로 완성하는 나만의 아이덴티티',
+          '🖋️ 도어 스커프와 헤드레스트에 새겨지는 고객 전용 이니셜 각인',
+          '🔑 공식 인증 카마스터의 1:1 맞춤 제작 오더 빌드 컨설팅'
+        ],
+        ttsLines: [
+          '고객님의 안목에 맞춘 정교한 수제 스티치와 최고급 가죽으로 실내를 빚어냅니다.',
+          '오십 가지 이상의 특별한 컬러 조합으로 세상에 단 하나뿐인 차량을 완성하세요.',
+          '도어 스커프에 고객님의 영문 이니셜을 새겨 특별한 소장 가치를 더해 드립니다.',
+          '공식 인증 마스터가 처음부터 끝까지 일대일 비스포크 빌드를 성심껏 도와드립니다.'
+        ]
+      },
 
       // ------------------------------------------------------------------------
-      // [3] 미래 테크 & 전기차 EV (category: 'ev_tech') - 6종
+      // [3] 미래 테크 & 전기차 EV (category: 'ev_tech') - 16종
       // ------------------------------------------------------------------------
       ev_future: {
         id: 'ev_future',
@@ -2503,9 +3143,329 @@
           '댓글에 견적이라고 남겨주시면 총 세제 감면액을 계산해 드립니다.'
         ]
       },
+      super_fast_charge: {
+        id: 'super_fast_charge',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '⚡ 800V 초고속 18분 완충형',
+        shortTitle: '18분완충',
+        tagline: '350kW 초급속 충전 아키텍처 · 커피 한 잔에 80% 완충 · 장거리 충전 스트레스 해소',
+        icon: '⚡',
+        themeId: 'cyber',
+        accentColor: '#00f0ff',
+        hook: '⚡ 커피 한 잔 마시는 18분이면 80% 충전 완료! 800V 초급속',
+        discountNum: 680,
+        discount: '월 49만원대 · 초고속 충전팩',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⚡ 800V 초고전압 시스템으로 10%에서 80%까지 단 18분 완충',
+          '☕ 고속도로 휴게소 커피 타임이면 이미 400km 주행 가능 충전',
+          '🔋 배터리 컨디셔닝 시스템으로 겨울철에도 최고 충전 속도 유지',
+          '💬 댓글에 [충전] 남기시면 1년 무제한 초고속 충전 크레딧 증정'
+        ],
+        ttsLines: [
+          '팔백 볼트 초고전압 시스템으로 십 퍼센트에서 팔십 퍼센트까지 단 십팔 분이면 충전됩니다.',
+          '휴게소에서 커피 한 잔 마시는 사이에 사백 킬로미터 주행 거리를 확보합니다.',
+          '배터리 사전 예열 시스템으로 혹한기에도 최상의 충전 효율을 발휘합니다.',
+          '댓글에 충전이라고 남겨주시면 일 년간 사용 가능한 충전 지원금을 드립니다.'
+        ]
+      },
+      v2l_camping: {
+        id: 'v2l_camping',
+        category: 'ev_tech',
+        layoutMode: 'EDITORIAL_VOGUE',
+        title: '🏕️ V2L 220V 차박 캠핑형',
+        shortTitle: '차박V2L',
+        tagline: '움직이는 대용량 파워뱅크 · 220V 일반 가전 풀가동 · 감성 글램핑 라이프',
+        icon: '🏕️',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '🏕️ 캠핑장에서 전자레인지·에어컨 빵빵! 움직이는 220V 파워뱅크',
+        discountNum: 590,
+        discount: '월 46만원대 · V2L 캠핑 에디션',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏕️ 최대 3.6kW 대용량 V2L로 커피머신·인덕션·빔프로젝터 동시 구동',
+          '🛏️ 2열 완전 평탄화 시트로 완성하는 럭셔리 감성 차박 라운지',
+          '❄️ 시동 없이 밤새 켜두는 무소음 무진동 에어컨 & 히터 캠핑 모드',
+          '🔑 출고 즉시 떠나는 V2L 전용 젠더 및 에어매트 사은품 증정'
+        ],
+        ttsLines: [
+          '삼 점 육 킬로와트 대용량 전력으로 야외에서도 가정용 가전을 마음껏 사용하세요.',
+          '이열 풀 플랫 시트로 아늑한 호텔급 차박 공간을 손쉽게 만드실 수 있습니다.',
+          '엔진 소음과 매연 없이 밤새 시원한 에어컨과 따뜻한 난방을 유지합니다.',
+          '출고 즉시 캠핑을 떠나실 수 있도록 정품 브이투엘 젠더를 함께 선물합니다.'
+        ]
+      },
+      ota_update: {
+        id: 'ota_update',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '📡 무선 OTA 평생 진화형',
+        shortTitle: 'OTA무선진화',
+        tagline: '무선 소프트웨어 업데이트 · 자고 일어나면 새 차가 되는 자율주행 진화 · SDV',
+        icon: '📡',
+        themeId: 'cyber',
+        accentColor: '#38bdf8',
+        hook: '📡 정비소 갈 필요 없이 자고 일어나면 새 차로 진화하는 무선 OTA',
+        discountNum: 620,
+        discount: '월 48만원대 · 평생 OTA 커넥티드',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📡 무선 통신으로 브레이크·서스펜션·자율주행 알고리즘 자동 성능 향상',
+          '📱 스마트폰처럼 새로운 기능이 밤사이 자동 설치되는 차세대 SDV',
+          '🌐 현대차 블루링크 5년 무상 기본 제공으로 원격 제어 완벽 호환',
+          '💬 댓글에 [OTA] 남기시면 무선 소프트웨어 패키지 풀옵션 배정'
+        ],
+        ttsLines: [
+          '서비스센터 방문 없이 무선 업데이트만으로 주행 성능과 자율주행이 진화합니다.',
+          '스마트폰을 업데이트하듯 최신 기능이 차량에 자동으로 탑재되는 소프트웨어 중심 차량입니다.',
+          '오 년간 무상 제공되는 커넥티드 서비스로 차량 상태를 원격 관리해 드립니다.',
+          '댓글에 오티에이라고 남겨주시면 무선 진화 패키지 적용 차량을 안내해 드립니다.'
+        ]
+      },
+      cyberpunk_cockpit: {
+        id: 'cyberpunk_cockpit',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '🌌 사이버 콕핏 증강현실형',
+        shortTitle: '사이버콕핏',
+        tagline: '27인치 OLED 커브드 디스플레이 · AR 증강현실 내비게이션 · 앰비언트 인터랙션',
+        icon: '🌌',
+        themeId: 'neon',
+        accentColor: '#a855f7',
+        hook: '🌌 영화 속 우주선 조종석! 27인치 커브드 파노라믹 OLED 콕핏',
+        discountNum: 710,
+        discount: '월 52만원대 · 하이테크 콕핏 팩',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🌌 27인치 일체형 파노라믹 커브드 디스플레이의 압도적 시인성',
+          '🎯 도로 위에 직접 주행 경로를 투영하는 AR 증강현실 길안내',
+          '🌈 음성 인식에 반응하여 살아 움직이듯 점등하는 다이내믹 앰비언트',
+          '💬 댓글에 [콕핏] 남기시면 하이테크 옵션 무상 장착 프로모션'
+        ],
+        ttsLines: [
+          '이십칠 인치 파노라믹 커브드 디스플레이가 마치 우주선 조종석에 앉은 기분을 줍니다.',
+          '실제 도로 위에 화살표를 띄워주는 증강현실 내비게이션으로 길 찾기가 완벽해집니다.',
+          '운전자의 음성에 맞춰 살아 숨쉬듯 반응하는 첨단 인터랙티브 조명을 만나보세요.',
+          '댓글에 콕핏이라고 남겨주시면 첨단 디스플레이 풀패키지 차량을 우선 배정합니다.'
+        ]
+      },
+      dual_motor_awd: {
+        id: 'dual_motor_awd',
+        category: 'ev_tech',
+        layoutMode: 'RACING_ACTION',
+        title: '🌪️ 듀얼 모터 전자식 사륜형',
+        shortTitle: '듀얼모터AWD',
+        tagline: '전후륜 듀얼 모터 600Nm 즉각 토크 · e-AWD 눈길 접지력 · 압도적 가속',
+        icon: '🌪️',
+        themeId: 'cyber',
+        accentColor: '#06b6d4',
+        hook: '🌪️ 눈길·빗길 걱정 제로! 600마력급 듀얼 모터 전자식 사륜 e-AWD',
+        discountNum: 740,
+        discount: '월 54만원대 · 듀얼모터 사륜구동',
+        scenePlan: [
+          { cut: 1, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'HUD_TELEMETRY', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🌪️ 전륜과 후륜에 각각 탑재된 고출력 듀얼 모터의 폭발적인 즉각 토크',
+          '❄️ 밀리초 단위로 구동력을 배분하여 결빙 도로에서도 미끄러짐 방지',
+          '🚀 밟는 순간 뿜어져 나오는 제로백 4초대의 짜릿한 가속 성능',
+          '💬 댓글에 [사륜] 남기시면 사륜구동 추가옵션 비용 전액 지원'
+        ],
+        ttsLines: [
+          '전후륜 듀얼 모터가 즉각적인 토크를 뿜어내어 지체 없는 가속력을 선사합니다.',
+          '밀리초 단위로 바퀴마다 구동력을 정밀 배분하여 빗길과 눈길에서도 안전합니다.',
+          '페달을 밟는 즉시 머리가 젖혀지는 폭발적인 스포츠카급 가속감을 느껴보세요.',
+          '댓글에 사륜이라고 남겨주시면 사륜구동 옵션 비용을 파격적으로 지원해 드립니다.'
+        ]
+      },
+      one_pedal_drive: {
+        id: 'one_pedal_drive',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '🦶 아이페달 스마트 원페달형',
+        shortTitle: '원페달드라이브',
+        tagline: '가속 페달 하나로 가속·감속·정차까지 완벽 제어 · 브레이크 패드 마모 제로',
+        icon: '🦶',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '🦶 브레이크 밟을 일 없는 편안함! 가속과 정차를 페달 하나로',
+        discountNum: 560,
+        discount: '월 43만원대 · 스마트 드라이빙',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🦶 가속 페달에서 발을 떼는 것만으로 부드러운 감속부터 완전 정차까지',
+          '🔋 회생제동 에너지로 주행거리는 늘리고 브레이크 패드 마모는 제로',
+          '🚦 막히는 도심 출퇴근길 피로도를 절반 이하로 줄여주는 스마트 주행',
+          '💬 댓글에 [원페달] 남기시면 초보자도 쉬운 원페달 전담 코칭 출고'
+        ],
+        ttsLines: [
+          '가속 페달 하나로 출발과 감속, 완전 정차까지 부드럽게 제어할 수 있습니다.',
+          '회생제동을 통해 버려지는 전기를 회수하여 주행 가능 거리를 극대화합니다.',
+          '막히는 도심 출퇴근 시간에도 다리의 피로도를 획기적으로 덜어드립니다.',
+          '댓글에 원페달이라고 남겨주시면 출고 당일 일대일 드라이빙 코칭을 제공합니다.'
+        ]
+      },
+      digital_side_mirror: {
+        id: 'digital_side_mirror',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '📷 디지털 사이드 카메라 미러형',
+        shortTitle: '디지털미러',
+        tagline: '우천·야간 무결점 OLED 화면 · 사각지대 완전 제거 · 공기저항 최소화',
+        icon: '📷',
+        themeId: 'cyber',
+        accentColor: '#38bdf8',
+        hook: '📷 폭우가 쏟아져도 선명한 시야! 디지털 사이드 카메라 미러',
+        discountNum: 640,
+        discount: '월 47만원대 · 디지털 미러 패키지',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📷 거울 대신 고화질 OLED 모니터로 밤길과 비바람 속에서도 선명한 후방',
+          '🛡️ 차선 변경 시 사각지대 위험 차량을 빨간색 가이드라인으로 직관적 경고',
+          '💨 콤팩트한 카메라 디자인으로 풍절음 감소 및 전비 효율 극대화',
+          '💬 댓글에 [미러] 남기시면 디지털 미러 옵션 장착차 즉시 출고'
+        ],
+        ttsLines: [
+          '폭우가 쏟아지는 밤에도 물방울 맺힘 없이 선명한 초고화질 후방 화면을 보여줍니다.',
+          '차선 변경 시 사각지대에 있는 위험 차량을 가이드라인으로 안전하게 알려줍니다.',
+          '슬림한 카메라 바디로 공기저항을 줄여 풍절음과 주행 전비를 모두 개선했습니다.',
+          '댓글에 미러라고 남겨주시면 디지털 사이드 미러 탑재 차량을 우선 배정해 드립니다.'
+        ]
+      },
+      smart_summon: {
+        id: 'smart_summon',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '📱 원격 스마트 주차 어시스트형',
+        shortTitle: '원격스마트주차',
+        tagline: '차 밖에서 스마트키로 원격 전후진 입출차 · 좁은 문콕 주차장 탈출 솔루션',
+        icon: '📱',
+        themeId: 'cyber',
+        accentColor: '#22c55e',
+        hook: '📱 좁은 주차장 문콕 걱정 끝! 차 밖에서 키로 넣고 빼는 원격 주차',
+        discountNum: 600,
+        discount: '월 45만원대 · 원격 주차 솔루션',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📱 먼저 차에서 내린 뒤 스마트키 버튼 하나로 좁은 칸에 쏙 넣는 원격 주차',
+          '🚪 양옆 차량 문콕 걱정 없이 널찍하게 짐 싣고 내리는 프리미엄 편의성',
+          '🛑 장애물과 보행자를 감지하면 스스로 즉각 정지하는 360도 초음파 센서',
+          '🔑 스마트 주차 마스터 카매니저의 1:1 조작법 완벽 시연 출고'
+        ],
+        ttsLines: [
+          '좁은 주차 칸에 주차할 때 미리 내린 후 스마트키로 안전하게 차를 넣을 수 있습니다.',
+          '문콕 스트레스 없이 짐을 편하게 싣고 여유롭게 탑승하세요.',
+          '삼백육십도 센서가 장애물과 보행자를 감지하여 스스로 멈추므로 안심할 수 있습니다.',
+          '공식 카매니저가 출고 현장에서 원격 주차 조작법을 친절히 시연해 드립니다.'
+        ]
+      },
+      heatpump_winter: {
+        id: 'heatpump_winter',
+        category: 'ev_tech',
+        layoutMode: 'CYBER_HUD',
+        title: '❄️ 영하 20도 고효율 히트펌프형',
+        shortTitle: '히트펌프윈터',
+        tagline: '폐열 회수 고효율 히트펌프 · 겨울철 주행거리 저하 최소화 · 윈터 배터리 케어',
+        icon: '❄️',
+        themeId: 'glacier',
+        accentColor: '#38bdf8',
+        hook: '❄️ 영하 20도 한파에도 주행거리 그대로! 폐열 회수 히트펌프 시스템',
+        discountNum: 630,
+        discount: '월 47만원대 · 윈터 히트펌프팩',
+        scenePlan: [
+          { cut: 1, widget: 'HUD_TELEMETRY', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '❄️ 모터와 인버터 폐열을 모아 난방에 재활용하는 고효율 히트펌프 탑재',
+          '📉 겨울철 히터를 틀어도 주행거리 급감 없는 검증된 실주행 효율',
+          '🔥 배터리 히팅 시스템으로 강추위 속에서도 급속 충전 속도 완벽 방어',
+          '💬 댓글에 [히트펌프] 남기시면 겨울철 윈터 패키지 무상 업그레이드'
+        ],
+        ttsLines: [
+          '전기장치에서 발생하는 폐열을 모아 실내 난방에 활용하는 고효율 시스템입니다.',
+          '한겨울에도 주행거리 감소 걱정 없이 따뜻하고 쾌적하게 운전하실 수 있습니다.',
+          '배터리 사전 히팅 기능으로 추운 날씨에도 고속 충전 성능을 유지합니다.',
+          '댓글에 히트펌프라고 남겨주시면 윈터 패키지 업그레이드 혜택을 챙겨드립니다.'
+        ]
+      },
+      battery_guarantee: {
+        id: 'battery_guarantee',
+        category: 'ev_tech',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🔋 배터리 평생 안심 보증형',
+        shortTitle: '배터리보증',
+        tagline: '10년 20만km 공식 보증 · 배터리 무상 교환 프로그램 · 안심 잔존가치 보장',
+        icon: '🔋',
+        themeId: 'teal',
+        accentColor: '#22c55e',
+        hook: '🔋 10년 20만km 배터리 무상 보증! 중고차 감가 걱정 없는 안심 플랜',
+        discountNum: 700,
+        discount: '10년 20만km 무상 보증 풀케어',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🔋 10년 20만km 이내 배터리 용량 70% 이하 저하 시 100% 무상 교환',
+          '🛡️ 현대 정품 배터리 진단 스캐너로 매년 정기 점검 무상 발급',
+          '💰 3년 후 신차 교체 시 중고차 배터리 잔존가치 최고가 보장 확약',
+          '💬 댓글에 [보증] 남기시면 공식 카마스터 평생 안심 보증서 동봉'
+        ],
+        ttsLines: [
+          '십 년 이십만 킬로미터 동안 배터리 수명을 제조사가 완벽히 책임집니다.',
+          '매년 정기 점검 시 공식 스캐너로 배터리 건강 상태를 투명하게 진단해 드립니다.',
+          '삼 년 후 차를 바꾸실 때도 최고 수준의 잔존가치를 확정 보장해 드립니다.',
+          '댓글에 보증이라고 남겨주시면 공식 평생 안심 보증서를 발급해 드립니다.'
+        ]
+      },
 
       // ------------------------------------------------------------------------
-      // [4] 고성능 스포츠 & 레이싱 (category: 'sports') - 6종
+      // [4] 고성능 스포츠 & 레이싱 (category: 'sports') - 16종
       // ------------------------------------------------------------------------
       high_performance: {
         id: 'high_performance',
@@ -2699,9 +3659,329 @@
           '댓글에 견적이라고 남겨주시면 서킷 패키지 차량을 바로 배정해 드립니다.'
         ]
       },
+      launch_control: {
+        id: 'launch_control',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🚀 런치 컨트롤 제로백 3.4초형',
+        shortTitle: '런치컨트롤',
+        tagline: '풀악셀 스타트 스프린트 · 심장을 뛰게 하는 1.2G 가속도 · 트랙 론치',
+        icon: '🚀',
+        themeId: 'crimson',
+        accentColor: '#ef4444',
+        hook: '🚀 브레이크 밟고 풀악셀! 0 to 100km 단 3.4초 런치 컨트롤',
+        discountNum: 780,
+        discount: '월 59만원대 · 런치 컨트롤 팩',
+        scenePlan: [
+          { cut: 1, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RACING_RIBBON', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🚀 런치 모드 활성화 시 네 바퀴를 아스팔트에 박아 넣는 폭발적 스타트',
+          '⏱️ 계측기 인증 제로백 3.4초! 슈퍼카 부럽지 않은 가속 G포스',
+          '🔥 고강도 단조 크랭크샤프트와 트윈 스크롤 터보의 고성능 엔진',
+          '💬 댓글에 [런치] 남기시면 고성능 트랙 패키지 우선 시승권'
+        ],
+        ttsLines: [
+          '런치 컨트롤 모드를 켜는 순간 아스팔트를 박차고 나가는 폭발적인 스타트를 발휘합니다.',
+          '제로백 삼 점 사 초의 압도적인 가속력으로 온몸을 시트에 파묻히게 만듭니다.',
+          '고강도 엔진 설계와 트윈 터보로 한계 주행에서도 완벽한 내구성을 보장합니다.',
+          '댓글에 런치라고 남겨주시면 고성능 트랙 패키지 우선 배정권을 드립니다.'
+        ]
+      },
+      drift_machine: {
+        id: 'drift_machine',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '💨 리어 휠 드리프트 머신형',
+        shortTitle: '드리프트머신',
+        tagline: '후륜 구동 오버스티어 완벽 제어 · 드리프트 옵티마이저 모드 · 타이어 스모크',
+        icon: '💨',
+        themeId: 'neon',
+        accentColor: '#f97316',
+        hook: '💨 스티어링 꺾고 엑셀 ON! 아드레날린 폭발 후륜 드리프트 머신',
+        discountNum: 650,
+        discount: '월 52만원대 · 드리프트 팩',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '💨 드리프트 옵티마이저로 카운터스티어 조작을 예술로 완성하는 전자제어',
+          '🏎️ 50:50 완벽에 가까운 전후 무게 배분으로 칼날 같은 코너링 선회력',
+          '🏁 서킷 전용 타이어 트레드 온도를 실시간 감지하는 스마트 TPMS',
+          '💬 댓글에 [드리프트] 남기시면 미쉐린 파일럿 스포츠 교환권'
+        ],
+        ttsLines: [
+          '드리프트 전용 모드가 탑재되어 짜릿한 후륜 슬라이드를 안전하게 즐길 수 있습니다.',
+          '오십 대 오십 무게 배분으로 와인딩 코너를 칼날처럼 베어 나갑니다.',
+          '실시간 타이어 온도 모니터링으로 트랙 주행 시 최적의 접지력을 유지합니다.',
+          '댓글에 드리프트라고 남겨주시면 고성능 스포츠 타이어 교환권을 증정합니다.'
+        ]
+      },
+      brembo_brakes: {
+        id: 'brembo_brakes',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🛑 브렘보 6P 카본 세라믹형',
+        shortTitle: '브렘보6P',
+        tagline: '초고온 서킷에서도 페이드 현상 제로 · 400mm 카본 세라믹 디스크 · 극한 제동',
+        icon: '🛑',
+        themeId: 'crimson',
+        accentColor: '#dc2626',
+        hook: '🛑 100km에서 단 32미터 제동! 브렘보 6피스톤 카본 세라믹',
+        discountNum: 720,
+        discount: '월 56만원대 · 카본 브레이크 팩',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛑 대형 브렘보 6피스톤 캘리퍼와 400mm 카본 세라믹 로터의 극한 제동력',
+          '🔥 연속 풀브레이킹에도 베이퍼록과 페이드 현상 없는 트랙 내구성',
+          '🛞 노란색 고성능 캘리퍼가 뿜어내는 강렬한 레이싱 익스테리어',
+          '💬 댓글에 [브렘보] 남기시면 브레이크 튜닝 패키지 무상 시공'
+        ],
+        ttsLines: [
+          '대구경 육 피스톤 캘리퍼로 시속 백 킬로미터에서 불과 삼십이 미터 만에 멈춰섭니다.',
+          '연속되는 서킷 주행에도 지치지 않는 카본 세라믹 디스크가 기본 적용됩니다.',
+          '휠 안쪽에서 강렬하게 빛나는 옐로우 레이싱 캘리퍼의 압도적 존재감을 만나보세요.',
+          '댓글에 브렘보라고 남겨주시면 고성능 브레이크 패키지 출고 차량을 안내합니다.'
+        ]
+      },
+      electron_lsd: {
+        id: 'electron_lsd',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '⚙️ e-LSD 전자식 차동제한형',
+        shortTitle: '전자식LSD',
+        tagline: '코너링 탈출 가속 시 좌우 토크 능동 배분 · 언더스티어 완전 삭제 · 레일 주행',
+        icon: '⚙️',
+        themeId: 'cyber',
+        accentColor: '#06b6d4',
+        hook: '⚙️ 레일 위를 달리는 코너링! e-LSD 전자식 차동제한 차체제어',
+        discountNum: 610,
+        discount: '월 49만원대 · e-LSD 퍼포먼스',
+        scenePlan: [
+          { cut: 1, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⚙️ 코너 바깥쪽 바퀴에 토크를 몰아주어 안쪽으로 파고드는 전자식 LSD',
+          '🛤️ 와인딩 로드에서 언더스티어를 지우고 기차처럼 궤적을 유지하는 안정감',
+          '🎮 전자제어 서스펜션(ECS)과 연동되어 롤링을 즉각 억제하는 차체 강성',
+          '💬 댓글에 [코너링] 남기시면 서킷 데이터 로거 장착 패키지 증정'
+        ],
+        ttsLines: [
+          '코너를 탈출할 때 외측 휠에 최적의 구동력을 전달해 안쪽으로 날카롭게 파고듭니다.',
+          '언더스티어 없이 마치 철길 위를 달리는 듯한 기막힌 코너링 궤적을 그립니다.',
+          '전자제어 서스펜션과 맞물려 급격한 방향 전환 시에도 차체 쏠림이 없습니다.',
+          '댓글에 코너링이라고 남겨주시면 트랙 텔레메트리 패키지 차량을 배정해 드립니다.'
+        ]
+      },
+      active_spoiler: {
+        id: 'active_spoiler',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🏎️ 액티브 카본 가변 스포일러형',
+        shortTitle: '가변스포일러',
+        tagline: '고속 주행 시 자동 전개 가변 윙 · 150kg 추가 다운포스 · 에어 브레이크',
+        icon: '🏎️',
+        themeId: 'crimson',
+        accentColor: '#f43f5e',
+        hook: '🏎️ 시속 120km에서 날개를 펴다! 액티브 카본 가변 스포일러',
+        discountNum: 680,
+        discount: '월 54만원대 · 에어로 다이내믹',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏎️ 속도에 따라 3단계로 각도를 자동 조절하는 리얼 카본 가변 윙',
+          '🌪️ 고속 주행 시 차체를 바닥으로 눌러주는 150kg 강력한 다운포스',
+          '🛑 급제동 시 70도 수직으로 세워져 제동거리를 줄이는 에어 브레이크',
+          '💬 댓글에 [스포일러] 남기시면 카본 에어로 파츠 풀세트 장착'
+        ],
+        ttsLines: [
+          '주행 속도에 맞춰 자동으로 각도를 조절하는 리얼 카본 가변 스포일러입니다.',
+          '초고속에서도 차체를 바닥으로 강하게 눌러주어 흔들림 없는 안정감을 선사합니다.',
+          '급제동 시에는 에어 브레이크 역할을 수행하여 제동 안정성을 비약적으로 높여줍니다.',
+          '댓글에 스포일러라고 남겨주시면 카본 에어로 바디킷이 적용된 차량을 안내합니다.'
+        ]
+      },
+      paddle_shift: {
+        id: 'paddle_shift',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🕹️ 마그네슘 패들 시프트 직결형',
+        shortTitle: '패들시프트',
+        tagline: '0.05초 번개 같은 듀얼클러치 변속 체감 · 레브매칭 회전수 보정 · 손끝 손맛',
+        icon: '🕹️',
+        themeId: 'cyber',
+        accentColor: '#38bdf8',
+        hook: '🕹️ 0.05초 만에 다음 단 체결! 손끝으로 지휘하는 듀얼클러치 DCT',
+        discountNum: 570,
+        discount: '월 47만원대 · 스포츠 DCT 팩',
+        scenePlan: [
+          { cut: 1, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🕹️ 스티어링 휠 뒤편 큼직한 마그네슘 패들이 전하는 서늘한 금속의 손맛',
+          '⚡ 다운시프트 시 엔진 RPM을 순식간에 튕겨 맞추는 자동 레브매칭',
+          '💥 변속 순간 귓전을 때리는 배기 파열음과 즉각적인 동력 직결감',
+          '💬 댓글에 [패들] 남기시면 고성능 알칸타라 D컷 스티어링 업그레이드'
+        ],
+        ttsLines: [
+          '큼직한 마그네슘 패들 시프트로 손끝에서 레이스카 수준의 빠른 변속을 즐기세요.',
+          '기어를 내릴 때 자동으로 알피엠을 보정하는 레브매칭으로 부드럽고 안전합니다.',
+          '변속 순간 터져 나오는 배기음과 함께 완벽한 동력 직결감을 온몸으로 느껴보세요.',
+          '댓글에 패들이라고 남겨주시면 알칸타라 스티어링 휠이 적용된 모델을 배정합니다.'
+        ]
+      },
+      exhaust_titanium: {
+        id: 'exhaust_titanium',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🔊 가변 배기 팝앤뱅 사운드형',
+        shortTitle: '팝앤뱅배기',
+        tagline: '스포츠 플러스 모드 폭발적 백파이어 배기음 · 티타늄 머플러 팁 · 합법 사운드',
+        icon: '🔊',
+        themeId: 'crimson',
+        accentColor: '#f97316',
+        hook: '🔊 악셀 오프 시 팝콘 튀기는 사운드! 가변 배기 팝앤뱅 시스템',
+        discountNum: 640,
+        discount: '월 51만원대 · 가변 배기 에디션',
+        scenePlan: [
+          { cut: 1, widget: 'AUDIO_WAVEFORM', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🔊 스포츠 모드에서 가변 밸브가 열리며 뿜어내는 가슴 뛰는 중저음 배기음',
+          '🍿 가속 후 페달을 뗄 때 터져 나오는 짜릿한 백파이어 팝콘 사운드',
+          '🤫 아파트 지하주차장에서는 조용하게 밸브를 닫는 컴포트 사일런트 모드',
+          '💬 댓글에 [배기] 남기시면 티타늄 쿼드 머플러 팁 무상 장착'
+        ],
+        ttsLines: [
+          '스포츠 모드를 켜면 가변 밸브가 열리며 가슴을 울리는 웅장한 배기음이 터져 나옵니다.',
+          '가속 페달에서 발을 뗄 때 터지는 팝앤뱅 사운드가 드라이빙의 즐거움을 더합니다.',
+          '아파트 주차장에서는 조용하게 주행할 수 있는 사일런트 모드로 이웃을 배려합니다.',
+          '댓글에 배기라고 남겨주시면 티타늄 머플러가 장착된 스페셜 에디션을 배정합니다.'
+        ]
+      },
+      bucket_seat: {
+        id: 'bucket_seat',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '💺 알칸타라 카본 버킷시트형',
+        shortTitle: '카본버킷시트',
+        tagline: '횡가속도를 단단히 지지하는 레이싱 전용 시트 · 카본 백쉘 · 라이트웨이트',
+        icon: '💺',
+        themeId: 'neon',
+        accentColor: '#38bdf8',
+        hook: '💺 극한의 코너링에서도 몸을 꽉 잡아주는 알칸타라 카본 버킷시트',
+        discountNum: 690,
+        discount: '월 53만원대 · 버킷시트 패키지',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RACING_RIBBON', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '💺 등받이 뒤편을 리얼 카본으로 마감하여 경량화와 강성을 동시에 확보',
+          '🏎️ 과격한 횡가속도 주행 시 상체와 골반을 완벽히 밀착 지지하는 볼스터',
+          '🧵 통기성이 우수하고 미끄러짐을 방지하는 정품 이탈리아 알칸타라 원단',
+          '💬 댓글에 [버킷] 남기시면 실내 카본 패키지 무상 시공 출고'
+        ],
+        ttsLines: [
+          '리얼 카본 백쉘이 적용되어 가벼운 무게와 강력한 지지력을 자랑합니다.',
+          '격한 코너링에서도 몸이 전혀 흔들리지 않도록 상체를 완벽하게 감싸줍니다.',
+          '이탈리아 정품 알칸타라 소재로 미끄러짐 없이 쾌적한 착좌감을 유지합니다.',
+          '댓글에 버킷이라고 남겨주시면 실내 카본 인테리어 패키지를 무상으로 더해 드립니다.'
+        ]
+      },
+      forged_wheels: {
+        id: 'forged_wheels',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🛞 초경량 20인치 단조 휠형',
+        shortTitle: '초경량단조휠',
+        tagline: '현가하질량 12kg 감축 · 서스펜션 반응성 및 핸들링 극대화 · 단조 공법',
+        icon: '🛞',
+        themeId: 'crimson',
+        accentColor: '#e11d48',
+        hook: '🛞 바퀴 하나당 3kg 경량화! 서스펜션이 살아나는 20인치 단조 휠',
+        discountNum: 660,
+        discount: '월 50만원대 · 경량 단조 휠팩',
+        scenePlan: [
+          { cut: 1, widget: 'RACING_RIBBON', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'STOCK_COUNTDOWN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛞 10,000톤 프레스로 압축 성형한 초고강도 20인치 레이싱 단조 휠',
+          '📉 휠 4개 합산 12kg 감축으로 로드홀딩과 서스펜션 추종성 드라마틱 개선',
+          '🏎️ 미쉐린 최상급 파일럿 스포츠 4S 타이어와 완벽 매칭 조합',
+          '💬 댓글에 [단조휠] 남기시면 단조 휠 옵션 가격 50% 반값 할인'
+        ],
+        ttsLines: [
+          '만 톤 프레스로 찍어낸 단조 휠로 극한의 강성과 가벼운 무게를 동시에 달성했습니다.',
+          '하체 무게를 십이 킬로그램 덜어내어 노면을 읽고 반응하는 속도가 획기적으로 향상됩니다.',
+          '최고급 미쉐린 스포츠 타이어와 함께 완벽한 접지력과 코너링을 완성합니다.',
+          '댓글에 단조휠이라고 남겨주시면 고가 단조 휠 옵션을 반값에 지원해 드립니다.'
+        ]
+      },
+      redline_rev: {
+        id: 'redline_rev',
+        category: 'sports',
+        layoutMode: 'RACING_ACTION',
+        title: '🏁 레드존 8,000RPM 고회전형',
+        shortTitle: '8000RPM레드존',
+        tagline: '가슴을 울리는 고회전 자연흡기 감성 엔진 필링 · 선형적 출력 전개 · 퓨어 스포츠',
+        icon: '🏁',
+        themeId: 'amber',
+        accentColor: '#f59e0b',
+        hook: '🏁 8,000 RPM까지 거침없이 치솟는 타코미터 바늘! 고회전 스포츠',
+        discountNum: 750,
+        discount: '월 58만원대 · 고회전 퓨어 머신',
+        scenePlan: [
+          { cut: 1, widget: 'SPEEDO_GAUGE', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RACING_RIBBON', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏁 8,000 RPM 고회전 영역까지 매끄럽게 뻗어나가는 선형적 가속 페달 반응',
+          '🎻 회전수가 올라갈수록 울려 퍼지는 기계식 사운드의 순수한 교향곡',
+          '🏎️ 변속 타이밍을 시각적으로 안내하는 고회전 인디케이터 시프트 라이트',
+          '💬 댓글에 [레드존] 남기시면 서킷 스포츠 주행 보증 패키지 제공'
+        ],
+        ttsLines: [
+          '팔천 알피엠까지 거침없이 회전하며 뿜어내는 가속 페달 반응이 심장을 울립니다.',
+          '알피엠이 치솟을수록 맑고 날카롭게 변하는 기계식 엔진 사운드를 즐겨보세요.',
+          '시프트 라이트가 최적의 변속 타이밍을 알려주어 완벽한 트랙 주행을 돕습니다.',
+          '댓글에 레드존이라고 남겨주시면 서킷 주행 전용 안심 케어 패키지를 증정합니다.'
+        ]
+      },
 
       // ------------------------------------------------------------------------
-      // [5] 실속 금융 & 0원 초기비용 & 사업자 절세 (category: 'finance') - 6종
+      // [5] 실속 금융 & 0원 초기비용 & 사업자 절세 (category: 'finance') - 16종
       // ------------------------------------------------------------------------
       zero_initial: {
         id: 'zero_initial',
@@ -2895,9 +4175,329 @@
           '댓글에 잔가라고 남겨주시면 삼 년 잔가 보장 확약서를 전송해 드립니다.'
         ]
       },
+      freelance_pass: {
+        id: 'freelance_pass',
+        category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '💼 프리랜서·주부 무서류 승인형',
+        shortTitle: '무서류간편승인',
+        tagline: '재직증명 소득증빙 없이 10분 즉시 모바일 승인 · 서류 스트레스 제로 · 99% 통과',
+        icon: '💼',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '💼 재직증명서 소득증빙 NO! 휴대폰 본인인증으로 10분 즉시 승인',
+        discountNum: 480,
+        discount: '초기비용 0원 · 무서류 10분 승인',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '💼 프리랜서, 주부, 신규 창업자도 복잡한 소득증빙 서류 없이 간편 신청',
+          '📱 스마트폰 본인인증 30초면 한도 조회 완료! 신용점수 하락 없는 안심 조회',
+          '🤝 10년 경력 심사 마스터가 지점장 특별 전결로 승인율 99% 달성',
+          '💬 댓글에 [승인] 남기시면 1:1 비공개 무서류 간편 한도 즉시 산출'
+        ],
+        ttsLines: [
+          '프리랜서나 주부님도 복잡한 소득 증빙 서류 없이 간편하게 신차를 이용하실 수 있습니다.',
+          '스마트폰 인증만으로 신용도 영향 없이 삼십 초 만에 한도를 확인해 드립니다.',
+          '십 년 경력의 심사 전문 마스터가 특별 승인으로 높은 통과율을 약속합니다.',
+          '댓글에 승인이라고 남겨주시면 일대일 비공개 무서류 심사를 도와드립니다.'
+        ]
+      },
+      oil_included: {
+        id: 'oil_included',
+        category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '⛽ 1년 주유비·충전비 지원형',
+        shortTitle: '1년주유비지원',
+        tagline: '차량 출고 즉시 100만원 주유·충전 카드 증정 · 1년간 기름값 걱정 끝',
+        icon: '⛽',
+        themeId: 'amber',
+        accentColor: '#f59e0b',
+        hook: '⛽ 차만 타세요, 1년 기름값은 저희가 쏩니다! 100만원 주유권 증정',
+        discountNum: 520,
+        discount: '100만원 주유·충전 상품권 증정',
+        scenePlan: [
+          { cut: 1, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⛽ 신차 인도 당일 GS칼텍스/SK에너지 모바일 주유권 100만원 즉시 지급',
+          '🔋 전기차 출고 고객님께는 전국 초고속 충전 1년 무제한 크레딧 대체 증정',
+          '📉 월 납입금 외에 기름값 부담까지 덜어드리는 역대급 생활 밀착 프로모션',
+          '💬 댓글에 [주유비] 남기시면 100만원 주유권 바우처 선착순 배정'
+        ],
+        ttsLines: [
+          '차량을 출고하시는 모든 분께 백만 원 상당의 정품 모바일 주유권을 증정합니다.',
+          '전기차를 선택하시는 고객님께는 일 년간 마음껏 충전하실 수 있는 충전권을 드립니다.',
+          '월 납입금 외에 추가 유류비 부담까지 덜어드리는 실속 있는 프로모션입니다.',
+          '댓글에 주유비라고 남겨주시면 백만 원 유류비 지원 바우처를 챙겨드립니다.'
+        ]
+      },
+      short_lease: {
+        id: 'short_lease',
+        category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '⏱️ 12개월 단기 무위약 승계형',
+        shortTitle: '1년단기리스',
+        tagline: '장기 부담 없는 1년 단위 계약 · 언제든 위약금 없이 신차 교체 · 자유로운 반납',
+        icon: '⏱️',
+        themeId: 'deepblue',
+        accentColor: '#38bdf8',
+        hook: '⏱️ 4~5년 묶이기 싫다면? 딱 1년만 타고 위약금 없이 갈아타기',
+        discountNum: 430,
+        discount: '월 39만원대 · 12개월 단기 플랜',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⏱️ 36개월, 48개월 장기 계약 부담 NO! 1년 단위로 가볍게 이용하는 단기 플랜',
+          '🔄 1년 후 위약금 한 푼 없이 최신 신차로 무상 교체 또는 자유로운 반납',
+          '🛡️ 취등록세, 자동차세, 보험료 모두 월 렌트료에 포함되어 추가 지출 제로',
+          '💬 댓글에 [단기] 남기시면 12개월 무위약 승계 전용 리스트 발송'
+        ],
+        ttsLines: [
+          '삼사 년씩 묶이는 장기 계약 부담 없이 딱 일 년만 타실 수 있는 단기 플랜입니다.',
+          '일 년 후 위약금 없이 신형 차량으로 갈아타시거나 자유롭게 반납하실 수 있습니다.',
+          '세금과 보험료가 모두 포함되어 있어 매달 고정 비용 외에 추가 지출이 없습니다.',
+          '댓글에 단기라고 남겨주시면 십이 개월 단기 전용 차량 목록을 보내드립니다.'
+        ]
+      },
+      zero_interest: {
+        id: 'zero_interest',
+        category: 'finance',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '0️⃣ 무이자 60개월 제로할부형',
+        shortTitle: '무이자60개월',
+        tagline: '이자 부담 0% 원금만 60개월 분할 납부 · 고금리 시대 완벽한 이자 방어 솔루션',
+        icon: '0️⃣',
+        themeId: 'royal',
+        accentColor: '#facc15',
+        hook: '0️⃣ 고금리 시대에 이자율 0.0%! 원금만 60개월 나눠 내는 제로할부',
+        discountNum: 620,
+        discount: '이자 0원 · 60개월 무이자 할부',
+        scenePlan: [
+          { cut: 1, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '0️⃣ 금리 인상기에도 걱정 없는 확정 0.0% 무이자 60개월 균등 분할 상환',
+          '💰 총 이자 지출 수백만원 전액 세이브! 원금만 깔끔하게 납부하는 알짜 조건',
+          '📜 공식 현대캐피탈 제휴 본사 승인 특별 금융 프로모션 재고',
+          '💬 댓글에 [무이자] 남기시면 60개월 무이자 적용 잔여 차량 즉시 확인'
+        ],
+        ttsLines: [
+          '고금리 시대에도 이자 부담이 전혀 없는 연 영 퍼센트 무이자 육십 개월 할부입니다.',
+          '수백만 원에 달하는 대출 이자를 아끼고 순수 차량 원금만 분할 납부하세요.',
+          '본사 공식 금융 제휴를 통해 한정 수량으로 제공되는 특별 프로모션입니다.',
+          '댓글에 무이자라고 남겨주시면 무이자 적용 가능한 잔여 차량을 확인해 드립니다.'
+        ]
+      },
+      credit_recovery: {
+        id: 'credit_recovery',
+        category: 'finance',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🤝 저신용 맞춤형 특별예외승인형',
+        shortTitle: '특별예외승인',
+        tagline: '신용점수 7~8등급도 지점장 직권 특별 한도 배정 · 거절 이력자 재승인 솔루션',
+        icon: '🤝',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '🤝 타사 거절되셨나요? 7·8등급도 지점장 직권 특별 한도 100% 배정',
+        discountNum: 490,
+        discount: '저신용 특별 예외 승인 전문',
+        scenePlan: [
+          { cut: 1, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🤝 타사 렌트/리스 심사 부결자, 신용점수 하락자도 1:1 맞춤 우회 솔루션',
+          '🏢 지점장 직권 특별 예외 승인 라인 가동으로 당일 즉시 펀딩 완료',
+          '🔒 신용등급에 영향 없는 비공개 가심사 시스템으로 안심 진행',
+          '💬 댓글에 [예외승인] 남기시면 1:1 극비 승인 전담 마스터 배정'
+        ],
+        ttsLines: [
+          '타사에서 부결되셨거나 신용점수가 낮아 고민이신 분들도 승인이 가능합니다.',
+          '지점장 직권 특별 승인 라인을 통해 당일 출고까지 신속하게 처리해 드립니다.',
+          '신용 점수 하락이 전혀 없는 안전한 사전 심사로 부담 없이 상담받으세요.',
+          '댓글에 예외승인이라고 남겨주시면 전담 심사 마스터가 직접 도와드립니다.'
+        ]
+      },
+      tax_refund: {
+        id: 'tax_refund',
+        category: 'finance',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '📑 사업자 비용처리 연 1,500만원형',
+        shortTitle: '사업자절세1500',
+        tagline: '종합소득세 및 법인세 전액 경비 처리 · 부가세 환급 · 대표님을 위한 절세 비법',
+        icon: '📑',
+        themeId: 'deepblue',
+        accentColor: '#38bdf8',
+        hook: '📑 종합소득세·법인세 폭탄 방어! 연간 1,500만원 전액 경비 처리',
+        discountNum: 580,
+        discount: '연 최대 1,500만원 합법 절세',
+        scenePlan: [
+          { cut: 1, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📑 연간 차량 렌트료 800만원 + 유지관리비 700만원 = 연 1,500만원 100% 경비 처리',
+          '🧾 9인승 이상 및 경차 출고 시 부가세 10% 전액 환급 혜택 추가 적용',
+          '📊 5월 종합소득세 및 법인세 신고 시 세무사 연계 원클릭 세금계산서 발송',
+          '💬 댓글에 [절세] 남기시면 사업자 맞춤 연간 절세 시뮬레이션 리포트 증정'
+        ],
+        ttsLines: [
+          '차량 렌트료와 유류비 등 연간 최대 천오백만 원까지 전액 경비 처리가 가능합니다.',
+          '구인승 이상 모델을 선택하시면 부가세 십 퍼센트 환급 혜택까지 챙기실 수 있습니다.',
+          '종합소득세와 법인세 절세 리포트를 발행해 드려 세무 신고가 간편해집니다.',
+          '댓글에 절세라고 남겨주시면 대표님 맞춤형 절세 계산서를 즉시 보내드립니다.'
+        ]
+      },
+      trade_in_bonus: {
+        id: 'trade_in_bonus',
+        category: 'finance',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🔄 타시던 차 최고가 매입형',
+        shortTitle: '트레이드인보너스',
+        tagline: '중고차 감정 평가 즉시 매입 · 시세 대비 100만원 더 보장 · 신차 추가 더블 DC',
+        icon: '🔄',
+        themeId: 'teal',
+        accentColor: '#22c55e',
+        hook: '🔄 타시던 중고차 최고가 보장 매입 + 신차 100만원 추가 더블 할인!',
+        discountNum: 550,
+        discount: '중고차 시세+100만 & 신차 더블할인',
+        scenePlan: [
+          { cut: 1, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🔄 타사 헤이딜러/엔카 견적 들고 오시면 무조건 50~100만원 더 쳐드리는 매입 보장',
+          '💰 중고차 판매 대금은 신차 보증금으로 즉시 전환하여 월 납입금 파격 인하',
+          '🚗 신차 받는 날 타시던 차 문 앞 인도! 단 1분의 공백도 없는 당일 맞교환',
+          '💬 댓글에 [내차팔기] 남기시면 5분 모바일 무감가 확정 매입가 제시'
+        ],
+        ttsLines: [
+          '타사 중고차 비교 견적보다 무조건 오십만 원에서 백만 원 더 높게 매입해 드립니다.',
+          '매각 대금을 신차 초기비용으로 전환하여 매달 납부하는 비용을 크게 낮춰보세요.',
+          '신차를 인수받는 날 타시던 차를 바로 넘겨주시면 되므로 출퇴근 공백이 없습니다.',
+          '댓글에 내차팔기라고 남겨주시면 오 분 만에 확정 매입 견적을 산출해 드립니다.'
+        ]
+      },
+      daily_coffee: {
+        id: 'daily_coffee',
+        category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '☕ 하루 커피 한 잔 9,900원형',
+        shortTitle: '하루9900원',
+        tagline: '부담 없는 일 단위 환산 월 납입금 · 커피 두 잔 값이면 최신 신차가 내 손에',
+        icon: '☕',
+        themeId: 'amber',
+        accentColor: '#f59e0b',
+        hook: '☕ 하루 커피 두 잔 값 9,900원이면 끝! 부담 제로 갓성비 신차 플랜',
+        discountNum: 410,
+        discount: '하루 9,900원대 실속형 플랜',
+        scenePlan: [
+          { cut: 1, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '☕ 하루 9,900원 커피 두 잔 값이면 주유비 지원 포함 최신 세단 풀옵션',
+          '📉 목돈 들어갈 일 없는 보증금 0원, 선수금 0원 완벽한 무자본 출고',
+          '🛡️ 고장 수리비, 소모품 교체비 모두 렌트사에 포함된 안심 케어 서비스',
+          '💬 댓글에 [커피] 남기시면 일 9,900원대 잔여 모델 특가표 발송'
+        ],
+        ttsLines: [
+          '하루 커피 두 잔 값인 구천구백 원대로 최신 신차를 부담 없이 운행해 보세요.',
+          '목돈이 전혀 필요 없는 보증금 영원 조건으로 누구나 가볍게 시작하실 수 있습니다.',
+          '차량 유지보수와 소모품 교체까지 알아서 챙겨드리므로 신경 쓸 일이 없습니다.',
+          '댓글에 커피라고 남겨주시면 하루 만 원 이하로 탈 수 있는 차량 목록을 드립니다.'
+        ]
+      },
+      no_penalty: {
+        id: 'no_penalty',
+        category: 'finance',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '🆓 중도 반납 위약금 0원형',
+        shortTitle: '위약금0원반납',
+        tagline: '사정 변경 시 언제든 위약금 없이 반납 가능한 안심 플랜 · 리스크 완전 제로',
+        icon: '🆓',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '🆓 타다가 사정 생기면 위약금 0원 반납! 리스크 제로 프리미엄 플랜',
+        discountNum: 470,
+        discount: '중도 반납 위약금 0원 확약',
+        scenePlan: [
+          { cut: 1, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🆓 이직, 이사, 해외 파견 등 언제든 타다가 돌려줘도 위약금 0원 전액 면제',
+          '📉 기존 렌트 승계 수수료나 패널티 걱정 없이 마음 편한 드라이빙',
+          '🔄 타는 동안에는 신차 혜택 그대로 누리고 원할 때 깔끔하게 종료',
+          '💬 댓글에 [위약금제로] 남기시면 무위약 안심 계약서 조건표 전송'
+        ],
+        ttsLines: [
+          '이직이나 해외 파견 등 사정이 생기더라도 위약금 없이 자유롭게 반납이 가능합니다.',
+          '중도 해지 수수료 부담 없이 안심하고 신차를 마음껏 이용해 보세요.',
+          '타시는 동안에는 최신 신차의 편리함을 누리고 필요할 때 언제든 부담 없이 종료하세요.',
+          '댓글에 위약금제로라고 남겨주시면 무위약 안심 조건표를 즉시 보내드립니다.'
+        ]
+      },
+      fleet_vip: {
+        id: 'fleet_vip',
+        category: 'finance',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🏢 법인 대량 구매 특별 우대형',
+        shortTitle: '법인플릿우대',
+        tagline: '임직원 패밀리 할인 및 법인 전담 카매니저 1:1 배정 · 3대 이상 대량 추가 할인',
+        icon: '🏢',
+        themeId: 'deepblue',
+        accentColor: '#1e40af',
+        hook: '🏢 법인·개인사업자 2대 이상 구매 시 대량 특별 추가 할인 풀적용',
+        discountNum: 710,
+        discount: '법인 플릿 대량 추가 10% DC',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏢 회사 업무용 차량 2대 이상 계약 시 대당 추가 100만원 플릿 특별 할인',
+          '🧑‍💼 법인 임직원 및 직계가족까지 동일한 임직원 패밀리 할인율 적용',
+          '📊 분기별 차량 유지비 통합 정산서 및 무상 방문 순회정비 정기 제공',
+          '💬 댓글에 [법인] 남기시면 법인 플릿 전담 매니저 1:1 출장 상담'
+        ],
+        ttsLines: [
+          '업무용 차량을 두 대 이상 계약하시면 대당 추가 백만 원의 특별 할인이 적용됩니다.',
+          '법인 소속 임직원분들과 가족분들에게도 동일한 우대 혜택을 제공합니다.',
+          '차량 유지비를 한눈에 관리할 수 있는 통합 정산서와 정기 방문 정비를 제공합니다.',
+          '댓글에 법인이라고 남겨주시면 플릿 전담 매니저가 직접 회사로 방문해 드립니다.'
+        ]
+      },
 
       // ------------------------------------------------------------------------
-      // [6] 카마스터 신뢰 & 무사고 팩트체크 & 패밀리 (category: 'trust') - 6종
+      // [6] 카마스터 신뢰 & 무사고 팩트체크 & 패밀리 (category: 'trust') - 16종
       // ------------------------------------------------------------------------
       certified_used: {
         id: 'certified_used',
@@ -3090,6 +4690,327 @@
           '백만 원 상당의 일본 명품 유리막 코팅과 생활보호 필름을 모두 둘러드립니다.',
           '댓글에 견적이라고 남기시면 팔 종 프리미엄 용품 패키지를 먼저 챙겨드립니다.'
         ]
+      },
+      full_inspection: {
+        id: 'full_inspection',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '📋 120가지 정밀 사전검수형',
+        shortTitle: '120가지사전검수',
+        tagline: '하부 누유부터 전자 장비까지 120개 항목 정밀 점검 · 무결점 확인서 고객 제공',
+        icon: '📋',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '📋 볼트 하나까지 120가지 정밀 사전 검수! 무결점 차량만 출고합니다',
+        discountNum: 540,
+        discount: '120개 항목 정밀 점검표 발급',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📋 도장면 단차, 하부 누유, 배터리 진단까지 국가공인 정비사가 직접 검수',
+          '📸 출고 전 120개 검수 항목의 실물 사진과 체크리스트를 카카오톡 전송',
+          '🛡️ 이상 발견 시 100% 본사 교환 및 무결점 재배정 안심 프로세스',
+          '💬 댓글에 [검수] 남기시면 120가지 실물 정밀 검수 리포트 발송'
+        ],
+        ttsLines: [
+          '도장 단차부터 하부 누유까지 국가 공인 정비사가 백이십 가지 항목을 정밀 검수합니다.',
+          '검수 과정의 실물 사진과 체크리스트를 고객님께 투명하게 전송해 드립니다.',
+          '작은 결함이라도 발견되면 즉시 교환하여 무결점 차량만을 인도해 드립니다.',
+          '댓글에 검수라고 남겨주시면 정밀 검수 샘플 리포트를 전송해 드립니다.'
+        ]
+      },
+      nationwide_carrier: {
+        id: 'nationwide_carrier',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🚛 전국 세이프 캐리어 탁송형',
+        shortTitle: '전국캐리어탁송',
+        tagline: '제주도까지 집 앞 전용 캐리어 안전 탁송 · 주행거리 0km 신차 컨디션 유지',
+        icon: '🚛',
+        themeId: 'deepblue',
+        accentColor: '#38bdf8',
+        hook: '🚛 주행거리 늘어나는 로드 탁송 NO! 전용 세이프 캐리어로 안방 배달',
+        discountNum: 510,
+        discount: '전국 세이프 캐리어 탁송비 지원',
+        scenePlan: [
+          { cut: 1, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🚛 다른 사람이 몰고 오는 로드 탁송이 아닌 전용 캐리어 차량에 실어 안전 운송',
+          '📍 서울부터 부산, 제주도까지 고객님 댁 주차장 앞까지 정확한 시간 엄수 배송',
+          '🛡️ 탁송 중 발생할 수 있는 스톤칩 방지를 위한 특수 보호 랩핑 시공',
+          '💬 댓글에 [탁송] 남기시면 전국 어디든 캐리어 탁송비 전액 지원'
+        ],
+        ttsLines: [
+          '남이 운전해서 오는 로드 탁송이 아닌 전용 캐리어에 실어 안전하게 배달해 드립니다.',
+          '전국 어디든 고객님 자택 주차장 앞까지 약속된 시간에 맞춰 안전히 도착합니다.',
+          '이동 중 발생할 수 있는 미세 흠집까지 방지하는 전용 보호 필름을 씌워 운송합니다.',
+          '댓글에 탁송이라고 남겨주시면 캐리어 탁송 비용을 전액 지원해 드립니다.'
+        ]
+      },
+      no_fake_price: {
+        id: 'no_fake_price',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '💯 정찰제 100% 실견적형',
+        shortTitle: '정찰제실견적',
+        tagline: '취등록세 및 부대비용 포함 100% 투명 영수증 공개 · 낚시 견적 절대 사절',
+        icon: '💯',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '💯 1원도 숨기지 않는 정찰제 실견적! 숨은 부대비용 0원 투명 공개',
+        discountNum: 480,
+        discount: '숨은 추가금 0원 정찰제',
+        scenePlan: [
+          { cut: 1, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '💯 인터넷 미끼 견적에 낚이지 마세요! 취등록세, 공채, 탁송료 100% 공개',
+          '🧾 공식 전산 영수증과 계약서를 토씨 하나 숨김없이 고객님께 투명 교부',
+          '🙅‍♂️ 출고 당일 말 바꾸거나 추가 비용을 요구하지 않는 안심 정찰제 확약',
+          '💬 댓글에 [정찰제] 남기시면 거품 없는 1원 단위 투명 실견적서 발송'
+        ],
+        ttsLines: [
+          '인터넷 낚시 견적에 속지 마세요. 취등록세와 탁송료를 모두 투명하게 공개합니다.',
+          '공식 전산 영수증과 계약서를 있는 그대로 투명하게 교부해 드립니다.',
+          '출고 당일 말을 바꾸거나 추가 비용을 요구하지 않는 클린 정찰제를 약속합니다.',
+          '댓글에 정찰제라고 남겨주시면 일 원 단위까지 정직한 견적서를 보내드립니다.'
+        ]
+      },
+      female_driver: {
+        id: 'female_driver',
+        category: 'trust',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🌸 초보·가족 맞춤 안심케어형',
+        shortTitle: '초보가족안심케어',
+        tagline: '출고 후 기능 1:1 방문 코칭 · 24시간 안심 긴급 콜 서비스 · 가족의 안전 최우선',
+        icon: '🌸',
+        themeId: 'teal',
+        accentColor: '#38bdf8',
+        hook: '🌸 차를 잘 몰라도 걱정 제로! 출고 후 1:1 방문 기능 코칭 안심 케어',
+        discountNum: 460,
+        discount: '초보 맞춤형 1:1 안심 케어',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🌸 차 기능 조작이 낯선 초보 운전자와 가족을 위한 눈높이 1시간 친절 코칭',
+          '📞 야간 경고등이나 접촉 사고 시 24시간 즉시 연결되는 전담 카마스터 직통폰',
+          '👶 유아용 카시트 장착 및 사각지대 어라운드 뷰 세팅 완벽 지원',
+          '💬 댓글에 [안심케어] 남기시면 초보 운전자를 위한 1:1 전담 매니저 배정'
+        ],
+        ttsLines: [
+          '차량 기능이 낯선 초보 운전자분들을 위해 한 시간 동안 눈높이에 맞춰 친절히 설명해 드립니다.',
+          '야간 경고등 점등이나 비상 상황 시 이십사 시간 직통으로 연락 가능한 번호를 드립니다.',
+          '어린 자녀를 위한 카시트 장착과 안전 주행 기능 설정을 꼼꼼히 챙겨드립니다.',
+          '댓글에 안심케어라고 남겨주시면 가족처럼 챙겨드리는 전담 매니저를 연결해 드립니다.'
+        ]
+      },
+      accident_free_care: {
+        id: 'accident_free_care',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🛡️ 무사고 5년 연장보증형',
+        shortTitle: '무사고5년보증',
+        tagline: '제조사 기본 보증에 공식 카마스터 추가 2년 연장 보증 · 엔진 미션 완벽 보호',
+        icon: '🛡️',
+        themeId: 'teal',
+        accentColor: '#22c55e',
+        hook: '🛡️ 기본 보증 끝났다고 걱정 마세요! 5년 10만km 무상 연장 보증 혜택',
+        discountNum: 590,
+        discount: '5년 10만km 연장 보증 무상 제공',
+        scenePlan: [
+          { cut: 1, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🛡️ 제조사 보증기간이 끝난 후에도 2년간 추가 보증해 드리는 안심 워런티',
+          '🔧 엔진, 미션, 조향장치, 전자장비 고장 시 자기부담금 0원 무상 수리',
+          '📜 전국 현대/제네시스 공식 서비스센터 어디서나 호환 가능한 정품 보증서',
+          '💬 댓글에 [연장보증] 남기시면 5년 무상 보증 케어 증서 동봉 출고'
+        ],
+        ttsLines: [
+          '제조사 기본 보증이 끝난 후에도 이 년간 추가로 무상 수리를 보장해 드립니다.',
+          '엔진과 변속기 등 핵심 부품 고장 시 자기부담금 없이 완벽하게 고쳐드립니다.',
+          '전국 공식 서비스망에서 호환되는 정품 연장 보증서를 함께 발급해 드립니다.',
+          '댓글에 연장보증이라고 남겨주시면 오 년 안심 보증 혜택을 챙겨드립니다.'
+        ]
+      },
+      tinting_guarantee: {
+        id: 'tinting_guarantee',
+        category: 'trust',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🎁 명품 비반사 틴팅 시공형',
+        shortTitle: '명품비반사틴팅',
+        tagline: '루마 버텍스 900급 열차단 틴팅 & QXD 블랙박스 풀시공 · 정품 전자보증서 발급',
+        icon: '🎁',
+        themeId: 'royal',
+        accentColor: '#f59e0b',
+        hook: '🎁 싸구려 영맨표 썬팅 NO! 150만원 상당 루마 버텍스 정품 풀시공',
+        discountNum: 530,
+        discount: '150만원 상당 틴팅·블박 무상시공',
+        scenePlan: [
+          { cut: 1, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🎁 자외선 99.9%, 열차단율 70% 이상의 하이엔드 프리미엄 비반사 필름',
+          '📷 전후방 QHD 초고화질 블랙박스 + 주차 중 충격 감지 커넥티드 모듈 장착',
+          '📜 공식 시공 대리점에서 발행하는 10년 정품 전자 품질 보증서 발급',
+          '💬 댓글에 [틴팅] 남기시면 명품 틴팅 시공 패키지 우선 예약'
+        ],
+        ttsLines: [
+          '자외선과 열을 완벽히 차단하는 백오십만 원 상당의 하이엔드 비반사 틴팅을 시공합니다.',
+          '초고화질 블랙박스와 통신형 모듈을 장착하여 주차 중 충격도 스마트폰으로 알려줍니다.',
+          '십 년 품질 보증서가 발급되는 공식 대리점 정품 시공만을 고집합니다.',
+          '댓글에 틴팅이라고 남겨주시면 명품 틴팅 시공 패키지를 지원해 드립니다.'
+        ]
+      },
+      youtube_delivery: {
+        id: 'youtube_delivery',
+        category: 'trust',
+        layoutMode: 'TIKTOK_VIRAL_SPLIT',
+        title: '📹 유튜브 출고 영상 선물형',
+        shortTitle: '출고영상숏폼제작',
+        tagline: '감동적인 신차 인도 순간을 4K 숏폼으로 제작 선물 · 평생 기억될 특별한 추억',
+        icon: '📹',
+        themeId: 'neon',
+        accentColor: '#ec4899',
+        hook: '📹 생애 첫 신차 출고 순간! 4K 시네마틱 숏폼 영상 무료 제작 선물',
+        discountNum: 490,
+        discount: '4K 출고 기념 숏폼 무료 제작',
+        scenePlan: [
+          { cut: 1, widget: 'MAGAZINE_COVER', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '📹 리본 커팅부터 첫 시동의 설렘까지 전문 촬영팀이 4K 고화질 영상 기록',
+          '🎬 인스타그램 릴스와 유튜브 쇼츠에 바로 올릴 수 있는 세련된 숏폼 편집본',
+          '💐 고급 꽃다발 및 맞춤 레터링 케이크와 함께하는 특별한 출고식 이벤트',
+          '💬 댓글에 [출고영상] 남기시면 출고 세리머니 패키지 무상 예약'
+        ],
+        ttsLines: [
+          '신차를 인도받는 감동적인 첫 순간을 전문 카메라로 담아 세련된 숏폼으로 편집해 드립니다.',
+          '인스타그램과 유튜브에 자랑하실 수 있도록 고화질 영상 파일로 선물해 드립니다.',
+          '축하 꽃다발과 맞춤 케이크가 함께하는 감동적인 출고 이벤트를 준비합니다.',
+          '댓글에 출고영상이라고 남겨주시면 특별 출고 세리머니를 준비해 드립니다.'
+        ]
+      },
+      door_to_door: {
+        id: 'door_to_door',
+        category: 'trust',
+        layoutMode: 'CLASSIC_SHOWROOM',
+        title: '🏠 집 앞으로 찾아오는 시승형',
+        shortTitle: '홈방문시승상담',
+        tagline: '전시장 방문 없이 원하는 시간·장소로 시승차 직접 배달 · 주차장 주차 테스트',
+        icon: '🏠',
+        themeId: 'teal',
+        accentColor: '#38bdf8',
+        hook: '🏠 바쁜 직장인을 위해! 계신 곳 주차장으로 시승차 몰고 찾아갑니다',
+        discountNum: 450,
+        discount: '전국 무료 1:1 방문 시승',
+        scenePlan: [
+          { cut: 1, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'LOWER_THIRD', pos: 'bottom', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏠 주말에 전시장 갈 시간 없으신가요? 고객님 회사나 자택 앞으로 시승차 배달',
+          '🅿️ 실제 출퇴근 코스 주행과 아파트 지하주차장 주차 편의성을 직접 확인',
+          '☕ 부담스러운 구매 강요 절대 없이 순수하게 차만 타보실 수 있는 힐링 시승',
+          '💬 댓글에 [방문시승] 남기시면 원하시는 날짜와 장소로 시승차 출발'
+        ],
+        ttsLines: [
+          '전시장에 오실 필요 없이 고객님 회사나 집 앞으로 시승 차량을 직접 가져다 드립니다.',
+          '매일 다니시는 출퇴근 도로와 아파트 주차장에서 차의 크기와 승차감을 시험해 보세요.',
+          '구매 부담 없이 편안하게 타보실 수 있도록 친절하게 안내해 드립니다.',
+          '댓글에 방문시승이라고 남겨주시면 원하시는 일정에 맞춰 찾아뵙겠습니다.'
+        ]
+      },
+      reorder_rate: {
+        id: 'reorder_rate',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '🏆 7년 연속 재구매 1위형',
+        shortTitle: '재구매율1위',
+        tagline: '누적 1,200대 출고 · 고객 평점 4.98점 보증 · 평생 자동차 주치의 사후관리',
+        icon: '🏆',
+        themeId: 'royal',
+        accentColor: '#facc15',
+        hook: '🏆 고객 10명 중 8명이 다시 찾는 카마스터! 누적 1,200대 출고 신화',
+        discountNum: 580,
+        discount: '7년 연속 고객만족도 1위 사후케어',
+        scenePlan: [
+          { cut: 1, widget: 'CONTRACT_STAMP_SIGN', pos: 'center', cam: 0 },
+          { cut: 2, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '🏆 한 번 맺은 인연은 평생! 출고 후 5년, 10년이 지나도 변함없는 사후 관리',
+          '⭐️ 고객 만족도 평가 4.98점! 지인 소개와 재구매로만 증명된 정직한 서비스',
+          '🛠️ 정기 오일 교환 알림부터 사고 처리 대행까지 원스톱 자동차 비서 역할',
+          '💬 댓글에 [평생케어] 남기시면 VIP 전담 평생 주치의 카마스터 등록'
+        ],
+        ttsLines: [
+          '출고 후에도 오 년, 십 년 동안 변함없이 고객님의 소중한 자동차를 케어해 드립니다.',
+          '평점 사 점 구팔 점으로 입증된 정직하고 투명한 관리로 고객 만족을 약속합니다.',
+          '정기 점검 시기 안내부터 사고 처리까지 모든 과정을 가족처럼 전담해 드립니다.',
+          '댓글에 평생케어라고 남겨주시면 평생 자동차 주치의 서비스를 등록해 드립니다.'
+        ]
+      },
+      honest_quote: {
+        id: 'honest_quote',
+        category: 'trust',
+        layoutMode: 'CERTIFIED_SEAL',
+        title: '⚖️ 타사 견적 분석 양심견적형',
+        shortTitle: '양심견적비교',
+        tagline: '과다 청구된 부대비용 및 고금리 상품 즉시 거품 제거 · 투명 비교 리포트',
+        icon: '⚖️',
+        themeId: 'teal',
+        accentColor: '#10b981',
+        hook: '⚖️ 타사 견적서 사진 찍어 보내주세요! 거품 쏙 뺀 양심 최저가 공개',
+        discountNum: 520,
+        discount: '타사 대비 거품 전액 제거 확약',
+        scenePlan: [
+          { cut: 1, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 0 },
+          { cut: 2, widget: 'PRICE_STRIKE_THROUGH', pos: 'center', cam: 1 },
+          { cut: 3, widget: 'CHECKLIST_GLASS', pos: 'center', cam: 2 },
+          { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }
+        ],
+        cutCaptions: [
+          '⚖️ 타 대리점에서 받은 견적서의 숨겨진 수수료와 이자율을 정확히 팩트체크',
+          '🔍 겉으로만 저렴해 보이는 편법 리스/렌트의 교묘한 독소 조항 사전 차단',
+          '📉 불필요한 마진을 모두 걷어낸 본사 공식 최저가 견적으로 1:1 재산출',
+          '💬 댓글에 [견적비교] 남기시면 3분 만에 타사 견적서 거품 분석 리포트 회신'
+        ],
+        ttsLines: [
+          '타사에서 받아보신 견적서를 보내주시면 숨어있는 불필요한 수수료를 짚어드립니다.',
+          '초기비용이 저렴해 보여도 만기에 폭탄을 맞는 독소 조항을 사전에 꼼꼼히 걸러냅니다.',
+          '영업 수수료 거품을 모두 걷어낸 정직한 본사 공식 최저가로 다시 산출해 드립니다.',
+          '댓글에 견적비교라고 남겨주시면 삼 분 안에 견적서 팩트체크 리포트를 보내드립니다.'
+        ]
+      }
       }
     };
 
@@ -3101,7 +5022,7 @@
       }
     }
 
-    // 전역 스토리 아키타입 사전 (큐레이션 36종 + 사용자 영구 저장 AI 커스텀)
+    // 전역 스토리 아키타입 사전 (큐레이션 96종 + 사용자 영구 저장 AI 커스텀)
     const STORY_ARCHETYPES = { ...BASE_STORY_ARCHETYPES, ...loadUserCustomArchetypes() };
 
     let activeStoryArchetypeKey = 'clearance';
@@ -3270,6 +5191,12 @@
       if (elCustom) elCustom.textContent = `(${customCount})`;
       const elFav = document.getElementById('favTabCount');
       if (elFav) elFav.textContent = `(${favCount})`;
+
+      const cats = ['special', 'luxury', 'ev_tech', 'sports', 'finance', 'trust'];
+      cats.forEach(c => {
+        const el = document.getElementById(`catCount_${c}`);
+        if (el) el.textContent = allKeys.filter(k => STORY_ARCHETYPES[k].category === c).length;
+      });
     }
 
     function updateFavoriteTabCount() {
@@ -7688,55 +9615,55 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'center';
           ctx.fillText('◆ AUTOREELS COUTURE · PRIVATE CONCIERGE ◆', 0, -cardH / 2 + 42);
 
-          // 딜러 프로필 원형 (골드 링)
+          // 딜러 프로필 원형 (골드 링 - 겹침 없는 완전한 360도 원형)
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -64, -284, 128, 128);
           else {
             ctx.fillStyle = '#1e293b';
-            ctx.fillRect(-74, -269, 148, 148);
+            ctx.fillRect(-64, -284, 128, 128);
           }
           ctx.restore();
 
           ctx.strokeStyle = theme.accent || '#d4af37';
-          ctx.lineWidth = 4;
+          ctx.lineWidth = 3.5;
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.stroke();
 
-          // VIP 프라이빗 마스터 골드 캡슐 (불투명 솔리드 배경 + 그림자 적용으로 프로필 원형 침범 100% 방지)
+          // VIP 프라이빗 마스터 골드 캡슐 (원형 아래 12px 간격을 두고 완벽히 분리 배치 -> 겹침/뭉개짐 원천 차단!)
           ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#0a0d14';
-          drawRoundedRect(ctx, -100, -132, 200, 32, 16);
+          drawRoundedRect(ctx, -95, -144, 190, 28, 14);
           ctx.fill();
           ctx.restore();
 
           ctx.strokeStyle = theme.accent || '#d4af37';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -100, -132, 200, 32, 16);
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -95, -144, 190, 28, 14);
           ctx.stroke();
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = '#fef3c7';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.fillText('★ VIP 프라이빗 마스터', 0, -116);
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('★ VIP 프라이빗 마스터', 0, -130);
           ctx.restore();
 
           // 소속 지점 & 카마스터 성함 (우아한 세리프 타이포그래피)
           ctx.fillStyle = '#94a3b8';
-          ctx.font = '16px serif';
-          ctx.fillText(`${d.branch} · VIP 컨시어지`, 0, -78);
+          ctx.font = '15px serif';
+          ctx.fillText(`${d.branch} · VIP 컨시어지`, 0, -90);
 
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 38px serif';
-          ctx.fillText(`${d.name} ${d.title}`, 0, -28);
+          ctx.font = 'bold 36px serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -38);
 
           // VIP 1:1 전담 상담 다크 글래스 박스
           ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
@@ -7815,53 +9742,53 @@ function renderStoryArchetypesUI() {
           ctx.fillStyle = '#fecaca';
           ctx.fillText('OFFICIAL PRESS IDENTIFICATION CARD', 0, -cardH / 2 + 58);
 
-          // 딜러 실사 프로필 (사각 프레스 배지 스타일)
+          // 딜러 실사 프로필 (사각 프레스 배지 스타일 - 완벽한 여백)
           ctx.save();
-          drawRoundedRect(ctx, -74, -269, 148, 148, 16);
+          drawRoundedRect(ctx, -64, -284, 128, 128, 16);
           ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -64, -284, 128, 128);
           else {
             ctx.fillStyle = '#0f172a';
-            ctx.fillRect(-74, -269, 148, 148);
+            ctx.fillRect(-64, -284, 128, 128);
           }
           ctx.restore();
 
           ctx.strokeStyle = '#dc2626';
-          ctx.lineWidth = 4;
-          drawRoundedRect(ctx, -74, -269, 148, 148, 16);
+          ctx.lineWidth = 3.5;
+          drawRoundedRect(ctx, -64, -284, 128, 128, 16);
           ctx.stroke();
 
-          // 취재 전문위원 인증 배지 (불투명 솔리드 배경 + 그림자 적용)
+          // 취재 전문위원 인증 배지 (원형 아래 12px 간격을 두고 분리 배치 -> 겹침/뭉개짐 원천 차단!)
           ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#dc2626';
-          drawRoundedRect(ctx, -105, -132, 210, 32, 16);
+          drawRoundedRect(ctx, -100, -144, 200, 28, 14);
           ctx.fill();
           ctx.restore();
 
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -105, -132, 210, 32, 16);
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -100, -144, 200, 28, 14);
           ctx.stroke();
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = '#ffffff';
-          ctx.font = '900 13px sans-serif';
-          ctx.fillText('● 공식 인증 취재 전문위원', 0, -116);
+          ctx.font = '900 12px sans-serif';
+          ctx.fillText('● 공식 인증 취재 전문위원', 0, -130);
           ctx.restore();
 
           // 소속 지점 & 카마스터 성함
           ctx.fillStyle = '#475569';
-          ctx.font = 'bold 18px sans-serif';
-          ctx.fillText(`현장 보도국 · ${d.branch}`, 0, -76);
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(`현장 보도국 · ${d.branch}`, 0, -90);
 
           ctx.fillStyle = '#0f172a';
-          ctx.font = '900 40px sans-serif';
-          ctx.fillText(`${d.name} 전문기자`, 0, -26);
+          ctx.font = '900 38px sans-serif';
+          ctx.fillText(`${d.name} 전문기자`, 0, -38);
 
           // 긴급 단독 취재 상담 박스
           ctx.fillStyle = '#0f172a';
@@ -7949,65 +9876,65 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'center';
           ctx.fillText(`SYSTEM: TERMINAL_AUTH // AGENT ID: #AR-${d.token || '2026'}`, 0, -cardH / 2 + 38);
 
-          // 딜러 프로필 (네온 조준선 링)
+          // 딜러 프로필 (네온 조준선 링 - 겹침 없는 완전한 360도 원형)
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -64, -284, 128, 128);
           else {
             ctx.fillStyle = '#082f49';
-            ctx.fillRect(-74, -269, 148, 148);
+            ctx.fillRect(-64, -284, 128, 128);
           }
           ctx.restore();
 
           ctx.strokeStyle = '#06b6d4';
           ctx.lineWidth = 3;
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.stroke();
 
           // 십자 조준선 마크
           ctx.strokeStyle = '#22d3ee';
           ctx.lineWidth = 2;
           ctx.beginPath();
-          ctx.moveTo(-84, -195); ctx.lineTo(-64, -195);
-          ctx.moveTo(64, -195); ctx.lineTo(84, -195);
-          ctx.moveTo(0, -279); ctx.lineTo(0, -259);
-          ctx.moveTo(0, -131); ctx.lineTo(0, -111);
+          ctx.moveTo(-80, -220); ctx.lineTo(-66, -220);
+          ctx.moveTo(66, -220); ctx.lineTo(80, -220);
+          ctx.moveTo(0, -300); ctx.lineTo(0, -286);
+          ctx.moveTo(0, -154); ctx.lineTo(0, -146);
           ctx.stroke();
 
-          // 사이버 시스템 인증 배지 (불투명 솔리드 배경 + 그림자 적용)
+          // 사이버 시스템 인증 배지 (원형 아래 12px 분리 배치 -> 겹침/뭉개짐 원천 차단!)
           ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#040711';
-          drawRoundedRect(ctx, -110, -132, 220, 32, 6);
+          drawRoundedRect(ctx, -105, -144, 210, 28, 6);
           ctx.fill();
           ctx.restore();
 
           ctx.strokeStyle = '#06b6d4';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -110, -132, 220, 32, 6);
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -105, -144, 210, 28, 6);
           ctx.stroke();
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = '#67e8f9';
-          ctx.font = 'bold 12px monospace';
-          ctx.fillText('[ SYSTEM CERTIFIED MASTER ]', 0, -116);
+          ctx.font = 'bold 11px monospace';
+          ctx.fillText('[ SYSTEM CERTIFIED MASTER ]', 0, -130);
           ctx.restore();
 
           // 유닛 & 오퍼레이터 성함
           ctx.fillStyle = '#94a3b8';
           ctx.font = '15px monospace';
-          ctx.fillText(`TERMINAL_UNIT // ${d.branch}`, 0, -76);
+          ctx.fillText(`TERMINAL_UNIT // ${d.branch}`, 0, -90);
 
           ctx.fillStyle = '#38bdf8';
-          ctx.font = '900 38px monospace';
-          ctx.fillText(`${d.name} OPERATOR`, 0, -26);
+          ctx.font = '900 36px monospace';
+          ctx.fillText(`${d.name} OPERATOR`, 0, -38);
 
           // 다이렉트 업링크 터미널 박스
           ctx.fillStyle = 'rgba(6, 182, 212, 0.12)';
@@ -8084,53 +10011,53 @@ function renderStoryArchetypesUI() {
           // 딜러 프로필 (인스타 스토리 무지개 링)
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -225, 62, 0, Math.PI * 2);
           ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -62, -287, 124, 124);
           else {
             ctx.fillStyle = '#27272a';
-            ctx.fillRect(-74, -269, 148, 148);
+            ctx.fillRect(-62, -287, 124, 124);
           }
           ctx.restore();
 
           // 인스타 컬러 외곽 링
           ctx.strokeStyle = igGrad;
-          ctx.lineWidth = 5;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -225, 62, 0, Math.PI * 2);
           ctx.stroke();
 
-          // 팔로우 캡슐 버튼 (불투명 솔리드 배경 + 그림자 적용)
+          // 팔로우 캡슐 버튼 (원형 아래 12px 분리 배치 -> 겹침/뭉개짐 원천 차단!)
           ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#3b82f6';
-          drawRoundedRect(ctx, -70, -132, 140, 32, 16);
+          drawRoundedRect(ctx, -70, -150, 140, 28, 14);
           ctx.fill();
           ctx.restore();
 
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -70, -132, 140, 32, 16);
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -70, -150, 140, 28, 14);
           ctx.stroke();
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 13px sans-serif';
-          ctx.fillText('✓ 팔로잉 중', 0, -116);
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillText('✓ 팔로잉 중', 0, -136);
           ctx.restore();
 
           // 지점 태그 & 크리에이터 성함
           ctx.fillStyle = '#ec4899';
-          ctx.font = 'bold 17px sans-serif';
-          ctx.fillText(`@${d.branch} 공식 딜러`, 0, -76);
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(`@${d.branch} 공식 딜러`, 0, -98);
 
           ctx.fillStyle = '#ffffff';
-          ctx.font = '900 40px sans-serif';
-          ctx.fillText(`${d.name} ${d.title}`, 0, -26);
+          ctx.font = '900 38px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -56);
 
           // 3단 스탯 요약 바
           ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
@@ -8209,55 +10136,55 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'center';
           ctx.fillText('🏁 OFFICIAL PADDOCK PASS // PIT CREW CHIEF', 0, -cardH / 2 + 76);
 
-          // 딜러 프로필 (레이싱 헬멧 프레임 느낌)
+          // 딜러 프로필 (레이싱 헬멧 프레임 느낌 - 겹침 없는 완전한 360도 원형)
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, -185, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.clip();
-          if (d.avatarImg) ctx.drawImage(d.avatarImg, -74, -259, 148, 148);
+          if (d.avatarImg) ctx.drawImage(d.avatarImg, -64, -284, 128, 128);
           else {
             ctx.fillStyle = '#1e1b4b';
-            ctx.fillRect(-74, -259, 148, 148);
+            ctx.fillRect(-64, -284, 128, 128);
           }
           ctx.restore();
 
           ctx.strokeStyle = '#e11d48';
-          ctx.lineWidth = 5;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.arc(0, -185, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.stroke();
 
-          // 피트 수석 마스터 형광 배지 (불투명 솔리드 배경 + 그림자 적용)
+          // 피트 수석 마스터 형광 배지 (원형 아래 12px 분리 배치 -> 겹침/뭉개짐 원천 차단!)
           ctx.save();
-          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetY = 4;
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#fee500';
-          drawRoundedRect(ctx, -95, -124, 190, 32, 6);
+          drawRoundedRect(ctx, -95, -144, 190, 28, 6);
           ctx.fill();
           ctx.restore();
 
           ctx.strokeStyle = '#0f172a';
-          ctx.lineWidth = 2;
-          drawRoundedRect(ctx, -95, -124, 190, 32, 6);
+          ctx.lineWidth = 1.5;
+          drawRoundedRect(ctx, -95, -144, 190, 28, 6);
           ctx.stroke();
 
           ctx.save();
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = '#0f172a';
-          ctx.font = '900 13px sans-serif';
-          ctx.fillText('⚡ SCUDERIA CHIEF DRIVER', 0, -108);
+          ctx.font = '900 12px sans-serif';
+          ctx.fillText('⚡ SCUDERIA CHIEF DRIVER', 0, -130);
           ctx.restore();
 
           // 레이싱 지점 & 드라이버 성함
           ctx.fillStyle = '#cbd5e1';
-          ctx.font = 'bold 17px sans-serif';
-          ctx.fillText(`${d.branch} SCUDERIA`, 0, -68);
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(`${d.branch} SCUDERIA`, 0, -90);
 
           ctx.fillStyle = '#ffffff';
-          ctx.font = '900 40px sans-serif';
-          ctx.fillText(`${d.name} ${d.title}`, 0, -20);
+          ctx.font = '900 38px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -38);
 
           // 즉시 피트인 상담 박스
           ctx.fillStyle = '#e11d48';
@@ -8332,42 +10259,50 @@ function renderStoryArchetypesUI() {
           ctx.textAlign = 'center';
           ctx.fillText('HYUNDAI · KIA MOTORS OFFICIAL CAR MASTER', 0, -cardH / 2 + 40);
 
-          // ★ 딜러 대형 실사 얼굴 프로필 사진 (원형 화이트 프레임)
+          // ★ 딜러 대형 실사 얼굴 프로필 사진 (원형 화이트 프레임 - 겹침 없는 완전한 360도 원형)
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.clip();
           if (d.avatarImg) {
-            ctx.drawImage(d.avatarImg, -74, -269, 148, 148);
+            ctx.drawImage(d.avatarImg, -64, -284, 128, 128);
           } else {
             ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
-            ctx.fillRect(-74, -269, 148, 148);
+            ctx.fillRect(-64, -284, 128, 128);
           }
           ctx.restore();
 
           // 프로필 사진 화이트 & 골드 이중 링
           ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 6;
+          ctx.lineWidth = 4;
           ctx.beginPath();
-          ctx.arc(0, -195, 74, 0, Math.PI * 2);
+          ctx.arc(0, -220, 64, 0, Math.PI * 2);
           ctx.stroke();
 
-          // 우수 카마스터 인증 캡슐 배지
+          // 우수 카마스터 인증 캡슐 배지 (원형 아래 12px 분리 배치 -> 겹침/뭉개짐 원천 차단!)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = '#f59e0b';
-          drawRoundedRect(ctx, -78, -134, 156, 28, 14);
+          drawRoundedRect(ctx, -85, -144, 170, 28, 14);
           ctx.fill();
+          ctx.restore();
+
           ctx.fillStyle = '#ffffff';
-          ctx.font = 'bold 15px sans-serif';
-          ctx.fillText('★ 우수 카마스터 인증', 0, -115);
+          ctx.font = 'bold 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('★ 우수 카마스터 인증', 0, -130);
 
           // 소속 지점 & 카마스터 성함/직함
           ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
-          ctx.font = 'bold 21px sans-serif';
-          ctx.fillText(d.branch, 0, -76);
+          ctx.font = 'bold 18px sans-serif';
+          ctx.fillText(d.branch, 0, -90);
 
           ctx.fillStyle = '#0f172a';
-          ctx.font = 'bold 40px sans-serif';
-          ctx.fillText(`${d.name} ${d.title}`, 0, -26);
+          ctx.font = 'bold 38px sans-serif';
+          ctx.fillText(`${d.name} ${d.title}`, 0, -38);
 
           // 상담 안내 대형 네이비 박스
           ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
