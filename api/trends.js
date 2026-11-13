@@ -161,12 +161,16 @@ async function fetchInstagramApify(hashtag, diag, opts = {}) {
   if (!tags.length) return [];
   const tag = tags[0];
   const limit = opts.limit || 6;
-  const url = `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&timeout=24`;
+  // 해시태그 여러 개(모션 수집)는 24초 안에 끝나지 않아 TIMED-OUT 이 났음 → 대기 45초, 해시태그당 20개
+  // (vercel.json 의 trends maxDuration 60초 안에서 YouTube 대체 조회까지 끝나도록)
+  const multi = tags.length > 1;
+  const waitSec = multi ? 45 : 24;
+  const url = `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&timeout=${waitSec}`;
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hashtags: tags, resultsType: 'reels', resultsLimit: 50 }),
-    signal: AbortSignal.timeout(25000)
+    body: JSON.stringify({ hashtags: tags, resultsType: 'reels', resultsLimit: multi ? 20 : 50 }),
+    signal: AbortSignal.timeout((waitSec + 2) * 1000)
   });
   if (diag) diag.apifyStatus = r.status;
   if (!r.ok) {
