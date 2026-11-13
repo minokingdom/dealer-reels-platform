@@ -13701,23 +13701,118 @@ function renderStoryArchetypesUI() {
       const hl = bgAccent ? (light ? '#111111' : '#ffffff') : V.accent;
       return { bg, light, bgAccent, hl, ink: light ? '#111111' : '#ffffff', label: spec.label || V.label };
     }
+    function kitAutoCutLayout(spec, cutIdx) {
+      if (cutIdx === 0) return spec.layout;
+      const fixedLayouts = ['chalkboard', 'notebook', 'polaroid', 'film', 'handheld'];
+      if (fixedLayouts.includes(spec.layout)) {
+        return cutIdx === 2 ? 'duo' : spec.layout;
+      }
+      const rotMap = {
+        full: ['full', 'diag', 'duo', 'split'],
+        dim: ['dim', 'split', 'cards', 'duo'],
+        split: ['split', 'duo', 'diag', 'cards'],
+        diag: ['diag', 'duo', 'split', 'grid'],
+        circle: ['circle', 'diag', 'grid', 'duo'],
+        cards: ['cards', 'duo', 'diag', 'split'],
+        grid: ['grid', 'split', 'diag', 'duo'],
+        duo: ['duo', 'diag', 'split', 'cards'],
+        arch: ['arch', 'split', 'duo', 'full'],
+        mat: ['mat', 'split', 'duo', 'cards'],
+        blinds: ['blinds', 'diag', 'duo', 'split'],
+        poster: ['poster', 'duo', 'diag', 'split']
+      };
+      const seq = rotMap[spec.layout] || ['full', 'diag', 'duo', 'split'];
+      return seq[cutIdx % seq.length];
+    }
+
+    function kitRichGraphics(c, W, H, t, cutIdx, totalCuts, S, spec, V, K) {
+      const col = (K && K.bgAccent) ? (K.hl || '#ffffff') : (V && V.accent) || '#facc15';
+      const col2 = (V && V.accent2) || '#ffffff';
+      const p = Math.min(1, Math.max(0, S ? S.p : 0.5));
+      const pop = gEase(Math.min(1, p * 2.6));
+      c.save();
+
+      // 1) 상단 진행 게이지 바 (컷 흐름 시각화)
+      const progW = W - 56;
+      const segW = progW / Math.max(1, totalCuts);
+      for (let i = 0; i < totalCuts; i++) {
+        const sx = 28 + i * segW;
+        c.fillStyle = 'rgba(255,255,255,0.18)';
+        c.fillRect(sx, 22, segW - 6, 3.5);
+        if (i < cutIdx) {
+          c.fillStyle = col;
+          c.fillRect(sx, 22, segW - 6, 3.5);
+        } else if (i === cutIdx) {
+          c.fillStyle = col;
+          c.fillRect(sx, 22, (segW - 6) * p, 3.5);
+        }
+      }
+
+      // 2) 움직이는 기하학 그래픽 (링 + 회전 사각 + 사선 바)
+      const drift = Math.sin(t * 2.1 + cutIdx) * 8;
+      c.save();
+      c.globalAlpha = 0.72 * pop;
+      c.strokeStyle = col;
+      c.lineWidth = 2.5;
+      c.beginPath();
+      c.arc(W - 46, 86 + drift, 18 + Math.sin(t * 3) * 3, 0, Math.PI * 2);
+      c.stroke();
+      c.fillStyle = col2;
+      c.beginPath();
+      c.arc(W - 46, 86 + drift, 5.5, 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+
+      // 3) 분할/사선 레이아웃일 때 경계선 그래픽 액센트
+      if (spec.layout === 'duo' || spec.layout === 'split') {
+        const seamY = spec.layout === 'duo' ? 480 : 540;
+        c.save();
+        c.fillStyle = col;
+        c.globalAlpha = 0.9 * pop;
+        c.fillRect(W / 2 - (W * 0.42 * pop), seamY - 2, W * 0.84 * pop, 4);
+        c.restore();
+      } else if (spec.layout === 'diag') {
+        c.save();
+        c.strokeStyle = col;
+        c.lineWidth = 5;
+        c.globalAlpha = 0.85 * pop;
+        c.beginPath();
+        c.moveTo(0, 640);
+        c.lineTo(W * pop, 640 - 110 * pop);
+        c.stroke();
+        c.restore();
+      }
+
+      // 4) 모서리 프레임 브래킷 + 씬 번호 그래픽
+      const m = 18, len = 20;
+      c.strokeStyle = col;
+      c.lineWidth = 2.5;
+      c.globalAlpha = 0.65;
+      c.beginPath();
+      c.moveTo(m, m + len); c.lineTo(m, m); c.lineTo(m + len, m);
+      c.moveTo(W - m - len, H - m); c.lineTo(W - m, H - m); c.lineTo(W - m, H - m - len);
+      c.stroke();
+
+      c.restore();
+    }
+
     function renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, spec, V) {
       const cutDur = mainDuration / totalCuts;
       if (t < mainDuration) {
         const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
         const cutPlan = (typeof campaign !== 'undefined' && Array.isArray(campaign.scenePlan) && campaign.scenePlan[cutIdx]) || {};
-        const cutSpec = (cutPlan.customLayout || cutPlan.customCap || cutPlan.customDeco)
-          ? Object.assign({}, spec, {
-              layout: cutPlan.customLayout || spec.layout,
-              cap: cutPlan.customCap || spec.cap,
-              deco: cutPlan.customDeco || spec.deco
-            })
-          : spec;
+        const autoLayout = kitAutoCutLayout(spec, cutIdx);
+        const cutSpec = Object.assign({}, spec, {
+          layout: cutPlan.customLayout || autoLayout,
+          cap: cutPlan.customCap || spec.cap,
+          deco: cutPlan.customDeco || (cutIdx % 2 === 1 && spec.deco === 'none' ? 'shapes' : spec.deco)
+        });
         const K = kitContext(cutSpec, V);
         K.dealer = d;
         const S = kitScene(t, mainDuration, false);
         const zone = kitLayout(c, W, H, t, S, cutSpec, V, K);
         kitDeco(c, W, H, t, cutSpec, V, K, 'under');
+        kitRichGraphics(c, W, H, t, cutIdx, totalCuts, S, cutSpec, V, K);
         const localSec = t - cutIdx * cutDur;
         const raw = (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || campaign.hook || '';
         const caption = gCleanCaption(raw);
