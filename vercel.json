@@ -19,6 +19,9 @@
     },
     "api/trends.js": {
       "maxDuration": 30
+    },
+    "api/generate-script.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [

@@ -12,7 +12,18 @@
  * 을 생성합니다. 자동차(auto)는 차종 사전 기반 전용 경로를, 나머지 업종은 업종 정보 기반 경로를 쓰며,
  * 외부 AI 호출이 실패하면 서버 내장 기본 대본으로 응답합니다.
  * (응답 필드명 vehicle/discount 는 하위 호환을 위해 자동차 시절 이름을 유지합니다.)
+ *
+ * 대본 3안: 한 번 요청으로 혜택 강조형·고객 공감형·신뢰형 대본 3개를 만들어 variants 로 돌려줍니다.
+ * data 는 variants[0] 과 같아서 예전 화면도 그대로 동작합니다.
+ * 응답: { ok, provider, data, variants: [{ angle, angleLabel, ...대본 }] }
  */
+
+// 대본 3안의 방향 (순서 = 화면에 보이는 순서)
+const SCRIPT_ANGLES = [
+  { id: 'benefit', label: '혜택 강조형', guide: '첫 컷에서 혜택·조건을 바로 던지는 직진형. 숫자는 입력에 있는 것만 쓴다.' },
+  { id: 'empathy', label: '고객 공감형', guide: '첫 컷에서 고객의 고민·불편을 질문으로 꺼내고 해결로 이어가는 스토리형.' },
+  { id: 'trust', label: '신뢰·전문성형', guide: '담당자의 꼼꼼함·책임감·전문성을 보여 주며 믿고 맡기게 만드는 신뢰형.' }
+];
 
 const VALID_THEMES = ['crimson', 'emerald', 'royal', 'cyber', 'cobalt', 'sunset', 'violet', 'obsidian'];
 const VALID_WIDGETS = [
@@ -141,8 +152,70 @@ function parsePromptAndBuildSmartScene(prompt, fallbackVehicle, fallbackDiscount
     kakaoChat,
     bullets,
     ctaKeyword: '견적',
-    ctaBanner: `댓글에 [견적] 남기시면 ${shortCarName} 비밀 조건표 즉시 발송`
+    ctaBanner: `댓글에 [견적] 남기시면 ${shortCarName} 비밀 조건표 즉시 발송`,
+    // 대본 3안 기본값을 만들 때만 쓰고 응답에서는 지웁니다.
+    __ctx: { persona, shortCarName, stockCount }
   };
+}
+
+// 자동차 기본 대본 3안 (AI 호출 실패 시)
+function buildAutoFallbackVariants(base, dealerName, dealerTitle) {
+  const { persona, shortCarName, stockCount } = base.__ctx;
+  const n = base.discountNum;
+  const won = Number(n).toLocaleString();
+  const who = `${dealerName} ${dealerTitle}`;
+  return [
+    base,
+    {
+      ...base,
+      hook: `${persona}, 아직 ${shortCarName} 고민 중이세요?`,
+      cutCaptions: [
+        `${shortCarName}, 출고 대기 때문에 망설이셨죠?`,
+        `선점 물량 ${stockCount}대로 기다림 없이`,
+        `최대 -${won}만원 · ${base.discount}`,
+        `${who} 끝까지 책임 관리`
+      ],
+      ttsLines: ['출고 대기, 지치셨죠?', `선점 물량 ${stockCount}대 준비했어요.`, `최대 ${n}만 원 할인됩니다.`, '끝까지 책임지고 챙길게요.']
+    },
+    {
+      ...base,
+      hook: `${shortCarName}, 제대로 사고 싶다면`,
+      cutCaptions: [
+        `${shortCarName} 출고 전문 · ${who}`,
+        '견적부터 출고까지 한 사람이 책임',
+        `최대 -${won}만원 · ${base.discount}`,
+        `${who} 직통 상담`
+      ],
+      ttsLines: [`${shortCarName}, 제대로 사고 싶다면.`, '견적부터 출고까지 제가 맡습니다.', `최대 ${n}만 원 혜택 챙겨드려요.`, '편하게 연락 주세요.']
+    }
+  ];
+}
+
+// 자동차 외 업종 기본 대본 3안 (AI 호출 실패 시). 지어낸 숫자는 넣지 않습니다.
+function buildOtherFallbackVariants(base, item, I, discountText) {
+  const offer = discountText || '자세한 내용은 문의 주세요';
+  return [
+    base,
+    {
+      ...base,
+      hook: `${item}, 고민만 하고 계셨나요?`.slice(0, 24),
+      cutCaptions: [`${item}, 고민만 하셨다면`, '직접 보고 결정하세요', offer, `${I.cta} 문의 환영합니다`],
+      ttsLines: ['아직 고민 중이신가요?', '직접 보시면 달라요.', '궁금한 점 편하게 물어보세요.', `${I.cta} 문의 기다릴게요.`]
+    },
+    {
+      ...base,
+      hook: `${item}, 정직하게 준비했습니다`.slice(0, 24),
+      cutCaptions: [`${item} · ${I.role} 직접 준비`, '하나하나 꼼꼼하게', offer, `${I.cta} 문의 환영합니다`],
+      ttsLines: [`${item}, 직접 준비했어요.`, '하나하나 꼼꼼하게 챙겼어요.', '궁금한 점 편하게 물어보세요.', `${I.cta} 문의 기다릴게요.`]
+    }
+  ];
+}
+
+// AI 응답에서 대본 목록 꺼내기: {variants:[...]} 또는 예전 형식(대본 1개)
+function extractAiVariants(aiResult) {
+  if (!aiResult || typeof aiResult !== 'object') return [];
+  const list = Array.isArray(aiResult.variants) ? aiResult.variants : [aiResult];
+  return list.filter((v) => v && typeof v === 'object' && Array.isArray(v.cutCaptions) && v.cutCaptions.length >= 4);
 }
 
 async function handler(req, res) {
@@ -219,8 +292,9 @@ async function handler(req, res) {
     name: cut(ind.name, 20), role: cut(ind.role, 12), product: cut(ind.product, 12), cta: cut(ind.cta, 8),
     aiRole: cut(ind.aiRole, 60), caution: cut(ind.caution, 300)
   } : null;
+  const otherItem = prompt.length > 1 && prompt.length <= 24 ? prompt : currentVehicle;
   const otherFallback = isOther ? (() => {
-    const item = prompt.length > 1 && prompt.length <= 24 ? prompt : currentVehicle;
+    const item = otherItem;
     return {
       vehicle: item, discountNum: Number(body.discountNum) || 0, discount: body.discount || '',
       hook: cut(`${item}, 지금 소개합니다`, 24), themeId: 'royal',
@@ -233,6 +307,23 @@ async function handler(req, res) {
     };
   })() : null;
   const fallback = otherFallback || smartFallback;
+  const fallbackVariants = isOther
+    ? buildOtherFallbackVariants(otherFallback, otherItem, I, body.discount || '')
+    : buildAutoFallbackVariants(smartFallback, dealerName, dealerTitle);
+
+  // 응답용 대본 정리: 내부 값 제거, 방향 표시, 금지어 제거
+  const finalizeVariant = (v, i) => {
+    const { __ctx, angle, angleLabel, ...rest } = v || {};
+    const a = SCRIPT_ANGLES[i] || SCRIPT_ANGLES[0];
+    return sanitizeScript({ ...rest, angle: a.id, angleLabel: a.label });
+  };
+  const respond = (provider, variants) => {
+    const list = variants.map(finalizeVariant);
+    return res.status(200).json({ ok: true, provider, data: list[0], variants: list });
+  };
+  const anglesRule = `\n\n[대본 3안] 같은 상황으로 방향이 다른 대본 3개를 만들어 {"variants":[대본1, 대본2, 대본3]} 형태의 JSON으로만 출력하세요. 각 대본은 아래 스키마를 따릅니다.
+${SCRIPT_ANGLES.map((a, i) => `대본${i + 1} (${a.label}): ${a.guide}`).join('\n')}
+세 대본의 hook·cutCaptions·ttsLines 문장이 서로 겹치지 않게 쓰세요.`;
 
   try {
     const systemInstruction = isOther ? `당신은 대한민국 ${I.name} 업종의 숏폼(릴스·쇼츠) 대본 작가입니다. 화자는 ${I.aiRole}입니다.
@@ -273,6 +364,7 @@ JSON 스키마:
   "ctaKeyword": "견적",
   "ctaBanner": "하단 댓글 유도 문구"
 }`;
+    const systemWithAngles = `${systemInstruction}${anglesRule}`;
 
     const userMessage = isOther ? `[입력 상황]: "${prompt || `${currentVehicle} 소개`}"
 [화자]: ${dealerBranch} ${dealerName} ${dealerTitle} (고객 혜택: ${dealerPromo})
@@ -294,7 +386,7 @@ JSON 스키마:
           temperature: 0.85,
           response_format: { type: 'json_object' },
           messages: [
-            { role: 'system', content: systemInstruction },
+            { role: 'system', content: systemWithAngles },
             { role: 'user', content: userMessage }
           ]
         })
@@ -312,7 +404,7 @@ JSON 스키마:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemInstruction}\n\n${userMessage}` }] }],
+          contents: [{ parts: [{ text: `${systemWithAngles}\n\n${userMessage}` }] }],
           generationConfig: {
             temperature: 0.85,
             responseMimeType: 'application/json'
@@ -326,27 +418,28 @@ JSON 스키마:
       }
     }
 
-    if (aiResult && Array.isArray(aiResult.cutCaptions) && aiResult.cutCaptions.length >= 4) {
-      return res.status(200).json({
-        ok: true,
-        provider: providerUsed,
-        data: sanitizeScript({
-          ...fallback,
-          ...aiResult,
-          ...(isOther ? { scenePlan: fallback.scenePlan } : {}),
-          ttsLines: Array.isArray(aiResult.ttsLines) && aiResult.ttsLines.length >= 4 ? aiResult.ttsLines : fallback.ttsLines
-        })
+    const aiVariants = extractAiVariants(aiResult).slice(0, SCRIPT_ANGLES.length);
+    if (aiVariants.length > 0) {
+      // AI가 3개보다 적게 주면 모자란 칸은 기본 대본으로 채웁니다.
+      const merged = SCRIPT_ANGLES.map((_, i) => {
+        const fb = fallbackVariants[i] || fallback;
+        const v = aiVariants[i];
+        if (!v) return fb;
+        return {
+          ...fb,
+          ...v,
+          ...(isOther ? { scenePlan: fb.scenePlan } : {}),
+          ...(v.themeId && !VALID_THEMES.includes(v.themeId) ? { themeId: fb.themeId } : {}),
+          ttsLines: Array.isArray(v.ttsLines) && v.ttsLines.length >= 4 ? v.ttsLines : fb.ttsLines
+        };
       });
+      return respond(providerUsed, merged);
     }
   } catch (e) {
     // 외부 LLM 타임아웃/오류 시에도 아래 내장 스마트 엔진으로 즉시 200 응답 반환
   }
 
-  return res.status(200).json({
-    ok: true,
-    provider: isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director',
-    data: sanitizeScript(fallback)
-  });
+  return respond(isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director', fallbackVariants);
 };
 
 // 사용량 계산·한도 (회원 서버가 켜져 있을 때만 동작)

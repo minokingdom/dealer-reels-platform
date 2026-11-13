@@ -884,6 +884,11 @@
               <input id="aiExcludeInput" type="text" placeholder="예: 견적, 최저가, 무료, 1등 (쉼표로 구분 · AI 대본에서 자동 제외)" class="studio-input flex-1 h-8 px-2.5 text-[12px] text-[#d4d4d8]" />
             </div>
             <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
+            <!-- AI 대본 3안: 생성 후 표시, 누르면 그 대본으로 바로 다시 재생 -->
+            <div id="aiVariantPicker" class="hidden flex flex-col gap-1.5">
+              <p class="text-[11px] font-mono text-[#85858b]">대본 3안 · 눌러서 바꿔 보기</p>
+              <div id="aiVariantList" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
+            </div>
 
             <!-- 동적 N컷(4컷~10컷) 자막 + 성우 TTS 대본 카드 컨테이너 (시간이 늘어나면 컷 카드도 자동으로 늘어남) -->
             <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
@@ -20312,7 +20317,40 @@ function renderStoryArchetypesUI() {
           throw new Error(result.error || 'AI 서버 응답 오류');
         }
 
-        const ai = result.data;
+        // 대본 3안 저장 (예전 서버 응답이면 data 1개만)
+        const variants = Array.isArray(result.variants) && result.variants.length ? result.variants : [result.data];
+        arScriptVariants.list = variants;
+        arScriptVariants.index = 0;
+        arScriptVariants.strip = stripExcludedLocal;
+        applyAiScriptToCampaign(variants[0], d, stripExcludedLocal);
+        renderScriptVariantPicker();
+      } catch (err) {
+        arScriptVariants.list = [];
+        renderScriptVariantPicker();
+        if (IND.key !== 'auto') {
+          // 자동차가 아닌 업종: 실패하면 지금 상품 프리셋 대본으로 되돌림
+          if (campaign.presetKey && (AR_INDUSTRY_PRESETS[IND.key] || {})[campaign.presetKey]) applyIndustryPreset(campaign.presetKey);
+          if (noticeEl) noticeEl.textContent = `AI 대본을 만들지 못해 기본 대본으로 채웠습니다. (${err.message || '연결 오류'})`;
+          return;
+        }
+        arFillAutoScriptOffline(parsedLocal, d);
+      } finally {
+        if (btnEl) {
+          btnEl.disabled = false;
+          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
+        }
+      }
+
+      arFinishScriptApply(totalCuts);
+    }
+
+    // ==========================================================================
+    // ★ AI 대본 3안 (혜택 강조형 · 고객 공감형 · 신뢰·전문성형)
+    // ==========================================================================
+    const arScriptVariants = { list: [], index: 0, strip: null };
+
+    // 대본 하나를 campaign 에 반영 (AI 생성 직후와 3안 전환에서 같이 사용)
+    function applyAiScriptToCampaign(ai, d, stripExcludedLocal) {
         if (ai.vehicle) campaign.vehicle = stripExcludedLocal(ai.vehicle) || ai.vehicle;
         if (ai.discountNum !== undefined && !isNaN(Number(ai.discountNum))) {
           campaign.discountNum = Number(ai.discountNum);
@@ -20353,13 +20391,10 @@ function renderStoryArchetypesUI() {
         } else {
           proceduralRestyleCurrentScene();
         }
-      } catch (err) {
-        if (IND.key !== 'auto') {
-          // 자동차가 아닌 업종: 실패하면 지금 상품 프리셋 대본으로 되돌림
-          if (campaign.presetKey && (AR_INDUSTRY_PRESETS[IND.key] || {})[campaign.presetKey]) applyIndustryPreset(campaign.presetKey);
-          if (noticeEl) noticeEl.textContent = `AI 대본을 만들지 못해 기본 대본으로 채웠습니다. (${err.message || '연결 오류'})`;
-          return;
-        }
+    }
+
+    // 자동차: 서버에 연결하지 못했을 때 화면에서 바로 채우는 기본 대본
+    function arFillAutoScriptOffline(parsedLocal, d) {
         const personaPrefix = parsedLocal.targetPersona ? `${parsedLocal.targetPersona} 인기 1위! ` : '';
         const newHook = `${personaPrefix}${campaign.vehicle} 당월 즉시출고 특판`;
         campaign.hook = newHook;
@@ -20384,13 +20419,11 @@ function renderStoryArchetypesUI() {
           { role: 'dealer', text: `최대 -${campaign.discountNum.toLocaleString()}만원 혜택으로 ${campaign.discount}입니다! 👇` }
         ];
         proceduralRestyleCurrentScene();
-      } finally {
-        if (btnEl) {
-          btnEl.disabled = false;
-          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
-        }
-      }
+    }
 
+    // 대본 반영 후 공통 마무리: 컷 수 맞추기 → 입력칸·패널 갱신 → 처음부터 재생
+    function arFinishScriptApply(totalCuts) {
+      const noticeEl = document.getElementById('aiGenNotice');
       // 설정된 영상 길이(4~10컷)에 맞춰 추가 사진 및 추가 컷 대본·성우 문장 자동 확장!
       syncDynamicCutCountAndPhotos();
 
@@ -20413,6 +20446,46 @@ function renderStoryArchetypesUI() {
       window.__timelines['main'].seek(0.12);
       AudioEngine.speakCutLine(0, true);
     }
+
+    function renderScriptVariantPicker() {
+      const wrap = document.getElementById('aiVariantPicker');
+      const listEl = document.getElementById('aiVariantList');
+      if (!wrap || !listEl) return;
+      const list = arScriptVariants.list;
+      if (!Array.isArray(list) || list.length < 2) {
+        wrap.classList.add('hidden');
+        listEl.innerHTML = '';
+        return;
+      }
+      const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      listEl.innerHTML = list.map((v, i) => {
+        const on = i === arScriptVariants.index;
+        const label = v.angleLabel || `대본 ${i + 1}`;
+        const hook = v.hook || (Array.isArray(v.cutCaptions) ? v.cutCaptions[0] : '');
+        return `<button type="button" data-script-variant="${i}" aria-pressed="${on}" class="${on ? 'btn-primary' : 'btn-secondary'} h-auto min-h-[52px] px-3 py-2 text-[12px] cursor-pointer flex-col items-start text-left whitespace-normal">`
+          + `<span class="font-mono text-[11px] opacity-70">${i + 1}안 · ${esc(label)}</span>`
+          + `<span class="w-full truncate">${esc(hook)}</span></button>`;
+      }).join('');
+      wrap.classList.remove('hidden');
+    }
+
+    function selectScriptVariant(index) {
+      const list = arScriptVariants.list;
+      if (!Array.isArray(list) || !list[index] || index === arScriptVariants.index) return;
+      arScriptVariants.index = index;
+      if (!AudioEngine.enabled) toggleAudioMaster(true);
+      else AudioEngine.ensureContext();
+      const strip = arScriptVariants.strip || ((t) => (typeof indWord === 'function' ? indWord(String(t || '')) : String(t || '')));
+      applyAiScriptToCampaign(list[index], getSelectedDealer(), strip);
+      renderScriptVariantPicker();
+      arFinishScriptApply(getTargetCutCount());
+    }
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest && e.target.closest('[data-script-variant]');
+      if (!btn) return;
+      selectScriptVariant(Number(btn.getAttribute('data-script-variant')));
+    });
 
 
     // ==========================================================================
