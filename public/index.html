@@ -14932,11 +14932,26 @@ function renderStoryArchetypesUI() {
         if (!window.__arStyleBag.length) {
           const bag = ids.filter((id) => id !== curId);
           for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
-          window.__arStyleBag = bag.length ? bag : ids.slice();
+          // 바로 앞 디자인과 분류·화면 방식(엔진)이 겹치지 않게 순서를 다시 고름 (비슷한 모양이 연달아 나오지 않도록)
+          const info = (id) => { const d = designs.find((x) => x.id === id) || {}; return { cat: d.cat || '', eng: (d.engine || '') + '/' + (d.mstyle || '') }; };
+          const spread = [];
+          let prev = info(curId);
+          while (bag.length) {
+            let k = bag.findIndex((id) => { const f = info(id); return f.cat !== prev.cat && f.eng !== prev.eng; });
+            if (k < 0) k = bag.findIndex((id) => info(id).cat !== prev.cat);
+            if (k < 0) k = 0;
+            const id = bag.splice(k, 1)[0];
+            spread.push(id);
+            prev = info(id);
+          }
+          window.__arStyleBag = spread.length ? spread : ids.slice();
+          window.__arStyleBagTotal = window.__arStyleBag.length;
         }
         const pickId = window.__arStyleBag.shift();
         const pick = designs.find((x) => x.id === pickId) || designs[0];
         selectDesignStyle(pick.id);
+        // 어떤 디자인으로 바뀌었는지 이름과 남은 개수를 잠깐 보여 줌
+        if (typeof arToast === 'function') arToast(`🎲 ${pick.name}${pick.cat ? ' · ' + pick.cat : ''} (${(window.__arStyleBagTotal || designs.length) - window.__arStyleBag.length}/${window.__arStyleBagTotal || designs.length})`);
       }
       if (typeof selectColorPalette === 'function') {
         // 대부분 디자인 고유의 조화로운 기본색을 유지하고, 가끔만 다른 팔레트 적용
