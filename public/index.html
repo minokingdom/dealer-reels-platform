@@ -627,7 +627,7 @@
           <p id="narrationFitNotice" class="hidden text-[11px] leading-relaxed text-[#f5a524]"></p>
 
           <!-- 구간 점프 -->
-          <div class="grid grid-cols-3 gap-1 bg-[#141415] p-1 rounded-[8px] border border-[var(--border)]">
+          <div data-advanced class="grid grid-cols-3 gap-1 bg-[#141415] p-1 rounded-[8px] border border-[var(--border)]">
             <button id="jumpBtn0" onclick="seekToTime(0.0)" class="h-7 px-2 rounded-[6px] text-[12px] text-[#a1a1a6] hover:bg-[#232325] hover:text-[#ededed] transition-colors">
               처음
             </button>
@@ -673,7 +673,14 @@
               <span id="wasmEngineBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[11px]">Rust Wasm v1.0</span>
               <span class="hidden text-xs text-[#85858b]"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
             </div>
-            <div id="previewStatusBadge"></div>
+            <div class="flex items-center gap-2">
+              <!-- 쉬운 모드 / 전체 기능 전환 (선택은 이 브라우저에 기억) -->
+              <div id="uiModeToggle" role="group" aria-label="화면 모드" class="flex items-center gap-1 p-1 rounded-[8px] bg-[#141415] border border-[var(--border)]">
+                <button type="button" data-ui-mode="easy" aria-pressed="false" class="ui-mode-btn h-8 px-3 rounded-[6px] text-[12px] cursor-pointer">쉬운 모드</button>
+                <button type="button" data-ui-mode="full" aria-pressed="false" class="ui-mode-btn h-8 px-3 rounded-[6px] text-[12px] cursor-pointer">전체 기능</button>
+              </div>
+              <div id="previewStatusBadge"></div>
+            </div>
           </div>
 
           <!-- 단계 탭 바 (스크롤해도 상단에 고정) -->
@@ -697,6 +704,11 @@
             </div>
           </div>
 
+        <!-- 쉬운 모드 단계 안내: 탭을 바꾸면 문구가 바뀜 -->
+        <div id="easyStepGuide" class="ar-easy-only mx-5 sm:mx-6 mt-4 px-4 py-3 rounded-[10px] bg-[#12201a] border border-[#4cc38a]/30" aria-live="polite">
+          <div class="text-[12px] text-[#4cc38a] font-semibold"><span id="easyStepCount">1 / 5</span> · <span id="easyStepTitle">대본 고르기</span></div>
+          <p id="easyStepText" class="text-[14px] text-[#ededed] mt-1 leading-relaxed"></p>
+        </div>
         <div id="studioPanel_script" role="tabpanel" aria-labelledby="studioTabBtn_script" class="studio-panel p-5 sm:p-6 space-y-5">
           <div>
             <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 프리셋</label>
@@ -731,7 +743,7 @@
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[14px] font-semibold text-[#ededed]">AI로 대본 만들기</span>
-                <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
+                <span data-advanced id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
                 </span>
                 <span id="activeSceneRecipeBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
@@ -739,7 +751,7 @@
             </div>
 
             <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
-            <details class="fold rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
+            <details data-advanced class="fold rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
               <summary class="px-3 py-2 text-[12px] text-[#a1a1a6]">AI 대본으로 영상이 만들어지는 과정 보기</summary>
               <div class="px-3 pb-3"> 아래에 <code class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 입력 후 생성 버튼을 누르면 ① 차종·할인액·월납입금이 즉시 바뀌고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">차량 화보 컷 + 12종 모션 그래픽(카톡 대화·영수증 견적·할인 스탬프) + 한국어 성우(TTS) 음성 + 릴스 BGM</strong>이 즉시 합성되어 재생됩니다.</div>
             </details>
@@ -750,7 +762,7 @@
                 AI로 만들기
               </button>
             </div>
-            <div class="flex items-center gap-2">
+            <div data-advanced class="flex items-center gap-2">
               <label for="aiExcludeInput" class="text-[11px] font-mono text-[#85858b] shrink-0">뺄 문구</label>
               <input id="aiExcludeInput" type="text" placeholder="예: 견적, 최저가, 무료, 1등 (쉼표로 구분 · AI 대본에서 자동 제외)" class="studio-input flex-1 h-8 px-2.5 text-[12px] text-[#d4d4d8]" />
             </div>
@@ -762,7 +774,7 @@
             </div>
 
             <!-- 동적 N컷(4컷~10컷) 자막 + 성우 TTS 대본 카드 컨테이너 (시간이 늘어나면 컷 카드도 자동으로 늘어남) -->
-            <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
+            <div data-advanced id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
           </div>
 
           <!-- ================================================================= -->
@@ -780,8 +792,8 @@
                 <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">디자인 바꾸기 ›</button>
               </div>
             </div>
-            <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
-            <details class="fold pt-2 border-t border-[var(--border)]">
+            <p data-advanced class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
+            <details data-advanced class="fold pt-2 border-t border-[var(--border)]">
               <summary class="py-1.5 text-[12px] text-[#a1a1a6]">🔥 인기 릴스 스타일 가져오기 · 키워드로 찾기</summary>
             <div class="pt-2 space-y-2">
               <div class="flex items-center justify-between gap-2">
@@ -809,7 +821,7 @@
             </div>
           </div>
 
-          <details id="scriptTemplateFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
+          <details data-advanced id="scriptTemplateFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
             <summary class="px-4 py-3 text-[13px] font-medium text-[#ededed]">📝 대본 템플릿 더 보기 <span class="text-[12px] text-[#85858b] font-normal">상황별 문구 모음 · 고르면 문구만 바뀌어요</span></summary>
             <div class="px-2 pb-2">
           <!-- ================================================================= -->
@@ -892,7 +904,7 @@
             </div>
           </details>
 
-          <details id="storyboardFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
+          <details data-advanced id="storyboardFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
             <summary class="px-4 py-3 text-[13px] font-medium text-[#ededed]">🎬 컷 구성 · 추천 문구 칩 <span class="text-[12px] text-[#85858b] font-normal">컷별 시간 확인, 문구 한 번에 넣기</span></summary>
             <div class="px-2 pb-2">
           <!-- ================================================================= -->
@@ -949,7 +961,7 @@
                 <p class="text-[12px] text-[#85858b] mt-0.5">누르면 그 장면으로 이동합니다</p>
               </div>
               <div class="flex items-center gap-2">
-                <button type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                <button data-advanced type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   구도 섞기
                 </button>
                 <button type="button" onclick="resetToAiPhotos()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
@@ -957,7 +969,7 @@
                 </button>
               </div>
             </div>
-            <div id="dealerVariationSummary" class="text-[12px] text-[#a1a1a6] bg-[#141415] px-3.5 py-2.5 rounded-[8px] border border-[var(--border)]">
+            <div data-advanced id="dealerVariationSummary" class="text-[12px] text-[#a1a1a6] bg-[#141415] px-3.5 py-2.5 rounded-[8px] border border-[var(--border)]">
               변주 레시피 로딩 중
             </div>
             <div id="aiPhotoThumbnails" class="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-0.5"></div>
@@ -977,11 +989,11 @@
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[13px] font-medium text-[#ededed]">배경음악 · 성우</span>
-                <span id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]">클릭 시 사운드 자동 활성</span>
-                <span id="ttsProviderBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]">성우: 준비 중</span>
+                <span data-advanced id="audioEngineBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]">클릭 시 사운드 자동 활성</span>
+                <span data-advanced id="ttsProviderBadge" class="tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]">성우: 준비 중</span>
               </div>
               <div class="flex items-center gap-1.5 flex-wrap">
-                <button type="button" onclick="testCurrentCutTtsNow()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
+                <button data-advanced type="button" onclick="testCurrentCutTtsNow()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   현재 컷 듣기
                 </button>
                 <button type="button" onclick="triggerFullAudioPreview()" class="btn-primary h-8 px-3 text-[12px] cursor-pointer">
@@ -1018,7 +1030,7 @@
                 </select>
               </div>
 
-              <div>
+              <div data-advanced>
                 <label for="sfxModeSelect" class="block text-[12px] text-[#a1a1a6] mb-1">효과음</label>
                 <select id="sfxModeSelect" onchange="setSfxMode(this.value)" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
                   <option value="scene">장면 맞춤 · 팝 / 물방울 / 반짝</option>
@@ -1037,7 +1049,7 @@
                 </select>
               </div>
 
-              <div>
+              <div data-advanced>
                 <label for="ttsSpeedSelect" class="block text-[12px] text-[#a1a1a6] mb-1">말하는 속도</label>
                 <select id="ttsSpeedSelect" onchange="onAudioConfigChange()" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
                   <option value="1">보통</option>
@@ -1086,7 +1098,7 @@
           </div>
 
           <!-- Rust Wasm 정품 구독 라이선스 & 전화번호 바인딩 보호 카드 -->
-          <details class="studio-sub fold">
+          <details data-advanced class="studio-sub fold">
             <summary class="p-4 flex flex-wrap items-center justify-between gap-2">
               <span class="text-[13px] font-medium text-[#ededed]">구독 라이선스 · 번호 인증 세부내역</span>
               <span id="drmStatusBadge" class="tag-chip px-2.5 py-1 text-[12px] font-medium text-[#4cc38a]">
@@ -1248,7 +1260,7 @@
             <div class="flex items-center justify-between flex-wrap gap-2">
               <label class="text-[13px] font-medium text-[#ededed]">SNS 본문 캡션 및 해시태그</label>
               <div class="flex items-center gap-2">
-                <span id="igAccountBadge" class="hidden sm:inline text-[12px] font-mono text-[#85858b]"></span>
+                <span data-advanced id="igAccountBadge" class="hidden sm:inline text-[12px] font-mono text-[#85858b]"></span>
                 <button type="button" onclick="copyDealerCaption()" id="copyCaptionBtn" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
                   본문 복사
                 </button>
@@ -19743,7 +19755,50 @@ function renderStoryArchetypesUI() {
       if (bar && bar.getBoundingClientRect().top < 0) {
         bar.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }
+      arUpdateEasyGuide(key);
     }
+
+    // ==========================================================================
+    // ★ 쉬운 모드: 단계마다 꼭 필요한 것만 보이고 고급 기능([data-advanced])은 숨김
+    //   body.ar-easy 클래스로 전환, 선택은 localStorage 'ar_ui_mode' 에 기억 (기본: 쉬운 모드)
+    // ==========================================================================
+    function arUpdateEasyGuide(key) {
+      const steps = {
+        script: ['대본 고르기', '상품 이름과 혜택을 확인하고 [AI로 만들기]를 누르세요. 대본 3안 중 마음에 드는 것을 고르면 됩니다.'],
+        photo: ['사진 넣기', '내 사진이나 영상을 올리세요. 올리지 않으면 기본 사진으로 만들어집니다.'],
+        sound: ['소리 고르기', '배경음악과 성우 목소리를 고르고 [처음부터 듣기]로 확인하세요.'],
+        card: ['마지막 화면 확인', '영상 마지막에 나올 이름·소속·연락처·혜택이 맞는지 확인하세요.'],
+        publish: ['SNS에 올리기', '올릴 SNS를 고르고 [선택한 SNS에 발행]을 누르세요. 날짜를 정해 예약할 수도 있습니다.']
+      };
+      const idx = STUDIO_TABS.indexOf(key);
+      const step = steps[key];
+      if (idx < 0 || !step) return;
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('easyStepCount', `${idx + 1} / ${STUDIO_TABS.length}`);
+      set('easyStepTitle', step[0]);
+      set('easyStepText', step[1]);
+    }
+
+    function arSetUiMode(mode, remember) {
+      const easy = mode !== 'full';
+      document.body.classList.toggle('ar-easy', easy);
+      document.querySelectorAll('[data-ui-mode]').forEach((b) => {
+        b.setAttribute('aria-pressed', String((b.getAttribute('data-ui-mode') === 'easy') === easy));
+      });
+      if (remember) {
+        try { localStorage.setItem('ar_ui_mode', easy ? 'easy' : 'full'); } catch (e) {}
+      }
+    }
+
+    function arLoadUiMode() {
+      try { return localStorage.getItem('ar_ui_mode') === 'full' ? 'full' : 'easy'; } catch (e) { return 'easy'; }
+    }
+
+    document.addEventListener('click', (e) => {
+      const b = e.target.closest && e.target.closest('[data-ui-mode]');
+      if (!b) return;
+      arSetUiMode(b.getAttribute('data-ui-mode'), true);
+    });
 
     function switchMainTab(tab) {
       document.getElementById('viewPreview').classList.toggle('hidden', tab !== 'preview');
@@ -22562,6 +22617,8 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     syncPreviewPanel();
     syncTechPanel();
     applyRoleViewModeUI();
+    arSetUiMode(arLoadUiMode(), false);
+    arUpdateEasyGuide('script');
     window.__timelines['main'].seek(0);
     requestAnimationFrame(tick);
   </script>
@@ -22594,6 +22651,15 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     body button.h-6, body button.h-7, body input.h-6, body input.h-7, body select.h-7 { height: 32px !important; }
     body button.w-6 { width: 32px !important; }
     body .pd-close { min-width: 32px; }
+
+    /* 5) 쉬운 모드 (C단계) */
+    body.ar-easy [data-advanced] { display: none !important; }
+    body:not(.ar-easy) .ar-easy-only { display: none !important; }
+    .ui-mode-btn { color: #a1a1a6; background: transparent; }
+    .ui-mode-btn:hover { color: #ededed; }
+    .ui-mode-btn[aria-pressed="true"] { background: #ededed; color: #141415; font-weight: 600; }
+    /* 단계 이동 버튼을 크게 */
+    body.ar-easy .studio-panel button[onclick^="switchStudioTab"] { height: 44px !important; padding: 0 20px !important; font-size: 15px !important; }
   </style>
 </body>
 </html>
