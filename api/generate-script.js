@@ -431,7 +431,8 @@ async function handler(req, res) {
   const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.0-flash').trim();
   const kieKey = String(process.env.KIE_API_KEY || '').trim();
   // 쉼표로 여러 개 지정 가능, 앞에서부터 차례로 시도
-  const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-3-8-flash-openai,gemini-3-7-flash-openai')
+  // 2026-11-14 진단(?diag=kie): 3.8 Flash 무응답, 3.7 Flash 500 오류 → 응답이 확인된 두 모델을 기본으로
+  const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-4-hydrogen-openai,gemini-3-6-flash-openai')
     .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
   const aiDiag = { kieKey: Boolean(kieKey), openaiKey: Boolean(adminOpenAiKey), geminiKey: Boolean(adminGeminiKey) };
   const secrets = [kieKey, adminOpenAiKey, adminGeminiKey].filter(Boolean);
