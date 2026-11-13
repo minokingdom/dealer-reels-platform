@@ -183,8 +183,35 @@ async function handler(req, res) {
     dealerTitle
   );
 
+  // 자동차가 아닌 업종: 업종 정보로 대본을 만들고, 실패하면 내장 기본 대본
+  const ind = body.industryInfo && typeof body.industryInfo === 'object' ? body.industryInfo : null;
+  const isOther = body.industry && body.industry !== 'auto' && ind;
+  const cut = (v, n) => String(v || '').replace(/[\r\n`]/g, ' ').slice(0, n);
+  const I = isOther ? {
+    name: cut(ind.name, 20), role: cut(ind.role, 12), product: cut(ind.product, 12), cta: cut(ind.cta, 8),
+    aiRole: cut(ind.aiRole, 60), caution: cut(ind.caution, 300)
+  } : null;
+  const otherFallback = isOther ? (() => {
+    const item = prompt.length > 1 && prompt.length <= 24 ? prompt : currentVehicle;
+    return {
+      vehicle: item, discountNum: Number(body.discountNum) || 0, discount: body.discount || '',
+      hook: cut(`${item}, 지금 소개합니다`, 24), themeId: 'royal',
+      scenePlan: [{ cut: 1, widget: 'LOWER_THIRD', pos: 'bottom', cam: 0 }, { cut: 2, widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1 }, { cut: 3, widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2 }, { cut: 4, widget: 'COMMENT_DM_MAGNET', pos: 'bottom', cam: 3 }],
+      cutCaptions: [`${item}`, '직접 준비했습니다', body.discount || '자세한 내용은 문의 주세요', `${I.cta} 문의 환영합니다`],
+      ttsLines: [`${item} 소개해 드릴게요.`, '정성껏 준비했습니다.', '궁금한 점은 편하게 물어보세요.', `${I.cta} 문의 기다릴게요.`],
+      kakaoChat: [{ role: 'customer', text: `${item} 문의드려요!` }, { role: 'dealer', text: '네, 편하게 물어보세요 😊' }, { role: 'customer', text: '이번 주에 가능할까요?' }, { role: 'dealer', text: `댓글에 [${I.cta}] 남겨주시면 바로 안내드릴게요 👇` }],
+      bullets: Array.isArray(body.bullets) ? body.bullets.slice(0, 3).map((x) => cut(x, 40)) : [],
+      ctaKeyword: I.cta
+    };
+  })() : null;
+  const fallback = otherFallback || smartFallback;
+
   try {
-    const systemInstruction = `당신은 대한민국 자동차 카마스터 전문 숏폼 AI 영상 감독(Scene Director)입니다.
+    const systemInstruction = isOther ? `당신은 대한민국 ${I.name} 업종의 숏폼(릴스·쇼츠) 대본 작가입니다. 화자는 ${I.aiRole}입니다.
+입력된 상황에 맞춰 vehicle(소개할 ${I.product} 이름), discount(혜택·조건 한 줄), hook, cutCaptions(4컷 자막), ttsLines(4컷 성우 문장), kakaoChat(4개 대화), bullets(3개)를 JSON으로만 출력하세요.
+ttsLines의 각 문장은 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요. 마지막 "댓글에 [${I.cta}]" 안내는 명함 화면에서 따로 나오므로 넣지 마세요.
+지어낸 고객 후기, 지어낸 숫자·통계, 효과를 보장하는 표현은 쓰지 마세요. 입력에 없는 가격은 만들지 마세요.${I.caution ? `\n반드시 지킬 것: ${I.caution}` : ''}
+JSON 스키마: {"vehicle":"","discountNum":0,"discount":"","hook":"24자 이내","themeId":"royal","cutCaptions":["","","",""],"ttsLines":["","","",""],"kakaoChat":[{"role":"customer","text":""},{"role":"dealer","text":""},{"role":"customer","text":""},{"role":"dealer","text":""}],"bullets":["✔ ","✔ ","✔ "],"ctaKeyword":"${I.cta}"}` : `당신은 대한민국 자동차 카마스터 전문 숏폼 AI 영상 감독(Scene Director)입니다.
 카마스터가 입력한 상황(예: "30대 여성, 그랜저")에서 차종과 고객 특성을 정확히 반영하여 vehicle(차종명), discountNum(할인액), discount(월납입조건), themeId, scenePlan, cutCaptions(4컷 자막), ttsLines(4컷 성우 내레이션 대본), kakaoChat(4개 대화)을 JSON으로만 출력하세요.
 ttsLines의 각 문장은 숏폼 한 컷(약 2초) 안에 읽을 수 있도록 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요.
 "댓글에 견적" 안내는 영상 마지막 명함 화면에서 따로 나오므로 cutCaptions와 ttsLines에는 넣지 마세요.
@@ -219,7 +246,9 @@ JSON 스키마:
   "ctaBanner": "하단 댓글 유도 문구"
 }`;
 
-    const userMessage = `[카마스터 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
+    const userMessage = isOther ? `[입력 상황]: "${prompt || `${currentVehicle} 소개`}"
+[화자]: ${dealerBranch} ${dealerName} ${dealerTitle} (고객 혜택: ${dealerPromo})
+[지금 ${I.product}]: ${currentVehicle} / ${body.discount || ''}` : `[카마스터 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
 [담당 카마스터]: ${dealerBranch} ${dealerName} ${dealerTitle} (사은품: ${dealerPromo})`;
 
     let aiResult = null;
@@ -274,9 +303,10 @@ JSON 스키마:
         ok: true,
         provider: providerUsed,
         data: {
-          ...smartFallback,
+          ...fallback,
           ...aiResult,
-          ttsLines: Array.isArray(aiResult.ttsLines) && aiResult.ttsLines.length >= 4 ? aiResult.ttsLines : smartFallback.ttsLines
+          ...(isOther ? { scenePlan: fallback.scenePlan } : {}),
+          ttsLines: Array.isArray(aiResult.ttsLines) && aiResult.ttsLines.length >= 4 ? aiResult.ttsLines : fallback.ttsLines
         }
       });
     }
@@ -286,8 +316,8 @@ JSON 스키마:
 
   return res.status(200).json({
     ok: true,
-    provider: 'AutoReels AI Automotive Director',
-    data: smartFallback
+    provider: isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director',
+    data: fallback
   });
 };
 
