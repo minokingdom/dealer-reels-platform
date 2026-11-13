@@ -538,8 +538,8 @@
         <div class="w-full max-w-[300px] lg:max-w-[368px] monitor-frame p-4 space-y-3">
           <!-- 상단 상태 바 -->
           <div class="flex items-center justify-between gap-2 text-[12px]">
-            <!-- 모바일은 아래 '영상 만들기' 버튼 묶음에 같은 버튼이 있어 여기서는 PC에서만 보임 -->
-            <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+            <!-- 스타일 섞기는 미리보기 아래 큰 버튼으로 옮겨 여기서는 숨김 -->
+            <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
               <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
               🎲 스타일 섞기
             </button>
@@ -599,8 +599,9 @@
 
           <!-- 핵심 액션 컨트롤 -->
           <div class="space-y-2 pt-1">
-            <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer">
-              <span id="exportBtnText">영상 만들기 · 12초</span>
+            <!-- 영상 만들기는 완성본을 확인하는 발행 단계로 옮기고, 이 자리는 스타일 섞기 -->
+            <button type="button" id="previewRandomDesignBtnMain" onclick="randomizePreviewDesignOnly()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+              🎲 스타일 섞기
             </button>
             <div class="grid grid-cols-2 gap-1.5">
               <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
@@ -611,10 +612,6 @@
                 ⏸ 일시정지
               </button>
             </div>
-            <!-- 모바일 전용: 미리보기 위에 있던 '스타일 섞기'를 영상 만들기 버튼 묶음으로 옮김 -->
-            <button type="button" id="previewRandomDesignBtnMobile" onclick="randomizePreviewDesignOnly()" class="lg:hidden w-full h-9 px-2.5 rounded-[8px] bg-[#1e293b] active:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] cursor-pointer flex items-center justify-center gap-1.5" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
-              🎲 스타일 섞기
-            </button>
           </div>
 
           <!-- 영상 총 길이(초) 원클릭 선택 -->
@@ -654,8 +651,8 @@
             <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-[#ededed] cursor-pointer" />
           </div>
 
-          <!-- 데스크탑 쇼룸 24종 테마 무드 덱 (Mood Palette) -->
-          <div class="space-y-1.5 pt-2 border-t border-[var(--border)]">
+          <!-- 진행바 아래 색상: 사용자 요청으로 숨김 (PC는 대본 단계 디자인 칸, 모바일은 상단 바에서 색상 선택) -->
+          <div class="hidden space-y-1.5 pt-2 border-t border-[var(--border)]">
             <div class="flex items-center justify-between text-[12px]">
               <span class="flex items-center gap-1.5 text-[#ededed] font-medium">
                 <span>🎨</span> 색상
@@ -822,7 +819,7 @@
               <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
             </div>
             </details>
-            <div class="lg:hidden pt-2 border-t border-[var(--border)] space-y-1.5">
+            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
               <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
               <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
             </div>
@@ -1065,6 +1062,7 @@
               </div>
             </div>
             <p id="customBgmStatusText" class="hidden text-[11px] font-mono text-[#4cc38a]"></p>
+            <p class="text-[11px] text-[#85858b]">지금은 배경음악만 들려요. 성우 목소리는 명함까지 마치면 발행 단계에서 음악과 섞인 완성본으로 들려드려요.</p>
           </div>
 
           <div class="flex items-center justify-between gap-2 pt-1">
@@ -1164,6 +1162,19 @@
         </div>
 
         <div id="studioPanel_publish" role="tabpanel" aria-labelledby="studioTabBtn_publish" class="studio-panel hidden p-5 sm:p-6 space-y-5">
+          <!-- 완성본 미리보기: 고른 배경음악 + 성우 목소리를 섞어 처음부터 재생 -->
+          <div class="studio-sub p-4 flex items-center justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
+              <div class="text-[13px] font-medium text-[#ededed]">완성본 미리보기</div>
+              <p id="finalPreviewStatus" class="text-[12px] text-[#a1a1a6] mt-0.5">고른 배경음악과 성우 목소리를 섞어 처음부터 보여 드려요.</p>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button type="button" onclick="arReplayFinalPreview()" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">▶ 처음부터 다시 보기</button>
+              <button id="exportVideoBtn" onclick="exportSynthesizedVideo()" class="btn-primary h-9 px-4 text-[12px] flex items-center justify-center gap-2 cursor-pointer">
+                <span id="exportBtnText">영상 만들기 · 12초</span>
+              </button>
+            </div>
+          </div>
           <!-- 내 SNS 계정 연결 관리 & 동시 발행 채널 선택 -->
           <div class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between flex-wrap gap-2">
@@ -7363,6 +7374,14 @@ function renderStoryArchetypesUI() {
       return out;
     }
 
+    // 명함(4단계)을 모두 비워 두면 영상 끝 명함 화면과 마지막 멘트 없이 본편만 출력
+    function arCardEmpty() {
+      try {
+        const d = getSelectedDealer();
+        return !d || !['name', 'title', 'branch', 'phone', 'promoTag'].some((k) => String(d[k] || '').trim());
+      } catch (e) { return false; }
+    }
+
     function arExtraBp(idx) {
       if (IND.key === 'auto') return EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
       const strip = (x) => String(x || '').replace(/^✔\s*/, '');
@@ -7684,6 +7703,13 @@ function renderStoryArchetypesUI() {
             outro = Math.max(outro, targetTotal - mainDur);
           }
         }
+      }
+      // 명함이 비었으면 명함 화면 없이: 고른 길이는 본편으로 채우고, 한 호흡 음성이 끝까지 들어가게 확보
+      if (arCardEmpty()) {
+        outro = 0;
+        mainDur = Math.max(mainDur, BASE_DURATION);
+        const masterDur = audioEngineReady() && AudioEngine.enabled && AudioEngine.masterBuffer ? AudioEngine.masterDuration : 0;
+        if (masterDur > 0) mainDur = Math.max(mainDur, masterDur + 0.6);
       }
       const total = Math.round((mainDur + outro) * 10) / 10;
       const outroRounded = Math.round(outro * 10) / 10;
@@ -8170,6 +8196,7 @@ function renderStoryArchetypesUI() {
         } else {
           // 마지막 엔딩 카드(명함/매장) 클로징 멘트: 매장 중심 업종은 매장명으로, 인물 중심 업종은 호칭으로 안내
           // 명함을 아직 안 채웠으면 이름 없이 안내만
+          if (arCardEmpty()) return ''; // 명함 화면이 없으면 마지막 멘트도 없음
           const who = (IND.outroMode === 'store' ? [d.name] : [d.name, d.title]).filter(Boolean).join(' ');
           const ask = `댓글에 ${IND.cta || (IND.outroMode === 'store' ? '예약' : '문의')} 남겨주세요!`;
           text = who ? `${who}입니다. ${ask}` : ask;
@@ -8274,6 +8301,7 @@ function renderStoryArchetypesUI() {
 
       // 문장 하나의 Fish Audio 음성을 받아 AudioBuffer로 디코딩 (성우·문장별 캐시)
       fetchTtsBuffer(text) {
+        if (!arVoiceAllowed()) return Promise.reject(new Error('voice_locked'));
         const key = this.ttsKey(text);
         if (this.ttsCache.has(key)) return this.ttsCache.get(key);
         // 대본 전체 녹음이 아직 시작 전이면(대본을 고친 직후 등) 문장별로 따로 녹음하지 않고 전체 녹음을 먼저 시작함
@@ -8502,7 +8530,8 @@ function renderStoryArchetypesUI() {
 
       // 모든 컷 + 마지막 명함 멘트 음성을 미리 받아 두고, 받은 길이에 맞춰 영상 길이를 조정
       prefetchTtsBuffers() {
-        if (this.ttsVoice === 'off') {
+        // 명함 단계까지 마치기 전에는 성우 녹음을 받지 않음 (발행 단계에서 완성본으로 한 번에)
+        if (this.ttsVoice === 'off' || !arVoiceAllowed()) {
           refitDurationToNarration();
           return Promise.resolve([]);
         }
@@ -8546,7 +8575,7 @@ function renderStoryArchetypesUI() {
 
       playMasterAt(startT = 0) {
         const ctx = this.ensureContext();
-        if (!ctx || !this.enabled || !this.masterBuffer || this.ttsVoice === 'off') return;
+        if (!ctx || !this.enabled || !this.masterBuffer || this.ttsVoice === 'off' || !arVoiceAllowed()) return;
         this.stopTts();
         const dur = this.masterBuffer.duration;
         if (startT >= dur - 0.05) return;
@@ -8683,7 +8712,7 @@ function renderStoryArchetypesUI() {
       },
 
       speakWithBrowserVoice(text) {
-        if (!('speechSynthesis' in window)) return;
+        if (!('speechSynthesis' in window) || !arVoiceAllowed()) return;
         try {
           window.speechSynthesis.cancel();
           const utter = new SpeechSynthesisUtterance(window.__koSpeech ? window.__koSpeech(text) : text);
@@ -8701,7 +8730,7 @@ function renderStoryArchetypesUI() {
       },
 
       speakCutLine(cutIdx, forceSpeak = false) {
-        if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off') return;
+        if ((!this.enabled && !forceSpeak) || this.ttsVoice === 'off' || !arVoiceAllowed()) return;
         if (!forceSpeak && this.lastSpokenCut === cutIdx) return;
         this.lastSpokenCut = cutIdx;
 
@@ -8988,7 +9017,9 @@ function renderStoryArchetypesUI() {
         this.currentTime = Easing.clamp(Number(timeInSeconds), 0, this.duration);
         // 화면은 가상 시간(컷 길이 균등)으로 그리고, 소리·표시는 실제 시간을 씀
         window.__realTimelineT = this.currentTime;
-        renderHyperFramesComposition(toVirtualTime(this.currentTime));
+        // 명함 화면이 없으면 끝 프레임에서도 명함을 그리지 않음
+        const drawT = OUTRO_DURATION <= 0 ? Math.min(this.currentTime, getMainDuration() - 0.001) : this.currentTime;
+        renderHyperFramesComposition(toVirtualTime(drawT));
         updateTimelineUI(this.currentTime);
         if (isPlaying && AudioEngine.enabled) {
           AudioEngine.syncWithTimeline(this.currentTime);
@@ -20048,8 +20079,56 @@ function renderStoryArchetypesUI() {
 
     // 스튜디오 우측 단계 탭 전환 (대본 · 사진 · 사운드 · 명함 · 발행)
     const STUDIO_TABS = ['script', 'photo', 'sound', 'card', 'publish'];
+    // ★ 성우 목소리는 단계를 순서대로 명함까지 마친 뒤 발행 단계에서 처음 들려줌
+    //   그 전에는 성우 녹음을 받지도 틀지도 않음 (배경음악 미리 듣기는 가능)
+    //   발행 단계에 들어오면 고른 배경음악 + 성우 목소리를 섞은 완성본을 처음부터 재생
+    const arStepsVisited = new Set(['script']);
+    let arFinalAudioUnlocked = false;
+    function arVoiceAllowed() { return arFinalAudioUnlocked; }
+    function arFirstMissingStep() {
+      return ['script', 'photo', 'sound', 'card'].find((k) => !arStepsVisited.has(k)) || null;
+    }
+    function arSetFinalPreviewStatus(text) {
+      const el = document.getElementById('finalPreviewStatus');
+      if (el) el.textContent = text;
+    }
+    // 발행 단계 진입: 완성본(배경음악 + 성우) 준비 후 처음부터 재생
+    function arStartFinalPreview() {
+      arFinalAudioUnlocked = true;
+      if (window.innerWidth < 1024) scrollToMainMonitor();
+      if (!AudioEngine.enabled) toggleAudioMaster(true);
+      if (AudioEngine.ttsVoice === 'off') {
+        arSetFinalPreviewStatus('성우를 끈 상태라 배경음악만 들어갑니다. 처음부터 재생합니다.');
+        triggerFullAudioPreview();
+        return;
+      }
+      arSetFinalPreviewStatus('완성본 준비 중… 성우가 대본을 한 번에 녹음하고 있어요 (10초 정도)');
+      AudioEngine.stopTts();
+      // 녹음이 끝나면 처음부터 배경음악과 함께 재생
+      Promise.resolve(AudioEngine.scriptPending || AudioEngine.prefetchTtsBuffers()).then(() => {
+        triggerFullAudioPreview();
+        arSetFinalPreviewStatus(AudioEngine.masterBuffer
+          ? '완성본 재생 중 — 고른 배경음악과 성우 목소리가 함께 들어갑니다.'
+          : '성우 녹음을 받지 못해 배경음악만 재생합니다. 잠시 뒤 [처음부터 다시 보기]를 눌러 주세요.');
+      });
+    }
+    function arReplayFinalPreview() {
+      if (!arFinalAudioUnlocked) return arStartFinalPreview();
+      if (window.innerWidth < 1024) scrollToMainMonitor();
+      triggerFullAudioPreview();
+    }
     function switchStudioTab(key) {
       if (!STUDIO_TABS.includes(key)) return;
+      // 발행 단계는 명함까지 순서대로 마쳐야 열림
+      if (key === 'publish' && !arFinalAudioUnlocked) {
+        const missing = arFirstMissingStep();
+        if (missing) {
+          const names = { script: '대본', photo: '사진', sound: '사운드', card: '명함' };
+          if (typeof arToast === 'function') arToast(`${names[missing]} 단계부터 순서대로 마쳐 주세요. 명함까지 끝내면 완성본을 들려드려요.`);
+          key = missing;
+        }
+      }
+      arStepsVisited.add(key);
       if (key === 'sound') AudioEngine.loadVoiceList();
       STUDIO_TABS.forEach((k) => {
         const panel = document.getElementById(`studioPanel_${k}`);
@@ -20069,6 +20148,7 @@ function renderStoryArchetypesUI() {
         bar.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }
       arUpdateEasyGuide(key);
+      if (key === 'publish' && !arFinalAudioUnlocked) arStartFinalPreview();
     }
 
     // ==========================================================================
@@ -20079,9 +20159,9 @@ function renderStoryArchetypesUI() {
       const steps = {
         script: ['대본 고르기', '상품 이름과 혜택을 확인하고 [AI로 만들기]를 누르세요. 대본 3안 중 마음에 드는 것을 고르면 됩니다.'],
         photo: ['사진 넣기', '내 사진이나 영상을 올리세요. 올리지 않으면 기본 사진으로 만들어집니다.'],
-        sound: ['소리 고르기', '배경음악과 성우 목소리를 고르고 [처음부터 듣기]로 확인하세요.'],
+        sound: ['소리 고르기', '배경음악과 성우 목소리를 고르세요. 성우 목소리는 명함까지 마치면 발행 단계에서 음악과 함께 완성본으로 들려드려요.'],
         card: ['마지막 화면 확인', '영상 마지막에 나올 이름·소속·연락처·혜택이 맞는지 확인하세요.'],
-        publish: ['SNS에 올리기', '올릴 SNS를 고르고 [선택한 SNS에 발행]을 누르세요. 날짜를 정해 예약할 수도 있습니다.']
+        publish: ['완성본 확인 · SNS에 올리기', '배경음악과 성우가 들어간 완성본을 확인하고, 올릴 SNS를 고른 뒤 [선택한 SNS에 발행]을 누르세요.']
       };
       const idx = STUDIO_TABS.indexOf(key);
       const step = steps[key];
@@ -20451,6 +20531,17 @@ function renderStoryArchetypesUI() {
       d.phone = document.getElementById('dlrInputPhone').value;
       d.branch = document.getElementById('dlrInputBranch').value;
       d.promoTag = document.getElementById('dlrInputPromo').value;
+      // 명함을 비우거나 채우면 명함 화면 유무·마지막 멘트가 바뀌므로 길이와 성우 녹음을 다시 맞춤
+      const cardEmptyNow = arCardEmpty();
+      if (cardEmptyNow !== d._cardEmptyLast) {
+        d._cardEmptyLast = cardEmptyNow;
+        applyVideoDurations();
+      }
+      if (typeof AudioEngine !== 'undefined' && AudioEngine.enabled && arVoiceAllowed()) {
+        AudioEngine.masterBuffer = null;
+        AudioEngine.masterDuration = 0;
+        AudioEngine.schedulePrefetch();
+      }
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
       saveDealerProfileToLocal(d);
       syncDrmAndSnsUI();
@@ -21146,6 +21237,12 @@ function renderStoryArchetypesUI() {
     }
 
     async function exportSynthesizedVideo() {
+      // 성우가 들어간 완성본은 명함까지 마친 뒤 발행 단계에서 만들 수 있음
+      if (!arFinalAudioUnlocked) {
+        if (typeof arToast === 'function') arToast('명함까지 순서대로 마치면 발행 단계에서 음악·성우가 들어간 완성본을 만들 수 있어요.');
+        switchStudioTab(arFirstMissingStep() || 'publish');
+        return;
+      }
       const d = getSelectedDealer();
       const drmCode = evaluateDealerDrmStatus(d);
       if (drmCode === 3) {
