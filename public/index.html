@@ -538,7 +538,8 @@
         <div class="w-full max-w-[300px] lg:max-w-[368px] monitor-frame p-4 space-y-3">
           <!-- 상단 상태 바 -->
           <div class="flex items-center justify-between gap-2 text-[12px]">
-            <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+            <!-- 모바일은 아래 '영상 만들기' 버튼 묶음에 같은 버튼이 있어 여기서는 PC에서만 보임 -->
+            <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-[6px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
               <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
               🎲 스타일 섞기
             </button>
@@ -610,6 +611,10 @@
                 ⏸ 일시정지
               </button>
             </div>
+            <!-- 모바일 전용: 미리보기 위에 있던 '스타일 섞기'를 영상 만들기 버튼 묶음으로 옮김 -->
+            <button type="button" id="previewRandomDesignBtnMobile" onclick="randomizePreviewDesignOnly()" class="lg:hidden w-full h-9 px-2.5 rounded-[8px] bg-[#1e293b] active:bg-[#3b82f6] border border-[#38bdf8]/40 text-[12px] font-semibold text-[#38bdf8] cursor-pointer flex items-center justify-center gap-1.5" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+              🎲 스타일 섞기
+            </button>
           </div>
 
           <!-- 영상 총 길이(초) 원클릭 선택 -->
