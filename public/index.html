@@ -20146,6 +20146,8 @@ function renderStoryArchetypesUI() {
       }
       arStepsVisited.add(key);
       if (key === 'sound') AudioEngine.loadVoiceList();
+      // 사진 탭의 컷 카드에 대본 탭에서 고친 문구를 반영
+      if (key === 'photo' && typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
       STUDIO_TABS.forEach((k) => {
         const panel = document.getElementById(`studioPanel_${k}`);
         const btn = document.getElementById(`studioTabBtn_${k}`);
