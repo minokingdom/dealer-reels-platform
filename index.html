@@ -2354,6 +2354,13 @@
       arRenderArchetypeCats();
       arApplyIndustryDemoDealers();
       if (changed || opts.force) arApplyIndustryPhotos();
+      if ((changed || opts.force) && typeof arVisibleDesigns === 'function' && typeof selectDesignStyle === 'function') {
+        const vis = arVisibleDesigns();
+        const cur = typeof getActiveDesign === 'function' ? getActiveDesign() : null;
+        if (IND.key !== 'auto' && vis[0] && vis[0].industry) { campaign.designCat = '전체'; selectDesignStyle(vis[0].id); }
+        else if (cur && !arDesignVisible(cur) && vis[0]) selectDesignStyle(vis[0].id);
+        if (typeof renderDesignStylePicker === 'function') { try { renderDesignStylePicker(); } catch (e) {} }
+      }
       if (changed || opts.force) {
         const list = arPresetsForIndustry();
         const first = Object.keys(list)[0];
@@ -13226,6 +13233,125 @@ function renderStoryArchetypesUI() {
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
     const DESIGN_CATS = ['전체', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    // ★ 업종 전용 테마: 그 업종을 고른 사람에게만 보이고, 업종을 바꾸면 첫 테마가 바로 적용됨
+    // [id, 이름, (분류는 '내 업종'), layout, cap, font, deco, trans, outro, grade, head, bg, label, accent, accent2, script, sfont]
+    const IND_KIT_ROWS = {
+      restaurant: [
+        ['r1', '오늘의 메뉴판', 'chalkboard', 'chalk', 'gaegu', 'none', 'fade', 'card', 'warm', 'kicker', 'dark', '오늘의 메뉴', '#facc15', '#ffffff'],
+        ['r2', '김 나는 한 그릇', 'full', 'band', 'dohyeon', 'leak', 'zoom', 'ticket', 'warm', 'pill', 'dark', '오늘 점심', '#f97316', '#fde68a'],
+        ['r3', '손글씨 메뉴 노트', 'notebook', 'write', 'pen', 'none', 'slide', 'polaroid', 'sepia', 'none', 'paper', '사장님 추천', '#b45309', '#fef3c7'],
+        ['r4', '단골 영수증', 'cards', 'ticket', 'mono', 'corners', 'slide', 'receipt', 'warm', 'box', 'cream', 'ORDER', '#dc2626', '#fee2e2'],
+        ['r5', '주방 브이로그', 'handheld', 'vsub', 'sans', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '새벽 6시 주방', '#facc15', '#fef9c3'],
+        ['r6', '맛집 신문', 'poster', 'headline', 'serif', 'grain', 'wipe', 'news', 'sepia', 'kicker', 'paper', '동네 맛집 소식', '#991b1b', '#fef2f2'],
+        ['r7', '네온 포차', 'dim', 'neon', 'dohyeon', 'grain', 'flash', 'neon', 'noir', 'box', 'dark', '오늘 밤 한잔', '#f472b6', '#fde047'],
+        ['r8', '정성 한 상', 'mat', 'brush', 'brush', 'border', 'fade', 'signature', 'warm', 'none', 'cream', '정성 한 상', '#7c2d12', '#ffedd5', 'Bon appétit', 'greatvibes']
+      ],
+      cafe: [
+        ['c1', '라떼 아트', 'arch', 'scriptkick', 'sans', 'leak', 'fade', 'signature', 'warm', 'none', 'cream', 'Today’s Coffee', '#92400e', '#fef3c7', 'Coffee & you', 'greatvibes'],
+        ['c2', '카페 메뉴 칠판', 'chalkboard', 'chalk', 'gaegu', 'none', 'fade', 'card', 'warm', 'kicker', 'dark', 'MENU', '#fde68a', '#ffffff'],
+        ['c3', '디저트 폴라로이드', 'polaroid', 'sticky', 'gamja', 'sparkle', 'drop', 'polaroid', 'pastel', 'none', 'paper', '오늘 구운 케이크', '#f472b6', '#fce7f3'],
+        ['c4', '스탬프 쿠폰', 'cards', 'stamp', 'jua', 'dots', 'zoom', 'ticket', 'pastel', 'counter', 'cream', 'STAMP 10+1', '#16a34a', '#dcfce7'],
+        ['c5', '오픈 준비 브이로그', 'handheld', 'timestamp', 'mono', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', 'AM 07:30', '#facc15', '#ffffff'],
+        ['c6', '창가 자리', 'full', 'glass', 'sans', 'leak', 'slide', 'minimal', 'warm', 'kicker', 'dark', '햇살 맛집', '#fbbf24', '#fff7ed'],
+        ['c7', '시즌 메뉴 포스터', 'poster', 'stack', 'gasoek', 'none', 'flash', 'split', 'vivid', 'box', 'accent', 'NEW SEASON', '#ea580c', '#ffffff'],
+        ['c8', '원두 노트', 'notebook', 'letter', 'pen', 'grain', 'slide', 'card', 'sepia', 'none', 'paper', 'Roasting Note', '#78350f', '#fef3c7']
+      ],
+      beauty: [
+        ['b1', '비포 애프터', 'duo', 'pill', 'sans', 'sparkle', 'wipe', 'card', 'pastel', 'kicker', 'white', 'BEFORE · AFTER', '#ec4899', '#fce7f3'],
+        ['b2', '살롱 매거진', 'full', 'outline', 'serif', 'border', 'fade', 'minimal', 'pastel', 'none', 'dark', 'BEAUTY ISSUE', '#f9a8d4', '#ffffff'],
+        ['b3', '네일 아트 카드', 'cards', 'glass', 'sans', 'sparkle', 'slide', 'polaroid', 'pastel', 'pill', 'cream', '이달의 아트', '#a855f7', '#f3e8ff'],
+        ['b4', '원장님 서명', 'mat', 'signline', 'serif7', 'none', 'fade', 'signature', 'warm', 'none', 'cream', 'Salon', '#be185d', '#fce7f3', 'With love', 'pinyon'],
+        ['b5', '예약 알림', 'split', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'pastel', 'counter', 'white', '이번 주 빈자리', '#f43f5e', '#ffe4e6'],
+        ['b6', '샵 브이로그', 'handheld', 'vsub', 'sans', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '원장님의 하루', '#f9a8d4', '#ffffff'],
+        ['b7', '홈케어 팁', 'notebook', 'checkl', 'sans', 'none', 'slide', 'receipt', 'none', 'kicker', 'paper', '관리 꿀팁', '#14b8a6', '#ccfbf1'],
+        ['b8', '글로우 원형', 'circle', 'scriptkick', 'sans', 'sparkle', 'zoom', 'ring', 'pastel', 'none', 'dark', 'Glow up', '#fda4af', '#fff1f2', 'Glow up', 'greatvibes']
+      ],
+      realestate: [
+        ['e1', '매물 카드', 'split', 'checkl', 'sans', 'corners', 'slide', 'card', 'cool', 'pill', 'white', '오늘의 매물', '#0ea5e9', '#e0f2fe'],
+        ['e2', '평면 그리드', 'grid', 'pill', 'sans', 'grid', 'blinds', 'receipt', 'cool', 'counter', 'white', '구조 한눈에', '#2563eb', '#dbeafe'],
+        ['e3', '동네 산책', 'handheld', 'loctag', 'sans', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '이 동네 어때요', '#22c55e', '#dcfce7'],
+        ['e4', '부동산 신문', 'poster', 'headline', 'serif', 'grain', 'wipe', 'news', 'mono', 'kicker', 'paper', '매물 속보', '#1e3a8a', '#e0e7ff'],
+        ['e5', '안전 계약 체크', 'cards', 'stamp', 'sans', 'border', 'zoom', 'badge', 'trust', 'box', 'cream', '권리분석 확인', '#15803d', '#dcfce7'],
+        ['e6', '야경 뷰', 'dim', 'cinema', 'serif', 'bars', 'fade', 'minimal', 'noir', 'none', 'dark', 'NIGHT VIEW', '#fbbf24', '#ffffff'],
+        ['e7', '열쇠 전달', 'arch', 'lower3', 'sans', 'leak', 'slide', 'ticket', 'warm', 'kicker', 'dark', '입주 축하', '#f59e0b', '#fef3c7'],
+        ['e8', '중개사 명함', 'mat', 'glass', 'sans', 'none', 'fade', 'card', 'trust', 'pill', 'ink', '공인중개사', '#0f766e', '#ccfbf1']
+      ],
+      academy: [
+        ['a1', '칠판 강의', 'chalkboard', 'chalk', 'gaegu', 'none', 'fade', 'card', 'none', 'kicker', 'dark', '오늘의 수업', '#fde047', '#ffffff'],
+        ['a2', '오답 노트', 'notebook', 'scribble', 'pen', 'none', 'slide', 'polaroid', 'none', 'none', 'paper', '오답 노트', '#ef4444', '#fee2e2'],
+        ['a3', '공부법 카드', 'cards', 'marker', 'sans', 'corners', 'slide', 'receipt', 'cool', 'counter', 'white', '공부법 3단계', '#2563eb', '#dbeafe'],
+        ['a4', '합격 포스터', 'poster', 'slam', 'gasoek', 'confetti', 'flash', 'split', 'vivid', 'box', 'accent', '시험 D-28', '#7c3aed', '#ffffff'],
+        ['a5', '학부모 Q&A', 'split', 'bubble', 'jua', 'none', 'drop', 'chat', 'pastel', 'kicker', 'white', '자주 묻는 질문', '#0ea5e9', '#e0f2fe'],
+        ['a6', '원장님 브이로그', 'handheld', 'vsub', 'sans', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '수업 끝나고', '#facc15', '#fef9c3'],
+        ['a7', '시간표', 'grid', 'pill', 'sans', 'grid', 'blinds', 'card', 'cool', 'pill', 'white', '이번 학기 시간표', '#16a34a', '#dcfce7'],
+        ['a8', '수료증', 'mat', 'stamp', 'serif', 'border', 'zoom', 'badge', 'trust', 'none', 'cream', 'CERTIFICATE', '#b45309', '#fef3c7']
+      ],
+      clinic: [
+        ['m1', '진료 안내 카드', 'split', 'glass', 'sans', 'none', 'slide', 'card', 'trust', 'pill', 'white', '진료 안내', '#0ea5e9', '#e0f2fe'],
+        ['m2', '건강 정보 체크', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'cool', 'counter', 'white', '건강 체크', '#14b8a6', '#ccfbf1'],
+        ['m3', '스트레칭 따라하기', 'full', 'pill', 'sans', 'none', 'fade', 'minimal', 'cool', 'counter', 'dark', '30초 스트레칭', '#22c55e', '#dcfce7'],
+        ['m4', '원장님 Q&A', 'split', 'bubble', 'sans', 'none', 'drop', 'chat', 'trust', 'kicker', 'white', '많이 묻는 질문', '#2563eb', '#dbeafe'],
+        ['m5', '건강 칼럼', 'poster', 'headline', 'serif', 'none', 'wipe', 'news', 'mono', 'kicker', 'paper', '건강 칼럼', '#1e40af', '#e0e7ff'],
+        ['m6', '진료 시간표', 'grid', 'lower3', 'sans', 'grid', 'blinds', 'card', 'trust', 'pill', 'white', '진료 시간', '#0f766e', '#ccfbf1'],
+        ['m7', '깨끗한 진료실', 'mat', 'outline', 'sans', 'border', 'fade', 'badge', 'cool', 'none', 'cream', 'CLEAN CARE', '#38bdf8', '#f0f9ff'],
+        ['m8', '편안한 첫 방문', 'arch', 'letter', 'pen', 'leak', 'slide', 'signature', 'warm', 'none', 'paper', '처음 오시는 분께', '#0d9488', '#ccfbf1', 'Take care', 'greatvibes']
+      ],
+      fitness: [
+        ['f1', '운동 카운트', 'full', 'slam', 'impact', 'none', 'flash', 'bigname', 'sports', 'counter', 'dark', 'NO PAIN NO GAIN', '#ef4444', '#ffffff'],
+        ['f2', '루틴 체크', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'sports', 'counter', 'white', '오늘의 루틴', '#f97316', '#ffedd5'],
+        ['f3', '센터 브이로그', 'handheld', 'timestamp', 'mono', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', 'AM 06:00', '#facc15', '#ffffff'],
+        ['f4', '바디 체인지', 'duo', 'band', 'impact', 'none', 'wipe', 'split', 'vivid', 'box', 'dark', 'BEFORE · AFTER', '#22c55e', '#dcfce7'],
+        ['f5', '필라테스 무드', 'arch', 'scriptkick', 'sans', 'leak', 'fade', 'signature', 'pastel', 'none', 'cream', 'Pilates', '#14b8a6', '#ccfbf1', 'Breathe', 'greatvibes'],
+        ['f6', '식단 노트', 'notebook', 'marker', 'sans', 'none', 'slide', 'polaroid', 'none', 'kicker', 'paper', '식단 가이드', '#16a34a', '#dcfce7'],
+        ['f7', '스피드 사선', 'diag', 'words', 'impact', 'none', 'slide', 'ticket', 'sports', 'pill', 'accent', 'LET’S GO', '#facc15', '#111111'],
+        ['f8', '트레이너 사원증', 'mat', 'stamp', 'sans', 'border', 'zoom', 'badge', 'sports', 'box', 'dark', 'TRAINER', '#ef4444', '#fee2e2']
+      ],
+      shop: [
+        ['s1', '오늘의 딜', 'full', 'band', 'impact', 'dots', 'zoom', 'ticket', 'vivid', 'pill', 'dark', 'TODAY DEAL', '#ec4899', '#fde047'],
+        ['s2', '포장 브이로그', 'handheld', 'vsub', 'sans', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '오늘 출발합니다', '#f59e0b', '#fef3c7'],
+        ['s3', '룩북 매거진', 'poster', 'outline', 'serif', 'border', 'fade', 'minimal', 'mono', 'none', 'paper', 'LOOKBOOK', '#111827', '#f3f4f6'],
+        ['s4', '언박싱', 'cards', 'sticky', 'gamja', 'confetti', 'drop', 'polaroid', 'pastel', 'counter', 'cream', 'UNBOXING', '#f472b6', '#fce7f3'],
+        ['s5', '재입고 알림', 'split', 'bubble', 'jua', 'none', 'drop', 'chat', 'vivid', 'kicker', 'white', '재입고!', '#2563eb', '#dbeafe'],
+        ['s6', '상품 그리드', 'grid', 'pill', 'sans', 'grid', 'blinds', 'receipt', 'none', 'pill', 'white', '베스트 4', '#16a34a', '#dcfce7'],
+        ['s7', '무한 세일 띠', 'full', 'marquee', 'impact', 'none', 'slide', 'split', 'sale', 'none', 'dark', 'SALE SALE SALE', '#facc15', '#ffffff'],
+        ['s8', '감사 카드', 'mat', 'letter', 'pen', 'sparkle', 'fade', 'signature', 'warm', 'none', 'cream', 'Thank you', '#9f1239', '#ffe4e6', 'Thank you', 'greatvibes']
+      ],
+      interior: [
+        ['i1', '비포 애프터', 'duo', 'pill', 'sans', 'none', 'wipe', 'card', 'none', 'kicker', 'white', 'BEFORE · AFTER', '#0ea5e9', '#e0f2fe'],
+        ['i2', '시공 현장 기록', 'handheld', 'timestamp', 'mono', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '현장 D+3', '#f59e0b', '#fef3c7'],
+        ['i3', '도면 그리드', 'grid', 'typer', 'mono', 'grid', 'blinds', 'receipt', 'cool', 'counter', 'white', '공정표', '#2563eb', '#dbeafe'],
+        ['i4', '쇼룸 매거진', 'poster', 'outline', 'serif', 'border', 'fade', 'minimal', 'mono', 'none', 'paper', 'HOME STYLING', '#44403c', '#f5f5f4'],
+        ['i5', '견적 체크', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'none', 'counter', 'cream', '견적 전 체크', '#16a34a', '#dcfce7'],
+        ['i6', '아치 인테리어', 'arch', 'glass', 'sans', 'leak', 'slide', 'card', 'warm', 'kicker', 'dark', '우리 집 변신', '#d97706', '#fef3c7'],
+        ['i7', '자재 샘플', 'polaroid', 'sticky', 'pen', 'none', 'drop', 'polaroid', 'sepia', 'none', 'paper', '자재 샘플', '#78716c', '#f5f5f4'],
+        ['i8', '실장님 서명', 'mat', 'signline', 'serif7', 'none', 'fade', 'signature', 'warm', 'none', 'cream', 'Interior', '#57534e', '#f5f5f4', 'Made with care', 'pinyon']
+      ]
+    };
+    Object.keys(IND_KIT_ROWS).forEach((ind) => {
+      IND_KIT_ROWS[ind].forEach((r, i) => {
+        DESIGN_STYLES.push({
+          id: `ind_${ind}_${r[0]}`, name: r[1], cat: '내 업종', industry: ind, engine: 'kit',
+          layout: r[2], cap: r[3], font: r[4], deco: r[5], trans: r[6], outro: r[7], grade: r[8], head: r[9], bg: r[10],
+          label: r[11], accent: r[12], accent2: r[13], script: r[14] || '', sfont: r[15] || '', seed: 500 + i, genre: 'kit',
+          desc: `${KIT_PART_NAMES.layout[r[2]]} · ${KIT_PART_NAMES.cap[r[3]]} 자막 · ${KIT_PART_NAMES.outro[r[7]]} 명함`
+        });
+      });
+    });
+    // 지금 업종에서 보여 줄 디자인: 업종 전용 테마 + 공통 테마 (자동차 전용 고전 테마·테크는 자동차에서만)
+    function arDesignVisible(ds) {
+      const key = typeof IND !== 'undefined' ? IND.key : 'auto';
+      if (ds.industry) return ds.industry === key;
+      if (key !== 'auto' && (ds.engine === 'genre' || ds.cat === '테크')) return false;
+      return true;
+    }
+    function arVisibleDesigns() {
+      const list = DESIGN_STYLES.filter(arDesignVisible);
+      return list.filter((d) => d.industry).concat(list.filter((d) => !d.industry));
+    }
+    function arDesignCats() {
+      const key = typeof IND !== 'undefined' ? IND.key : 'auto';
+      return key === 'auto' ? DESIGN_CATS : ['전체', '내 업종'].concat(DESIGN_CATS.slice(1).filter((c) => c !== '테크'));
+    }
 
     function loadDesignPrefs() {
       try {
@@ -13279,7 +13405,8 @@ function renderStoryArchetypesUI() {
     }
     function getDesignPickerList() {
       const cat = campaign.designCat || '전체';
-      return cat === '전체' ? DESIGN_STYLES : DESIGN_STYLES.filter((ds) => ds.cat === cat);
+      const vis = arVisibleDesigns();
+      return cat === '전체' ? vis : vis.filter((ds) => ds.cat === cat);
     }
     function renderDesignThumbBatch(list) {
       const saved = campaign.designStyle;
@@ -13315,7 +13442,7 @@ function renderStoryArchetypesUI() {
           designThumbJob = setTimeout(step, key ? 1500 : 700);
           return;
         }
-        const todo = getDesignPickerList().concat(DESIGN_STYLES).filter((ds) => !designThumbCache.fresh[ds.id]);
+        const todo = getDesignPickerList().concat(arVisibleDesigns()).filter((ds) => !designThumbCache.fresh[ds.id]);
         if (!todo.length) return;
         const batch = todo.filter((ds, i, arr) => arr.indexOf(ds) === i).slice(0, 6);
         const fonts = [...new Set(batch.filter((ds) => ds.engine === 'kit').flatMap((ds) => [ds.font, ds.sfont, 'brush'].filter(Boolean)))];
@@ -13337,6 +13464,13 @@ function renderStoryArchetypesUI() {
     function getDesignBgm(ds) {
       if (!ds) return 'showroom';
       if (ds.bgm) return ds.bgm;
+      if (ds.industry) {
+        const byInd = { restaurant: ['vlog', 'funk', 'bright'], cafe: ['lofi', 'jazz', 'vlog'], beauty: ['bright', 'lofi', 'luxury'], realestate: ['showroom', 'luxury', 'ballad'],
+          academy: ['bright', 'showroom', 'vlog'], clinic: ['ballad', 'showroom', 'lofi'], fitness: ['edm', 'urban', 'funk'], shop: ['bright', 'funk', 'edm'], interior: ['jazz', 'showroom', 'lofi'] };
+        if (ds.layout === 'handheld') return 'vlog';
+        const opts = byInd[ds.industry] || ['showroom'];
+        return opts[gHash(ds.id) % opts.length];
+      }
       if (ds.cap === 'cinema' || ds.layout === 'film' || /cinema|subtitle|credits|spot/.test(ds.id)) return 'cinema';
       const opts = DESIGN_BGM_BY_CAT[ds.cat] || ['showroom'];
       return opts[gHash(ds.id) % opts.length];
@@ -13367,8 +13501,9 @@ function renderStoryArchetypesUI() {
       const cat = campaign.designCat || '전체';
       const tabs = document.getElementById('designCatTabs');
       if (tabs) {
-        tabs.innerHTML = DESIGN_CATS.map((c) => {
-          const n = c === '전체' ? DESIGN_STYLES.length : DESIGN_STYLES.filter((ds) => ds.cat === c).length;
+        const vis = arVisibleDesigns();
+        tabs.innerHTML = arDesignCats().map((c) => {
+          const n = c === '전체' ? vis.length : vis.filter((ds) => ds.cat === c).length;
           const on = c === cat;
           return `<button type="button" onclick="selectDesignCat('${c}')" class="shrink-0 px-2.5 py-1 rounded-[6px] text-[11px] font-medium border cursor-pointer ${on ? 'border-[#ededed] bg-[#232325] text-white' : 'border-[var(--border)] text-[#a1a1a6] hover:text-[#ededed]'}">${c} <span class="text-[#6e6e73]">${n}</span></button>`;
         }).join('');
@@ -13392,7 +13527,7 @@ function renderStoryArchetypesUI() {
         descEl.textContent = `${getActiveDesign().desc}  ·  배경음악: ${bl}`;
       }
       const countEl = document.getElementById('designStyleCount');
-      if (countEl) countEl.textContent = String(DESIGN_STYLES.length);
+      if (countEl) countEl.textContent = String(arVisibleDesigns().length);
       scheduleDesignThumbs();
       const pd = document.getElementById('presetDrawer');
       if (pd && pd.classList.contains('open') && typeof renderPresetDrawer === 'function') renderPresetDrawer();
@@ -17998,14 +18133,16 @@ function renderStoryArchetypesUI() {
       if (!list || typeof DESIGN_STYLES === 'undefined') return;
       const cats = document.getElementById('pdCats');
       if (cats) {
-        cats.innerHTML = DESIGN_CATS.map((c) => `<button type="button" class="pd-cat ${c === pdCat ? 'on' : ''}" onclick="selectPdCat('${c}')">${c}</button>`).join('');
+        cats.innerHTML = arDesignCats().map((c) => `<button type="button" class="pd-cat ${c === pdCat ? 'on' : ''}" onclick="selectPdCat('${c}')">${c}</button>`).join('');
       }
       const cnt = document.getElementById('pdCount');
-      if (cnt) cnt.textContent = String(DESIGN_STYLES.length);
+      if (cnt) cnt.textContent = String(arVisibleDesigns().length);
       const active = getActiveDesign().id;
       const urls = (typeof designThumbCache !== 'undefined' && designThumbCache.urls) || {};
       const blank = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-      const items = pdCat === '전체' ? DESIGN_STYLES : DESIGN_STYLES.filter((d) => d.cat === pdCat);
+      if (!arDesignCats().includes(pdCat)) pdCat = '전체';
+      const vis = arVisibleDesigns();
+      const items = pdCat === '전체' ? vis : vis.filter((d) => d.cat === pdCat);
       list.innerHTML = `<button type="button" class="pd-card pd-random" onclick="pickRandomTheme(true)" title="디자인과 색을 무작위로 바꿔 봅니다">
           <span class="pd-dice">🎲</span>
           <div>랜덤 테마</div>
@@ -18054,7 +18191,8 @@ function renderStoryArchetypesUI() {
 
     // 🎲 랜덤 테마: 지금 분류 안에서 다른 디자인 + 다른 색을 무작위로
     function pickRandomTheme(fromDrawer) {
-      const pool = (typeof pdCat !== 'undefined' && fromDrawer && pdCat !== '전체' ? DESIGN_STYLES.filter((d) => d.cat === pdCat) : DESIGN_STYLES)
+      const vis = arVisibleDesigns();
+      const pool = (typeof pdCat !== 'undefined' && fromDrawer && pdCat !== '전체' ? vis.filter((d) => d.cat === pdCat) : vis)
         .filter((d) => d.id !== getActiveDesign().id);
       if (!pool.length) return;
       const ds = pool[Math.floor(Math.random() * pool.length)];
