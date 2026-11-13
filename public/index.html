@@ -7339,14 +7339,26 @@ function renderStoryArchetypesUI() {
     ];
 
     // 5번째 컷부터 쓸 문구: 자동차가 아닌 업종은 그 업종 프리셋 내용으로
+    // 업종을 바꾸면 명함(4단계)에 예시 매장 정보(예: 음식점 "한옥 갈비 본점")가 들어가 있음.
+    // 사장님이 아직 바꾸지 않은 예시 값은 대본·자막에 쓰지 않도록 빈 값으로 돌려줌 (자동차는 그대로)
+    function arDealerForCopy(d) {
+      const out = { name: (d && d.name) || '', title: (d && d.title) || '', branch: (d && d.branch) || '', promoTag: (d && d.promoTag) || '' };
+      if (!d || IND.key === 'auto') return out;
+      if ((IND.storeNames || []).includes(out.name)) { out.name = ''; if (out.title === (IND.storeSubtitle || `${IND.place} 공식 안내`)) out.title = ''; }
+      if (out.branch && (out.branch === IND.storeLocation || out.branch === IND.branchPlaceholder)) out.branch = '';
+      if (out.promoTag && out.promoTag === IND.promoPlaceholder) out.promoTag = '';
+      if (out.title && out.title === IND.title && !out.name) out.title = '';
+      return out;
+    }
+
     function arExtraBp(idx) {
       if (IND.key === 'auto') return EXTRA_CUT_BLUEPRINTS[(idx - 4) % EXTRA_CUT_BLUEPRINTS.length];
       const strip = (x) => String(x || '').replace(/^✔\s*/, '');
       const list = [
         { widget: 'CHECKLIST_GLASS', pos: 'bottom', cam: 1, sub: (c) => strip((c.bullets || [])[2]) || c.discount, tts: (c) => `${strip((c.bullets || [])[2]) || '꼼꼼하게 준비했습니다'}.` },
         { widget: 'GIANT_DISCOUNT_STAMP', pos: 'center', cam: 2, sub: (c) => [c.priceLine, c.discount].filter(Boolean).join(' · '), tts: () => '혜택도 꼭 확인해 보세요.' },
-        { widget: 'STOCK_COUNTDOWN', pos: 'bottom', cam: 3, sub: (c, d) => `🎁 ${d.promoTag || IND.promoPlaceholder}`, tts: () => '찾아 주시는 분께 드리는 혜택도 있어요.' },
-        { widget: 'LOWER_THIRD', pos: 'bottom', cam: 0, sub: (c, d) => `${d.name} ${d.title} · ${d.branch || ''}`, tts: () => `${IND.promise}.` },
+        { widget: 'STOCK_COUNTDOWN', pos: 'bottom', cam: 3, sub: (c, d) => { const dd = arDealerForCopy(d); return dd.promoTag ? `🎁 ${dd.promoTag}` : '찾아 주시는 분께 드리는 혜택도 있어요'; }, tts: () => '찾아 주시는 분께 드리는 혜택도 있어요.' },
+        { widget: 'LOWER_THIRD', pos: 'bottom', cam: 0, sub: (c, d) => { const dd = arDealerForCopy(d); return dd.name ? [`${dd.name} ${dd.title}`.trim(), dd.branch].filter(Boolean).join(' · ') : `${c.vehicle || IND.product} · ${IND.place}에서 만나요`; }, tts: () => `${IND.promise}.` },
         { widget: 'RECEIPT_QUOTE', pos: 'bottom', cam: 1, sub: () => '궁금한 점은 편하게 물어보세요', tts: () => '궁금한 점은 편하게 물어보세요.' },
         { widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2, sub: () => `${IND.place}에서 기다릴게요`, tts: () => `${IND.place}에서 기다릴게요.` }
       ];
@@ -20652,10 +20664,12 @@ function renderStoryArchetypesUI() {
             vehicle: campaign.vehicle,
             discountNum: campaign.discountNum,
             discount: campaign.discount,
-            dealerName: d.name,
-            dealerTitle: d.title,
-            dealerBranch: d.branch,
-            dealerPromo: d.promoTag,
+            // 아직 바꾸지 않은 예시 매장 정보는 빼고 보냄 (자동차는 그대로)
+            dealerName: arDealerForCopy(d).name,
+            dealerTitle: arDealerForCopy(d).title,
+            dealerBranch: arDealerForCopy(d).branch,
+            dealerPromo: arDealerForCopy(d).promoTag,
+            cutCount: totalCuts,
             bullets: campaign.bullets,
             industry: IND.key,
             industryInfo: IND.key === 'auto' ? null : { name: IND.name, role: IND.role, product: IND.product, cta: IND.cta, aiRole: IND.aiRole, caution: IND.caution },
@@ -20712,11 +20726,13 @@ function renderStoryArchetypesUI() {
           campaign.hook = stripExcludedLocal(ai.hook);
           if (d.variation) d.variation.hook = campaign.hook;
         }
+        // AI가 영상 컷 수만큼 써 주면 전부 반영 (모자라면 화면이 나머지를 채움)
+        const nCuts = Math.max(4, getTargetCutCount());
         if (Array.isArray(ai.cutCaptions) && ai.cutCaptions.length >= 4) {
-          campaign.cutCaptions = ai.cutCaptions.slice(0, 4).map(stripExcludedLocal);
+          campaign.cutCaptions = ai.cutCaptions.slice(0, nCuts).map(stripExcludedLocal);
         }
         if (Array.isArray(ai.ttsLines) && ai.ttsLines.length >= 4) {
-          campaign.ttsLines = ai.ttsLines.slice(0, 4).map(stripExcludedLocal);
+          campaign.ttsLines = ai.ttsLines.slice(0, nCuts).map(stripExcludedLocal);
         } else {
           campaign.ttsLines = [...campaign.cutCaptions];
         }
