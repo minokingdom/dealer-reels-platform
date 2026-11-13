@@ -8741,7 +8741,9 @@ function renderStoryArchetypesUI() {
           const curSlot = Math.min(totalCuts, getCutIndexAt(t) + 1);
           badge.textContent = `본편 CUT ${curSlot}/${totalCuts} (${t.toFixed(1)}s / ${mainDuration.toFixed(0)}s)`;
         } else {
-          badge.textContent = `엔딩 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
+          badge.textContent = (typeof IND !== 'undefined' && IND.outroMode === 'store')
+            ? `엔딩 ${IND.place || '매장'} 안내 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`
+            : `엔딩 카마스터 명함 (${mainDuration.toFixed(0)}~${TOTAL_DURATION.toFixed(0)}초)`;
         }
       }
     }
@@ -10113,7 +10115,135 @@ function renderStoryArchetypesUI() {
     // ==========================================================================
     // 장르별 마지막 명함
     // ==========================================================================
+    function drawStoreOutro(c, W, H, t, local, V, d) {
+      const a = gEase(local / 0.45);
+      const e = gBack(local / 0.55);
+      const cta = arCta();
+      const promo = gCleanCaption(d.promoTag || '');
+      const accent = (V && V.accent) || '#f97316';
+      const inkOnAccent = gLuminance(accent) > 0.55 ? '#0b1220' : '#ffffff';
+
+      // 전체 화면 그라데이션 오버레이 (상단 배경 사진이 비치면서 하단 가독성 확보)
+      const bgGrad = c.createLinearGradient(0, 0, 0, H);
+      bgGrad.addColorStop(0, 'rgba(10, 10, 12, 0.35)');
+      bgGrad.addColorStop(0.45, 'rgba(10, 10, 12, 0.72)');
+      bgGrad.addColorStop(1, 'rgba(10, 10, 12, 0.94)');
+      c.fillStyle = bgGrad;
+      c.fillRect(0, 0, W, H);
+
+      // 상단 쇼케이스 사진 카드 (명함 원형 얼굴 대신 큼직한 매장/대표 메뉴 사진)
+      const heroImg = (typeof campaign !== 'undefined' && Array.isArray(campaign.uploadedPhotos) && campaign.uploadedPhotos[0]) || d.avatarImg;
+      const fx = 32, fy = 96, fw = W - 64, fh = 320;
+      c.save();
+      c.globalAlpha = a;
+      c.translate(W / 2, fy + fh / 2);
+      const sc = 0.94 + 0.06 * Math.min(1, e);
+      c.scale(sc, sc);
+      c.translate(-W / 2, -(fy + fh / 2));
+      gRoundRect(c, fx, fy, fw, fh, 22);
+      c.save();
+      c.clip();
+      if (heroImg && (heroImg.naturalWidth || heroImg.width)) {
+        const sw = heroImg.naturalWidth || heroImg.width;
+        const sh = heroImg.naturalHeight || heroImg.height;
+        const k = Math.max(fw / sw, fh / sh);
+        c.drawImage(heroImg, fx + (fw - sw * k) / 2, fy + (fh - sh * k) / 2, sw * k, sh * k);
+      } else {
+        c.fillStyle = '#1c1917';
+        c.fillRect(fx, fy, fw, fh);
+      }
+      const imgVignette = c.createLinearGradient(0, fy + fh * 0.5, 0, fy + fh);
+      imgVignette.addColorStop(0, 'rgba(0,0,0,0)');
+      imgVignette.addColorStop(1, 'rgba(0,0,0,0.72)');
+      c.fillStyle = imgVignette;
+      c.fillRect(fx, fy, fw, fh);
+      c.restore();
+
+      c.strokeStyle = 'rgba(255,255,255,0.22)';
+      c.lineWidth = 2;
+      gRoundRect(c, fx, fy, fw, fh, 22);
+      c.stroke();
+
+      // 사진 위 업종/방문 안내 뱃지
+      const badgeTxt = `${IND.icon || '📍'} ${IND.place || '매장'} 방문 · ${IND.cta || '예약'} 안내`;
+      c.font = gFont(800, 15, GENRE_FONTS.sans);
+      const bw = Math.min(fw - 32, c.measureText(badgeTxt).width + 28);
+      gRoundRect(c, fx + 16, fy + 16, bw, 34, 17);
+      c.fillStyle = accent;
+      c.fill();
+      c.fillStyle = inkOnAccent;
+      c.textAlign = 'left';
+      c.fillText(badgeTxt, fx + 30, fy + 38);
+      c.restore();
+
+      // 매장 이름 (큰 에디토리얼 포스터 타이틀)
+      c.save();
+      c.globalAlpha = a;
+      c.textAlign = 'center';
+      c.fillStyle = '#ffffff';
+      c.shadowColor = 'rgba(0,0,0,0.6)';
+      c.shadowBlur = 14;
+      gDrawLine(c, d.name || IND.branchPlaceholder || '', W / 2, 492, W - 64, 52, 28, GENRE_FONTS.sans, 900);
+      c.shadowBlur = 0;
+
+      // 대표 메뉴 / 혜택 강조 라인
+      c.fillStyle = accent;
+      gDrawLine(c, arPriceLine(), W / 2, 554, W - 64, 34, 20, GENRE_FONTS.sans, 900);
+
+      c.fillStyle = 'rgba(255,255,255,0.88)';
+      gDrawLine(c, (typeof campaign !== 'undefined' && campaign.vehicle) || '', W / 2, 596, W - 72, 20, 14, GENRE_FONTS.sans, 700);
+
+      if (promo) {
+        c.fillStyle = 'rgba(255,255,255,0.68)';
+        gDrawLine(c, promo, W / 2, 632, W - 72, 17, 12, GENRE_FONTS.sans, 500);
+      }
+
+      // 매장 이용 안내 칩 (주차 · 포장 · 단체석 등)
+      const rawTags = String(d.branch || '').split(/[·,|/]/).map((s) => s.trim()).filter(Boolean).slice(0, 3);
+      if (d.phone) rawTags.push(`📞 ${d.phone}`);
+      if (rawTags.length > 0) {
+        c.font = gFont(600, 14, GENRE_FONTS.sans);
+        const padX = 14, gap = 8;
+        const widths = rawTags.map((tg) => c.measureText(tg).width + padX * 2);
+        const totalW = widths.reduce((sum, w) => sum + w, 0) + gap * (widths.length - 1);
+        let cx = Math.max(24, (W - Math.min(W - 48, totalW)) / 2);
+        const cy = 672;
+        rawTags.forEach((tg, idx) => {
+          const w = widths[idx];
+          if (cx + w > W - 20) return;
+          gRoundRect(c, cx, cy, w, 32, 16);
+          c.fillStyle = 'rgba(255,255,255,0.12)';
+          c.fill();
+          c.strokeStyle = 'rgba(255,255,255,0.22)';
+          c.lineWidth = 1;
+          c.stroke();
+          c.fillStyle = '#f4f4f5';
+          c.textAlign = 'center';
+          c.fillText(tg, cx + w / 2, cy + 21);
+          cx += w + gap;
+        });
+      }
+      c.restore();
+
+      // 하단 펄스 CTA 버튼
+      c.save();
+      c.globalAlpha = gEase((local - 0.15) / 0.45);
+      const pulse = 1 + 0.03 * Math.sin(t * 7);
+      c.translate(W / 2, 810);
+      c.scale(pulse, pulse);
+      gRoundRect(c, -(W - 64) / 2, -37, W - 64, 74, 37);
+      c.fillStyle = accent;
+      c.fill();
+      c.fillStyle = inkOnAccent;
+      c.textAlign = 'center';
+      gDrawLine(c, cta, 0, 10, W - 110, 28, 17, GENRE_FONTS.sans, 900);
+      c.restore();
+    }
+
     function drawGenreOutro(c, W, H, t, local, V, d) {
+      if (typeof IND !== 'undefined' && IND.outroMode === 'store') {
+        return drawStoreOutro(c, W, H, t, local, V, d);
+      }
       const e = gBack(local / 0.55);
       const a = gEase(local / 0.4);
       const cta = arCta();
@@ -10433,6 +10563,9 @@ function renderStoryArchetypesUI() {
 
     // 두 번째 명함 디자인: 사진을 화면 가득 깔고 아래쪽에 큰 이름을 얹는 잡지 표지형
     function drawCoverOutro(c, W, H, t, local, V, d) {
+      if (typeof IND !== 'undefined' && IND.outroMode === 'store') {
+        return drawStoreOutro(c, W, H, t, local, V, d);
+      }
       const light = V.genre === 'trust' || V.genre === 'finance';
       const font = V.genre === 'luxury' ? GENRE_FONTS.serif : V.genre === 'sale' || V.genre === 'sports' ? GENRE_FONTS.impact : GENRE_FONTS.sans;
       const weight = V.genre === 'luxury' ? 900 : V.genre === 'sale' || V.genre === 'sports' ? 400 : 900;
@@ -12604,6 +12737,9 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
     function kitOutro(c, W, H, t, local, lt, spec, V, K, d, S) {
+      if (typeof IND !== 'undefined' && IND.outroMode === 'store') {
+        return drawStoreOutro(c, W, H, t, local, V, d);
+      }
       const O = spec.outro;
       const fk = spec.font;
       const col = K.bgAccent ? K.hl : V.accent;
