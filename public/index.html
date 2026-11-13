@@ -17064,6 +17064,20 @@ function renderStoryArchetypesUI() {
       const activeHook = v.hook || campaign.hook;
       const activeBullets = (v.bullets && v.bullets.length > 0) ? v.bullets : campaign.bullets;
       const kw = v.ctaKeyword || '견적';
+      if (IND.key !== 'auto') {
+        return (
+          `${campaign.vehicle} — ${activeHook}\n\n` +
+          (campaign.priceLine ? `• ${campaign.priceLine}\n` : '') +
+          (campaign.discount ? `• ${campaign.discount}\n` : '') +
+          `${activeBullets.join('\n')}\n` +
+          (dealer.promoTag ? `• ${dealer.promoTag}\n` : '') +
+          `\n──────────────────\n` +
+          `${dealer.branch} ${dealer.name} ${dealer.title}\n` +
+          `문의: ${dealer.phone}\n` +
+          `댓글에 [${IND.cta}] 남겨주시면 바로 안내드릴게요.\n\n` +
+          `${IND.hashtags.map((h) => '#' + h).join(' ')} #Shorts`
+        );
+      }
       return (
         `${campaign.vehicle} — ${activeHook}\n\n` +
         `• 최대 할인 혜택: -${campaign.discountNum.toLocaleString()}만 원\n` +
@@ -17198,7 +17212,7 @@ function renderStoryArchetypesUI() {
       document.getElementById('dlrInputPhone').value = d.phone;
       document.getElementById('dlrInputBranch').value = d.branch;
       document.getElementById('dlrInputPromo').value = d.promoTag;
-      document.getElementById('igAccountBadge').textContent = `${d.igUsername}`;
+      document.getElementById('igAccountBadge').textContent = window.AR_SERVER && AR_SERVER.mode ? ((AR_SNS_STATE && AR_SNS_STATE.targets.instagram.name) || '') : `${d.igUsername}`;
       document.getElementById('dlrCaptionTextarea').value = buildCaption(d);
 
       const hookInput = document.getElementById('inputHook');
@@ -17339,6 +17353,7 @@ function renderStoryArchetypesUI() {
     }
 
     function openSnsConnectModal(focusKey) {
+      if (window.AR_SERVER && AR_SERVER.mode) return arSnsConnectClick(focusKey);
       const d = getSelectedDealer();
       const sns = d.snsAccounts || { ig: d.igUsername, yt: '', tt: '', fb: '' };
       document.getElementById('snsModalHeaderTitle').textContent = `[${d.name} ${d.title}] 내 4대 SNS 계정 연결 설정`;
@@ -18394,6 +18409,7 @@ function renderStoryArchetypesUI() {
     }
 
     async function approveAndPublishToInstagram() {
+      if (window.AR_SERVER && AR_SERVER.mode) return arSnsPublish();
       const d = getSelectedDealer();
       const logBox = document.getElementById('publishLogBox');
       const logLines = document.getElementById('publishLogLines');
@@ -18410,41 +18426,14 @@ function renderStoryArchetypesUI() {
       logLines.innerHTML = '';
       stepStatus.textContent = `선택된 ${selectedChannels.length}개 SNS 채널 동시 발행 중...`;
 
-      // Vercel Serverless API (/api/publish) 호출 시도 (로컬 파일 실행 시에도 폴백 지원)
-      try {
-        if (window.location.protocol.startsWith('http')) {
-          fetch('/api/publish', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              dealer: d,
-              carModelName: campaign.carModel,
-              promoSubtext: campaign.hookText,
-              channels: selectedChannels
-            })
-          }).catch(() => {});
-        }
-      } catch (e) {}
-
+      // 체험 모드: 실제 SNS에는 올라가지 않음 (회원 서버가 켜지면 내 계정을 연결해 실제로 발행)
       const steps = [
-        `[1] 카마스터(${d.name} ${d.title}) 시안 검수 승인 완료 → 9:16 12초 마스터 영상 패키징`,
-        `[2] HyperFrames window.__timelines["main"].seek(frame/60) 720프레임 결정론적 인코딩 완료`
+        `체험 모드입니다 — 실제 SNS에는 올라가지 않습니다.`,
+        `[1] ${d.name} ${d.title} 시안 확인 → 9:16 영상 준비`
       ];
-
-      if (selectedChannels.includes('instagram')) {
-        steps.push(`📸 [Instagram Reels] 업로드 완료 (${d.igUsername}) + 댓글 [견적] 자동 DM 웹훅 활성화 → https://instagram.com/reel/C_HF_${d.token}/`);
-      }
-      if (selectedChannels.includes('youtube')) {
-        steps.push(`▶️ [YouTube Shorts] #Shorts 업로드 완료 + 고정댓글에 직통번호(${d.phone}) 견적링크 자동 등록 → https://youtube.com/shorts/yt_${d.token}`);
-      }
-      if (selectedChannels.includes('tiktok')) {
-        steps.push(`🎵 [TikTok] Content Posting API v2 피드 발행 완료 → https://tiktok.com/@${d.igUsername.replace('@', '')}/video/${d.token}`);
-      }
-      if (selectedChannels.includes('facebook')) {
-        steps.push(`👍 [Facebook Reels] 4060 타겟 메타 비즈니스 페이지 동시 릴스 게시 완료 → https://facebook.com/reel/fb_${d.token}`);
-      }
-
-      steps.push(`🎉 총 ${selectedChannels.length}개 SNS 채널 원소스 멀티유즈 동시 업로드 완료!`);
+      const nameOf = { instagram: '인스타그램 릴스', youtube: '유튜브 쇼츠', tiktok: '틱톡', facebook: '페이스북 릴스' };
+      selectedChannels.forEach((c) => steps.push(`[체험] ${nameOf[c] || c} 발행 흐름 확인`));
+      steps.push(`체험 완료 — 실제 발행은 회원 가입 후 SNS 계정을 연결하면 쓸 수 있습니다.`);
 
       steps.forEach((msg, index) => {
         setTimeout(() => {
@@ -19061,6 +19050,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         expiryYmd: until
       });
       if (u.industry && typeof setIndustry === 'function') setIndustry(u.industry, { silent: true });
+      if (typeof arSnsRefresh === 'function') arSnsRefresh();
       const btn = document.getElementById('headerAuthBtn');
       if (btn) {
         btn.textContent = '내 계정 · 로그아웃';
@@ -19103,6 +19093,8 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       const me = await arApi('me');
       if (me.ok) arApplyMe(me.body);
       else arLockDemoDealers();
+      arSnsRender();
+      arSnsHandleReturn();
     }
 
     async function arServerAuthSubmit() {
@@ -19302,6 +19294,205 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     }
 
     arInitServerMode();
+
+    // ==========================================================================
+    // ★ SNS 계정 연결 · 실제 발행 (회원 서버가 켜졌을 때만)
+    // ==========================================================================
+    const AR_SNS_ROWS = { instagram: 'ig', youtube: 'yt', tiktok: 'tt', facebook: 'fb' };
+    const AR_SNS_NAMES = { instagram: '인스타그램', youtube: '유튜브', tiktok: '틱톡', facebook: '페이스북' };
+    let AR_SNS_STATE = null;
+
+    async function arSnsApi(action, body) {
+      const opt = { method: body ? 'POST' : 'GET', headers: {}, credentials: 'same-origin' };
+      if (body) { opt.headers['Content-Type'] = 'application/json'; opt.body = JSON.stringify(body); }
+      const r = await fetch(`/api/sns?action=${encodeURIComponent(action)}`, opt);
+      const j = await r.json().catch(() => ({}));
+      return { status: r.status, ok: r.ok && j.ok !== false, body: j };
+    }
+
+    function arSnsRender() {
+      const st = AR_SNS_STATE;
+      Object.entries(AR_SNS_ROWS).forEach(([t, k]) => {
+        const handle = document.getElementById(`snsHandle_${k}`);
+        const btn = document.getElementById(`snsStatusBtn_${k}`);
+        const chk = document.getElementById(`snsCheck${k[0].toUpperCase()}${k[1]}`);
+        if (!handle || !btn) return;
+        handle.setAttribute('data-noind', '');
+        const info = st && st.targets ? st.targets[t] : null;
+        if (!AR_SERVER.me) {
+          handle.textContent = '로그인하면 연결할 수 있어요';
+          btn.textContent = '로그인';
+          btn.disabled = false;
+        } else if (!info || !info.ready) {
+          handle.textContent = '준비 중 (운영자 설정 필요)';
+          btn.textContent = '준비 중';
+          btn.disabled = true;
+        } else if (info.connected) {
+          handle.textContent = info.name || '연결됨';
+          btn.textContent = '연결 해제';
+          btn.disabled = false;
+        } else {
+          handle.textContent = info.note || '연결 안 됨';
+          btn.textContent = '연결하기';
+          btn.disabled = false;
+        }
+        if (chk) {
+          const can = Boolean(info && info.connected);
+          if (!can) chk.checked = false;
+          chk.disabled = !can;
+        }
+      });
+      // 페이스북 페이지가 여러 개면 고르는 목록
+      let pick = document.getElementById('snsPagePicker');
+      const fbRow = document.getElementById('snsStatusBtn_fb');
+      if (st && st.pages && st.pages.length > 1 && fbRow) {
+        if (!pick) {
+          pick = document.createElement('select');
+          pick.id = 'snsPagePicker';
+          pick.setAttribute('data-noind', '');
+          pick.className = 'studio-input w-full h-9 px-2 text-[12px] mt-2 sm:col-span-2';
+          pick.onchange = () => arSnsSelectPage(pick.value);
+          fbRow.closest('.grid').appendChild(pick);
+        }
+        pick.innerHTML = st.pages.map((p) => `<option value="${escapeHtmlInd(p.id)}">${escapeHtmlInd(p.name)}${p.ig ? ` · 인스타그램 @${escapeHtmlInd(p.ig)}` : ' · 인스타그램 연결 없음'}</option>`).join('');
+        pick.value = st.page;
+      } else if (pick) {
+        pick.remove();
+      }
+    }
+
+    async function arSnsRefresh() {
+      if (!AR_SERVER.mode) return;
+      if (!AR_SERVER.me) { AR_SNS_STATE = null; arSnsRender(); return; }
+      const r = await arSnsApi('status');
+      if (r.ok) AR_SNS_STATE = r.body;
+      arSnsRender();
+    }
+
+    async function arSnsSelectPage(pageId) {
+      const r = await arSnsApi('select-page', { pageId });
+      if (r.ok) { AR_SNS_STATE = r.body; arSnsRender(); arToast('페이지를 바꿨습니다.', true); }
+      else arToast(r.body.message || '페이지를 바꾸지 못했습니다.');
+    }
+
+    async function arSnsConnectClick(code) {
+      const target = Object.keys(AR_SNS_ROWS).find((t) => AR_SNS_ROWS[t] === code);
+      if (!AR_SERVER.me) return openDealerAuthModal();
+      const info = AR_SNS_STATE && AR_SNS_STATE.targets ? AR_SNS_STATE.targets[target] : null;
+      if (info && info.connected) {
+        const both = target === 'instagram' || target === 'facebook';
+        if (!confirm(`${AR_SNS_NAMES[target]} 연결을 해제할까요?${both ? '\n(인스타그램과 페이스북은 메타 계정 하나로 연결되어 함께 해제됩니다)' : ''}`)) return;
+        const r = await arSnsApi('disconnect', { target });
+        if (r.ok) { AR_SNS_STATE = r.body; arSnsRender(); }
+        return;
+      }
+      const r = await arSnsApi('connect', { target });
+      if (r.ok && r.body.url) window.location.href = r.body.url;
+      else arToast(r.body.message || '연결을 시작하지 못했습니다.');
+    }
+
+    // SNS 로그인 후 돌아왔을 때 결과 알림
+    function arSnsHandleReturn() {
+      const p = new URLSearchParams(window.location.search);
+      const s = p.get('sns');
+      if (!s) return;
+      if (s === 'connected') arToast('SNS 계정을 연결했습니다.', true);
+      else arToast(`SNS 연결 실패: ${p.get('msg') || p.get('reason') || '다시 시도해 주세요'}`);
+      try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+      if (typeof switchStudioTab === 'function') { try { switchStudioTab('publish'); } catch (e) {} }
+    }
+
+    function arSnsLog(msg, kind) {
+      const box = document.getElementById('publishLogBox');
+      const lines = document.getElementById('publishLogLines');
+      if (!box || !lines) return;
+      box.classList.remove('hidden');
+      const line = document.createElement('div');
+      line.setAttribute('data-noind', '');
+      line.className = kind === 'ok' ? 'text-emerald-400' : kind === 'err' ? 'text-[#f87171]' : '';
+      line.textContent = msg;
+      lines.appendChild(line);
+      return line;
+    }
+
+    let arVercelBlob = null;
+    async function arLoadBlobClient() {
+      if (!arVercelBlob) arVercelBlob = await import('https://esm.sh/@vercel/blob@2.9.0/client');
+      return arVercelBlob;
+    }
+
+    async function arSnsPublish() {
+      const stepStatus = document.getElementById('publishStepStatus');
+      const lines = document.getElementById('publishLogLines');
+      if (lines) lines.innerHTML = '';
+      if (!AR_SERVER.me) { openDealerAuthModal(); return; }
+      const targets = Object.entries(AR_SNS_ROWS)
+        .filter(([, k]) => document.getElementById(`snsCheck${k[0].toUpperCase()}${k[1]}`)?.checked)
+        .map(([t]) => t);
+      if (!targets.length) { arSnsLog('발행할 SNS를 골라 주세요. 먼저 계정을 연결해야 고를 수 있습니다.', 'err'); return; }
+      const blob = window.lastRecordedVideoBlob;
+      if (!blob) { arSnsLog('먼저 [영상 만들기]로 영상을 만든 다음 발행해 주세요.', 'err'); return; }
+      if ((targets.includes('instagram') || targets.includes('facebook')) && !/mp4/.test(blob.type || '')) {
+        arSnsLog('이 브라우저는 mp4로 저장하지 못해 인스타그램·페이스북에는 올릴 수 없습니다. 최신 크롬에서 다시 만들어 주세요.', 'err');
+        return;
+      }
+      const d = getSelectedDealer();
+      const caption = document.getElementById('dlrCaptionTextarea')?.value || buildCaption(d);
+      const title = campaign.hook || campaign.vehicle || '';
+      if (stepStatus) stepStatus.textContent = '영상 올리는 중...';
+      try {
+        const tk = await arSnsApi('upload-token', { size: blob.size, type: blob.type || 'video/mp4' });
+        if (!tk.ok) throw new Error(tk.body.message || '업로드 권한을 받지 못했습니다');
+        const prog = arSnsLog('영상 파일 올리는 중... 0%');
+        const { put } = await arLoadBlobClient();
+        const up = await put(tk.body.pathname, blob, {
+          access: 'public', token: tk.body.clientToken, contentType: tk.body.contentType,
+          onUploadProgress: (e) => { if (prog) prog.textContent = `영상 파일 올리는 중... ${Math.round(e.percentage || 0)}%`; }
+        });
+        if (prog) prog.textContent = '영상 파일 올리기 완료';
+        if (stepStatus) stepStatus.textContent = `${targets.length}개 SNS에 발행 중...`;
+        const pub = await arSnsApi('publish', { targets, videoUrl: up.url, caption, title });
+        if (!pub.ok) throw new Error(pub.body.message || '발행을 시작하지 못했습니다');
+        await arSnsTrackJobs(pub.body.jobs || []);
+      } catch (e) {
+        arSnsLog(`발행 실패: ${e.message || e}`, 'err');
+        if (stepStatus) stepStatus.textContent = '발행 실패';
+      }
+    }
+
+    async function arSnsTrackJobs(jobs) {
+      const stepStatus = document.getElementById('publishStepStatus');
+      const rows = {};
+      const show = (j) => {
+        const name = AR_SNS_NAMES[j.target] || j.target;
+        let msg;
+        let kind;
+        if (j.status === 'done') { msg = `✅ ${name}: 게시 완료${j.url ? ` → ${j.url}` : ''}${j.note ? ` (${j.note})` : ''}`; kind = 'ok'; }
+        else if (j.status === 'failed') { msg = `❌ ${name}: ${j.error || '실패'}`; kind = 'err'; }
+        else { msg = `⏳ ${name}: 처리 중...`; }
+        if (j.target === 'tiktok' && j.status === 'done' && !j.note) msg += ' (틱톡 앱 알림함에서 게시를 마무리해 주세요)';
+        if (!rows[j.id]) rows[j.id] = arSnsLog(msg, kind);
+        else { rows[j.id].textContent = msg; rows[j.id].className = kind === 'ok' ? 'text-emerald-400' : kind === 'err' ? 'text-[#f87171]' : ''; }
+      };
+      jobs.forEach(show);
+      const started = Date.now();
+      let pending = jobs.filter((j) => j.status === 'processing' || j.status === 'pending').map((j) => j.id);
+      while (pending.length && Date.now() - started < 6 * 60 * 1000) {
+        await new Promise((r) => setTimeout(r, 5000));
+        const r = await arSnsApi('jobs', { ids: pending });
+        if (!r.ok) break;
+        (r.body.jobs || []).forEach(show);
+        pending = (r.body.jobs || []).filter((j) => j.status === 'processing' || j.status === 'pending').map((j) => j.id);
+      }
+      const all = Object.values(rows).map((el) => el.className);
+      const okCount = all.filter((c) => c.includes('emerald')).length;
+      if (stepStatus) stepStatus.textContent = pending.length ? '아직 처리 중인 SNS가 있습니다. 잠시 후 각 앱에서 확인해 주세요.' : `${okCount}/${jobs.length}개 SNS 발행 완료`;
+      if (okCount) {
+        const d = getSelectedDealer();
+        d.status = 'PUBLISHED';
+        try { renderQuickSelector(); renderAdminDealerList(); syncPreviewPanel(); } catch (e) {}
+      }
+    }
 
     // 초기 구동
     loadSavedDealerProfiles();
