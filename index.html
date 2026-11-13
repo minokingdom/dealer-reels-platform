@@ -8287,7 +8287,7 @@ function renderStoryArchetypesUI() {
       playMasterAt(startT = 0) {
         const ctx = this.ensureContext();
         if (!ctx || !this.enabled || !this.masterBuffer || this.ttsVoice === 'off') return;
-        this.stopMasterSource();
+        this.stopTts();
         const dur = this.masterBuffer.duration;
         if (startT >= dur - 0.05) return;
         const src = ctx.createBufferSource();
@@ -8355,6 +8355,7 @@ function renderStoryArchetypesUI() {
       playTtsBuffer(buffer, cutIdx) {
         const ctx = this.ctx;
         if (!ctx || !buffer) return;
+        this.stopMasterSource();
         if (this.ttsSource) {
           try { this.ttsSource.stop(); } catch (e) {}
           this.ttsSource = null;
@@ -8662,10 +8663,14 @@ function renderStoryArchetypesUI() {
         if (ttsEl && ttsEl.value !== 'off') localStorage.setItem('autoreels_tts_voice', ttsEl.value);
       } catch (e) {}
       if (!AudioEngine.enabled) {
+        AudioEngine.masterBuffer = null;
+        AudioEngine.masterDuration = 0;
         toggleAudioMaster(true);
       } else {
         AudioEngine.startBgmLoop();
         AudioEngine.stopTts();
+        AudioEngine.masterBuffer = null;
+        AudioEngine.masterDuration = 0;
         AudioEngine.lastSpokenCut = -1;
         AudioEngine.prefetchTtsBuffers();
         AudioEngine.syncWithTimeline(window.__timelines['main'].currentTime);
@@ -8678,7 +8683,11 @@ function renderStoryArchetypesUI() {
       const ppBtn = document.getElementById('playPauseBtn');
       if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
       window.__timelines['main'].seek(0);
-      AudioEngine.speakCutLine(0, true);
+      if (AudioEngine.masterBuffer) {
+        AudioEngine.playMasterAt(0);
+      } else if (AudioEngine.enabled && !AudioEngine.scriptPending) {
+        AudioEngine.prefetchTtsBuffers();
+      }
     }
 
     // ============================================================================
@@ -18235,6 +18244,8 @@ function renderStoryArchetypesUI() {
         const ttsEl = document.getElementById(`cutTts${i}`);
         if (ttsEl) campaign.ttsLines[i] = ttsEl.value;
       }
+      AudioEngine.masterBuffer = null;
+      AudioEngine.masterDuration = 0;
       if (AudioEngine.enabled) AudioEngine.schedulePrefetch();
       if (typeof renderVisualStoryboardTrack === 'function') renderVisualStoryboardTrack();
       window.__timelines['main'].seek(window.__timelines['main'].currentTime);
