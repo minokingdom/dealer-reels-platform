@@ -576,12 +576,17 @@
                 </div>
               </div>
               <div id="pdCats" class="pd-cats"></div>
-              <div class="px-2.5 py-1.5 border-b border-[var(--border)] bg-[#141416] space-y-1">
+              <div class="px-2.5 py-1.5 border-b border-[var(--border)] bg-[#141416] space-y-1.5">
+                <div class="flex items-center justify-between gap-1">
+                  <span class="text-[10px] font-semibold text-[#fb923c]">🔥 이 업종 인기 템플릿</span>
+                  <button type="button" onclick="importAllPopularTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#ea580c]/20 hover:bg-[#ea580c] text-[#fb923c] hover:text-white border border-[#ea580c]/40 text-[10px] font-semibold cursor-pointer transition">한 번에 담기</button>
+                </div>
+                <div id="pdPopularTrendChips" class="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none"></div>
                 <div class="flex items-center gap-1">
-                  <input id="pdTrendThemeQuery" type="text" placeholder="업종 유행 키워드 (비우면 자동 추천)"
+                  <input id="pdTrendThemeQuery" type="text" placeholder="직접 키워드 입력 (예: 비포애프터, 오픈런)"
                     onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(true);}"
                     class="flex-1 min-w-0 h-7 px-2 rounded-[6px] bg-[#0f0f11] border border-[var(--border)] text-[11px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
-                  <button type="button" onclick="searchAndSwapTrendTheme(true)" class="h-7 px-2 rounded-[6px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[11px] font-semibold shrink-0 cursor-pointer" title="기존 디자인을 유지한 채 업종별 유행 테마를 추가합니다">🔥 추가</button>
+                  <button type="button" onclick="searchAndSwapTrendTheme(true)" class="h-7 px-2 rounded-[6px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[11px] font-semibold shrink-0 cursor-pointer" title="키워드 맞춤 유행 테마를 추가합니다">🔥 추가</button>
                   <button id="pdTrendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden h-7 px-1.5 rounded-[6px] border border-[var(--border)] text-[10px] text-[#a1a1a6] hover:text-white shrink-0 cursor-pointer" title="추가한 유행 테마 비우기">↺</button>
                 </div>
                 <div id="pdTrendSwapStatus" class="hidden text-[10px] text-[#fb923c] truncate"></div>
@@ -721,16 +726,20 @@
               </div>
             </div>
             <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
-            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
+            <div class="pt-2 border-t border-[var(--border)] space-y-2">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] text-[#fb923c] font-medium">🔥 업종별 유행 테마 추가 <span class="text-[#85858b] font-normal">(다이어트된 기본 목록에 새 유행 테마만 추가)</span></span>
-                <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
+                <span class="text-[11px] text-[#fb923c] font-medium">🔥 이 업종 인기 템플릿 <span class="text-[#85858b] font-normal">(클릭 한 번으로 바로 적용)</span></span>
+                <div class="flex items-center gap-2">
+                  <button type="button" onclick="importAllPopularTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#ea580c]/20 hover:bg-[#ea580c] text-[#fb923c] hover:text-white border border-[#ea580c]/40 text-[10px] font-semibold cursor-pointer transition">✨ 인기 5종 한 번에 가져오기</button>
+                  <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
+                </div>
               </div>
+              <div id="popularTrendChips" class="flex items-center gap-1.5 flex-wrap"></div>
               <div class="flex items-center gap-1.5">
-                <input id="trendThemeQuery" type="text" placeholder="키워드 입력 (예: 비포애프터, 오픈런, 1등급 루틴... 비우면 자동)"
+                <input id="trendThemeQuery" type="text" placeholder="원하는 키워드 직접 검색·생성 (예: 비포애프터, 오픈런...)"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[7px] bg-[#0f0f11] border border-[var(--border)] text-[12px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
-                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 유행 테마 추가</button>
+                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 키워드 추가</button>
               </div>
               <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
             </div>
@@ -13900,6 +13909,75 @@ function renderStoryArchetypesUI() {
           el.classList.add('hidden');
         }
       });
+      renderPopularTrendChips();
+    }
+
+    function renderPopularTrendChips() {
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const bank = IND_TREND_BANK[indKey] || IND_TREND_BANK.auto;
+      const activeId = campaign && campaign.designStyle;
+      const addedSet = new Set(DESIGN_STYLES.map((d) => d.id));
+      const html = bank.map((r) => {
+        const on = activeId === r[0];
+        const added = addedSet.has(r[0]);
+        return `<button type="button" onclick="applyPopularTrendChip('${r[0]}')" title="${r[1]} 바로 적용"
+          class="shrink-0 px-2 py-1 rounded-[6px] text-[11px] font-medium border cursor-pointer transition ${on
+            ? 'border-[#fb923c] bg-[#ea580c]/25 text-white'
+            : added
+              ? 'border-[#ea580c]/40 bg-[#1a1614] text-[#fdba74] hover:border-[#fb923c]'
+              : 'border-[var(--border)] bg-[#141416] text-[#d4d4d8] hover:border-[#fb923c] hover:text-white'}">${r[1]}</button>`;
+      }).join('');
+      ['popularTrendChips', 'pdPopularTrendChips'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+      });
+    }
+
+    function applyPopularTrendChip(rowId) {
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const bank = IND_TREND_BANK[indKey] || IND_TREND_BANK.auto;
+      const row = bank.find((r) => r[0] === rowId);
+      if (!row) return;
+      if (!DESIGN_STYLES.some((d) => d.id === rowId)) {
+        const obj = makeTrendDesignObj(row, indKey, DESIGN_STYLES.length);
+        DESIGN_STYLES.unshift(obj);
+        const st = getTrendSwapState();
+        if (!st.added.some((x) => x.id === obj.id)) {
+          st.added.unshift(obj);
+          saveTrendSwapState(st);
+        }
+        if (typeof designThumbCache !== 'undefined' && designThumbCache.fresh) {
+          delete designThumbCache.fresh[obj.id];
+        }
+      }
+      campaign.designCat = '전체';
+      selectDesignStyle(rowId);
+      updateTrendSwapStatusUI(`'${row[1]}' 바로 적용됨`);
+    }
+
+    function importAllPopularTrends() {
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const bank = IND_TREND_BANK[indKey] || IND_TREND_BANK.auto;
+      const st = getTrendSwapState();
+      let addedCount = 0;
+      let firstId = bank[0] && bank[0][0];
+      [...bank].reverse().forEach((row, i) => {
+        if (!DESIGN_STYLES.some((d) => d.id === row[0])) {
+          const obj = makeTrendDesignObj(row, indKey, i);
+          DESIGN_STYLES.unshift(obj);
+          if (!st.added.some((x) => x.id === obj.id)) st.added.unshift(obj);
+          if (typeof designThumbCache !== 'undefined' && designThumbCache.fresh) {
+            delete designThumbCache.fresh[obj.id];
+          }
+          addedCount++;
+        }
+      });
+      if (addedCount) saveTrendSwapState(st);
+      campaign.designCat = '내 업종';
+      if (firstId && DESIGN_STYLES.some((d) => d.id === firstId)) selectDesignStyle(firstId);
+      else renderDesignStylePicker();
+      const totalCount = arVisibleDesigns().length;
+      updateTrendSwapStatusUI(addedCount ? `인기 템플릿 ${addedCount}종 한 번에 추가됨 (총 ${totalCount}종)` : `이미 인기 템플릿 5종이 모두 담겨 있습니다`);
     }
 
     function pickVictimDesignForSwap(indKey) {
