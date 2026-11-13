@@ -91,40 +91,52 @@ async function writeTrendCache(indKey, source, query, items) {
   } catch (e) {}
 }
 
-function themeSpecFromTitle(title, indKey, idx, prefix = '📡') {
+function themeSpecFromTitle(title, indKey, idx, prefix = '📡', fullCaption = '') {
   const t = String(title || '');
   const lower = t.toLowerCase();
-  let layout = 'full', cap = 'band', font = 'dohyeon', deco = 'leak', trans = 'zoom', outro = 'card', grade = 'vivid', head = 'pill', bg = 'dark';
-  let accent = '#ef4444', accent2 = '#fde047';
+  const presets = [
+    { layout: 'dim', cap: 'stack', font: 'gasoek', deco: 'grain', trans: 'flash', outro: 'vlogend', grade: 'noir', head: 'kicker', bg: 'dark', accent: '#facc15', accent2: '#ffffff' },
+    { layout: 'handheld', cap: 'vsub', font: 'sans', deco: 'camera', trans: 'zoom', outro: 'vlogend', grade: 'warm', head: 'profile', bg: 'dark', accent: '#38bdf8', accent2: '#e0f2fe' },
+    { layout: 'split', cap: 'pill', font: 'jua', deco: 'sparkle', trans: 'slide', outro: 'polaroid', grade: 'vivid', head: 'pill', bg: 'dark', accent: '#ec4899', accent2: '#fce7f3' },
+    { layout: 'cards', cap: 'checkl', font: 'sans', deco: 'corners', trans: 'slide', outro: 'receipt', grade: 'cool', head: 'counter', bg: 'white', accent: '#2563eb', accent2: '#dbeafe' },
+    { layout: 'arch', cap: 'cinema', font: 'serif', deco: 'leak', trans: 'fade', grade: 'film', head: 'kicker', bg: 'paper', accent: '#d97706', accent2: '#fef3c7' },
+    { layout: 'duo', cap: 'band', font: 'dohyeon', deco: 'dots', trans: 'wipe', grade: 'vivid', head: 'box', bg: 'dark', accent: '#22c55e', accent2: '#dcfce7' }
+  ];
+  let chosen = { ...presets[idx % presets.length] };
 
   if (/비포|애프터|전후|변신|before|after/.test(lower)) {
-    layout = 'duo'; cap = 'band'; trans = 'wipe'; accent = '#ec4899'; accent2 = '#fce7f3';
+    chosen = { ...presets[5] };
   } else if (/브이로그|일상|하루|출근|오픈|현장|vlog/.test(lower)) {
-    layout = 'handheld'; cap = 'vsub'; font = 'sans'; deco = 'camera'; outro = 'vlogend'; grade = 'warm'; head = 'profile'; accent = '#facc15'; accent2 = '#fef9c3';
-  } else if (/꿀팁|방법|체크|정리|루틴|추천|이유|주의/.test(lower)) {
-    layout = 'cards'; cap = 'checkl'; font = 'sans'; deco = 'corners'; trans = 'slide'; outro = 'receipt'; bg = 'white'; head = 'counter'; accent = '#2563eb'; accent2 = '#dbeafe';
-  } else if (/할인|특가|가격|세일|이벤트|무료/.test(lower)) {
-    layout = 'split'; cap = 'band'; font = 'impact'; deco = 'dots'; trans = 'flash'; outro = 'ticket'; accent = '#dc2626'; accent2 = '#fde047';
-  } else if (/감성|무드|분위기|야경|카페|예쁜/.test(lower)) {
-    layout = 'arch'; cap = 'cinema'; font = 'serif'; deco = 'grain'; trans = 'fade'; grade = 'film'; bg = 'paper'; accent = '#d97706'; accent2 = '#fef3c7';
-  } else if (idx % 2 === 1) {
-    layout = 'split'; cap = 'pill'; font = 'jua'; deco = 'sparkle'; trans = 'slide'; outro = 'polaroid'; accent = '#8b5cf6'; accent2 = '#ede9fe';
+    chosen = { ...presets[1] };
+  } else if (/꿀팁|방법|체크|정리|루틴|추천|이유|주의|인기/.test(lower)) {
+    chosen = { ...presets[3] };
+  } else if (/할인|특가|가격|세일|이벤트|무료|문의/.test(lower)) {
+    chosen = { layout: 'full', cap: 'band', font: 'impact', deco: 'dots', trans: 'flash', outro: 'ticket', grade: 'vivid', head: 'pill', bg: 'dark', accent: '#ef4444', accent2: '#fde047' };
+  } else if (/감성|무드|분위기|야경|카페|예쁜|결감/.test(lower)) {
+    chosen = { ...presets[4] };
+  } else if (/소리|꼭|절대|실화|충격|레전드/.test(lower)) {
+    chosen = { ...presets[0] };
   }
 
   const cleaned = t
     .replace(/#[^\s#]+/g, '')
+    .replace(/@[a-zA-Z0-9._]+/g, '')
     .replace(/\[[^\]]*\]|\([^)]*\)/g, '')
-    .replace(/[^\w가-힣\s·!?]/g, ' ')
+    .replace(/[^\w가-힣\s·!?,.]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   const shortLabel = (cleaned.slice(0, 12) || '실시간 릴스').trim();
   const shortName = `${prefix} ${(cleaned.slice(0, 11) || '실시간 트렌드').trim()}`;
+  const hookCaption = (cleaned.slice(0, 28) || '지금 가장 많이 본 릴스 스타일').trim();
+  const tags = (String(fullCaption || t).match(/#[가-힣a-zA-Z0-9_]+/g) || []).slice(0, 5);
 
   return {
     id: `live_${indKey}_${Date.now().toString(36)}_${idx}`,
     name: shortName,
     label: shortLabel,
-    layout, cap, font, deco, trans, outro, grade, head, bg, accent, accent2
+    hookCaption,
+    hashtags: tags,
+    ...chosen
   };
 }
 
@@ -177,6 +189,7 @@ async function fetchInstagramApify(hashtag, diag) {
       videoId: p.shortCode || p.id || '',
       url: p.url || (p.shortCode ? `https://www.instagram.com/reel/${p.shortCode}/` : 'https://www.instagram.com/'),
       title: firstLine.slice(0, 80),
+      fullCaption: String(p.caption || '').slice(0, 300),
       views: statLabel,
       author: p.ownerUsername ? `@${p.ownerUsername}` : 'Instagram',
       platform: 'instagram'
@@ -309,7 +322,7 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
   const prefix = source.startsWith('instagram') ? '📸' : '📡';
   const items = rawVideos.map((v, idx) => ({
     ...v,
-    theme: themeSpecFromTitle(v.title, indKey, idx, prefix)
+    theme: themeSpecFromTitle(v.title, indKey, idx, prefix, v.fullCaption || '')
   }));
   return { source, query: source.startsWith('instagram') ? `#${igTag}` : ytQuery, items, diag };
 }

@@ -14064,12 +14064,19 @@ function renderStoryArchetypesUI() {
         st.added.unshift(obj);
         saveTrendSwapState(st);
       }
+      if (t.hookCaption && Array.isArray(campaign.cutCaptions) && campaign.cutCaptions.length > 0) {
+        campaign.cutCaptions[0] = t.hookCaption;
+        if (typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
+      }
       if (typeof designThumbCache !== 'undefined' && designThumbCache.fresh) {
         delete designThumbCache.fresh[obj.id];
       }
       campaign.designCat = '전체';
       selectDesignStyle(obj.id);
-      updateTrendSwapStatusUI(`실시간 유행 '${obj.name}' 적용됨`);
+      if (window.__timelines && window.__timelines.main) {
+        window.__timelines.main.seek(0.5);
+      }
+      updateTrendSwapStatusUI(`인스타 스타일 '${obj.name}' + 1컷 훅 문구 적용됨`);
     }
 
     function pickVictimDesignForSwap(indKey) {
