@@ -14987,7 +14987,12 @@ function renderStoryArchetypesUI() {
       ['mo_neon', '네온 사인', 'neon', 'dohyeon', '#0b0b12', '#141420', '#ff4fd8', '#4ff0ff', false],
       ['mo_scrap', '스크랩북 콜라주', 'scrap', 'gamja', '#f5efe6', '#ede3d3', '#e11d48', '#0f766e', true],
       ['mo_punch', '줌 펀치', 'punch', 'gasoek', '#000000', '#0a0a0a', '#ffffff', '#ff2d55', false],
-      ['mo_cube', '큐브 플립', 'cube', 'sans', '#0f172a', '#1e1b4b', '#818cf8', '#f9a8d4', false]
+      ['mo_cube', '큐브 플립', 'cube', 'sans', '#0f172a', '#1e1b4b', '#818cf8', '#f9a8d4', false],
+      // 2026-11 캡컷 트렌드 분석(docs/motion-research)에서 온 4종
+      ['mo_glow', '카메라 글로우', 'glow', 'serif', '#1a0f08', '#2b1709', '#fb923c', '#fde68a', false],
+      ['mo_bokeh', '보케 스포트라이트', 'bokeh', 'sans', '#120a1c', '#1e1030', '#f0abfc', '#fde68a', false],
+      ['mo_cinema', '시네마 레터박스', 'cinema', 'serif', '#000000', '#0c0a09', '#d4af37', '#f5f5f4', false],
+      ['mo_credits', '엔딩 크레딧 롤', 'credits', 'sans', '#0a0a0c', '#111114', '#facc15', '#ffffff', false]
     ];
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: '모션그래픽', engine: 'motion', mstyle: r[2], font: r[3],
@@ -15096,6 +15101,78 @@ function renderStoryArchetypesUI() {
       c.textBaseline = 'middle';
       gDrawLine(c, txt, 0, 2, w - 30, 40, 20, GENRE_FONTS.impact, 900);
       c.restore();
+    }
+
+    // ---- 캡컷 트렌드 4종(glow · bokeh · cinema · credits)용 도우미 ----
+    // 따뜻한 빛: 상시 은은한 빛샘(오른쪽 위) + 전환 순간(g>0) 아래·모서리에서 차오르는 빛, 세로 빛줄기, 빛망울
+    function mWarmLight(c, W, H, g, t, seed) {
+      c.save();
+      c.globalCompositeOperation = 'screen';
+      const amb = 0.16 + 0.06 * Math.sin(t * 0.9);
+      const a = c.createRadialGradient(W * 0.95, H * 0.04, 0, W * 0.95, H * 0.04, W * 0.95);
+      a.addColorStop(0, `rgba(255,180,90,${amb})`);
+      a.addColorStop(1, 'rgba(255,120,40,0)');
+      c.fillStyle = a;
+      c.fillRect(0, 0, W, H);
+      if (g > 0.001) {
+        const b = c.createRadialGradient(W * 0.25, H * 1.02, 0, W * 0.25, H * 1.02, H * (0.4 + 0.7 * g));
+        b.addColorStop(0, `rgba(255,243,214,${0.95 * g})`);
+        b.addColorStop(0.45, `rgba(255,140,50,${0.6 * g})`);
+        b.addColorStop(1, 'rgba(255,90,20,0)');
+        c.fillStyle = b;
+        c.fillRect(0, 0, W, H);
+        for (let i = 0; i < 3; i++) {
+          const x = W * (0.2 + 0.3 * i) + Math.sin(seed * 1.7 + i) * 40;
+          const lg = c.createLinearGradient(x - 40, 0, x + 40, 0);
+          lg.addColorStop(0, 'rgba(255,200,140,0)');
+          lg.addColorStop(0.5, `rgba(255,220,170,${0.45 * g})`);
+          lg.addColorStop(1, 'rgba(255,200,140,0)');
+          c.fillStyle = lg;
+          c.fillRect(x - 40, 0, 80, H);
+        }
+        for (let i = 0; i < 7; i++) {
+          const bx = W * ((Math.sin(seed * 3.1 + i * 2.3) + 1) / 2);
+          const by = H * (0.35 + 0.6 * ((Math.cos(seed * 1.3 + i * 1.7) + 1) / 2)) - g * 30;
+          c.fillStyle = `rgba(255,236,200,${0.35 * g})`;
+          c.beginPath();
+          c.arc(bx, by, 12 + (i % 4) * 9, 0, Math.PI * 2);
+          c.fill();
+        }
+        c.fillStyle = `rgba(255,232,205,${0.28 * g})`;
+        c.fillRect(0, 0, W, H);
+      }
+      c.restore();
+    }
+    // 흐린 사진 (canvas filter 를 못 쓰는 브라우저는 어둡게만)
+    function mBlurPhoto(c, S, k, x, y, w, h, scale, px) {
+      const can = 'filter' in c;
+      c.save();
+      if (can) c.filter = `blur(${px}px)`;
+      mPhoto(c, S, k, x, y, w, h, scale);
+      c.restore();
+      if (!can) { c.fillStyle = 'rgba(0,0,0,0.35)'; c.fillRect(x, y, w, h); }
+    }
+    // 부드러운 원형 마스크를 만들 때 쓰는 보조 캔버스 (한 장을 계속 재사용)
+    let mOffCanvasEl = null;
+    function mOffscreen(W, H) {
+      if (!mOffCanvasEl) mOffCanvasEl = document.createElement('canvas');
+      if (mOffCanvasEl.width !== W || mOffCanvasEl.height !== H) { mOffCanvasEl.width = W; mOffCanvasEl.height = H; }
+      return mOffCanvasEl;
+    }
+    // 엔딩 크레딧에 올릴 정보 (연락처는 영상에 넣지 않음)
+    function mCreditItems(d) {
+      const out = [];
+      const add = (label, value) => { const v = String(value || '').trim(); if (v) out.push([label, v]); };
+      const isAuto = typeof IND === 'undefined' || IND.key === 'auto';
+      add(isAuto ? '차종' : (IND.product || '상품'), campaign.vehicle);
+      add('혜택', campaign.discount);
+      (campaign.bullets || []).slice(0, 3).forEach((b) => add('포인트', String(b).replace(/^[✔✓•\-\s]+/, '')));
+      add(isAuto ? '전시장' : '매장', d && d.branch);
+      add('담당', d && `${d.name || ''} ${d.title || ''}`.trim());
+      add('특전', d && d.promoTag);
+      const kw = (d && d.variation && d.variation.ctaKeyword) || (typeof IND !== 'undefined' && IND.cta) || '문의';
+      add('문의', `댓글에 [${kw}] 남겨 주세요`);
+      return out;
     }
 
     // 업종을 바꾸면 모션 템플릿도 그 업종 색으로 물듦 (사용자가 색을 고르면 그 색 우선)
@@ -15769,6 +15846,151 @@ function renderStoryArchetypesUI() {
         c.beginPath(); c.moveTo(x0, cy + chh / 2); c.lineTo(x0 + cw, cy + chh / 2); c.lineTo(x0 + cw - 30, cy + chh / 2 + 22); c.lineTo(x0 + 30, cy + chh / 2 + 22); c.closePath(); c.fill();
         if (isPrice) mPrice(c, W, capY + 12, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 48 : 16), W - 60, capH - (isPrice ? 48 : 16), 38, sp.font, '#ffffff', e);
+      } else if (M === 'glow') {
+        // 카메라 글로우: 컷이 바뀔 때 아래·모서리에서 따뜻한 빛이 차오르며 이전 사진과 겹쳐 바뀜 (캡컷 "카메라 글로우")
+        const tr = cutIdx > 0 && local < 0.6;
+        const mix = tr ? mEase((local - 0.15) / 0.3) : 1;
+        if (tr && mix < 1) mPhoto(c, S, -1, 0, 0, W, H, 1.06);
+        c.save();
+        c.globalAlpha = mix;
+        mPhoto(c, S, 0, 0, 0, W, H, 1.04 + lp * 0.05);
+        c.restore();
+        mWarmLight(c, W, H, tr ? Math.sin(Math.PI * mClamp(local / 0.6)) : 0, t, cutIdx + 1);
+        const bg = c.createLinearGradient(0, H * 0.5, 0, H);
+        bg.addColorStop(0, 'rgba(0,0,0,0)');
+        bg.addColorStop(1, 'rgba(0,0,0,0.82)');
+        c.fillStyle = bg;
+        c.fillRect(0, H * 0.5, W, H * 0.5);
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 40, sp.font, '#ffffff', e);
+      } else if (M === 'bokeh') {
+        // 보케 스포트라이트: 흐린 배경과 빛망울 위로 가운데만 또렷하게 열림 (캡컷 "갤럭시 블러")
+        const scale = 1.04 + lp * 0.04;
+        mBlurPhoto(c, S, 0, 0, 0, W, H, scale, 14);
+        c.save();
+        c.globalCompositeOperation = 'screen';
+        c.fillStyle = sp.accent2 + '22';
+        c.fillRect(0, 0, W, H);
+        for (let i = 0; i < 9; i++) {
+          const bx = W * ((i * 0.37 + 0.11) % 1) + Math.sin(t * 0.35 + i) * 18;
+          const by = H * ((i * 0.53 + 0.07) % 0.9) + Math.cos(t * 0.3 + i * 1.3) * 14;
+          const r = 18 + (i % 4) * 10;
+          const bg = c.createRadialGradient(bx, by, 0, bx, by, r);
+          bg.addColorStop(0, i % 2 ? 'rgba(255,255,255,0.32)' : sp.accent + '55');
+          bg.addColorStop(1, 'rgba(255,255,255,0)');
+          c.fillStyle = bg;
+          c.beginPath();
+          c.arc(bx, by, r, 0, Math.PI * 2);
+          c.fill();
+        }
+        c.restore();
+        const open = mEase((local - 0.1) / 0.7);
+        if (open > 0.01) {
+          const cx = W / 2, cy = stageH * 0.5, R = W * 0.5 * open;
+          const off = mOffscreen(W, H);
+          const o = off.getContext('2d');
+          o.setTransform(1, 0, 0, 1, 0, 0);
+          o.globalCompositeOperation = 'source-over';
+          o.clearRect(0, 0, W, H);
+          mPhoto(o, S, 0, 0, 0, W, H, scale);
+          o.globalCompositeOperation = 'destination-in';
+          const m = o.createRadialGradient(cx, cy, R * 0.62, cx, cy, R);
+          m.addColorStop(0, 'rgba(0,0,0,1)');
+          m.addColorStop(1, 'rgba(0,0,0,0)');
+          o.fillStyle = m;
+          o.fillRect(0, 0, W, H);
+          o.globalCompositeOperation = 'source-over';
+          c.drawImage(off, 0, 0, W, H);
+        }
+        gRoundRect(c, 22, capY - 10, W - 44, capH + 20, 22);
+        c.fillStyle = 'rgba(10,10,14,0.55)';
+        c.fill();
+        if (isPrice) mPrice(c, W, capY - 10, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 30 : 4), W - 80, capH - (isPrice ? 30 : 8), 38, sp.font, '#ffffff', e);
+      } else if (M === 'cinema') {
+        // 시네마틱: 위아래 검은 띠 + 가장자리 비네트, 컷은 부드럽게 겹쳐 바뀜 (캡컷 "영화 화면"·"비네트")
+        const fade = cutIdx > 0 ? mEase(local / 0.45) : 1;
+        if (fade < 1) mPhoto(c, S, -1, 0, 0, W, H, 1.06);
+        c.save();
+        c.globalAlpha = fade;
+        mPhoto(c, S, 0, 0, 0, W, H, 1.0 + lp * 0.03);
+        c.restore();
+        const vs = 0.45 + 0.25 * mEase(local / 0.55);
+        const vg = c.createRadialGradient(W / 2, H * 0.45, W * 0.25, W / 2, H * 0.45, H * 0.62);
+        vg.addColorStop(0, 'rgba(0,0,0,0)');
+        vg.addColorStop(1, `rgba(15,12,10,${vs})`);
+        c.fillStyle = vg;
+        c.fillRect(0, 0, W, H);
+        const band = Math.round(H * 0.14);
+        const barH = Math.round(band * mEase((t - 0.1) / 0.55));
+        c.fillStyle = '#000';
+        c.fillRect(0, 0, W, barH);
+        c.fillRect(0, H - barH, W, barH);
+        if (barH > 20) {
+          // 위 띠: 상품명(왼쪽) · 담당자(오른쪽)
+          c.save();
+          c.globalAlpha = mEase((t - 0.5) / 0.6);
+          c.textBaseline = 'middle';
+          c.fillStyle = sp.accent;
+          c.textAlign = 'left';
+          gDrawLine(c, String(campaign.vehicle || (typeof IND !== 'undefined' && IND.product) || ''), 26, barH * 0.55, W * 0.55, 16, 11, GENRE_FONTS.sans, 700);
+          c.fillStyle = 'rgba(255,255,255,0.78)';
+          c.textAlign = 'right';
+          gDrawLine(c, d ? `${d.name || ''} ${d.title || ''}`.trim() : '', W - 26, barH * 0.55, W * 0.38, 15, 11, GENRE_FONTS.sans, 500);
+          c.restore();
+        }
+        if (isPrice) mPrice(c, W, H - band - 52, sp, e);
+        // 아래 띠 안의 영화 자막
+        mCaption(c, caption, W / 2, H - band + 6, W - 60, band - 12, 30, sp.font, sp.accent2, e);
+      } else if (M === 'credits') {
+        // 옆 크레딧 롤: 사진은 왼쪽으로 살짝 밀리고, 오른쪽 어두운 면에 상품·매장 정보가 영화 엔딩처럼 올라감
+        const fade = cutIdx > 0 ? mEase(local / 0.4) : 1;
+        const pan = -W * 0.08 * mEase(t / 0.6);
+        if (fade < 1) mPhoto(c, S, -1, 0, 0, W, H, 1.06, pan);
+        c.save();
+        c.globalAlpha = fade;
+        mPhoto(c, S, 0, 0, 0, W, H, 1.06 + lp * 0.03, pan);
+        c.restore();
+        const sg = c.createLinearGradient(W * 0.38, 0, W * 0.74, 0);
+        sg.addColorStop(0, 'rgba(10,10,12,0)');
+        sg.addColorStop(1, 'rgba(10,10,12,0.92)');
+        c.fillStyle = sg;
+        c.fillRect(0, 0, W, H);
+        const bb = c.createLinearGradient(0, H * 0.55, 0, H);
+        bb.addColorStop(0, 'rgba(10,10,12,0)');
+        bb.addColorStop(1, 'rgba(10,10,12,0.88)');
+        c.fillStyle = bb;
+        c.fillRect(0, H * 0.55, W, H * 0.45);
+        const items = mCreditItems(d);
+        const zx = W * 0.6, zw = W * 0.36, zTop = 36, zBot = capY - 16, zH = zBot - zTop;
+        const blockH = 66, total = items.length * blockH + zH;
+        const off = (t * (total / Math.max(4, mainDuration))) % total;
+        c.save();
+        c.beginPath();
+        c.rect(zx - 6, zTop, zw + 12, zH);
+        c.clip();
+        c.globalAlpha = mEase((t - 0.3) / 0.6);
+        c.textAlign = 'left';
+        c.textBaseline = 'middle';
+        items.forEach(([label, value], i) => {
+          const y = zBot - off + i * blockH;
+          if (y < zTop - blockH || y > zBot + 10) return;
+          c.fillStyle = sp.accent;
+          gDrawLine(c, label, zx, y + 10, zw, 13, 10, GENRE_FONTS.sans, 700);
+          c.fillStyle = '#ffffff';
+          gDrawLine(c, value, zx, y + 36, zw, 19, 12, GENRE_FONTS.sans, 800);
+        });
+        c.restore();
+        // 크레딧 위아래 가장자리를 어둡게 녹임
+        [[zTop, 0], [zBot - 40, 1]].forEach(([y, dir]) => {
+          const fg2 = c.createLinearGradient(0, y, 0, y + 40);
+          fg2.addColorStop(dir ? 0 : 1, 'rgba(10,10,12,0)');
+          fg2.addColorStop(dir ? 1 : 0, 'rgba(10,10,12,0.9)');
+          c.fillStyle = fg2;
+          c.fillRect(zx - 6, y, zw + 12, 40);
+        });
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, 30, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 38, sp.font, '#ffffff', e, 'left');
       } else {
         // strips: 세로 세 줄 사진이 서로 다른 속도로 움직임
         const gap = 8, sw = (W - gap * 4) / 3;
@@ -15787,7 +16009,8 @@ function renderStoryArchetypesUI() {
         if (isPrice) mPrice(c, W, capY + 6, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 44 : 8), W - 60, capH - (isPrice ? 44 : 8), 40, sp.font, sp.accent2, e);
       }
-      if (M !== 'story' && M !== 'feed') mChip(c, d, W, H, sp, mEase(t / 0.6));
+      // 시네마는 위 띠에, 크레딧은 크레딧 안에 이름이 나오므로 아래 이름 칩을 그리지 않음
+      if (M !== 'story' && M !== 'feed' && M !== 'cinema' && M !== 'credits') mChip(c, d, W, H, sp, mEase(t / 0.6));
     }
 
     function renderMotionOutro(c, W, H, t, mainDuration, d, sp) {
