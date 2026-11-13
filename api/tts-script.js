@@ -69,10 +69,12 @@ async function handler(req, res) {
   const toneTag = TONE_TAGS[toneKey];
 
   const spoken = lines.map((l) => normalizeKoreanNumbers(l));
-  // 문장 사이에 [pause]를 넣어 실제로 숨 쉬는 틈을 만듦 (문장을 잘라 쓸 때 말끝이 잘리지 않도록)
-  const fullText = spoken
-    .map((l, i) => (toneTag ? `${toneTag} ${l}` : l) + (i < spoken.length - 1 ? ' [pause]' : ''))
-    .join('\n');
+  // 대본을 하나의 글로 합쳐 처음부터 끝까지 이어 읽게 함
+  //   (예전에는 문장마다 [happy] 지시어와 [pause]를 넣어 문장마다 새로 읽기 시작하는 것처럼 끊겨 들렸음)
+  //   말투 지시어는 맨 앞에 한 번만, 문장 끝 부호가 없는 자막 조각은 쉼표로 이어 자연스럽게 숨만 쉬게 함
+  const fullText = (toneTag ? `${toneTag} ` : '') + spoken
+    .map((l, i) => (/[.!?~…。]$/.test(l) ? l : l + (i < spoken.length - 1 ? ',' : '.')))
+    .join(' ');
 
   const callFish = (model) =>
     fetch(FISH_TS_URL, {
