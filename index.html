@@ -1754,7 +1754,9 @@
         aiRole: '대한민국 자동차 영업 카마스터', caution: ''
       },
       restaurant: {
-        key: 'restaurant', name: '음식점', icon: '🍲', role: '사장님', title: '대표',
+        key: 'restaurant', name: '음식점', icon: '🍲', role: '사장님', title: '매장 공식 안내',
+        outroMode: 'store', storeNames: ['한옥 갈비 본점', '성수 화로구이', '정성 한상 식탁'],
+        storeSubtitle: '매장 공식 안내', storeLocation: '단체석 완비 · 포장 · 주차 가능',
         product: '메뉴', deliver: '방문', cta: '예약', trial: '시식', place: '매장',
         branchLabel: '가게 이름 · 지점', branchPlaceholder: '한옥 갈비 본점',
         promoLabel: '방문 고객 혜택 문구', promoPlaceholder: '리뷰 작성 시 음료 1병 서비스',
@@ -1763,7 +1765,9 @@
         aiRole: '동네 음식점 사장님', caution: ''
       },
       cafe: {
-        key: 'cafe', name: '카페·디저트', icon: '☕', role: '사장님', title: '대표',
+        key: 'cafe', name: '카페·디저트', icon: '☕', role: '사장님', title: '카페 공식 안내',
+        outroMode: 'store', storeNames: ['모닝빈 커피 연남점', '아워스 로스터리', '메종 디저트 바'],
+        storeSubtitle: '카페 공식 안내', storeLocation: '매일 직접 로스팅 · 테이크아웃',
         product: '메뉴', deliver: '방문', cta: '쿠폰', trial: '시음', place: '카페',
         branchLabel: '카페 이름', branchPlaceholder: '모닝빈 커피 연남점',
         promoLabel: '방문 고객 혜택 문구', promoPlaceholder: '스탬프 10개 모으면 음료 1잔 무료',
@@ -1820,7 +1824,9 @@
         aiRole: '헬스장·필라테스 센터 트레이너', caution: ''
       },
       shop: {
-        key: 'shop', name: '쇼핑몰·소매', icon: '🛍️', role: '대표', title: '대표',
+        key: 'shop', name: '쇼핑몰·소매', icon: '🛍️', role: '스토어', title: '스토어 공식 안내',
+        outroMode: 'store', storeNames: ['데일리룩 스토어', '모던 리빙샵', '셀렉트 마켓'],
+        storeSubtitle: '스토어 공식 안내', storeLocation: '오늘 주문 시 당일 발송',
         product: '상품', deliver: '배송', cta: '구매', trial: '체험', place: '스토어',
         branchLabel: '쇼핑몰·가게 이름', branchPlaceholder: '데일리룩 스토어',
         promoLabel: '구매 혜택 문구', promoPlaceholder: '오늘 주문 시 무료배송',
@@ -2294,11 +2300,52 @@
     const AR_DEMO_DEALER_IDS = ['dlr_1', 'dlr_2', 'dlr_3'];
     function arApplyIndustryDemoDealers() {
       if (typeof dealers === 'undefined') return;
-      dealers.forEach((d) => {
+      dealers.forEach((d, idx) => {
         if (!AR_DEMO_DEALER_IDS.includes(d.id)) return;
-        if (!d._autoOrig) d._autoOrig = { title: d.title, branch: d.branch, promoTag: d.promoTag };
-        if (IND.key === 'auto') Object.assign(d, d._autoOrig);
-        else Object.assign(d, { title: IND.title, branch: IND.branchPlaceholder, promoTag: IND.promoPlaceholder });
+        if (!d._autoOrig) {
+          d._autoOrig = {
+            name: d.name,
+            title: d.title,
+            branch: d.branch,
+            promoTag: d.promoTag,
+            avatarImg: d.avatarImg
+          };
+        }
+        if (IND.key === 'auto') {
+          Object.assign(d, d._autoOrig);
+          return;
+        }
+        if (IND.outroMode === 'store') {
+          const storeName = (IND.storeNames && IND.storeNames[idx % IND.storeNames.length]) || IND.branchPlaceholder || d._autoOrig.branch;
+          if (!d._storeAvatarCache) d._storeAvatarCache = {};
+          if (!d._storeAvatarCache[IND.key] && typeof createThemedSceneImage === 'function') {
+            const deck = (typeof AR_INDUSTRY_SCENE_DECKS !== 'undefined' && AR_INDUSTRY_SCENE_DECKS[IND.key]) || [];
+            const storeScene = deck[8] || deck[0] || [IND.icon, storeName, IND.storeSubtitle || IND.place, ['#1f1209', '#451a03']];
+            d._storeAvatarCache[IND.key] = createThemedSceneImage(
+              IND.icon || storeScene[0],
+              storeName,
+              IND.storeSubtitle || `${IND.place} 공식 안내`,
+              storeScene[3] || ['#1f1209', '#451a03'],
+              storeName,
+              10
+            );
+          }
+          Object.assign(d, {
+            name: storeName,
+            title: IND.storeSubtitle || `${IND.place} 공식 안내`,
+            branch: IND.storeLocation || IND.branchPlaceholder,
+            promoTag: IND.promoPlaceholder,
+            avatarImg: d._storeAvatarCache[IND.key] || d._autoOrig.avatarImg
+          });
+        } else {
+          Object.assign(d, {
+            name: d._autoOrig.name,
+            title: IND.title,
+            branch: IND.branchPlaceholder,
+            promoTag: IND.promoPlaceholder,
+            avatarImg: d._autoOrig.avatarImg
+          });
+        }
       });
     }
 
@@ -7853,8 +7900,10 @@ function renderStoryArchetypesUI() {
             (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) ||
             campaign.hook;
         } else {
-          // 마지막 엔딩 카드(명함) 클로징 멘트: 업종에 맞는 호칭 및 행동 유도어(예약/쿠폰/상담/견적) 사용
-          text = `${d.name} ${d.title}입니다. 댓글에 ${IND.cta || '문의'} 남겨주세요!`;
+          // 마지막 엔딩 카드(명함/매장) 클로징 멘트: 매장 중심 업종은 매장명으로, 인물 중심 업종은 호칭으로 안내
+          text = IND.outroMode === 'store'
+            ? `${d.name}입니다. 댓글에 ${IND.cta || '예약'} 남겨주세요!`
+            : `${d.name} ${d.title}입니다. 댓글에 ${IND.cta || '문의'} 남겨주세요!`;
         }
         return indWord(String(text || ''))
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
@@ -10093,9 +10142,9 @@ function renderStoryArchetypesUI() {
         gDrawLine(c, d.branch || '', W / 2, 588, W - 160, 17, 12, GENRE_FONTS.serif, 700);
         gDrawLine(c, promo, W / 2, 640, W - 160, 15, 11, GENRE_FONTS.serif, 700);
         c.fillStyle = V.accent;
-        gDrawLine(c, 'Private Consultation', W / 2, 730, W - 160, 15, 11, GENRE_FONTS.serif, 700);
+        gDrawLine(c, IND.outroMode === 'store' ? `${IND.place || '매장'} 방문 안내` : 'Private Consultation', W / 2, 730, W - 160, 15, 11, GENRE_FONTS.serif, 700);
         c.fillStyle = '#ffffff';
-        gDrawLine(c, '댓글로 1:1 프라이빗 상담', W / 2, 770, W - 160, 26, 16, GENRE_FONTS.serif, 900);
+        gDrawLine(c, IND.outroMode === 'store' ? cta : '댓글로 1:1 프라이빗 상담', W / 2, 770, W - 160, 26, 16, GENRE_FONTS.serif, 900);
         c.restore();
         return;
       }
