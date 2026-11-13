@@ -219,6 +219,16 @@ function buildOtherFallbackVariants(base, item, I, discountText) {
   });
 }
 
+// AI 글에서 JSON 꺼내기: ```json 코드블록이나 앞뒤 설명이 붙어 와도 첫 { ~ 마지막 } 을 해석
+function parseJsonLoose(text) {
+  const t = String(text || '').replace(/```(?:json)?/gi, '').trim();
+  try { return JSON.parse(t); } catch (e) { /* 아래에서 다시 시도 */ }
+  const s = t.indexOf('{');
+  const e = t.lastIndexOf('}');
+  if (s < 0 || e <= s) return null;
+  try { return JSON.parse(t.slice(s, e + 1)); } catch (err) { return null; }
+}
+
 // AI 응답에서 대본 목록 꺼내기: {variants:[...]} 또는 예전 형식(대본 1개)
 function extractAiVariants(aiResult) {
   if (!aiResult || typeof aiResult !== 'object') return [];
@@ -332,8 +342,10 @@ async function handler(req, res) {
   // AI 모델 이름은 환경변수로 바꿀 수 있음 (예전 모델이 지원 종료되면 여기서 교체)
   const openaiModel = String(process.env.OPENAI_SCRIPT_MODEL || 'gpt-4o-mini').trim();
   const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.0-flash').trim();
-  const aiDiag = { openaiKey: Boolean(adminOpenAiKey), geminiKey: Boolean(adminGeminiKey) };
-  const secrets = [adminOpenAiKey, adminGeminiKey].filter(Boolean);
+  const kieKey = String(process.env.KIE_API_KEY || '').trim();
+  const kieModel = String(process.env.KIE_SCRIPT_MODEL || 'gemini-3-8-flash-openai').trim();
+  const aiDiag = { kieKey: Boolean(kieKey), openaiKey: Boolean(adminOpenAiKey), geminiKey: Boolean(adminGeminiKey) };
+  const secrets = [kieKey, adminOpenAiKey, adminGeminiKey].filter(Boolean);
   const errSnippet = async (resp) => {
     let t = await resp.text().catch(() => '');
     secrets.forEach((s) => { t = t.split(s).join('***'); });
@@ -392,7 +404,42 @@ JSON 스키마:
     let aiResult = null;
     let providerUsed = '';
 
-    if (adminOpenAiKey) {
+    // 1순위: kie.ai (OpenAI 호환 chat.completions, 모델은 주소로 고름 · 오류도 HTTP 200 + {code,msg} 로 올 수 있음)
+    if (kieKey) {
+      aiDiag.kieModel = kieModel;
+      const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(kieModel)}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
+        signal: AbortSignal.timeout(45000),
+        body: JSON.stringify({
+          stream: false,
+          messages: [
+            { role: 'system', content: [{ type: 'text', text: `${systemWithAngles}\n\n반드시 JSON만 출력하세요. 설명이나 코드블록 표시는 넣지 마세요.` }] },
+            { role: 'user', content: [{ type: 'text', text: userMessage }] }
+          ]
+        })
+      });
+      aiDiag.kieStatus = resp.status;
+      if (resp.ok) {
+        const data = await resp.json().catch(() => null);
+        const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (typeof text === 'string' && text.trim()) {
+          const parsed = parseJsonLoose(text);
+          if (parsed) {
+            aiResult = parsed;
+            providerUsed = `kie.ai ${kieModel} Director`;
+          } else {
+            aiDiag.kieError = 'JSON 해석 실패: ' + text.replace(/\s+/g, ' ').slice(0, 120);
+          }
+        } else {
+          aiDiag.kieError = data ? `code ${data.code}: ${String(data.msg || '').slice(0, 160)}` : '빈 응답';
+        }
+      } else {
+        aiDiag.kieError = await errSnippet(resp);
+      }
+    }
+
+    if (!aiResult && adminOpenAiKey) {
       aiDiag.openaiModel = openaiModel;
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -470,7 +517,7 @@ JSON 스키마:
   }
 
   // 기본 대본으로 대신 응답: 왜 AI를 못 썼는지 aiFallback 에 남김 (키 값은 넣지 않음)
-  if (!aiDiag.openaiKey && !aiDiag.geminiKey) aiDiag.reason = 'AI 키가 설정되어 있지 않음 (OPENAI_API_KEY / GEMINI_API_KEY)';
+  if (!aiDiag.kieKey && !aiDiag.openaiKey && !aiDiag.geminiKey) aiDiag.reason = 'AI 키가 설정되어 있지 않음 (KIE_API_KEY / OPENAI_API_KEY / GEMINI_API_KEY)';
   return respond(isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director', fallbackVariants, aiDiag);
 };
 
