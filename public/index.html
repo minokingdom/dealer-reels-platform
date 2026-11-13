@@ -343,6 +343,9 @@
     .pd-card { padding: 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.07); background: #18181b; text-align: left; cursor: pointer; }
     .pd-card.on { border-color: #ededed; background: #232326; }
     .pd-card img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 6px; background: #0f0f10; display: block; }
+    .pd-random .pd-dice { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 9 / 16; border-radius: 6px; font-size: 34px;
+      background: linear-gradient(135deg, #3b82f6 0%, #a855f7 50%, #f97316 100%); }
+    .pd-random:hover .pd-dice { filter: brightness(1.12); }
     .pd-card div { margin-top: 4px; padding: 0 2px; font-size: 11px; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pd-handle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 2px;
       padding: 10px 5px; border-radius: 10px 0 0 10px; background: rgba(0,0,0,0.45); color: #ededed; font-size: 10px; font-weight: 600; writing-mode: horizontal-tb;
@@ -652,7 +655,10 @@
                 <div id="activeDesignName" class="text-[14px] font-semibold text-[#ededed] truncate"></div>
                 <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6] mt-0.5"></p>
               </div>
-              <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] shrink-0 cursor-pointer">디자인 바꾸기 ›</button>
+              <div class="flex gap-1.5 shrink-0">
+                <button type="button" onclick="pickRandomTheme(false)" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer" title="디자인과 색을 무작위로">🎲 랜덤</button>
+                <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">디자인 바꾸기 ›</button>
+              </div>
             </div>
             <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
             <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
@@ -899,6 +905,14 @@
                   <option value="jazz">내장 비트 · Jazz 라운지</option>
                   <option value="custom_mp3" id="customBgmOption" class="hidden">내가 불러온 릴스·숏츠 음원 파일</option>
                   <option value="off">BGM 끄기</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="sfxModeSelect" class="block text-[12px] text-[#a1a1a6] mb-1">효과음</label>
+                <select id="sfxModeSelect" onchange="setSfxMode(this.value)" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
+                  <option value="scene">장면 맞춤 · 팝 / 물방울 / 반짝</option>
+                  <option value="off">효과음 끄기</option>
                 </select>
               </div>
 
@@ -7385,11 +7399,11 @@ function renderStoryArchetypesUI() {
         if (S.clap.includes(s16) && this.noiseBuf) {
           const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
           n.buffer = this.noiseBuf;
-          f.type = 'bandpass'; f.frequency.value = 1500; f.Q.value = 0.8;
-          g.gain.setValueAtTime(0.32, when);
-          g.gain.exponentialRampToValueAtTime(0.001, when + 0.18);
+          f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 1.4;
+          g.gain.setValueAtTime(0.13, when);
+          g.gain.exponentialRampToValueAtTime(0.001, when + 0.09);
           n.connect(f); f.connect(g); g.connect(out);
-          n.start(when); n.stop(when + 0.2);
+          n.start(when); n.stop(when + 0.1);
         }
 
         // 3) 하이햇 (노이즈 하이패스)
@@ -7403,9 +7417,9 @@ function renderStoryArchetypesUI() {
           const n = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
           n.buffer = this.noiseBuf;
           f.type = 'highpass'; f.frequency.value = 7000;
-          const v = S.hat === 'trap' ? (s16 % 2 === 0 ? 0.09 : 0.05) : 0.1;
+          const v = S.hat === 'trap' ? (s16 % 2 === 0 ? 0.045 : 0.025) : 0.05;
           g.gain.setValueAtTime(v, when);
-          g.gain.exponentialRampToValueAtTime(0.001, when + 0.05);
+          g.gain.exponentialRampToValueAtTime(0.001, when + 0.035);
           n.connect(f); f.connect(g); g.connect(out);
           n.start(when); n.stop(when + 0.06);
         }
@@ -8094,8 +8108,76 @@ function renderStoryArchetypesUI() {
         }
       },
 
+      // ---------- 장면 효과음: 팝 · 물방울 · 반짝 (장면이 바뀔 때만, 작게) ----------
+      sfxMode: (() => { try { return localStorage.getItem('autoreels_sfx') || 'scene'; } catch (e) { return 'scene'; } })(),
+      lastSfxSlot: -2,
+      sfxOut() {
+        if (!this.sfxGain) {
+          this.sfxGain = this.ctx.createGain();
+          this.sfxGain.gain.value = 0.7;
+          this.sfxGain.connect(this.masterGain);
+        }
+        return this.sfxGain;
+      },
+      sfxTone(when, f0, f1, dur, gain, type = 'sine', glide = 0.04) {
+        const ctx = this.ctx;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type;
+        o.frequency.setValueAtTime(f0, when);
+        o.frequency.exponentialRampToValueAtTime(f1, when + glide);
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.linearRampToValueAtTime(gain, when + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+        o.connect(g); g.connect(this.sfxOut());
+        o.start(when); o.stop(when + dur + 0.02);
+      },
+      // 톡 튀는 팝
+      sfxPop(when, gain = 0.2) {
+        this.sfxTone(when, 380, 980, 0.09, gain, 'sine', 0.03);
+        this.sfxTone(when, 760, 1960, 0.05, gain * 0.25, 'triangle', 0.025);
+      },
+      // 똑 떨어지는 물방울
+      sfxDrop(when, gain = 0.22) {
+        this.sfxTone(when, 620, 1650, 0.16, gain, 'sine', 0.07);
+        this.sfxTone(when + 0.11, 900, 2100, 0.1, gain * 0.35, 'sine', 0.05);
+      },
+      // 가격·혜택 장면: 맑은 두 음
+      sfxChime(when, gain = 0.13) {
+        this.sfxTone(when, 1318.5, 1318.5, 0.55, gain, 'sine', 0.01);
+        this.sfxTone(when + 0.08, 1975.5, 1975.5, 0.6, gain * 0.8, 'sine', 0.01);
+      },
+      // 마지막 명함 장면: 올라가는 반짝임
+      sfxSparkle(when, gain = 0.08) {
+        [1046.5, 1318.5, 1568, 2093].forEach((hz, i) => this.sfxTone(when + i * 0.055, hz, hz, 0.3, gain, 'sine', 0.01));
+      },
+      playSceneSfx(t, slot, totalCuts) {
+        const when = this.ctx.currentTime + 0.01;
+        if (slot >= totalCuts) return this.sfxSparkle(when);
+        const ds = typeof getActiveDesign === 'function' ? getActiveDesign() : null;
+        const soft = ds && ['감성', '브이로그', '손글씨', '고급', '신뢰', '상담·정보'].includes(ds.cat);
+        const cap = String((campaign.cutCaptions || [])[slot] || '');
+        if (/만\s?원|\d+\s?%|할인|특가|혜택|\d+원|1\+1/.test(cap)) {
+          (soft ? this.sfxDrop(when, 0.16) : this.sfxPop(when, 0.16));
+          return this.sfxChime(when + 0.12);
+        }
+        return soft ? this.sfxDrop(when) : this.sfxPop(when);
+      },
+      handleSceneSfx(t) {
+        if (this.sfxMode === 'off' || !this.ctx) return;
+        const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+        const totalCuts = getTargetCutCount();
+        const slot = t < mainDur ? getCutIndexAt(t) : totalCuts;
+        const dt = t - this.lastTimelineT;
+        const moving = dt > 0 && dt < 0.6;
+        if (slot === this.lastSfxSlot) return;
+        this.lastSfxSlot = slot;
+        if (!moving && !(t < 0.2 && slot === 0)) return; // 이리저리 넘겨 볼 때는 소리 없이
+        this.playSceneSfx(t, slot, totalCuts);
+      },
+
       syncWithTimeline(t) {
         if (!this.enabled) return;
+        try { this.handleSceneSfx(t); } catch (e) {}
         // 1. 원테이크 마스터 음성이 있으면 컷 경계마다 끊지 않고 한 호흡으로 자연스럽게 이어서 재생!
         if (this.masterBuffer) {
           // 타임라인이 끝에 도달하여 0초로 루프되거나 처음으로 감긴 경우 마스터 트랙 재시작
@@ -17868,7 +17950,10 @@ function renderStoryArchetypesUI() {
       const urls = (typeof designThumbCache !== 'undefined' && designThumbCache.urls) || {};
       const blank = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
       const items = pdCat === '전체' ? DESIGN_STYLES : DESIGN_STYLES.filter((d) => d.cat === pdCat);
-      list.innerHTML = items.map((d) => `<button type="button" class="pd-card ${d.id === active ? 'on' : ''}" onclick="choosePresetFromDrawer('${d.id}')" title="${d.desc}">
+      list.innerHTML = `<button type="button" class="pd-card pd-random" onclick="pickRandomTheme(true)" title="디자인과 색을 무작위로 바꿔 봅니다">
+          <span class="pd-dice">🎲</span>
+          <div>랜덤 테마</div>
+        </button>` + items.map((d) => `<button type="button" class="pd-card ${d.id === active ? 'on' : ''}" onclick="choosePresetFromDrawer('${d.id}')" title="${d.desc}">
           <img id="pdthumb_${d.id}" src="${urls[d.id] || blank}" alt="" loading="lazy" />
           <div>${d.name}</div>
         </button>`).join('');
@@ -17904,6 +17989,29 @@ function renderStoryArchetypesUI() {
       if (vp) vp.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setTimeout(() => openPresetDrawer('right'), 350);
     }
+    function setSfxMode(v) {
+      AudioEngine.sfxMode = v === 'off' ? 'off' : 'scene';
+      try { localStorage.setItem('autoreels_sfx', AudioEngine.sfxMode); } catch (e) {}
+      if (AudioEngine.sfxMode === 'scene' && AudioEngine.ensureContext()) AudioEngine.sfxPop(AudioEngine.ctx.currentTime + 0.02);
+    }
+    try { const sel = document.getElementById('sfxModeSelect'); if (sel) sel.value = AudioEngine.sfxMode; } catch (e) {}
+
+    // 🎲 랜덤 테마: 지금 분류 안에서 다른 디자인 + 다른 색을 무작위로
+    function pickRandomTheme(fromDrawer) {
+      const pool = (typeof pdCat !== 'undefined' && fromDrawer && pdCat !== '전체' ? DESIGN_STYLES.filter((d) => d.cat === pdCat) : DESIGN_STYLES)
+        .filter((d) => d.id !== getActiveDesign().id);
+      if (!pool.length) return;
+      const ds = pool[Math.floor(Math.random() * pool.length)];
+      selectDesignStyle(ds.id);
+      if (typeof COLOR_PALETTES !== 'undefined' && typeof selectColorPalette === 'function') {
+        const colors = COLOR_PALETTES.filter((c) => c.id !== campaign.colorKey);
+        const c = Math.random() < 0.4 ? { id: 'default' } : colors[Math.floor(Math.random() * colors.length)];
+        if (c) selectColorPalette(c.id);
+      }
+      if (AudioEngine.enabled && AudioEngine.sfxMode !== 'off' && AudioEngine.ctx) AudioEngine.sfxPop(AudioEngine.ctx.currentTime + 0.01);
+      renderPresetDrawer();
+    }
+
     function choosePresetFromDrawer(id) {
       selectDesignStyle(id);
       renderPresetDrawer();
