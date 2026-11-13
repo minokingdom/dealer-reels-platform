@@ -916,8 +916,8 @@
           <div class="studio-sub p-4 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span id="photoSectionHeaderTitle" class="text-[13px] font-medium text-[#ededed]">컷에 들어간 사진 · 영상</span>
-                <p class="text-[12px] text-[#85858b] mt-0.5">누르면 그 장면으로 이동합니다</p>
+                <span id="photoSectionHeaderTitle" class="text-[13px] font-medium text-[#ededed]">컷별 사진 · 구도</span>
+                <p class="text-[12px] text-[#85858b] mt-0.5">컷마다 사진·영상을 바꾸고 화면 구도·카메라 움직임을 고르세요. 썸네일을 누르면 그 장면으로 이동합니다</p>
               </div>
               <div class="flex items-center gap-2">
                 <button data-advanced type="button" onclick="randomizeCurrentDealerVariation()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
@@ -931,19 +931,14 @@
             <div data-advanced id="dealerVariationSummary" class="text-[12px] text-[#a1a1a6] bg-[#141415] px-3.5 py-2.5 rounded-[8px] border border-[var(--border)]">
               변주 레시피 로딩 중
             </div>
-            <div id="aiPhotoThumbnails" class="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-0.5"></div>
+            <!-- 사진 썸네일 목록은 아래 컷별 카드(썸네일 포함)와 겹쳐 숨김 -->
+            <div id="aiPhotoThumbnails" class="hidden"></div>
+            <!-- 컷별 사진/영상 · 화면 구도 · 카메라 모션 (사진 칸과 구도 칸을 하나로 합침) -->
+            <div id="cutMediaCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[480px] overflow-y-auto pr-1"></div>
             <p id="photoUploadStatus" class="text-[12px] text-[#85858b]">기본 실사 화보가 적용되어 있습니다</p>
             <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="hidden" />
           </div>
 
-          <!-- 컷별 사진/영상 · 화면 디자인 · 카메라 모션 (대본 탭에서 옮겨 옴) -->
-          <div class="studio-sub p-4 space-y-3">
-            <div>
-              <span class="text-[13px] font-medium text-[#ededed]">컷별 사진 · 화면 바꾸기</span>
-              <p class="text-[12px] text-[#85858b] mt-0.5">컷마다 사진·영상을 바꾸거나 화면 디자인과 카메라 움직임을 고를 수 있어요</p>
-            </div>
-            <div id="cutMediaCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[430px] overflow-y-auto pr-1"></div>
-          </div>
           <!-- ================================================================= -->
           <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
           <!--   모바일은 위쪽 미리보기에 디자인 손잡이·색상이 이미 있어 겹치므로 숨김 (PC에서만 보임) -->
