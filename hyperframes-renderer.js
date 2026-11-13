@@ -4,9 +4,9 @@
  * HeyGen HyperFrames 아키텍처 기반 결정론적(Deterministic) 타임라인 시킹 렌더러 모듈.
  * 
  * 원리:
- * 1) 각 딜러별 신상정보가 주입된 HyperFrames 규격 HTML(data-start, data-duration, window.__timelines)을 생성합니다.
+ * 1) 각 사용자(업종별 담당자·매장) 정보가 주입된 HyperFrames 규격 HTML(data-start, data-duration, window.__timelines)을 생성합니다.
  * 2) 임시서버에서는 이 HTML 자체가 0.1초 만에 열리는 초경량 실시간 프리뷰 플레이어로 작동합니다.
- * 3) 딜러가 [승인]을 누르면 헤드리스 브라우저(Puppeteer/Playwright) 또는 캔버스 캡처 파이프라인이
+ * 3) 사용자가 [승인]을 누르면 헤드리스 브라우저(Puppeteer/Playwright) 또는 캔버스 캡처 파이프라인이
  *    window.__timelines["main"].seek(frame / fps)를 프레임 단위(0 ~ 719 프레임, 60fps, 12초)로 호출하여
  *    100% 픽셀 오차 없는 MP4 파일을 FFmpeg로 인코딩합니다.
  */
@@ -17,10 +17,10 @@ const path = require('path');
 /**
  * HyperFrames 헤드리스 시킹 렌더러 실행 스크립트 생성
  * @param {Object} params
- * @param {string} params.compositionUrl - 딜러별 HyperFrames HTML URL (예: https://staging.autoreels.kr/v/tok_minjun?render=1)
+ * @param {string} params.compositionUrl - 사용자별 HyperFrames HTML URL (예: https://staging.autoreels.kr/v/tok_minjun?render=1)
  * @param {string} params.outputPath - 렌더링될 최종 MP4 경로
  * @param {number} [params.fps=60] - 초당 프레임 수
- * @param {number} [params.durationSec=12] - 전체 영상 길이(초) (0~8초 본편 + 8~12초 딜러 3D 명함 엔딩)
+ * @param {number} [params.durationSec=12] - 전체 영상 길이(초) (0~8초 본편 + 8~12초 사용자 엔딩 카드)
  */
 function buildHyperFramesRenderPipeline({
   compositionUrl,

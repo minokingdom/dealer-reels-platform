@@ -1,7 +1,8 @@
 /**
  * AutoReels Multi-SNS Simultaneous Publisher
  * ----------------------------------------------------------------------------
- * 단일 9:16 렌더링 영상(1080x1920, 12s)을 딜러 승인 즉시 4대 숏폼 채널에 동시 발행합니다.
+ * 단일 9:16 렌더링 영상(1080x1920, 12s)을 사용자 승인 즉시 4대 숏폼 채널에 동시 발행하는 초기 모듈입니다.
+ * (기본 해시태그는 자동차 기준입니다. 현재 업종별 발행·스레드·예약 발행은 api/sns.js 와 lib/server/sns.js 가 담당합니다.)
  * 1) Instagram Reels (Meta Graph API + 댓글 [견적] 자동 DM 웹훅 연동)
  * 2) YouTube Shorts (YouTube Data API v3 + 고정 댓글에 1:1 견적 링크 자동 등록)
  * 3) TikTok (TikTok Content Posting API v2)

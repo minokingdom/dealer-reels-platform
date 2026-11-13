@@ -2,13 +2,16 @@
  * Vercel Serverless Function: POST /api/generate-script
  * ----------------------------------------------------------------------------
  * 방식 A (중앙 AI 씬 디렉터 & 카피라이팅 엔진):
- * 카마스터가 한 줄 상황을 입력하거나 [AI 대본 · 씬 구도 새로 생성] 버튼을 누르면,
- * 입력된 프롬프트에서 차종·타겟 고객·상황을 정확히 추출하여
- * 1) 차종 타이틀(vehicle), 할인액(discountNum), 월 납입 조건(discount)
+ * 사용자(카마스터·사장님·원장님 등 업종별 담당자)가 한 줄 상황을 입력하거나
+ * [AI 대본 · 씬 구도 새로 생성] 버튼을 누르면, 선택한 업종 정보와 프롬프트에서
+ * 상품·타겟 고객·상황을 추출하여
+ * 1) 상품 타이틀(vehicle), 혜택 수치(discountNum), 혜택 조건(discount)
  * 2) 1~4컷 스토리보드 대본(cutCaptions) 및 TTS 성우 내레이션 대본(ttsLines)
- * 3) 카카오톡 실제 상담 대화(kakaoChat)
+ * 3) 카카오톡 상담 대화(kakaoChat)
  * 4) 컬러 테마(themeId) + 4컷 동적 위젯 레이아웃(scenePlan)
- * 을 즉시 생성합니다. (외부 API 지연 시에도 서버 내장 한국어 자동차 카피 엔진이 100% 무결점 응답 보장)
+ * 을 생성합니다. 자동차(auto)는 차종 사전 기반 전용 경로를, 나머지 업종은 업종 정보 기반 경로를 쓰며,
+ * 외부 AI 호출이 실패하면 서버 내장 기본 대본으로 응답합니다.
+ * (응답 필드명 vehicle/discount 는 하위 호환을 위해 자동차 시절 이름을 유지합니다.)
  */
 
 const VALID_THEMES = ['crimson', 'emerald', 'royal', 'cyber', 'cobalt', 'sunset', 'violet', 'obsidian'];

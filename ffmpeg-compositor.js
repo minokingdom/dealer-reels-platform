@@ -1,9 +1,11 @@
 /**
  * ffmpeg-compositor.js
  * 
- * 마스터 숏폼 영상(공통 프로모션 본편)에 각 딜러의 신상정보를 자동 합성하는 모듈입니다.
- * 1) 본편 하단에 딜러 소속/이름/연락처 워터마크 바 오버레이
- * 2) 영상 마지막(3~4초)에 딜러 전용 명함 엔딩 카드(Outro) 자동 결합
+ * 마스터 숏폼 영상(공통 프로모션 본편)에 각 사용자(업종별 담당자·매장)의 정보를 자동 합성하는 모듈입니다.
+ * 1) 본편 하단에 소속(매장)/이름/연락처 워터마크 바 오버레이
+ * 2) 영상 마지막(3~4초)에 사용자 전용 엔딩 카드(Outro) 자동 결합
+ *    (자동차는 개인 명함, 그 외 업종은 매장 안내 카드)
+ * 매개변수 이름 dealer 는 하위 호환을 위해 유지합니다.
  */
 
 const { execFile } = require('child_process');
@@ -11,13 +13,13 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * 딜러 개인화 릴스 FFmpeg 합성 명령어 생성 및 실행
+ * 사용자 개인화 릴스 FFmpeg 합성 명령어 생성 및 실행
  * @param {Object} params
  * @param {string} params.masterVideoPath - 원본 마스터 프로모션 영상 경로 (9:16, 1080x1920)
- * @param {string} params.outroImagePath - 딜러별 생성된 명함 엔딩 카드 이미지 경로 (1080x1920 PNG)
+ * @param {string} params.outroImagePath - 사용자별 생성된 엔딩 카드 이미지 경로 (1080x1920 PNG)
  * @param {string} params.outputPath - 임시 서버에 저장될 최종 합성 MP4 경로
- * @param {Object} params.dealer - 딜러 신상정보 ({ name, title, branch, phone, promoTag })
- * @param {number} [params.outroDuration=4] - 마지막 딜러 신상 엔딩 카드 노출 시간(초)
+ * @param {Object} params.dealer - 사용자 정보 ({ name, title, branch, phone, promoTag }) — branch 는 소속 또는 매장명
+ * @param {number} [params.outroDuration=4] - 마지막 엔딩 카드 노출 시간(초)
  */
 function buildFfmpegCommand({ masterVideoPath, outroImagePath, outputPath, dealer, outroDuration = 4 }) {
   const safeBannerText = `${dealer.branch} | ${dealer.name} ${dealer.title} 📞 ${dealer.phone}`
@@ -29,9 +31,9 @@ function buildFfmpegCommand({ masterVideoPath, outroImagePath, outputPath, deale
     .replace(/'/g, "\\'");
 
   // 필터 그래프 설명:
-  // [0:v] 마스터 영상을 1080x1920으로 스케일링 후 하단 반투명 바 + 딜러 소속/연락처 상시 표시 -> [main_v]
-  // [1:v] 딜러 전용 엔딩 명함 카드(또는 동적 텍스트 카드)를 outroDuration 초 길이의 비디오 스트림으로 변환 -> [outro_v]
-  // [main_v][outro_v] concat 필터로 본편 뒤에 딜러 신상정보 엔딩을 자연스럽게 이어붙임
+  // [0:v] 마스터 영상을 1080x1920으로 스케일링 후 하단 반투명 바 + 소속(매장)/연락처 상시 표시 -> [main_v]
+  // [1:v] 사용자 전용 엔딩 카드(또는 동적 텍스트 카드)를 outroDuration 초 길이의 비디오 스트림으로 변환 -> [outro_v]
+  // [main_v][outro_v] concat 필터로 본편 뒤에 사용자 엔딩 카드를 자연스럽게 이어붙임
   const filterComplex = [
     `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,` +
     `drawbox=x=0:y=1680:w=1080:h=130:color=black@0.72:t=fill,` +

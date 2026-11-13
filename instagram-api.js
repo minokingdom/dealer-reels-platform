@@ -1,11 +1,12 @@
 /**
  * instagram-api.js
  * 
- * 임시서버에서 딜러가 [승인] 버튼을 눌렀을 때 인스타그램 릴스를 자동 업로드하는 모듈입니다.
- * 
+ * 임시서버에서 사용자(업종별 담당자)가 [승인] 버튼을 눌렀을 때 인스타그램 릴스를 자동 업로드하는 초기 모듈입니다.
+ * 현재 멀티 SNS 연결·발행은 api/sns.js 와 lib/server/sns.js 가 담당합니다.
+ *
  * 지원 방식:
  * 1) [권장] Meta 공식 Instagram Graph API (OAuth 토큰 기반 - 비밀번호 노출/차단 위험 없음)
- * 2) [대행 운영] 딜러 계정 정보(ID/PW) 암호화 금고(AES-256-GCM) + 세션 유지형 업로드 워커 연동
+ * 2) [대행 운영] 사용자 계정 정보(ID/PW) 암호화 금고(AES-256-GCM) + 세션 유지형 업로드 워커 연동
  */
 
 const crypto = require('crypto');
@@ -17,7 +18,7 @@ const ENCRYPTION_KEY = crypto
   .digest();
 
 /**
- * 딜러 인스타 비밀번호/세션 토큰 AES-256-GCM 암호화 저장
+ * 사용자 인스타 비밀번호/세션 토큰 AES-256-GCM 암호화 저장
  */
 function encryptCredential(plainText) {
   if (!plainText) return null;
@@ -29,7 +30,7 @@ function encryptCredential(plainText) {
 }
 
 /**
- * 딜러 인스타 비밀번호/세션 토큰 복호화 (업로드 승인 시점에만 메모리에서 복호화)
+ * 사용자 인스타 비밀번호/세션 토큰 복호화 (업로드 승인 시점에만 메모리에서 복호화)
  */
 function decryptCredential(cipherText) {
   if (!cipherText) return null;
@@ -50,10 +51,10 @@ function decryptCredential(cipherText) {
 /**
  * 방식 1: Meta 공식 Instagram Graph API로 릴스(REELS) 컨테이너 생성 및 즉시 게시
  * @param {Object} params
- * @param {string} params.igUserId - 딜러의 인스타그램 비즈니스 계정 ID
- * @param {string} params.accessToken - 딜러의 장기(Long-lived) Access Token
- * @param {string} params.videoUrl - 임시서버에 렌더링된 딜러 전용 MP4 퍼블릭 URL
- * @param {string} params.caption - 딜러 연락처와 해시태그가 치환된 최종 본문 캡션
+ * @param {string} params.igUserId - 사용자의 인스타그램 비즈니스 계정 ID
+ * @param {string} params.accessToken - 사용자의 장기(Long-lived) Access Token
+ * @param {string} params.videoUrl - 임시서버에 렌더링된 사용자 전용 MP4 퍼블릭 URL
+ * @param {string} params.caption - 사용자 연락처와 해시태그가 치환된 최종 본문 캡션
  */
 async function publishReelViaGraphApi({ igUserId, accessToken, videoUrl, caption }) {
   // Step 1: 릴스 미디어 컨테이너 생성 요청
