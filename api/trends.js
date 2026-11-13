@@ -137,7 +137,7 @@ async function fetchInstagramApify(hashtag, diag) {
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hashtags: [tag], resultsLimit: 30 }),
+    body: JSON.stringify({ hashtags: [tag], resultsType: 'reels', resultsLimit: 50 }),
     signal: AbortSignal.timeout(25000)
   });
   if (diag) diag.apifyStatus = r.status;
@@ -147,16 +147,21 @@ async function fetchInstagramApify(hashtag, diag) {
   }
   const rows = await r.json();
   if (!Array.isArray(rows)) return [];
-  const scored = rows
-    .filter((p) => {
-      const cap = String(p.caption || '').trim();
-      return cap.length >= 4 && cap !== '-';
-    })
+  const monthAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const recentRows = rows.filter((p) => {
+    const cap = String(p.caption || '').trim();
+    if (cap.length < 4 || cap === '-') return false;
+    if (!p.timestamp) return true;
+    const ts = Date.parse(p.timestamp);
+    return Number.isNaN(ts) || ts >= monthAgo;
+  });
+  const pool = recentRows.length ? recentRows : rows.filter((p) => String(p.caption || '').trim().length >= 4);
+  const scored = pool
     .map((p) => {
       const play = Number(p.videoViewCount || p.videoPlayCount || 0);
       const likes = Number(p.likesCount) > 0 ? Number(p.likesCount) : 0;
-      const comments = Number(p.commentsCount) > 0 ? Number(p.commentsCount) : 0;
-      const score = play + likes * 10 + comments * 20;
+      // 한 달 기준 조회수 최우선 정렬 (조회수가 없는 경우에만 좋아요 보조)
+      const score = play > 0 ? play * 1000 + likes : likes;
       return { p, play, likes, score };
     })
     .sort((a, b) => b.score - a.score);
@@ -167,7 +172,7 @@ async function fetchInstagramApify(hashtag, diag) {
       ? `인스타 조회 ${play.toLocaleString()}회`
       : likes > 0
         ? `인스타 좋아요 ${likes.toLocaleString()}개`
-        : '인스타 인기 게시물';
+        : '인스타 릴스';
     return {
       videoId: p.shortCode || p.id || '',
       url: p.url || (p.shortCode ? `https://www.instagram.com/reel/${p.shortCode}/` : 'https://www.instagram.com/'),
@@ -265,9 +270,10 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
     if (rawVideos.length) source = 'instagram_graph';
   }
 
-  // 3) YouTube Data API (YOUTUBE_API_KEY)
+  // 3) YouTube Data API (YOUTUBE_API_KEY) — 최근 30일 조회수순
   if (!rawVideos.length && process.env.YOUTUBE_API_KEY) {
-    const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&order=viewCount&maxResults=6&regionCode=KR&relevanceLanguage=ko&q=${encodeURIComponent(ytQuery)}&key=${encodeURIComponent(process.env.YOUTUBE_API_KEY)}`;
+    const monthAgoIso = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoDuration=short&order=viewCount&publishedAfter=${encodeURIComponent(monthAgoIso)}&maxResults=6&regionCode=KR&relevanceLanguage=ko&q=${encodeURIComponent(ytQuery)}&key=${encodeURIComponent(process.env.YOUTUBE_API_KEY)}`;
     const r = await fetch(apiUrl, { signal: AbortSignal.timeout(5000) });
     if (r.ok) {
       const j = await r.json();
