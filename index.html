@@ -6423,6 +6423,25 @@
 
     function generateBatchCustomArchetypes(count = 10) {
       const custom = loadUserCustomArchetypes();
+      if (typeof IND !== 'undefined' && IND.key !== 'auto') {
+        // 자동차가 아닌 업종: 그 업종 문구로만 만들고, 그 업종에서만 보이게
+        for (let i = 0; i < count; i++) {
+          const pick = arIndustryCopyPick();
+          const seed = Math.floor(100000 + Math.random() * 900000);
+          const id = `batch_${IND.key}_${seed}_${i}`;
+          custom[id] = {
+            id, industry: IND.key, category: 'custom', layoutMode: 'CLASSIC_SHOWROOM',
+            title: `🎲 ${IND.name} 문구 #${seed}`, shortTitle: `${IND.name} #${seed}`, tagline: pick.hook, icon: IND.icon,
+            themeId: 'royal', accentColor: '#38bdf8', hook: pick.hook, discountNum: campaign.discountNum || 0, discount: campaign.discount || '',
+            scenePlan: JSON.parse(JSON.stringify(campaign.scenePlan || [])), cutCaptions: pick.caps, ttsLines: pick.tts, isCustom: true
+          };
+        }
+        try { localStorage.setItem('autoreels_user_custom_styles', JSON.stringify(custom)); } catch (e) {}
+        Object.assign(STORY_ARCHETYPES, custom);
+        currentArchetypeCategory = 'custom';
+        renderStoryArchetypesUI();
+        return;
+      }
       const lModes = ['EDITORIAL_VOGUE', 'BROADCAST_NEWS', 'CYBER_HUD', 'TIKTOK_VIRAL_SPLIT', 'RACING_ACTION', 'CLASSIC_SHOWROOM'];
       const themeKeys = Object.keys(DIRECTOR_THEMES);
 
@@ -6516,7 +6535,48 @@
       renderStoryArchetypesUI();
     }
 
+    // 업종별 문구 재료: 그 업종 대본 템플릿 6종 + 상품 프리셋에서 컷마다 (자막, 성우) 짝을 뽑아 섞음
+    let arLastCopyPick = -1;
+    function arIndustryCopyPick() {
+      // 앞뒤가 맞는 이야기가 되도록 대본 한 벌을 통째로 고름 (업종 템플릿 6종 + 상품 프리셋 대본), 직전 것과는 다르게
+      const fill = (x) => String(x).replace(/\{product\}/g, campaign.vehicle || IND.product);
+      const strip = (x) => String(x || '').replace(/^✔\s*/, '');
+      const options = (AR_INDUSTRY_TEMPLATES[IND.key] || []).map((tp) => ({ hook: fill(tp[3]), caps: tp[4].map(fill), tts: tp[5].map(fill) }));
+      Object.values(AR_INDUSTRY_PRESETS[IND.key] || {}).forEach((p) => options.push({
+        hook: p.hook,
+        caps: [p.hook, strip(p.bullets[0]), `${p.priceLine} · ${p.discount}`, strip(p.bullets[1])],
+        tts: [`${p.vehicle}, 소개해 드릴게요.`, `${strip(p.bullets[0])}.`, `${strip(p.bullets[1])}.`, `${IND.cta} 문의 기다릴게요.`]
+      }));
+      if (!options.length) return { hook: campaign.hook, caps: campaign.cutCaptions, tts: campaign.ttsLines };
+      let k = Math.floor(Math.random() * options.length);
+      if (options.length > 1 && k === arLastCopyPick) k = (k + 1 + Math.floor(Math.random() * (options.length - 1))) % options.length;
+      arLastCopyPick = k;
+      return options[k];
+    }
+    function arRandomizeIndustryScript() {
+      const pick = arIndustryCopyPick();
+      campaign.hook = pick.hook;
+      campaign.cutCaptions = pick.caps;
+      campaign.ttsLines = pick.tts;
+      const hookInput = document.getElementById('inputHook');
+      if (hookInput) hookInput.value = campaign.hook;
+      const d = getSelectedDealer();
+      if (d && d.variation) d.variation.hook = campaign.hook;
+      const badge = document.getElementById('activeArchetypeBadge');
+      if (badge) badge.textContent = `🎲 ${IND.icon} ${IND.name} 문구 조합`;
+      const bar = document.getElementById('aiMixerRecipeInfo');
+      if (bar) { bar.classList.add('hidden'); bar.classList.remove('flex'); }
+      activeStoryArchetypeKey = 'custom_ai';
+      if (typeof syncDynamicCutCountAndPhotos === 'function') { try { syncDynamicCutCountAndPhotos(); } catch (e) {} }
+      syncPreviewPanel();
+      syncTechPanel();
+      AudioEngine.lastSpokenCut = -1;
+      AudioEngine.prefetchTtsBuffers();
+      if (window.__timelines && window.__timelines['main']) window.__timelines['main'].seek(0.2);
+    }
+
         function randomizeCustomStyle() {
+      if (typeof IND !== 'undefined' && IND.key !== 'auto') return arRandomizeIndustryScript();
       // 1. 24종 디렉터 테마 무작위 선택
       const themeKeys = Object.keys(DIRECTOR_THEMES);
       const themeIdx = Math.floor(Math.random() * themeKeys.length);
@@ -14478,7 +14538,8 @@ function renderStoryArchetypesUI() {
     function arDesignVisible(ds) {
       const key = typeof IND !== 'undefined' ? IND.key : 'auto';
       if (ds.industry) return ds.industry === key;
-      if (key !== 'auto' && (ds.engine === 'genre' || ds.cat === '테크')) return false;
+      // 자동차가 아닌 업종: 그 업종 전용 테마 + 업종 색으로 물드는 모션 템플릿만 (자동차 판매용 공통 디자인은 숨김)
+      if (key !== 'auto') return ds.engine === 'motion';
       return true;
     }
     function arVisibleDesigns() {
@@ -14487,7 +14548,7 @@ function renderStoryArchetypesUI() {
     }
     function arDesignCats() {
       const key = typeof IND !== 'undefined' ? IND.key : 'auto';
-      return key === 'auto' ? DESIGN_CATS : ['전체', '내 업종'].concat(DESIGN_CATS.slice(1).filter((c) => c !== '테크'));
+      return key === 'auto' ? DESIGN_CATS : ['전체', '내 업종', '모션그래픽'];
     }
 
     function loadDesignPrefs() {
@@ -15003,9 +15064,17 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
+    // 업종을 바꾸면 모션 템플릿도 그 업종 색으로 물듦 (사용자가 색을 고르면 그 색 우선)
+    const AR_IND_PALETTE = {
+      restaurant: ['#f97316', '#1a0f08', '#3b1d0a'], cafe: ['#d97706', '#1c140c', '#3a2614'], beauty: ['#ec4899', '#1a0b14', '#3b1230'],
+      realestate: ['#0ea5e9', '#06101a', '#0c2a44'], academy: ['#3b82f6', '#081024', '#132a5c'], clinic: ['#14b8a6', '#05201d', '#0b3b36'],
+      fitness: ['#ef4444', '#140606', '#3a0d0d'], shop: ['#a855f7', '#120a1c', '#2a1442'], interior: ['#ca8a04', '#14110c', '#2e2618']
+    };
     function renderMotionFrame(c, W, H, t, mainDuration, totalCuts, d, spec, V) {
-      const accent = (V && V.accent) || spec.accent;
-      const sp = Object.assign({}, spec, { accent });
+      const userColor = campaign.colorKey && campaign.colorKey !== 'default';
+      const pal = typeof IND !== 'undefined' && IND.key !== 'auto' ? AR_IND_PALETTE[IND.key] : null;
+      const accent = userColor ? ((V && V.accent) || spec.accent) : pal ? pal[0] : spec.accent;
+      const sp = Object.assign({}, spec, { accent }, pal && !spec.light && !userColor ? { bg1: pal[1], bg2: pal[2] } : {});
       if (t >= mainDuration) return renderMotionOutro(c, W, H, t, mainDuration, d, sp);
       const cutDur = mainDuration / totalCuts;
       const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
