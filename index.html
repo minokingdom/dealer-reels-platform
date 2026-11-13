@@ -537,12 +537,17 @@
       <div id="mainMonitorColumn" class="lg:col-span-5 flex flex-col items-center lg:sticky lg:top-6">
         <div class="w-full max-w-[300px] lg:max-w-[368px] monitor-frame p-4 space-y-3">
           <!-- 상단 상태 바 -->
-          <div class="flex items-center justify-between text-[12px]">
-            <span class="text-[#a1a1a6] flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
-              미리보기
-            </span>
-            <span id="activeClipBadge" class="font-mono text-[12px] text-[#85858b]">
+          <div class="flex items-center justify-between gap-2 text-[12px]">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-[#a1a1a6] flex items-center gap-1.5 shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
+                미리보기
+              </span>
+              <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="px-2 py-0.5 rounded-[5px] bg-[#1e1e24] hover:bg-[#3b82f6] border border-[var(--border)] text-[11px] font-medium text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+                🎲 랜덤 디자인 섞기
+              </button>
+            </div>
+            <span id="activeClipBadge" class="font-mono text-[11px] text-[#85858b] truncate">
               0~3초 · 오프닝 훅
             </span>
           </div>
@@ -13853,6 +13858,41 @@ function renderStoryArchetypesUI() {
           el.style.color = getActivePalette().accent || design.accent;
         }
       });
+    }
+
+    function randomizePreviewDesignOnly() {
+      // 대본·업종·사진은 유지하고 디자인 스타일 + 색상 팔레트 + 컷별 위젯/모션만 랜덤으로 섞기
+      const designs = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
+      if (designs.length > 0 && typeof selectDesignStyle === 'function') {
+        const pool = designs.length > 1 ? designs.filter((x) => x.id !== campaign.designId) : designs;
+        const pick = pool[Math.floor(Math.random() * pool.length)] || designs[0];
+        selectDesignStyle(pick.id);
+      }
+      if (typeof COLOR_PALETTES !== 'undefined' && Array.isArray(COLOR_PALETTES) && COLOR_PALETTES.length > 0 && typeof selectColorPalette === 'function') {
+        const pal = COLOR_PALETTES[Math.floor(Math.random() * COLOR_PALETTES.length)];
+        if (pal && pal.id) selectColorPalette(pal.id);
+      }
+      const totalCuts = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      const shuffledWidgets = [...(WIDGET_POOL || [])].sort(() => Math.random() - 0.5);
+      const camLen = typeof MOTION_COUNT !== 'undefined' ? MOTION_COUNT : 14;
+      if (!Array.isArray(campaign.scenePlan)) campaign.scenePlan = [];
+      for (let i = 0; i < totalCuts; i++) {
+        const prev = campaign.scenePlan[i] || {};
+        const w = shuffledWidgets[i % shuffledWidgets.length] || prev.widget || 'LOWER_THIRD';
+        campaign.scenePlan[i] = {
+          ...prev,
+          cut: i + 1,
+          widget: w,
+          pos: w === 'DYNAMIC_ISLAND' ? 'top' : (w === 'LOWER_THIRD' || w === 'RECEIPT_QUOTE' ? 'bottom' : 'center'),
+          customCam: Math.floor(Math.random() * camLen)
+        };
+      }
+      campaign.motionSeed = Math.floor(Math.random() * 9973);
+      if (typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
+      if (typeof renderDesignStylePicker === 'function') { try { renderDesignStylePicker(); } catch (e) {} }
+      if (window.__timelines?.main) {
+        window.__timelines.main.seek(window.__timelines.main.currentTime);
+      }
     }
 
     function selectDesignStyle(id) {
