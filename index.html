@@ -543,8 +543,8 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
                 미리보기
               </span>
-              <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="px-2 py-0.5 rounded-[5px] bg-[#1e1e24] hover:bg-[#3b82f6] border border-[var(--border)] text-[11px] font-medium text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
-                🎲 랜덤 디자인 섞기
+              <button type="button" id="previewRandomDesignBtn" onclick="randomizePreviewDesignOnly()" class="px-2 py-0.5 rounded-[5px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[11px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition shrink-0" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
+                🎲 스타일 섞기
               </button>
             </div>
             <span id="activeClipBadge" class="font-mono text-[11px] text-[#85858b] truncate">
@@ -573,7 +573,12 @@
                   <div class="text-[13px] font-semibold text-[#ededed]">디자인 스타일 <span id="pdCount" class="text-[#85858b] font-normal"></span></div>
                   <div class="text-[11px] text-[#85858b]">고르면 바로 미리보기에 반영돼요</div>
                 </div>
-                <button type="button" onclick="closePresetDrawer()" class="pd-close" aria-label="닫기">✕</button>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="randomizePreviewDesignOnly()" class="px-2 py-1 rounded-[6px] bg-[#1e293b] hover:bg-[#3b82f6] border border-[#38bdf8]/40 text-[11px] font-semibold text-[#38bdf8] hover:text-white cursor-pointer transition">
+                    🎲 스타일 섞기
+                  </button>
+                  <button type="button" onclick="closePresetDrawer()" class="pd-close" aria-label="닫기">✕</button>
+                </div>
               </div>
               <div id="pdCats" class="pd-cats"></div>
               <div id="presetDrawerList" class="pd-list pd-grid"></div>
