@@ -34,7 +34,7 @@ function isSameSiteRequest(req) {
   }
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ ok: false, error: 'method_not_allowed' });
   }
@@ -180,3 +180,7 @@ module.exports = async function handler(req, res) {
     return res.status(502).json({ ok: false, error: 'fish_tts_unreachable', detail: String(err && err.message) });
   }
 };
+
+// 사용량 계산·한도 (회원 서버가 켜져 있을 때만 동작)
+const { withMeter } = require('../lib/server/meter');
+module.exports = withMeter(handler, 'tts', (req) => { try { return JSON.parse(String((req.query || {}).lines || '[]')).join('').replace(/\s+/g, ' ').length; } catch (e) { return 0; } });

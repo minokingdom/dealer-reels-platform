@@ -2,12 +2,26 @@
   "version": 2,
   "framework": null,
   "functions": {
-    "api/tts-script.js": { "maxDuration": 60 }
+    "api/tts-script.js": {
+      "maxDuration": 60
+    },
+    "api/account.js": {
+      "maxDuration": 60
+    },
+    "api/cron-billing.js": {
+      "maxDuration": 60
+    }
   },
   "rewrites": [
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron-billing",
+      "schedule": "0 1 * * *"
     }
   ]
 }

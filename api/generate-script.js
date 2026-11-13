@@ -142,7 +142,7 @@ function parsePromptAndBuildSmartScene(prompt, fallbackVehicle, fallbackDiscount
   };
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -290,3 +290,7 @@ JSON 스키마:
     data: smartFallback
   });
 };
+
+// 사용량 계산·한도 (회원 서버가 켜져 있을 때만 동작)
+const { withMeter } = require('../lib/server/meter');
+module.exports = withMeter(handler, 'ai', (req) => (req.method === 'POST' ? 1 : 0));
