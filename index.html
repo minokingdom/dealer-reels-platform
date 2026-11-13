@@ -1766,9 +1766,9 @@
       restaurant: {
         key: 'restaurant', name: '음식점', icon: '🍲', role: '사장님', title: '매장 공식 안내',
         outroMode: 'store', storeNames: ['한옥 갈비 본점', '성수 화로구이', '정성 한상 식탁'],
-        storeSubtitle: '매장 공식 안내', storeLocation: '단체석 완비 · 포장 · 주차 가능',
+        storeSubtitle: '매장 공식 안내', storeLocation: '서울 강남구 테헤란로 123 · 주차 가능',
         product: '메뉴', deliver: '방문', cta: '예약', trial: '시식', place: '매장',
-        branchLabel: '가게 이름 · 지점', branchPlaceholder: '한옥 갈비 본점',
+        branchLabel: '매장 주소 · 오시는 길', branchPlaceholder: '서울 강남구 테헤란로 123 · 주차 가능',
         promoLabel: '방문 고객 혜택 문구', promoPlaceholder: '리뷰 작성 시 음료 1병 서비스',
         promise: '정성껏 준비해 기다리겠습니다', vlogDone: '오늘도 영업 마감!', chatAsk: '이번 주말 예약 되나요?',
         hashtags: ['맛집', '오늘뭐먹지', '맛집추천', '동네맛집', '단체예약'],
@@ -1777,9 +1777,9 @@
       cafe: {
         key: 'cafe', name: '카페·디저트', icon: '☕', role: '사장님', title: '카페 공식 안내',
         outroMode: 'store', storeNames: ['모닝빈 커피 연남점', '아워스 로스터리', '메종 디저트 바'],
-        storeSubtitle: '카페 공식 안내', storeLocation: '매일 직접 로스팅 · 테이크아웃',
+        storeSubtitle: '카페 공식 안내', storeLocation: '서울 마포구 연남로 45 · 10:00~22:00',
         product: '메뉴', deliver: '방문', cta: '쿠폰', trial: '시음', place: '카페',
-        branchLabel: '카페 이름', branchPlaceholder: '모닝빈 커피 연남점',
+        branchLabel: '카페 주소 · 영업시간', branchPlaceholder: '서울 마포구 연남로 45 · 10:00~22:00',
         promoLabel: '방문 고객 혜택 문구', promoPlaceholder: '스탬프 10개 모으면 음료 1잔 무료',
         promise: '오늘도 맛있게 내려 드릴게요', vlogDone: '오늘도 마감 완료!', chatAsk: '쿠폰 받을 수 있나요?',
         hashtags: ['카페추천', '디저트맛집', '신메뉴', '카페투어', '동네카페'],
@@ -1836,9 +1836,9 @@
       shop: {
         key: 'shop', name: '쇼핑몰·소매', icon: '🛍️', role: '스토어', title: '스토어 공식 안내',
         outroMode: 'store', storeNames: ['데일리룩 스토어', '모던 리빙샵', '셀렉트 마켓'],
-        storeSubtitle: '스토어 공식 안내', storeLocation: '오늘 주문 시 당일 발송',
+        storeSubtitle: '스토어 공식 안내', storeLocation: '서울 성동구 성수이로 88 · 당일 발송',
         product: '상품', deliver: '배송', cta: '구매', trial: '체험', place: '스토어',
-        branchLabel: '쇼핑몰·가게 이름', branchPlaceholder: '데일리룩 스토어',
+        branchLabel: '매장 주소 · 배송 안내', branchPlaceholder: '서울 성동구 성수이로 88 · 당일 발송',
         promoLabel: '구매 혜택 문구', promoPlaceholder: '오늘 주문 시 무료배송',
         promise: '꼼꼼하게 포장해 보내드릴게요', vlogDone: '오늘 주문 출발!', chatAsk: '이 상품 재고 있나요?',
         hashtags: ['쇼핑', '신상', '데일리룩', '살림템', '오늘의딜'],
@@ -10198,30 +10198,31 @@ function renderStoryArchetypesUI() {
         gDrawLine(c, promo, W / 2, 632, W - 72, 17, 12, GENRE_FONTS.sans, 500);
       }
 
-      // 매장 이용 안내 칩 (주차 · 포장 · 단체석 등)
-      const rawTags = String(d.branch || '').split(/[·,|/]/).map((s) => s.trim()).filter(Boolean).slice(0, 3);
-      if (d.phone) rawTags.push(`📞 ${d.phone}`);
-      if (rawTags.length > 0) {
-        c.font = gFont(600, 14, GENRE_FONTS.sans);
-        const padX = 14, gap = 8;
-        const widths = rawTags.map((tg) => c.measureText(tg).width + padX * 2);
-        const totalW = widths.reduce((sum, w) => sum + w, 0) + gap * (widths.length - 1);
-        let cx = Math.max(24, (W - Math.min(W - 48, totalW)) / 2);
-        const cy = 672;
-        rawTags.forEach((tg, idx) => {
-          const w = widths[idx];
-          if (cx + w > W - 20) return;
-          gRoundRect(c, cx, cy, w, 32, 16);
-          c.fillStyle = 'rgba(255,255,255,0.12)';
-          c.fill();
-          c.strokeStyle = 'rgba(255,255,255,0.22)';
-          c.lineWidth = 1;
-          c.stroke();
+      // 매장 주소 & 전화번호 안내 카드 (명함 대신 실제 방문·예약에 필요한 위치/연락처 강조)
+      const addrText = String(d.branch || IND.storeLocation || IND.branchPlaceholder || '').trim();
+      const phoneText = String(d.phone || '').trim();
+      if (addrText || phoneText) {
+        const boxW = W - 64;
+        const boxX = 32;
+        const boxY = 656;
+        const boxH = addrText && phoneText ? 86 : 52;
+        gRoundRect(c, boxX, boxY, boxW, boxH, 16);
+        c.fillStyle = 'rgba(255,255,255,0.10)';
+        c.fill();
+        c.strokeStyle = 'rgba(255,255,255,0.22)';
+        c.lineWidth = 1.2;
+        c.stroke();
+
+        c.textAlign = 'center';
+        if (addrText) {
           c.fillStyle = '#f4f4f5';
-          c.textAlign = 'center';
-          c.fillText(tg, cx + w / 2, cy + 21);
-          cx += w + gap;
-        });
+          gDrawLine(c, `📍 ${addrText}`, W / 2, boxY + 30, boxW - 32, 18, 13, GENRE_FONTS.sans, 700);
+        }
+        if (phoneText) {
+          c.fillStyle = accent;
+          const py = addrText ? boxY + 66 : boxY + 33;
+          gDrawLine(c, `📞 예약·문의  ${phoneText}`, W / 2, py, boxW - 32, 22, 15, GENRE_FONTS.sans, 800);
+        }
       }
       c.restore();
 
