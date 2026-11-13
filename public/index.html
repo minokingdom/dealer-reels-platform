@@ -15951,9 +15951,9 @@ function renderStoryArchetypesUI() {
         c.globalAlpha = fade;
         mPhoto(c, S, 0, 0, 0, W, H, 1.06 + lp * 0.03, pan);
         c.restore();
-        const sg = c.createLinearGradient(W * 0.38, 0, W * 0.74, 0);
+        const sg = c.createLinearGradient(W * 0.3, 0, W * 0.64, 0);
         sg.addColorStop(0, 'rgba(10,10,12,0)');
-        sg.addColorStop(1, 'rgba(10,10,12,0.92)');
+        sg.addColorStop(1, 'rgba(10,10,12,0.94)');
         c.fillStyle = sg;
         c.fillRect(0, 0, W, H);
         const bb = c.createLinearGradient(0, H * 0.55, 0, H);
@@ -15961,9 +15961,13 @@ function renderStoryArchetypesUI() {
         bb.addColorStop(1, 'rgba(10,10,12,0.88)');
         c.fillStyle = bb;
         c.fillRect(0, H * 0.55, W, H * 0.45);
-        const items = mCreditItems(d);
-        const zx = W * 0.6, zw = W * 0.36, zTop = 36, zBot = capY - 16, zH = zBot - zTop;
-        const blockH = 66, total = items.length * blockH + zH;
+        const zx = W * 0.56, zw = W * 0.4, zTop = 36, zBot = capY - 16, zH = zBot - zTop;
+        // 항목마다 값은 최대 2줄(18px → 최소 14px)로 나눠 높이를 계산
+        const blocks = mCreditItems(d).map(([label, value]) => {
+          const r = gWrap(c, value, zw, 2, 18, 14, GENRE_FONTS.sans, 800);
+          return { label, lines: r.lines, size: r.size, h: 22 + r.lines.length * Math.round(r.size * 1.3) + 16 };
+        });
+        const total = blocks.reduce((s, b) => s + b.h, 0) + zH;
         const off = (t * (total / Math.max(4, mainDuration))) % total;
         c.save();
         c.beginPath();
@@ -15972,13 +15976,17 @@ function renderStoryArchetypesUI() {
         c.globalAlpha = mEase((t - 0.3) / 0.6);
         c.textAlign = 'left';
         c.textBaseline = 'middle';
-        items.forEach(([label, value], i) => {
-          const y = zBot - off + i * blockH;
-          if (y < zTop - blockH || y > zBot + 10) return;
-          c.fillStyle = sp.accent;
-          gDrawLine(c, label, zx, y + 10, zw, 13, 10, GENRE_FONTS.sans, 700);
-          c.fillStyle = '#ffffff';
-          gDrawLine(c, value, zx, y + 36, zw, 19, 12, GENRE_FONTS.sans, 800);
+        let by = zBot - off;
+        blocks.forEach((b) => {
+          if (by + b.h > zTop - 10 && by < zBot + 10) {
+            c.fillStyle = sp.accent;
+            gDrawLine(c, b.label, zx, by + 10, zw, 13, 11, GENRE_FONTS.sans, 700);
+            c.fillStyle = '#ffffff';
+            c.font = gFont(800, b.size, GENRE_FONTS.sans);
+            const lh = Math.round(b.size * 1.3);
+            b.lines.forEach((ln, i) => c.fillText(ln, zx, by + 22 + lh / 2 + i * lh));
+          }
+          by += b.h;
         });
         c.restore();
         // 크레딧 위아래 가장자리를 어둡게 녹임
