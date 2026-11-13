@@ -14018,7 +14018,7 @@ function renderStoryArchetypesUI() {
       }
 
       // 3) 모션 도형 / 트렌드 테마 전용: 위아래 분할(duo) 사이 틈에만 마키 띠 표시 (자막과 절대 겹치지 않음)
-      const isMotionTheme = spec.cat === '모션 도형' || spec.deco === 'shapes' || spec.isTrend;
+      const isMotionTheme = spec.deco === 'shapes' || spec.isTrend;
       if (isMotionTheme && spec.layout === 'duo' && cutIdx % 2 === 1) {
         c.save();
         c.translate(W / 2, 480);
@@ -14052,7 +14052,7 @@ function renderStoryArchetypesUI() {
         const cutPlan = (typeof campaign !== 'undefined' && Array.isArray(campaign.scenePlan) && campaign.scenePlan[cutIdx]) || {};
         const autoLayout = kitAutoCutLayout(spec, cutIdx);
         const kineticCaps = ['words', 'stack', 'slam', 'marquee', 'longshadow'];
-        const allowKineticCap = spec.cat === '모션 도형' || spec.cat === '타이포' || spec.cat === '스포츠' || spec.isTrend;
+        const allowKineticCap = spec.deco === 'shapes' || spec.cat === '타이포' || spec.cat === '스포츠' || spec.isTrend;
         const autoCap = (cutIdx === 2 && allowKineticCap && !kineticCaps.includes(spec.cap)) ? 'words' : spec.cap;
         const cutSpec = Object.assign({}, spec, {
           layout: cutPlan.customLayout || autoLayout,
@@ -14094,16 +14094,16 @@ function renderStoryArchetypesUI() {
     //   [id, 이름, 묶음, 사진배치, 자막, 글꼴, 장식, 전환, 명함, 색보정, 머리표, 바탕, 라벨, 기본색, 보조색]
     const KIT_ROWS = [
       // 모션 도형 10종 (도형 전환 + 움직이는 도형 그래픽)
-      ['g_iris', '원형 아이리스', '모션 도형', 'full', 'pill', 'dohyeon', 'shapes', 'iris', 'ring', 'vivid', 'pill', 'dark', '모션 릴스', '#facc15', '#ffffff'],
-      ['g_diamond', '다이아몬드 컷', '모션 도형', 'full', 'words', 'impact', 'shapes', 'diamond', 'bigname', 'vivid', 'counter', 'dark', 'FOCUS', '#38bdf8', '#e0f2fe'],
-      ['g_hex', '육각 줌인', '모션 도형', 'full', 'neon', 'gugi', 'shapes', 'hex', 'neon', 'noir', 'box', 'dark', 'HEXAGON', '#a855f7', '#f0abfc'],
-      ['g_blocks', '도형 블록 스윕', '모션 도형', 'split', 'band', 'dohyeon', 'shapes', 'barswipe', 'split', 'vivid', 'pill', 'dark', '오늘의 픽', '#ec4899', '#fde047'],
-      ['g_ringpop', '링 팝 릴스', '모션 도형', 'circle', 'glass', 'sans', 'shapes', 'iris', 'ring', 'cool', 'kicker', 'ink', 'SPOTLIGHT', '#22d3ee', '#e0f2fe'],
-      ['g_diagshape', '사선 도형 컷', '모션 도형', 'diag', 'outline', 'impact', 'shapes', 'diamond', 'badge', 'sports', 'counter', 'dark', 'TREND', '#ef4444', '#ffffff'],
-      ['g_cardhex', '카드 육각 전환', '모션 도형', 'cards', 'checkl', 'sans', 'shapes', 'hex', 'card', 'none', 'counter', 'white', '핵심 포인트', '#2563eb', '#dbeafe'],
-      ['g_duosweep', '비교 블록 전환', '모션 도형', 'duo', 'pill', 'jua', 'shapes', 'barswipe', 'ticket', 'vivid', 'box', 'dark', 'BEFORE / AFTER', '#22c55e', '#dcfce7'],
-      ['g_archiris', '아치 아이리스', '모션 도형', 'arch', 'cinema', 'serif', 'shapes', 'iris', 'minimal', 'warm', 'kicker', 'paper', 'ATELIER', '#d97706', '#fef3c7'],
-      ['g_griddia', '그리드 다이아', '모션 도형', 'grid', 'words', 'jua', 'shapes', 'diamond', 'polaroid', 'pastel', 'pill', 'white', 'BEST 4', '#f43f5e', '#ffe4e6'],
+      ['g_iris', '원형 아이리스', '고급', 'full', 'pill', 'dohyeon', 'shapes', 'iris', 'ring', 'vivid', 'pill', 'dark', '모션 릴스', '#facc15', '#ffffff'],
+      ['g_diamond', '다이아몬드 컷', '고급', 'full', 'words', 'impact', 'shapes', 'diamond', 'bigname', 'vivid', 'counter', 'dark', 'FOCUS', '#38bdf8', '#e0f2fe'],
+      ['g_hex', '육각 줌인', '테크', 'full', 'neon', 'gugi', 'shapes', 'hex', 'neon', 'noir', 'box', 'dark', 'HEXAGON', '#a855f7', '#f0abfc'],
+      ['g_blocks', '도형 블록 스윕', '스포츠', 'split', 'band', 'dohyeon', 'shapes', 'barswipe', 'split', 'vivid', 'pill', 'dark', '오늘의 픽', '#ec4899', '#fde047'],
+      ['g_ringpop', '링 팝 릴스', '재미', 'circle', 'glass', 'sans', 'shapes', 'iris', 'ring', 'cool', 'kicker', 'ink', 'SPOTLIGHT', '#22d3ee', '#e0f2fe'],
+      ['g_diagshape', '사선 도형 컷', '스포츠', 'diag', 'outline', 'impact', 'shapes', 'diamond', 'badge', 'sports', 'counter', 'dark', 'TREND', '#ef4444', '#ffffff'],
+      ['g_cardhex', '카드 육각 전환', '상담·정보', 'cards', 'checkl', 'sans', 'shapes', 'hex', 'card', 'none', 'counter', 'white', '핵심 포인트', '#2563eb', '#dbeafe'],
+      ['g_duosweep', '비교 블록 전환', '특가', 'duo', 'pill', 'jua', 'shapes', 'barswipe', 'ticket', 'vivid', 'box', 'dark', 'BEFORE / AFTER', '#22c55e', '#dcfce7'],
+      ['g_archiris', '아치 아이리스', '감성', 'arch', 'cinema', 'serif', 'shapes', 'iris', 'minimal', 'warm', 'kicker', 'paper', 'ATELIER', '#d97706', '#fef3c7'],
+      ['g_griddia', '그리드 다이아', '브이로그', 'grid', 'words', 'jua', 'shapes', 'diamond', 'polaroid', 'pastel', 'pill', 'white', 'BEST 4', '#f43f5e', '#ffe4e6'],
 
       // 특가 · 재미 · 뉴스
       ['k_redband', '레드 띠지', '특가', 'full', 'band', 'impact', 'dots', 'zoom', 'ticket', 'vivid', 'pill', 'dark', '오늘만 특가', '#ef4444', '#facc15'],
@@ -14180,7 +14180,8 @@ function renderStoryArchetypesUI() {
       ds.cat = CLASSIC_CATS[ds.genre] || '특가';
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
-    const DESIGN_CATS = ['전체', '모션 도형', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    // 스타일 분류는 이 12개로 고정: 새 스타일을 추가할 때 분류를 새로 만들지 말고 아래 중 하나에 넣을 것
+    const DESIGN_CATS = ['전체', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
     // ★ 업종 전용 테마: 그 업종을 고른 사람에게만 보이고, 업종을 바꾸면 첫 테마가 바로 적용됨
     // [id, 이름, (분류는 '내 업종'), layout, cap, font, deco, trans, outro, grade, head, bg, label, accent, accent2, script, sfont]
     const IND_KIT_ROWS = {
@@ -14705,7 +14706,9 @@ function renderStoryArchetypesUI() {
     }
     function arDesignCats() {
       const key = typeof IND !== 'undefined' ? IND.key : 'auto';
-      return key === 'auto' ? DESIGN_CATS : ['전체', '내 업종', '모션그래픽'];
+      if (key === 'auto') return DESIGN_CATS;
+      const vis = arVisibleDesigns();
+      return ['전체', '내 업종', ...DESIGN_CATS.filter((c) => c !== '전체' && vis.some((d) => !d.industry && d.cat === c))];
     }
 
     function loadDesignPrefs() {
@@ -14815,7 +14818,6 @@ function renderStoryArchetypesUI() {
 
     // ---------- 디자인에 어울리는 배경음악 ----------
     const DESIGN_BGM_BY_CAT = {
-      '모션 도형': ['edm', 'urban', 'drive'],
       특가: ['urban', 'edm'], 고급: ['luxury', 'jazz', 'cinema'], 테크: ['drive', 'edm'], 스포츠: ['edm', 'urban'],
       '상담·정보': ['showroom', 'bright'], 신뢰: ['ballad', 'showroom'], 감성: ['lofi', 'ballad'], 재미: ['funk', 'bright'],
       '뉴스·방송': ['news'], 손글씨: ['lofi', 'ballad', 'jazz'], 타이포: ['urban', 'drive', 'edm'], 브이로그: ['vlog', 'lofi', 'bright']
@@ -15150,13 +15152,20 @@ function renderStoryArchetypesUI() {
       ['mo_cinema', '시네마 레터박스', 'cinema', 'serif', '#000000', '#0c0a09', '#d4af37', '#f5f5f4', false],
       ['mo_credits', '엔딩 크레딧 롤', 'credits', 'sans', '#0a0a0c', '#111114', '#facc15', '#ffffff', false]
     ];
+    // 모션 디자인도 별도 분류를 만들지 않고 기존 분류에 넣음
+    const MOTION_CAT = {
+      mo_blob: '재미', mo_sweep: '타이포', mo_tiles: '테크', mo_tunnel: '스포츠', mo_cards: '브이로그', mo_eq: '재미',
+      mo_aurora: '감성', mo_dots: '재미', mo_number: '특가', mo_strips: '브이로그', mo_circle: '고급', mo_ribbon: '뉴스·방송',
+      mo_doors: '고급', mo_bounce: '타이포', ig_story: '브이로그', ig_feed: '브이로그', ig_poll: '재미', mo_vhs: '브이로그',
+      mo_neon: '재미', mo_scrap: '감성', mo_punch: '스포츠', mo_cube: '테크', mo_glow: '감성', mo_bokeh: '고급',
+      mo_cinema: '고급', mo_credits: '뉴스·방송'
+    };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
-      id: r[0], name: r[1], cat: '모션그래픽', engine: 'motion', mstyle: r[2], font: r[3],
+      id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
       bg1: r[4], bg2: r[5], accent: r[6], accent2: r[7], light: r[8], seed: 900 + i, genre: 'motion', grade: 'none', label: r[1],
       desc: `모션그래픽 · ${r[1]}`
     }));
     DESIGN_STYLES.push(...MOTION_DESIGNS);
-    if (!DESIGN_CATS.includes('모션그래픽')) DESIGN_CATS.splice(1, 0, '모션그래픽');
 
     const mClamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
     const mEase = (p) => gEase(mClamp(p));
@@ -21921,7 +21930,16 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
             VIP_BLACK_CARD: { layout: 'mat', cap: 'quotecard', deco: 'sparkle' },
             SCRATCH_COUPON: { layout: 'polaroid', cap: 'sticky', deco: 'confetti' }
           };
-          const mapped = kitMap[value] || { layout: 'split', cap: 'glass', deco: 'none' };
+          // 표에 없는 구도도 서로 다른 레이아웃·자막 모양이 나오게 (예전에는 모두 같은 모양이라 [변경]을 눌러도 그대로였음)
+          const FALLBACK_KIT = [
+            { layout: 'split', cap: 'glass', deco: 'none' }, { layout: 'full', cap: 'band', deco: 'corners' },
+            { layout: 'polaroid', cap: 'sticky', deco: 'sparkle' }, { layout: 'circle', cap: 'pill', deco: 'dots' },
+            { layout: 'diag', cap: 'outline', deco: 'grid' }, { layout: 'mat', cap: 'headline', deco: 'border' },
+            { layout: 'arch', cap: 'neon', deco: 'grain' }, { layout: 'cards', cap: 'checkl', deco: 'confetti' }
+          ];
+          let wHash = 0;
+          for (const ch of String(value)) wHash = (wHash * 31 + ch.charCodeAt(0)) >>> 0;
+          const mapped = kitMap[value] || FALLBACK_KIT[wHash % FALLBACK_KIT.length];
           campaign.scenePlan[cutIdx].customLayout = mapped.layout;
           campaign.scenePlan[cutIdx].customCap = mapped.cap;
           campaign.scenePlan[cutIdx].customDeco = mapped.deco;
