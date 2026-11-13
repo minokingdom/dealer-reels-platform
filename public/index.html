@@ -11021,6 +11021,97 @@ function renderStoryArchetypesUI() {
           draw(cur, mc, 0, 0, 1, 1);
           c.restore();
         }
+      } else if (tr === 'iris') {
+        draw(prev, mp, 0, 0, 1, 1);
+        const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+        const maxR = Math.hypot(r.w / 2, r.h / 2) * 1.05;
+        const rad = Math.max(2, e * maxR);
+        c.save();
+        c.beginPath();
+        c.arc(cx, cy, rad, 0, Math.PI * 2);
+        c.clip();
+        draw(cur, mc, 0, 0, 1.08 - 0.08 * e, 1);
+        c.restore();
+        c.save();
+        c.strokeStyle = spec.accent || '#facc15';
+        c.lineWidth = Math.max(3, 14 * (1 - e));
+        c.beginPath();
+        c.arc(cx, cy, rad, 0, Math.PI * 2);
+        c.stroke();
+        c.restore();
+      } else if (tr === 'diamond') {
+        draw(prev, mp, 0, 0, 1, 1);
+        const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+        const span = (r.w + r.h) * 0.65 * e;
+        c.save();
+        c.beginPath();
+        c.moveTo(cx, cy - span);
+        c.lineTo(cx + span, cy);
+        c.lineTo(cx, cy + span);
+        c.lineTo(cx - span, cy);
+        c.closePath();
+        c.clip();
+        draw(cur, mc, 0, 0, 1.06 - 0.06 * e, 1);
+        c.restore();
+        c.save();
+        c.strokeStyle = spec.accent || '#38bdf8';
+        c.lineWidth = Math.max(2, 12 * (1 - e));
+        c.beginPath();
+        c.moveTo(cx, cy - span);
+        c.lineTo(cx + span, cy);
+        c.lineTo(cx, cy + span);
+        c.lineTo(cx - span, cy);
+        c.closePath();
+        c.stroke();
+        c.restore();
+      } else if (tr === 'hex') {
+        draw(prev, mp, 0, 0, 1, 1);
+        const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+        const rad = Math.max(4, Math.hypot(r.w, r.h) * 0.62 * e);
+        const rot = (1 - e) * 0.65;
+        const traceHex = () => {
+          c.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const a = rot + (i * Math.PI) / 3;
+            const px = cx + Math.cos(a) * rad;
+            const py = cy + Math.sin(a) * rad;
+            if (i === 0) c.moveTo(px, py);
+            else c.lineTo(px, py);
+          }
+          c.closePath();
+        };
+        c.save();
+        traceHex();
+        c.clip();
+        draw(cur, mc, 0, 0, 1.08 - 0.08 * e, 1);
+        c.restore();
+        c.save();
+        c.strokeStyle = spec.accent || '#a855f7';
+        c.lineWidth = Math.max(2, 12 * (1 - e));
+        traceHex();
+        c.stroke();
+        c.restore();
+      } else if (tr === 'barswipe') {
+        draw(prev, mp, 0, 0, 1, 1);
+        const rows = 4;
+        const bh = r.h / rows;
+        for (let i = 0; i < rows; i++) {
+          const pe = gEase((tp - i * 0.08) / 0.68);
+          if (pe <= 0) continue;
+          const bw = r.w * pe;
+          const bx = i % 2 === 0 ? r.x : r.x + r.w - bw;
+          const by = r.y + i * bh;
+          c.save();
+          c.beginPath();
+          c.rect(bx, by, bw + 1, bh + 1);
+          c.clip();
+          draw(cur, mc, 0, 0, 1, 1);
+          c.restore();
+          if (pe < 0.98) {
+            c.fillStyle = spec.accent || '#ec4899';
+            c.fillRect(i % 2 === 0 ? bx + bw - 6 : bx, by, 6, bh);
+          }
+        }
       } else {
         draw(prev, mp, 0, 0, 1, 1);
         draw(cur, mc, 0, 0, 1, e);
@@ -12552,6 +12643,44 @@ function renderStoryArchetypesUI() {
             c.fillRect(0, 0, W, H);
           });
           c.restore();
+        } else if (D === 'shapes') {
+          c.save();
+          const c2 = V.accent2 || '#ffffff';
+          const drift = Math.sin(t * 1.4) * 14;
+          c.save();
+          c.translate(64, 150 + drift);
+          c.rotate(t * 0.7);
+          c.strokeStyle = col;
+          c.lineWidth = 3;
+          c.globalAlpha = 0.75;
+          c.strokeRect(-22, -22, 44, 44);
+          c.restore();
+          c.save();
+          c.strokeStyle = c2;
+          c.lineWidth = 2.5;
+          c.globalAlpha = 0.65;
+          c.beginPath();
+          c.arc(W - 62, 130 - drift * 0.7, 26 + Math.sin(t * 2.2) * 5, 0, Math.PI * 2);
+          c.stroke();
+          c.fillStyle = col;
+          c.globalAlpha = 0.45;
+          c.beginPath();
+          c.arc(W - 62, 130 - drift * 0.7, 10, 0, Math.PI * 2);
+          c.fill();
+          c.restore();
+          c.save();
+          c.translate(W - 58, H - 230 + drift * 0.8);
+          c.rotate(-t * 0.55);
+          c.fillStyle = col;
+          c.globalAlpha = 0.55;
+          c.beginPath();
+          c.moveTo(0, -24);
+          c.lineTo(22, 18);
+          c.lineTo(-22, 18);
+          c.closePath();
+          c.fill();
+          c.restore();
+          c.restore();
         }
         return;
       }
@@ -13614,27 +13743,30 @@ function renderStoryArchetypesUI() {
       }
     }
 
-    // ---------- 키트 디자인 20종 (핵심 큐레이션) ----------
+    // ---------- 키트 디자인 22종 (핵심 14종 + 모션 도형 전환 8종) ----------
     //   [id, 이름, 묶음, 사진배치, 자막, 글꼴, 장식, 전환, 명함, 색보정, 머리표, 바탕, 라벨, 기본색, 보조색]
     const KIT_ROWS = [
+      ['g_iris', '원형 아이리스', '모션 도형', 'full', 'pill', 'dohyeon', 'shapes', 'iris', 'ring', 'vivid', 'pill', 'dark', '모션 릴스', '#facc15', '#ffffff'],
+      ['g_diamond', '다이아몬드 컷', '모션 도형', 'full', 'words', 'impact', 'shapes', 'diamond', 'bigname', 'vivid', 'counter', 'dark', 'FOCUS', '#38bdf8', '#e0f2fe'],
+      ['g_hex', '육각 줌인', '모션 도형', 'full', 'neon', 'gugi', 'shapes', 'hex', 'neon', 'noir', 'box', 'dark', 'HEXAGON', '#a855f7', '#f0abfc'],
+      ['g_blocks', '도형 블록 스윕', '모션 도형', 'split', 'band', 'dohyeon', 'shapes', 'barswipe', 'split', 'vivid', 'pill', 'dark', '오늘의 픽', '#ec4899', '#fde047'],
+      ['g_ringpop', '링 팝 릴스', '모션 도형', 'circle', 'glass', 'sans', 'shapes', 'iris', 'ring', 'cool', 'kicker', 'ink', 'SPOTLIGHT', '#22d3ee', '#e0f2fe'],
+      ['g_diagshape', '사선 도형 컷', '모션 도형', 'diag', 'outline', 'impact', 'shapes', 'diamond', 'badge', 'sports', 'counter', 'dark', 'TREND', '#ef4444', '#ffffff'],
+      ['g_cardhex', '카드 육각 전환', '모션 도형', 'cards', 'checkl', 'sans', 'shapes', 'hex', 'card', 'none', 'counter', 'white', '핵심 포인트', '#2563eb', '#dbeafe'],
+      ['g_duosweep', '비교 블록 전환', '모션 도형', 'duo', 'pill', 'jua', 'shapes', 'barswipe', 'ticket', 'vivid', 'box', 'dark', 'BEFORE / AFTER', '#22c55e', '#dcfce7'],
+
       ['k_redband', '레드 띠지', '특가', 'full', 'band', 'impact', 'dots', 'zoom', 'ticket', 'vivid', 'pill', 'dark', '오늘만 특가', '#ef4444', '#facc15'],
-      ['s_shoplive', '쇼핑 라이브', '특가', 'split', 'pill', 'jua', 'sparkle', 'slide', 'ticket', 'vivid', 'pill', 'accent', '라이브 특가', '#ec4899', '#fde047'],
       ['k_neonnight', '네온 나이트', '재미', 'full', 'neon', 'dohyeon', 'grain', 'glitch', 'neon', 'noir', 'box', 'dark', 'NIGHT MOOD', '#f472b6', '#a78bfa'],
       ['k_popbubble', '팝 말풍선', '재미', 'full', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'vivid', 'counter', 'white', '이거 실화?', '#f59e0b', '#ffffff'],
       ['k_subtitle', '극장 자막', '고급', 'full', 'cinema', 'serif', 'bars', 'fade', 'minimal', 'film', 'kicker', 'dark', 'A FILM BY', '#f2c46d', '#ffffff'],
-      ['a_gallery', '갤러리 액자', '고급', 'mat', 'vertical', 'serif', 'none', 'fade', 'minimal', 'mono', 'kicker', 'paper', 'EXHIBITION', '#78716c', '#e7e5e4'],
-      ['r_window', '아치 윈도우', '고급', 'arch', 'cinema', 'serif', 'none', 'fade', 'minimal', 'warm', 'kicker', 'paper', 'MAISON', '#a16207', '#fef3c7'],
-      ['m_strip', '필름 스트립', '고급', 'film', 'cinema', 'serif', 'grain', 'slide', 'polaroid', 'film', 'none', 'dark', 'FILM No.35', '#f2c46d', '#ffffff'],
       ['p_diary', '폴라로이드 일기', '감성', 'polaroid', 'sticky', 'pen', 'leak', 'drop', 'polaroid', 'warm', 'none', 'paper', '오늘의 기록', '#fb923c', '#fed7aa'],
       ['g_fourcut', '네 컷 사진', '감성', 'grid', 'pill', 'jua', 'sparkle', 'flash', 'polaroid', 'pastel', 'none', 'white', '네컷', '#f9a8d4', '#fce7f3'],
       ['k_highlighter', '형광펜 정리', '상담·정보', 'full', 'marker', 'sans', 'none', 'wipe', 'card', 'none', 'pill', 'dark', '핵심 정리', '#facc15', '#fef9c3'],
       ['u_compare', '위아래 비교', '상담·정보', 'duo', 'band', 'sans', 'none', 'slide', 'split', 'none', 'counter', 'dark', 'BEFORE / AFTER', '#0ea5e9', '#e0f2fe'],
       ['k_lowerthird', '방송 하단 자막', '뉴스·방송', 'full', 'lower3', 'sans', 'corners', 'slide', 'news', 'none', 'box', 'dark', 'LIVE', '#2563eb', '#dbeafe'],
       ['k_kinetic', '키네틱 타이포', '스포츠', 'full', 'words', 'impact', 'leak', 'flash', 'bigname', 'sports', 'counter', 'dark', 'GO', '#facc15', '#ffffff'],
-      ['k_approved', '승인 도장', '신뢰', 'full', 'stamp', 'gugi', 'border', 'flash', 'badge', 'trust', 'kicker', 'dark', '승인 완료', '#dc2626', '#fee2e2'],
       ['s_datapanel', '데이터 패널', '테크', 'split', 'typer', 'mono', 'grid', 'glitch', 'receipt', 'ev', 'counter', 'ink', 'SYS.REPORT', '#22d3ee', '#a5f3fc'],
       ['h_signature', '시그니처', '손글씨', 'mat', 'scriptkick', 'serif7', 'none', 'fade', 'signature', 'warm', 'kicker', 'paper', 'SIGNATURE', '#a16207', '#fef3c7', 'With care', 'greatvibes'],
-      ['t_stack', '빅 스택', '타이포', 'dim', 'stack', 'gasoek', 'none', 'flash', 'bigname', 'noir', 'counter', 'dark', 'BIG TYPE', '#facc15', '#ffffff'],
       ['t_inside', '글자 속 사진', '타이포', 'full', 'knockout', 'bagel', 'none', 'zoom', 'card', 'vivid', 'pill', 'dark', 'INSIDE', '#22d3ee', '#ffffff'],
       ['v_delivery', '일상 브이로그', '브이로그', 'handheld', 'vsub', 'sans', 'none', 'fade', 'vlogend', 'warm', 'profile', 'dark', '오늘의 브이로그', '#facc15', '#fef9c3']
     ];
@@ -13672,7 +13804,7 @@ function renderStoryArchetypesUI() {
       ds.cat = CLASSIC_CATS[ds.genre] || '특가';
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
-    const DESIGN_CATS = ['전체', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    const DESIGN_CATS = ['전체', '모션 도형', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '감성', '재미', '뉴스·방송'];
     // ★ 업종 전용 테마: 그 업종을 고른 사람에게만 보이고, 업종을 바꾸면 첫 테마가 바로 적용됨
     // [id, 이름, (분류는 '내 업종'), layout, cap, font, deco, trans, outro, grade, head, bg, label, accent, accent2, script, sfont]
     const IND_KIT_ROWS = {
@@ -14306,6 +14438,7 @@ function renderStoryArchetypesUI() {
 
     // ---------- 디자인에 어울리는 배경음악 ----------
     const DESIGN_BGM_BY_CAT = {
+      '모션 도형': ['edm', 'urban', 'drive'],
       특가: ['urban', 'edm'], 고급: ['luxury', 'jazz', 'cinema'], 테크: ['drive', 'edm'], 스포츠: ['edm', 'urban'],
       '상담·정보': ['showroom', 'bright'], 신뢰: ['ballad', 'showroom'], 감성: ['lofi', 'ballad'], 재미: ['funk', 'bright'],
       '뉴스·방송': ['news'], 손글씨: ['lofi', 'ballad', 'jazz'], 타이포: ['urban', 'drive', 'edm'], 브이로그: ['vlog', 'lofi', 'bright']
