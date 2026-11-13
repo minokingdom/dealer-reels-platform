@@ -2317,17 +2317,22 @@
         if (IND.outroMode === 'store') {
           const storeName = (IND.storeNames && IND.storeNames[idx % IND.storeNames.length]) || IND.branchPlaceholder || d._autoOrig.branch;
           if (!d._storeAvatarCache) d._storeAvatarCache = {};
-          if (!d._storeAvatarCache[IND.key] && typeof createThemedSceneImage === 'function') {
-            const deck = (typeof AR_INDUSTRY_SCENE_DECKS !== 'undefined' && AR_INDUSTRY_SCENE_DECKS[IND.key]) || [];
-            const storeScene = deck[8] || deck[0] || [IND.icon, storeName, IND.storeSubtitle || IND.place, ['#1f1209', '#451a03']];
-            d._storeAvatarCache[IND.key] = createThemedSceneImage(
-              IND.icon || storeScene[0],
-              storeName,
-              IND.storeSubtitle || `${IND.place} 공식 안내`,
-              storeScene[3] || ['#1f1209', '#451a03'],
-              storeName,
-              10
-            );
+          if (!d._storeAvatarCache[IND.key]) {
+            const storeImg = new Image();
+            storeImg.crossOrigin = 'anonymous';
+            storeImg.onload = () => {
+              if (window.__timelines?.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            };
+            storeImg.onerror = () => {
+              if (typeof createThemedSceneImage === 'function') {
+                const deck = (typeof AR_INDUSTRY_SCENE_DECKS !== 'undefined' && AR_INDUSTRY_SCENE_DECKS[IND.key]) || [];
+                const storeScene = deck[8] || deck[0] || [IND.icon, storeName, IND.storeSubtitle || IND.place, ['#1f1209', '#451a03']];
+                const fb = createThemedSceneImage(IND.icon || storeScene[0], storeName, IND.storeSubtitle || `${IND.place} 공식 안내`, storeScene[3] || ['#1f1209', '#451a03'], storeName, 10);
+                storeImg.src = fb.src;
+              }
+            };
+            storeImg.src = `/assets/scenes/${IND.key}/9.jpg`;
+            d._storeAvatarCache[IND.key] = storeImg;
           }
           Object.assign(d, {
             name: storeName,
@@ -2538,12 +2543,34 @@
       return img;
     }
 
-    // 업종별 10개 기본 이미지 생성 (자동차 외 업종)
+    // 업종별 10개 기본 이미지 생성 (실제 사진 우선 로드 + 오프라인 시 테마 카드 폴백)
     function arIndustryPlaceholderPhotos() {
       const deck = AR_INDUSTRY_SCENE_DECKS[IND.key] || AR_INDUSTRY_SCENE_DECKS.restaurant;
-      return deck.map(([icon, title, sub, grad], i) =>
-        createThemedSceneImage(icon, title, sub, grad, `${i + 1}. ${title}`, i + 1)
-      );
+      return deck.map(([icon, title, sub, grad], i) => {
+        const label = `${i + 1}. ${title}`;
+        const url = `/assets/scenes/${IND.key}/${i + 1}.jpg`;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img._label = label;
+        img._sceneTitle = title;
+        img._dataUrl = url;
+        img.onload = () => {
+          if (window.__timelines?.main) {
+            window.__timelines.main.seek(window.__timelines.main.currentTime);
+          }
+        };
+        img.onerror = () => {
+          if (img._fellBack) return;
+          img._fellBack = true;
+          const fb = createThemedSceneImage(icon, title, sub, grad, label, i + 1);
+          img._dataUrl = fb.src;
+          img.src = fb.src;
+          if (typeof renderPhotoThumbnailsGrid === 'function') renderPhotoThumbnailsGrid();
+          if (typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
+        };
+        img.src = url;
+        return img;
+      });
     }
     function arApplyIndustryPhotos() {
       if (typeof campaign === 'undefined' || campaign.isUserCustomPhotos) return;
@@ -19352,17 +19379,35 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         campaign.uploadedPhotos.push(img);
       });
 
-      // 자동차 기본 이미지도 총 10장으로 채워 4~10컷 모든 장면이 겹치지 않게 구성
+      // 자동차 기본 이미지도 총 10장으로 채워 4~10컷 모든 장면이 실제 사진으로 겹치지 않게 구성
       const autoExtraDeck = (typeof AR_INDUSTRY_SCENE_DECKS !== 'undefined' && Array.isArray(AR_INDUSTRY_SCENE_DECKS.auto))
         ? AR_INDUSTRY_SCENE_DECKS.auto.slice(BUILT_IN_AI_CAR_PHOTOS.length)
         : [];
       autoExtraDeck.forEach(([icon, title, sub, grad], extraIdx) => {
         const num = BUILT_IN_AI_CAR_PHOTOS.length + extraIdx + 1;
-        if (typeof createThemedSceneImage === 'function') {
-          const sceneImg = createThemedSceneImage(icon, title, sub, grad, `${num}. ${title}`, num);
-          sceneImg._dataUrl = sceneImg.src;
-          campaign.uploadedPhotos.push(sceneImg);
-        }
+        const label = `${num}. ${title}`;
+        const url = `/assets/scenes/auto/${num}.jpg`;
+        const sceneImg = new Image();
+        sceneImg.crossOrigin = 'anonymous';
+        sceneImg._label = label;
+        sceneImg._sceneTitle = title;
+        sceneImg._dataUrl = url;
+        sceneImg.onload = () => {
+          if (window.__timelines?.main) {
+            window.__timelines.main.seek(window.__timelines.main.currentTime);
+          }
+        };
+        sceneImg.onerror = () => {
+          if (sceneImg._fellBack) return;
+          sceneImg._fellBack = true;
+          if (typeof createThemedSceneImage === 'function') {
+            const fb = createThemedSceneImage(icon, title, sub, grad, label, num);
+            sceneImg._dataUrl = fb.src;
+            sceneImg.src = fb.src;
+          }
+        };
+        sceneImg.src = url;
+        campaign.uploadedPhotos.push(sceneImg);
       });
 
       renderPhotoThumbnailsGrid();
