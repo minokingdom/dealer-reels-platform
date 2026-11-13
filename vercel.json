@@ -13,6 +13,9 @@
     },
     "api/sns.js": {
       "maxDuration": 60
+    },
+    "api/cron-sns.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -25,6 +28,10 @@
     {
       "path": "/api/cron-billing",
       "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron-sns",
+      "schedule": "0 2 * * *"
     }
   ]
 }
