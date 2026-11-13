@@ -7367,8 +7367,8 @@ function renderStoryArchetypesUI() {
                   <span id="cutTimeLabel${i}" class="font-mono text-[#ededed] font-medium">CUT ${i + 1} (${s}~${e}초)</span>
                   <div class="flex items-center gap-1">
                     <span id="cutWidgetBadge${i}" class="font-mono text-[10px] text-[#85858b] truncate max-w-[110px]">${wLabel}</span>
-                    <button type="button" onclick="seekToTime(${seekSec})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="이 컷 화면 보기">
-                      보기
+                    <button type="button" onclick="cycleCutDesign(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="누를 때마다 이 컷의 디자인을 바꾸고 바로 미리보기로 보여줍니다">
+                      변경
                     </button>
                     <button type="button" onclick="testCutTts(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="이 컷의 한국어 성우 음성을 즉시 들어봅니다">
                       듣기
@@ -7387,7 +7387,7 @@ function renderStoryArchetypesUI() {
               <select onchange="pickCutDefaultPhoto(${i}, this.value)" title="이 컷의 기본 이미지 선택" class="studio-input h-7 px-1.5 text-[11px] bg-[#1a1a1d] text-[#d4d4d8] cursor-pointer">
                 ${photoOpts || '<option value="0">기본 장면</option>'}
               </select>
-              <select onchange="updateCutSceneSetting(${i}, 'widget', this.value)" title="이 컷의 화면 위젯/디자인 변경" class="studio-input h-7 px-1.5 text-[11px] bg-[#1a1a1d] text-[#d4d4d8] cursor-pointer">
+              <select id="cutWidgetSelect${i}" onchange="updateCutSceneSetting(${i}, 'widget', this.value)" title="이 컷의 화면 위젯/디자인 변경" class="studio-input h-7 px-1.5 text-[11px] bg-[#1a1a1d] text-[#d4d4d8] cursor-pointer">
                 ${widgetOpts}
               </select>
               <select onchange="updateCutSceneSetting(${i}, 'customCam', this.value)" title="이 컷의 카메라 모션 변경" class="studio-input h-7 px-1.5 text-[11px] bg-[#1a1a1d] text-[#d4d4d8] cursor-pointer">
@@ -19534,6 +19534,19 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       } else if (window.__timelines?.main) {
         window.__timelines.main.seek(window.__timelines.main.currentTime);
       }
+    }
+
+    function cycleCutDesign(cutIdx) {
+      const keys = (typeof WIDGET_LABELS !== 'undefined' && Object.keys(WIDGET_LABELS)) || (typeof WIDGET_POOL !== 'undefined' && WIDGET_POOL) || [];
+      if (!keys.length) return;
+      if (!Array.isArray(campaign.scenePlan)) campaign.scenePlan = [];
+      if (!campaign.scenePlan[cutIdx]) campaign.scenePlan[cutIdx] = {};
+      const cur = campaign.scenePlan[cutIdx].widget || (typeof WIDGET_POOL !== 'undefined' ? WIDGET_POOL[cutIdx % WIDGET_POOL.length] : keys[0]);
+      const idx = keys.indexOf(cur);
+      const next = keys[(idx + 1) % keys.length];
+      const sel = document.getElementById(`cutWidgetSelect${cutIdx}`);
+      if (sel) sel.value = next;
+      updateCutSceneSetting(cutIdx, 'widget', next);
     }
 
     function replaceCutMedia(cutIdx, event) {
