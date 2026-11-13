@@ -729,12 +729,14 @@
             <div class="pt-2 border-t border-[var(--border)] space-y-2">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] text-[#fb923c] font-medium">🔥 이 업종 인기 템플릿 <span class="text-[#85858b] font-normal">(클릭 한 번으로 바로 적용)</span></span>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button id="liveTrendsBtn" type="button" onclick="fetchLiveReelsTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#0ea5e9]/15 hover:bg-[#0ea5e9] text-[#38bdf8] hover:text-white border border-[#0ea5e9]/40 text-[10px] font-semibold cursor-pointer transition">📡 실시간 릴스 가져오기</button>
                   <button type="button" onclick="importAllPopularTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#ea580c]/20 hover:bg-[#ea580c] text-[#fb923c] hover:text-white border border-[#ea580c]/40 text-[10px] font-semibold cursor-pointer transition">✨ 인기 5종 한 번에 가져오기</button>
                   <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
                 </div>
               </div>
               <div id="popularTrendChips" class="flex items-center gap-1.5 flex-wrap"></div>
+              <div id="liveTrendResults" class="hidden space-y-1.5 rounded-[8px] border border-[#0ea5e9]/30 bg-[#0b1219] p-2"></div>
               <div class="flex items-center gap-1.5">
                 <input id="trendThemeQuery" type="text" placeholder="원하는 키워드 직접 검색·생성 (예: 비포애프터, 오픈런...)"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
@@ -13978,6 +13980,70 @@ function renderStoryArchetypesUI() {
       else renderDesignStylePicker();
       const totalCount = arVisibleDesigns().length;
       updateTrendSwapStatusUI(addedCount ? `인기 템플릿 ${addedCount}종 한 번에 추가됨 (총 ${totalCount}종)` : `이미 인기 템플릿 5종이 모두 담겨 있습니다`);
+    }
+
+    window.__liveTrendItems = [];
+    async function fetchLiveReelsTrends() {
+      const btn = document.getElementById('liveTrendsBtn');
+      const box = document.getElementById('liveTrendResults');
+      const qEl = document.getElementById('trendThemeQuery');
+      const q = qEl ? qEl.value.trim() : '';
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      if (btn) { btn.disabled = true; btn.textContent = '📡 조회 중...'; }
+      if (box) {
+        box.classList.remove('hidden');
+        box.innerHTML = '<div class="text-[11px] text-[#93c5fd]">현재 유행 중인 릴스·쇼츠를 실시간으로 가져오는 중...</div>';
+      }
+      try {
+        const res = await fetch(`/api/trends?industry=${encodeURIComponent(indKey)}&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        const items = Array.isArray(data.items) ? data.items : [];
+        window.__liveTrendItems = items;
+        if (!items.length) {
+          if (box) box.innerHTML = '<div class="text-[11px] text-[#fca5a5]">실시간 검색 결과가 비어 있습니다. 키워드를 바꿔 다시 눌러 주세요.</div>';
+        } else if (box) {
+          box.innerHTML = `
+            <div class="flex items-center justify-between text-[10px] text-[#7dd3fc]">
+              <span>📡 실시간 릴스·쇼츠 검색 결과 (${items.length}건 · ${data.query || ''})</span>
+              <button type="button" onclick="document.getElementById('liveTrendResults').classList.add('hidden')" class="text-[#85858b] hover:text-white cursor-pointer">닫기</button>
+            </div>
+            ${items.map((it, idx) => `
+              <div class="flex items-center justify-between gap-2 rounded-[6px] bg-[#111827]/80 px-2 py-1.5 border border-white/5">
+                <div class="min-w-0 flex-1">
+                  <div class="text-[11px] text-[#ededed] truncate">${(it.title || '').replace(/</g, '&lt;')}</div>
+                  <div class="text-[10px] text-[#9ca3af] truncate">${it.views || '인기 쇼츠'} · 훅: <span class="text-[#fde047]">${(it.theme?.label || '').replace(/</g, '&lt;')}</span> · <a href="${it.url}" target="_blank" rel="noopener" class="underline text-[#38bdf8]">영상 보기</a></div>
+                </div>
+                <button type="button" onclick="applyLiveTrendItem(${idx})" class="shrink-0 px-2 py-1 rounded-[5px] bg-[#0ea5e9] hover:bg-[#38bdf8] text-white text-[10px] font-semibold cursor-pointer">스타일 적용</button>
+              </div>
+            `).join('')}`;
+        }
+      } catch (e) {
+        if (box) box.innerHTML = '<div class="text-[11px] text-[#fca5a5]">실시간 조회 중 오류가 발생했습니다.</div>';
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '📡 실시간 릴스 가져오기'; }
+      }
+    }
+
+    function applyLiveTrendItem(idx) {
+      const it = (window.__liveTrendItems || [])[idx];
+      if (!it || !it.theme) return;
+      const t = it.theme;
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const obj = makeTrendDesignObj([
+        t.id, t.name, t.layout, t.cap, t.font, t.deco, t.trans, t.outro, t.grade, t.head, t.bg, t.label, t.accent, t.accent2
+      ], indKey, DESIGN_STYLES.length);
+      if (!DESIGN_STYLES.some((d) => d.id === obj.id)) {
+        DESIGN_STYLES.unshift(obj);
+        const st = getTrendSwapState();
+        st.added.unshift(obj);
+        saveTrendSwapState(st);
+      }
+      if (typeof designThumbCache !== 'undefined' && designThumbCache.fresh) {
+        delete designThumbCache.fresh[obj.id];
+      }
+      campaign.designCat = '전체';
+      selectDesignStyle(obj.id);
+      updateTrendSwapStatusUI(`실시간 유행 '${obj.name}' 적용됨`);
     }
 
     function pickVictimDesignForSwap(indKey) {
