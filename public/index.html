@@ -13783,7 +13783,7 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 4) 모서리 프레임 브래킷 + 씬 번호 그래픽
+      // 4) 모서리 프레임 브래킷
       const m = 18, len = 20;
       c.strokeStyle = col;
       c.lineWidth = 2.5;
@@ -13792,6 +13792,65 @@ function renderStoryArchetypesUI() {
       c.moveTo(m, m + len); c.lineTo(m, m); c.lineTo(m + len, m);
       c.moveTo(W - m - len, H - m); c.lineTo(W - m, H - m); c.lineTo(W - m, H - m - len);
       c.stroke();
+
+      // 5) 키네틱 타이포 그래픽 (대형 외곽선 인덱스 + 바운스 키워드 + 흐르는 마키 띠)
+      const kBounce = typeof gBack === 'function' ? gBack(Math.min(1, p * 2.8)) : pop;
+      const numStr = `0${cutIdx + 1}`;
+      c.save();
+      c.translate(36, 98);
+      c.scale(0.85 + 0.15 * kBounce, 0.85 + 0.15 * kBounce);
+      c.font = '900 44px "Black Han Sans", "Do Hyeon", sans-serif';
+      c.textAlign = 'left';
+      c.lineWidth = 2.2;
+      c.strokeStyle = col;
+      c.globalAlpha = 0.55 * pop;
+      c.strokeText(numStr, 0, 0);
+      c.fillStyle = col;
+      c.globalAlpha = 0.16 * pop;
+      c.fillText(numStr, 3, 3);
+      c.restore();
+
+      const rawCap = String((typeof campaign !== 'undefined' && campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || spec.label || '').trim();
+      const firstWord = rawCap.replace(/[^\w가-힣\s!?]/g, ' ').trim().split(/\s+/).find((w) => w.length >= 2) || (spec.label || 'FOCUS');
+      const kWord = firstWord.slice(0, 7);
+      c.save();
+      c.translate(36 + (1 - pop) * -28, 128);
+      c.rotate(-0.04 * (1 - pop));
+      c.font = '900 18px "Do Hyeon", "Pretendard Variable", sans-serif';
+      const kw = Math.min(180, c.measureText(kWord).width + 22);
+      c.fillStyle = col;
+      c.globalAlpha = 0.92 * pop;
+      if (typeof gRoundRect === 'function') { gRoundRect(c, 0, -18, kw, 26, 6); c.fill(); }
+      else c.fillRect(0, -18, kw, 26);
+      c.fillStyle = gLuminance(col) > 0.45 ? '#111111' : '#ffffff';
+      c.textAlign = 'left';
+      c.fillText(kWord, 11, 1);
+      c.restore();
+
+      if (cutIdx % 2 === 1) {
+        c.save();
+        const bandY = spec.layout === 'duo' ? 472 : 168;
+        c.translate(W / 2, bandY);
+        c.rotate(-0.035);
+        c.fillStyle = 'rgba(12,12,16,0.72)';
+        c.fillRect(-W * 0.6, -13, W * 1.2, 26);
+        c.strokeStyle = col;
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.moveTo(-W * 0.6, -13); c.lineTo(W * 0.6, -13);
+        c.moveTo(-W * 0.6, 13); c.lineTo(W * 0.6, 13);
+        c.stroke();
+        const ticker = `★ ${spec.label || 'HOT'}  ·  ${kWord}  ·  POINT 0${cutIdx + 1}  ·  `;
+        c.font = '800 12px "Pretendard Variable", sans-serif';
+        c.fillStyle = col2;
+        c.textAlign = 'left';
+        const tw = Math.max(180, c.measureText(ticker).width);
+        const offset = -((t * 95) % tw);
+        for (let x = offset - tw; x < W * 0.7; x += tw) {
+          c.fillText(ticker, x - W * 0.5, 4);
+        }
+        c.restore();
+      }
 
       c.restore();
     }
@@ -13802,9 +13861,11 @@ function renderStoryArchetypesUI() {
         const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
         const cutPlan = (typeof campaign !== 'undefined' && Array.isArray(campaign.scenePlan) && campaign.scenePlan[cutIdx]) || {};
         const autoLayout = kitAutoCutLayout(spec, cutIdx);
+        const kineticCaps = ['words', 'stack', 'slam', 'marquee', 'longshadow'];
+        const autoCap = (cutIdx === 2 && !kineticCaps.includes(spec.cap)) ? 'words' : spec.cap;
         const cutSpec = Object.assign({}, spec, {
           layout: cutPlan.customLayout || autoLayout,
-          cap: cutPlan.customCap || spec.cap,
+          cap: cutPlan.customCap || autoCap,
           deco: cutPlan.customDeco || (cutIdx % 2 === 1 && spec.deco === 'none' ? 'shapes' : spec.deco)
         });
         const K = kitContext(cutSpec, V);
