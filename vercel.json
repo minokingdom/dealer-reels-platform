@@ -19,9 +19,6 @@
     },
     "api/trends.js": {
       "maxDuration": 30
-    },
-    "api/cron-trends.js": {
-      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -38,10 +35,6 @@
     {
       "path": "/api/cron-sns",
       "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron-trends",
-      "schedule": "0 3 * * *"
     }
   ]
 }

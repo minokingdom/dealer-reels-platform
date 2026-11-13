@@ -300,6 +300,16 @@ async function handler(req, res) {
   const forceRefresh = req.query.refresh === '1';
 
   try {
+    if (req.query.cron === '1') {
+      const keys = Object.keys(INDUSTRY_QUERIES);
+      const summary = {};
+      for (const k of keys) {
+        const { source, query, items } = await fetchTrendsForIndustry(k, '');
+        if (items.length) await writeTrendCache(k, source, query, items);
+        summary[k] = { source, count: items.length };
+      }
+      return res.status(200).json({ ok: true, updatedAt: new Date().toISOString(), summary });
+    }
     // 기본 업종 조회는 서버 DB 캐시 우선 (0.1초 응답 & 비용/한도 절약)
     if (!customQ && !forceRefresh) {
       const cached = await readTrendCache(indKey, 24);
