@@ -14002,9 +14002,11 @@ function renderStoryArchetypesUI() {
         if (!items.length) {
           if (box) box.innerHTML = '<div class="text-[11px] text-[#fca5a5]">실시간 검색 결과가 비어 있습니다. 키워드를 바꿔 다시 눌러 주세요.</div>';
         } else if (box) {
+          const srcLabel = String(data.source || '').startsWith('instagram') ? '📸 인스타 릴스' : '📡 쇼츠·릴스';
+          const cacheTag = data.cached ? ' · 서버 캐시' : '';
           box.innerHTML = `
             <div class="flex items-center justify-between text-[10px] text-[#7dd3fc]">
-              <span>📡 실시간 릴스·쇼츠 검색 결과 (${items.length}건 · ${data.query || ''})</span>
+              <span>${srcLabel} (${items.length}건 · ${data.query || ''}${cacheTag})</span>
               <button type="button" onclick="document.getElementById('liveTrendResults').classList.add('hidden')" class="text-[#85858b] hover:text-white cursor-pointer">닫기</button>
             </div>
             ${items.map((it, idx) => `
