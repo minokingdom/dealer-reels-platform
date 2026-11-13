@@ -128,19 +128,23 @@ function themeSpecFromTitle(title, indKey, idx, prefix = '📡') {
   };
 }
 
-async function fetchInstagramApify(hashtag) {
+async function fetchInstagramApify(hashtag, diag) {
   const token = String(process.env.APIFY_TOKEN || '').trim();
   if (!token) return [];
   const tag = String(hashtag || '').replace(/^#/, '').replace(/\s+/g, '');
   if (!tag) return [];
-  const url = `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&timeout=25`;
+  const url = `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&timeout=24`;
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hashtags: [tag], resultsType: 'reels', resultsLimit: 6 }),
-    signal: AbortSignal.timeout(26000)
+    body: JSON.stringify({ hashtags: [tag], resultsLimit: 6 }),
+    signal: AbortSignal.timeout(25000)
   });
-  if (!r.ok) return [];
+  if (diag) diag.apifyStatus = r.status;
+  if (!r.ok) {
+    if (diag) diag.apifyErr = (await r.text().catch(() => '')).slice(0, 180);
+    return [];
+  }
   const rows = await r.json();
   if (!Array.isArray(rows)) return [];
   return rows.slice(0, 6).map((p) => {
@@ -229,10 +233,11 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
 
   let source = 'empty';
   let rawVideos = [];
+  const diag = { hasApify: Boolean(process.env.APIFY_TOKEN) };
 
   // 1) 운영자 Apify 토큰이 있으면 인스타 릴스 우선 조회
   if (process.env.APIFY_TOKEN) {
-    rawVideos = await fetchInstagramApify(igTag).catch(() => []);
+    rawVideos = await fetchInstagramApify(igTag, diag).catch((e) => { diag.apifyEx = e?.message; return []; });
     if (rawVideos.length) source = 'instagram_apify';
   }
 
@@ -282,7 +287,7 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
     ...v,
     theme: themeSpecFromTitle(v.title, indKey, idx, prefix)
   }));
-  return { source, query: source.startsWith('instagram') ? `#${igTag}` : ytQuery, items };
+  return { source, query: source.startsWith('instagram') ? `#${igTag}` : ytQuery, items, diag };
 }
 
 async function handler(req, res) {
@@ -312,7 +317,7 @@ async function handler(req, res) {
       }
     }
 
-    const { source, query, items } = await fetchTrendsForIndustry(indKey, customQ);
+    const { source, query, items, diag } = await fetchTrendsForIndustry(indKey, customQ);
     if (!customQ && items.length) {
       await writeTrendCache(indKey, source, query, items);
       res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
@@ -325,6 +330,7 @@ async function handler(req, res) {
       industry: indKey,
       query,
       fetchedAt: new Date().toISOString(),
+      diag,
       items
     });
   } catch (err) {
