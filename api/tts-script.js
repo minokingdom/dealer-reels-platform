@@ -91,8 +91,13 @@ async function handler(req, res) {
       })
     });
   try {
-    let upstream = await callFish((process.env.FISH_TTS_MODEL || 's2-pro').trim());
-    if (upstream.status === 402) upstream = await callFish(FREE_MODEL);
+    let modelUsed = (process.env.FISH_TTS_MODEL || 's2-pro').trim();
+    let upstream = await callFish(modelUsed);
+    if (upstream.status === 402) {
+      modelUsed = FREE_MODEL;
+      upstream = await callFish(FREE_MODEL);
+    }
+    res.setHeader('X-TTS-Model', modelUsed);
     if (!upstream.ok) {
       let detail = '';
       try { detail = (await upstream.text()).slice(0, 300); } catch (e) {}
@@ -167,7 +172,8 @@ async function handler(req, res) {
       return res.status(502).json({ ok: false, error: 'fish_alignment_mismatch', lines: out, segments: segments.length });
     }
 
-    const body = { ok: true, duration: segments[segments.length - 1].end, lines: out, audio_base64: audio.toString('base64') };
+    // model: 실제로 쓴 Fish Audio 모델 (유료 크레딧이 떨어지면 무료 모델 이름이 나옴)
+    const body = { ok: true, model: modelUsed, duration: segments[segments.length - 1].end, lines: out, audio_base64: audio.toString('base64') };
     if (req.query.debug === '1') {
       body.debug = { eventCount, segments, spoken, fullText };
       res.setHeader('Cache-Control', 'no-store');

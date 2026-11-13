@@ -116,8 +116,14 @@ async function handler(req, res) {
       body: JSON.stringify(payload)
     });
   try {
-    let upstream = await callFish((process.env.FISH_TTS_MODEL || 's2-pro').trim());
-    if (upstream.status === 402) upstream = await callFish(FREE_MODEL);
+    let modelUsed = (process.env.FISH_TTS_MODEL || 's2-pro').trim();
+    let upstream = await callFish(modelUsed);
+    if (upstream.status === 402) {
+      modelUsed = FREE_MODEL;
+      upstream = await callFish(FREE_MODEL);
+    }
+    // 어떤 모델로 만들었는지 알려 줌 (유료 크레딧이 떨어져 무료 모델로 바뀌었는지 확인용)
+    res.setHeader('X-TTS-Model', modelUsed);
 
     if (!upstream.ok) {
       let detail = '';
