@@ -13519,28 +13519,38 @@ function renderStoryArchetypesUI() {
       return { bg, light, bgAccent, hl, ink: light ? '#111111' : '#ffffff', label: spec.label || V.label };
     }
     function renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, spec, V) {
-      const K = kitContext(spec, V);
-      K.dealer = d;
       const cutDur = mainDuration / totalCuts;
       if (t < mainDuration) {
-        const S = kitScene(t, mainDuration, false);
-        const zone = kitLayout(c, W, H, t, S, spec, V, K);
-        kitDeco(c, W, H, t, spec, V, K, 'under');
         const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
+        const cutPlan = (typeof campaign !== 'undefined' && Array.isArray(campaign.scenePlan) && campaign.scenePlan[cutIdx]) || {};
+        const cutSpec = (cutPlan.customLayout || cutPlan.customCap || cutPlan.customDeco)
+          ? Object.assign({}, spec, {
+              layout: cutPlan.customLayout || spec.layout,
+              cap: cutPlan.customCap || spec.cap,
+              deco: cutPlan.customDeco || spec.deco
+            })
+          : spec;
+        const K = kitContext(cutSpec, V);
+        K.dealer = d;
+        const S = kitScene(t, mainDuration, false);
+        const zone = kitLayout(c, W, H, t, S, cutSpec, V, K);
+        kitDeco(c, W, H, t, cutSpec, V, K, 'under');
         const localSec = t - cutIdx * cutDur;
         const raw = (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || campaign.hook || '';
         const caption = gCleanCaption(raw);
         const e = Math.min(1, localSec / 1.2);
         let z = zone;
         if (gIsPriceCut(raw)) {
-          const shift = kitPrice(c, W, zone, spec, V, K, e);
+          const shift = kitPrice(c, W, zone, cutSpec, V, K, e);
           if (shift) z = Object.assign({}, zone, { y: zone.y + shift, h: zone.h - shift });
         }
-        kitCaption(c, W, H, t, z, caption, spec, V, K, e, cutIdx, S, Math.min(1, localSec / cutDur));
-        kitHead(c, W, t, spec, V, K, S, cutIdx, totalCuts, cutDur);
-        kitChip(c, d, W, H, spec, V, K, gEase(t / 0.6));
-        kitDeco(c, W, H, t, spec, V, K, 'over');
+        kitCaption(c, W, H, t, z, caption, cutSpec, V, K, e, cutIdx, S, Math.min(1, localSec / cutDur));
+        kitHead(c, W, t, cutSpec, V, K, S, cutIdx, totalCuts, cutDur);
+        kitChip(c, d, W, H, cutSpec, V, K, gEase(t / 0.6));
+        kitDeco(c, W, H, t, cutSpec, V, K, 'over');
       } else {
+        const K = kitContext(spec, V);
+        K.dealer = d;
         syncCutVideos(-1, 0);
         const S = kitScene(t, mainDuration, true);
         kitPhoto(c, { x: 0, y: 0, w: W, h: H }, S, spec, { still: true });
@@ -19634,7 +19644,31 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         }
       } else {
         campaign.scenePlan[cutIdx][field] = value;
-        if (field === 'widget') campaign.scenePlan[cutIdx]._customWidget = true;
+        if (field === 'widget') {
+          campaign.scenePlan[cutIdx]._customWidget = true;
+          const kitMap = {
+            BREAKING_NEWS: { layout: 'full', cap: 'lower3', deco: 'corners' },
+            MAGAZINE_COVER: { layout: 'mat', cap: 'headline', deco: 'border' },
+            GIANT_DISCOUNT_STAMP: { layout: 'split', cap: 'stamp', deco: 'dots' },
+            KAKAO_CHAT_PAIR: { layout: 'cards', cap: 'bubble', deco: 'confetti' },
+            RECEIPT_QUOTE: { layout: 'polaroid', cap: 'ticket', deco: 'none' },
+            CHECKLIST_GLASS: { layout: 'notebook', cap: 'checkl', deco: 'corners' },
+            NEON_TITLE: { layout: 'dim', cap: 'neon', deco: 'grain' },
+            DYNAMIC_ISLAND: { layout: 'arch', cap: 'pill', deco: 'sparkle' },
+            TECH_HUD: { layout: 'diag', cap: 'typer', deco: 'grid' },
+            RACING_RIBBON: { layout: 'duo', cap: 'band', deco: 'leak' },
+            LOWER_THIRD: { layout: 'full', cap: 'lower3', deco: 'none' },
+            SPEC_FLOATING_TAGS: { layout: 'circle', cap: 'glass', deco: 'dots' },
+            VS_FINANCE_BATTLE: { layout: 'duo', cap: 'words', deco: 'none' },
+            STOCK_COUNTDOWN: { layout: 'dim', cap: 'marker', deco: 'corners' },
+            VIP_BLACK_CARD: { layout: 'mat', cap: 'quotecard', deco: 'sparkle' },
+            SCRATCH_COUPON: { layout: 'polaroid', cap: 'sticky', deco: 'confetti' }
+          };
+          const mapped = kitMap[value] || { layout: 'split', cap: 'glass', deco: 'none' };
+          campaign.scenePlan[cutIdx].customLayout = mapped.layout;
+          campaign.scenePlan[cutIdx].customCap = mapped.cap;
+          campaign.scenePlan[cutIdx].customDeco = mapped.deco;
+        }
       }
       if (field === 'widget') {
         const badge = document.getElementById(`cutWidgetBadge${cutIdx}`);
