@@ -2870,7 +2870,7 @@
       'CONTRACT_STAMP_SIGN'
     ];
 
-    const WIDGET_LABELS = {
+    const WIDGET_LABELS_RAW = {
       BREAKING_NEWS: '긴급 속보 티커',
       MAGAZINE_COVER: '매거진 커버 프레임',
       GIANT_DISCOUNT_STAMP: '슬롯머신 특가 스탬프',
@@ -2894,6 +2894,19 @@
       SMARTPHONE_NOTIF_STACK: '스마트폰 3단 알림스택',
       CONTRACT_STAMP_SIGN: '공식출고 서명 인감도장'
     };
+    // 업종이 자동차가 아니면 위젯 이름도 업종 말로 (음식점에 '견적'·'출고'가 보이지 않게)
+    const WIDGET_LABELS_IND = {
+      RECEIPT_QUOTE: '영수증 안내표', VS_FINANCE_BATTLE: '가격·혜택 비교', SMARTKEY_DELIVERY: '완료 축하 배너',
+      MONTHLY_PAYMENT_HERO: '가격 히어로 보드', RACING_RIBBON: '사선 리본', SPEEDOMETER_RPM_DIAL: '게이지 다이얼',
+      CONTRACT_STAMP_SIGN: '확인 도장', STOCK_COUNTDOWN: '선착순 잔여 게이지', TECH_HUD: '포커스 타겟'
+    };
+    const WIDGET_LABELS = new Proxy(WIDGET_LABELS_RAW, {
+      get(target, k) {
+        if (typeof k !== 'string' || !(k in target)) return target[k];
+        if (typeof IND !== 'undefined' && IND.key !== 'auto') return WIDGET_LABELS_IND[k] || indWord(target[k]);
+        return target[k];
+      }
+    });
 
     const ATMOSPHERE_FX_OPTIONS = [
       { id: 'anamorphic_flare', name: '시네마틱 렌즈 플레어' },
@@ -11163,7 +11176,7 @@ function renderStoryArchetypesUI() {
         g2.addColorStop(1, 'rgba(0,0,0,0.6)');
         c.fillStyle = g2;
         c.fillRect(0, 760, W, 200);
-        return { x: 30, y: 390, w: W - 60, h: 200, onPhoto: true };
+        return { x: 30, y: 540, w: W - 60, h: 290, onPhoto: true };
       }
       if (L === 'handheld') {
         // 손에 들고 찍은 듯한 흔들림 + 살짝 확대
@@ -11444,7 +11457,7 @@ function renderStoryArchetypesUI() {
         // 오른쪽 위 별 모양 스티커 (자막을 밀어내지 않음)
         const s = gBack(e / 0.45);
         c.save();
-        c.translate(spec.cap === 'vertical' ? 98 : W - 98, zone.y - 46);
+        c.translate(spec.cap === 'vertical' ? 98 : W - 98, Math.max(110, zone.y - 92));
         c.rotate(0.18 + Math.sin(e * 6) * 0.02);
         c.scale(s, s);
         c.beginPath();
@@ -14831,6 +14844,511 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
+    // ==========================================================================
+    // ★ 모션그래픽 엔진 — 기존 키트·장르와 별개로 처음부터 그리는 새 스타일 10종
+    //   화면 구역을 고정해 겹치지 않게: 위 사진 무대(0~58%) · 자막(62~86%) · 이름 칩(91% 아래)
+    // ==========================================================================
+    const MOTION_ROWS = [
+      // [id, 이름, 움직임, 글꼴, 바탕1, 바탕2, 강조색, 보조색, 밝은바탕]
+      ['mo_blob', '리퀴드 블롭', 'blob', 'dohyeon', '#1e1b4b', '#4c1d95', '#f472b6', '#fde68a', false],
+      ['mo_sweep', '키네틱 스윕', 'sweep', 'impact', '#0a0a0a', '#111827', '#facc15', '#ef4444', false],
+      ['mo_tiles', '타일 플립', 'tiles', 'sans', '#0b1220', '#111c33', '#38bdf8', '#e0f2fe', false],
+      ['mo_tunnel', '줌 터널', 'tunnel', 'gasoek', '#050505', '#18181b', '#a3e635', '#ffffff', false],
+      ['mo_cards', '스와이프 카드', 'cards', 'jua', '#fff7ed', '#ffedd5', '#f97316', '#111111', true],
+      ['mo_eq', '이퀄라이저 링', 'eq', 'gugi', '#020617', '#0f172a', '#22d3ee', '#f0abfc', false],
+      ['mo_aurora', '오로라 플로트', 'aurora', 'sans', '#0f0a1e', '#1a1033', '#c084fc', '#67e8f9', false],
+      ['mo_dots', '하프톤 웨이브', 'dots', 'bagel', '#fef08a', '#fde047', '#111111', '#ef4444', true],
+      ['mo_number', '넘버 마스크', 'number', 'impact', '#111111', '#1f2937', '#fb7185', '#ffffff', false],
+      ['mo_strips', '패럴랙스 스트립', 'strips', 'dohyeon', '#0c0a09', '#1c1917', '#fb923c', '#fef3c7', false]
+    ];
+    const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
+      id: r[0], name: r[1], cat: '모션그래픽', engine: 'motion', mstyle: r[2], font: r[3],
+      bg1: r[4], bg2: r[5], accent: r[6], accent2: r[7], light: r[8], seed: 900 + i, genre: 'motion', grade: 'none', label: r[1],
+      desc: `모션그래픽 · ${r[1]}`
+    }));
+    DESIGN_STYLES.push(...MOTION_DESIGNS);
+    if (!DESIGN_CATS.includes('모션그래픽')) DESIGN_CATS.splice(1, 0, '모션그래픽');
+
+    const mClamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+    const mEase = (p) => gEase(mClamp(p));
+    function mFit(c, text, maxW, maxLines, size, minSize, fontKey) {
+      return kWrap(c, text, maxW, maxLines, size, minSize, fontKey);
+    }
+    // 자막: 줄마다 아래에서 올라오며 나타남
+    function mCaption(c, text, x, y, maxW, maxH, size, fontKey, color, e, align = 'center', box = null) {
+      const F = KIT_FONTS[fontKey] || KIT_FONTS.sans;
+      const maxLines = Math.max(1, Math.min(3, Math.floor(maxH / (size * F.k * 1.28))));
+      const r = mFit(c, text, maxW, maxLines, size, Math.round(size * 0.55), fontKey);
+      const total = r.lines.length * r.lh;
+      const top = y + Math.max(0, (maxH - total) / 2);
+      c.save();
+      c.textAlign = align;
+      c.textBaseline = 'middle';
+      c.font = gFont(F.w, r.size, F.f);
+      r.lines.forEach((ln, i) => {
+        const p = mEase((e - i * 0.12) / 0.5);
+        const ly = top + i * r.lh + r.lh / 2 + (1 - p) * 26;
+        c.globalAlpha = p;
+        if (box) {
+          const w = c.measureText(ln).width + 28;
+          const bx = align === 'center' ? x - w / 2 : x - 14;
+          c.fillStyle = box;
+          c.fillRect(bx, ly - r.lh / 2 + 3, w * p, r.lh - 6);
+        }
+        c.fillStyle = color;
+        c.fillText(ln, x, ly);
+      });
+      c.restore();
+      return { top, h: total };
+    }
+    function mPhoto(c, S, k, x, y, w, h, scale = 1.06, px = 0, py = 0) {
+      const img = kitImg(S, k);
+      if (!img) {
+        const g = c.createLinearGradient(x, y, x, y + h);
+        g.addColorStop(0, '#3f4a5c');
+        g.addColorStop(1, '#10151f');
+        c.fillStyle = g;
+        c.fillRect(x, y, w, h);
+        return;
+      }
+      c.save();
+      c.beginPath();
+      c.rect(x, y, w, h);
+      c.clip();
+      kitCover(c, img, x, y, w, h, scale, px, py);
+      c.restore();
+    }
+    function mBg(c, W, H, spec, t) {
+      const g = c.createLinearGradient(0, 0, W * 0.4, H);
+      g.addColorStop(0, spec.bg1);
+      g.addColorStop(1, spec.bg2);
+      c.fillStyle = g;
+      c.fillRect(0, 0, W, H);
+    }
+    function mChip(c, d, W, H, spec, a) {
+      if (!d) return;
+      c.save();
+      c.globalAlpha = a;
+      const txt = `${d.name || ''} · ${d.title || ''}`;
+      c.font = gFont(700, 15, GENRE_FONTS.sans);
+      const w = Math.min(W - 40, c.measureText(txt).width + 54);
+      const x = 20, y = H - 58;
+      gRoundRect(c, x, y, w, 38, 19);
+      c.fillStyle = spec.light ? 'rgba(17,17,17,0.88)' : 'rgba(255,255,255,0.12)';
+      c.fill();
+      c.beginPath();
+      c.arc(x + 19, y + 19, 12, 0, Math.PI * 2);
+      c.fillStyle = spec.accent;
+      c.fill();
+      c.fillStyle = kTextOn(spec.accent);
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.font = gFont(800, 12, GENRE_FONTS.sans);
+      c.fillText(String(d.name || '').slice(0, 1), x + 19, y + 19.5);
+      c.fillStyle = '#ffffff';
+      c.textAlign = 'left';
+      c.font = gFont(700, 15, GENRE_FONTS.sans);
+      gDrawLine(c, txt, x + 38, y + 20, w - 48, 15, 11, GENRE_FONTS.sans, 700);
+      c.restore();
+    }
+    // 가격 배지: 자막 위쪽 가운데에서 통 튀어 오름
+    function mPrice(c, W, y, spec, e) {
+      const txt = arPriceTag();
+      const s = gBack(mClamp(e / 0.45));
+      c.save();
+      c.translate(W / 2, y);
+      c.scale(s, s);
+      c.font = gFont(900, 40, GENRE_FONTS.impact);
+      const w = Math.min(W - 60, c.measureText(txt).width + 48);
+      gRoundRect(c, -w / 2, -30, w, 60, 30);
+      c.fillStyle = spec.accent;
+      c.fill();
+      c.fillStyle = kTextOn(spec.accent);
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      gDrawLine(c, txt, 0, 2, w - 30, 40, 20, GENRE_FONTS.impact, 900);
+      c.restore();
+    }
+
+    function renderMotionFrame(c, W, H, t, mainDuration, totalCuts, d, spec, V) {
+      const accent = (V && V.accent) || spec.accent;
+      const sp = Object.assign({}, spec, { accent });
+      if (t >= mainDuration) return renderMotionOutro(c, W, H, t, mainDuration, d, sp);
+      const cutDur = mainDuration / totalCuts;
+      const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
+      const local = t - cutIdx * cutDur;
+      const lp = mClamp(local / cutDur);
+      const S = kitScene(t, mainDuration, false);
+      const raw = (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || campaign.hook || '';
+      const caption = gCleanCaption(raw);
+      const isPrice = gIsPriceCut(raw) || (campaign.priceTag && cutIdx === 2);
+      const e = mClamp(local / 1.1);
+      const ent = mEase(local / 0.6); // 컷 시작 등장
+      const stageH = Math.round(H * 0.58);
+      const capY = Math.round(H * 0.62), capH = Math.round(H * 0.24);
+      const fg = sp.light ? '#111111' : '#ffffff';
+      const M = sp.mstyle;
+      mBg(c, W, H, sp, t);
+
+      if (M === 'blob') {
+        // 배경 위 떠다니는 원 + 출렁이는 블롭 안에 사진
+        for (let i = 0; i < 5; i++) {
+          c.beginPath();
+          c.arc((W * (0.15 + i * 0.19) + Math.sin(t * 0.6 + i) * 30), H * (0.12 + (i % 3) * 0.3) + Math.cos(t * 0.5 + i * 2) * 24, 30 + i * 9, 0, Math.PI * 2);
+          c.fillStyle = i % 2 ? sp.accent2 + '22' : sp.accent + '26';
+          c.fill();
+        }
+        const cx = W / 2, cy = stageH * 0.55, R = W * 0.41 * (0.7 + 0.3 * ent);
+        c.save();
+        c.beginPath();
+        for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) {
+          const rr = R * (1 + 0.07 * Math.sin(3 * a + t * 1.8) + 0.05 * Math.sin(5 * a - t * 1.2));
+          const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr * 1.12;
+          if (a === 0) c.moveTo(px, py); else c.lineTo(px, py);
+        }
+        c.closePath();
+        c.shadowColor = sp.accent + '88';
+        c.shadowBlur = 40;
+        c.fillStyle = sp.accent;
+        c.fill();
+        c.shadowBlur = 0;
+        c.clip();
+        mPhoto(c, S, 0, cx - R * 1.15, cy - R * 1.3, R * 2.3, R * 2.6, 1.05 + lp * 0.06);
+        c.restore();
+        if (isPrice) mPrice(c, W, capY - 4, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 0), W - 70, capH - (isPrice ? 40 : 0), 40, sp.font, fg, e);
+      } else if (M === 'sweep') {
+        mPhoto(c, S, 0, 0, 0, W, H, 1.08 + lp * 0.05);
+        const g = c.createLinearGradient(0, H * 0.45, 0, H);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.85)');
+        c.fillStyle = g;
+        c.fillRect(0, H * 0.45, W, H * 0.55);
+        // 컷 시작마다 사선 색 띠 세 줄이 휙 지나감
+        if (local < 0.7) {
+          const cols = [sp.accent, sp.accent2, '#ffffff'];
+          cols.forEach((col, i) => {
+            const p = mClamp((local - i * 0.07) / 0.5);
+            const x = -W * 1.2 + p * W * 2.6;
+            c.save();
+            c.translate(x, 0);
+            c.transform(1, 0, -0.35, 1, 0, 0);
+            c.fillStyle = col;
+            c.fillRect(i * 70, 0, 120, H);
+            c.restore();
+          });
+        }
+        c.fillStyle = sp.accent;
+        c.fillRect(0, 0, W * lp, 6);
+        if (isPrice) mPrice(c, W, capY - 10, sp, e);
+        mCaption(c, caption, 34, capY + (isPrice ? 36 : 0), W - 68, capH - (isPrice ? 36 : 0), 38, sp.font, '#111111', e, 'left', sp.accent);
+      } else if (M === 'tiles') {
+        const cols = 4, rows = 5, tw = W / cols, th = stageH / rows;
+        mPhoto(c, S, -1, 0, 0, W, stageH, 1.1);
+        for (let r = 0; r < rows; r++) {
+          for (let k = 0; k < cols; k++) {
+            const p = cutIdx === 0 && local < 0.05 ? 1 : mEase((local - (r + k) * 0.05) / 0.35);
+            if (p <= 0) continue;
+            c.save();
+            const x = k * tw, y = r * th;
+            c.translate(x + tw / 2, y + th / 2);
+            c.scale(p, 1);
+            c.beginPath();
+            c.rect(-tw / 2, -th / 2, tw, th);
+            c.clip();
+            mPhoto(c, S, 0, -tw / 2 - x, -th / 2 - y, W, stageH, 1.04 + lp * 0.05);
+            c.restore();
+          }
+        }
+        c.fillStyle = sp.accent;
+        c.fillRect(0, stageH, W, 6);
+        gRoundRect(c, 24, capY - 6, W - 48, capH + 12, 18);
+        c.fillStyle = '#ffffff';
+        c.fill();
+        if (isPrice) mPrice(c, W, stageH + 6, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 26 : 4), W - 90, capH - (isPrice ? 26 : 8), 36, sp.font, '#0b1220', e);
+      } else if (M === 'tunnel') {
+        // 안쪽에서 바깥으로 계속 커지는 사각 테두리
+        c.save();
+        c.translate(W / 2, stageH * 0.52);
+        for (let i = 0; i < 7; i++) {
+          const ph = ((t * 0.45 + i / 7) % 1);
+          const s = 0.2 + ph * 1.5;
+          c.globalAlpha = (1 - ph) * 0.8;
+          c.strokeStyle = i % 2 ? sp.accent : '#ffffff';
+          c.lineWidth = 3;
+          gRoundRect(c, -W * 0.45 * s, -stageH * 0.5 * s, W * 0.9 * s, stageH * s, 20 * s);
+          c.stroke();
+        }
+        c.restore();
+        const sc = 0.62 + 0.12 * ent + lp * 0.03;
+        const pw = W * sc, ph = stageH * 0.86 * sc / 0.74;
+        const px = (W - pw) / 2, py = stageH * 0.52 - ph / 2;
+        c.save();
+        gRoundRect(c, px, py, pw, ph, 18);
+        c.clip();
+        mPhoto(c, S, 0, px, py, pw, ph, 1.05);
+        c.restore();
+        c.strokeStyle = sp.accent;
+        c.lineWidth = 4;
+        gRoundRect(c, px, py, pw, ph, 18);
+        c.stroke();
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 44, sp.font, sp.accent, e);
+      } else if (M === 'cards') {
+        // 겹친 카드: 끝날 무렵 맨 위 카드가 왼쪽으로 넘어감
+        const cw = W * 0.74, ch = stageH * 0.9, cx = W / 2, cy = stageH * 0.52;
+        const out = mClamp((local - (cutDur - 0.45)) / 0.45);
+        for (let i = 2; i >= 0; i--) {
+          c.save();
+          const rot = (i === 0 ? -out * 0.5 : (i === 1 ? 0.05 : -0.07));
+          c.translate(cx + (i === 0 ? -out * W : i * 6), cy + i * 10);
+          c.rotate(rot);
+          c.shadowColor = 'rgba(0,0,0,0.18)';
+          c.shadowBlur = 24;
+          gRoundRect(c, -cw / 2, -ch / 2, cw, ch, 22);
+          c.fillStyle = '#ffffff';
+          c.fill();
+          c.shadowBlur = 0;
+          gRoundRect(c, -cw / 2 + 10, -ch / 2 + 10, cw - 20, ch - 20, 16);
+          c.clip();
+          mPhoto(c, S, i, -cw / 2 + 10, -ch / 2 + 10, cw - 20, ch - 20, 1.04);
+          c.restore();
+        }
+        // 하트 팝
+        const hp = gBack(mClamp((local - 0.4) / 0.4));
+        if (hp > 0) {
+          c.save();
+          c.translate(W * 0.82, stageH * 0.12);
+          c.scale(hp, hp);
+          c.fillStyle = sp.accent;
+          c.beginPath();
+          c.moveTo(0, 12);
+          c.bezierCurveTo(-26, -8, -14, -30, 0, -16);
+          c.bezierCurveTo(14, -30, 26, -8, 0, 12);
+          c.fill();
+          c.restore();
+        }
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 70, capH - (isPrice ? 40 : 4), 40, sp.font, '#111111', e);
+      } else if (M === 'eq') {
+        const cx = W / 2, cy = stageH * 0.52, R = W * 0.3;
+        const bars = 64;
+        for (let i = 0; i < bars; i++) {
+          const a = (i / bars) * Math.PI * 2 - Math.PI / 2;
+          const v = 0.35 + 0.65 * Math.abs(Math.sin(t * 3.1 + i * 0.7) * Math.cos(t * 1.7 + i * 0.23));
+          const L = 14 + v * 52 * ent;
+          c.strokeStyle = i % 2 ? sp.accent : sp.accent2;
+          c.lineWidth = 4;
+          c.lineCap = 'round';
+          c.beginPath();
+          c.moveTo(cx + Math.cos(a) * (R + 10), cy + Math.sin(a) * (R + 10));
+          c.lineTo(cx + Math.cos(a) * (R + 10 + L), cy + Math.sin(a) * (R + 10 + L));
+          c.stroke();
+        }
+        c.save();
+        c.beginPath();
+        c.arc(cx, cy, R, 0, Math.PI * 2);
+        c.clip();
+        mPhoto(c, S, 0, cx - R, cy - R, R * 2, R * 2, 1.1 + lp * 0.06);
+        c.restore();
+        c.strokeStyle = '#ffffff';
+        c.lineWidth = 3;
+        c.beginPath();
+        c.arc(cx, cy, R, 0, Math.PI * 2);
+        c.stroke();
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        c.save();
+        c.shadowColor = sp.accent;
+        c.shadowBlur = 16;
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 40, sp.font, '#ffffff', e);
+        c.restore();
+      } else if (M === 'aurora') {
+        [[sp.accent, 0.3, 0.25], [sp.accent2, 0.75, 0.4], ['#f472b6', 0.4, 0.75]].forEach(([col, fx, fy], i) => {
+          const x = W * fx + Math.sin(t * 0.4 + i * 2) * 60, y = H * fy + Math.cos(t * 0.35 + i) * 50;
+          const g = c.createRadialGradient(x, y, 0, x, y, W * 0.7);
+          g.addColorStop(0, col + '66');
+          g.addColorStop(1, col + '00');
+          c.fillStyle = g;
+          c.fillRect(0, 0, W, H);
+        });
+        const fy = Math.sin(t * 1.4) * 6;
+        const pw = W * 0.7, ph = stageH * 0.9;
+        const px = (W - pw) / 2, py = stageH * 0.06 + fy + (1 - ent) * 30;
+        c.save();
+        c.globalAlpha = ent;
+        c.shadowColor = 'rgba(0,0,0,0.5)';
+        c.shadowBlur = 40;
+        c.shadowOffsetY = 16;
+        gRoundRect(c, px, py, pw, ph, 28);
+        c.fillStyle = '#000';
+        c.fill();
+        c.shadowColor = 'transparent';
+        c.clip();
+        mPhoto(c, S, 0, px, py, pw, ph, 1.05 + lp * 0.05);
+        c.restore();
+        c.save();
+        if ('filter' in c) c.filter = `blur(${Math.round((1 - mEase(e / 0.6)) * 8)}px)`;
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 70, capH - (isPrice ? 40 : 4), 38, sp.font, '#ffffff', e);
+        c.restore();
+      } else if (M === 'dots') {
+        // 크기가 물결치는 점 무늬
+        c.fillStyle = 'rgba(0,0,0,0.16)';
+        for (let y = 14; y < H; y += 24) {
+          for (let x = 14; x < W; x += 24) {
+            const r = 2 + 4 * (0.5 + 0.5 * Math.sin(x * 0.02 + y * 0.015 - t * 2.4));
+            c.beginPath();
+            c.arc(x, y, r, 0, Math.PI * 2);
+            c.fill();
+          }
+        }
+        const pw = W * 0.8, ph = stageH * 0.84;
+        c.save();
+        c.translate(W / 2, stageH * 0.52 + (1 - ent) * 40);
+        c.rotate(-0.04 + Math.sin(t * 0.8) * 0.012);
+        c.fillStyle = '#111111';
+        c.fillRect(-pw / 2 + 10, -ph / 2 + 12, pw, ph);
+        c.fillStyle = '#ffffff';
+        c.fillRect(-pw / 2 - 6, -ph / 2 - 6, pw + 12, ph + 12);
+        c.beginPath();
+        c.rect(-pw / 2, -ph / 2, pw, ph);
+        c.clip();
+        mPhoto(c, S, 0, -pw / 2, -ph / 2, pw, ph, 1.05 + lp * 0.05);
+        c.restore();
+        if (isPrice) mPrice(c, W, capY, Object.assign({}, sp, { accent: sp.accent2 }), e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 40 : 4), W - 70, capH - (isPrice ? 40 : 4), 40, sp.font, '#111111', e, 'center', '#ffffff');
+      } else if (M === 'number') {
+        // 큰 컷 번호 글자 속에 사진
+        mPhoto(c, S, 0, 0, 0, W, stageH, 1.15);
+        c.fillStyle = 'rgba(12,12,12,0.9)';
+        c.fillRect(0, 0, W, stageH);
+        const num = kPad(cutIdx + 1);
+        if (!window.__mNumCanvas) { window.__mNumCanvas = document.createElement('canvas'); }
+        const oc = window.__mNumCanvas;
+        oc.width = W; oc.height = stageH;
+        const ox = oc.getContext('2d');
+        ox.clearRect(0, 0, W, stageH);
+        ox.textAlign = 'center';
+        ox.textBaseline = 'middle';
+        ox.font = gFont(900, Math.round(stageH * 0.78), GENRE_FONTS.impact);
+        ox.fillStyle = '#fff';
+        const fitS = Math.min(1, (W * 0.88) / Math.max(1, ox.measureText(num).width));
+        const s = (0.85 + 0.15 * ent) * fitS;
+        ox.save();
+        ox.translate(W / 2, stageH * 0.54);
+        ox.scale(s, s);
+        ox.fillText(num, 0, 0);
+        ox.restore();
+        ox.globalCompositeOperation = 'source-in';
+        const img = kitImg(S, 0);
+        if (img) kitCover(ox, img, 0, 0, W, stageH, 1.08 + lp * 0.06, 0, 0); else { ox.fillStyle = sp.accent; ox.fillRect(0, 0, W, stageH); }
+        ox.globalCompositeOperation = 'source-over';
+        c.drawImage(oc, 0, 0);
+        c.save();
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.font = gFont(900, Math.round(stageH * 0.78), GENRE_FONTS.impact);
+        c.translate(W / 2, stageH * 0.54);
+        c.scale(s, s);
+        c.lineWidth = 3 / s;
+        c.strokeStyle = sp.accent;
+        c.strokeText(num, 0, 0);
+        c.restore();
+        c.fillStyle = sp.accent;
+        c.font = gFont(800, 16, GENRE_FONTS.sans);
+        c.textAlign = 'left';
+        c.fillText(`${num} / ${kPad(totalCuts)}`, 26, 40);
+        c.fillRect(26, 52, 60 * ent, 4);
+        if (isPrice) mPrice(c, W, capY, sp, e);
+        mCaption(c, caption, 30, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 40, sp.font, '#ffffff', e, 'left');
+      } else {
+        // strips: 세로 세 줄 사진이 서로 다른 속도로 움직임
+        const gap = 8, sw = (W - gap * 4) / 3;
+        for (let i = 0; i < 3; i++) {
+          const x = gap + i * (sw + gap);
+          const dir = i % 2 ? -1 : 1;
+          const off = (1 - ent) * dir * 120 + Math.sin(t * 0.8 + i) * 10;
+          c.save();
+          gRoundRect(c, x, gap + off, sw, stageH - gap, 14);
+          c.clip();
+          mPhoto(c, S, 0, 0, gap + off, W, stageH, 1.12 + lp * 0.05, 0, dir * lp * 20);
+          c.restore();
+        }
+        c.fillStyle = sp.accent;
+        c.fillRect(gap, stageH + 6, (W - gap * 2) * lp, 4);
+        if (isPrice) mPrice(c, W, capY + 6, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 44 : 8), W - 60, capH - (isPrice ? 44 : 8), 40, sp.font, sp.accent2, e);
+      }
+      mChip(c, d, W, H, sp, mEase(t / 0.6));
+    }
+
+    function renderMotionOutro(c, W, H, t, mainDuration, d, sp) {
+      const lt = t - mainDuration;
+      const e = mClamp(lt / 1.2);
+      mBg(c, W, H, sp, t);
+      const fg = sp.light ? '#111111' : '#ffffff';
+      // 돌아가는 도형 고리
+      c.save();
+      c.translate(W / 2, H * 0.3);
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2 + t * 0.6;
+        const r = 120 + Math.sin(t * 2 + i) * 6;
+        c.globalAlpha = 0.85 * mEase((lt - i * 0.03) / 0.4);
+        c.fillStyle = i % 3 === 0 ? sp.accent : i % 3 === 1 ? sp.accent2 : (sp.light ? '#11111133' : '#ffffff33');
+        c.beginPath();
+        if (i % 2) c.arc(Math.cos(a) * r, Math.sin(a) * r, 8, 0, Math.PI * 2);
+        else c.rect(Math.cos(a) * r - 7, Math.sin(a) * r - 7, 14, 14);
+        c.fill();
+      }
+      c.globalAlpha = 1;
+      const s = gBack(mClamp(lt / 0.5));
+      c.scale(s, s);
+      c.beginPath();
+      c.arc(0, 0, 74, 0, Math.PI * 2);
+      c.fillStyle = sp.accent;
+      c.fill();
+      c.fillStyle = kTextOn(sp.accent);
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.font = gFont(900, 60, GENRE_FONTS.sans);
+      c.fillText(String((d && d.name) || '').slice(0, 1), 0, 4);
+      c.restore();
+      // 이름: 아래에서 위로 걷히며 나타남
+      const ny = H * 0.53;
+      c.save();
+      c.beginPath();
+      c.rect(0, ny - 50, W, 100);
+      c.clip();
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillStyle = fg;
+      const off = (1 - mEase((lt - 0.2) / 0.5)) * 90;
+      gDrawLine(c, (d && d.name) || '', W / 2, ny + off, W - 60, 56, 30, GENRE_FONTS.sans, 900);
+      c.restore();
+      c.textAlign = 'center';
+      c.globalAlpha = mEase((lt - 0.4) / 0.4);
+      c.fillStyle = sp.accent;
+      c.font = gFont(700, 18, GENRE_FONTS.sans);
+      gDrawLine(c, `${(d && d.title) || ''}${d && d.branch ? ' · ' + d.branch : ''}`, W / 2, ny + 52, W - 60, 18, 12, GENRE_FONTS.sans, 700);
+      c.fillStyle = sp.light ? '#333333' : '#d4d4d8';
+      gDrawLine(c, arPriceLine(), W / 2, ny + 100, W - 80, 26, 14, GENRE_FONTS.sans, 800);
+      // 댓글 안내 (전화번호는 영상에 넣지 않음)
+      const pulse = 1 + Math.sin(t * 5) * 0.025;
+      c.globalAlpha = mEase((lt - 0.6) / 0.4);
+      c.save();
+      c.translate(W / 2, H * 0.8);
+      c.scale(pulse, pulse);
+      gRoundRect(c, -W * 0.36, -32, W * 0.72, 64, 32);
+      c.fillStyle = sp.light ? '#111111' : '#ffffff';
+      c.fill();
+      c.fillStyle = sp.light ? '#ffffff' : '#111111';
+      c.textBaseline = 'middle';
+      gDrawLine(c, arCta(), 0, 2, W * 0.66, 24, 14, GENRE_FONTS.sans, 800);
+      c.restore();
+      c.globalAlpha = 1;
+    }
+
     function renderGenreFrame(t, mainDuration, totalCuts, d) {
       const c = ctx;
       const W = canvas.width;
@@ -14843,6 +15361,11 @@ function renderStoryArchetypesUI() {
       c.globalAlpha = 1;
       c.setLineDash([]);
       c.shadowBlur = 0;
+      if (design.engine === 'motion') {
+        renderMotionFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
+        c.restore();
+        return;
+      }
       if (design.engine === 'kit') {
         renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
         if (t < mainDuration) {
