@@ -1044,7 +1044,6 @@
                   <option value="4e118bfbb83e401c84699c09b5f08257" selected>성우 1</option>
                   <option value="8cf5ee4cb0224c109852a206f185a05f">성우 2</option>
                   <option value="9a50287ddd26414690b538539ad52d61">성우 3</option>
-                  <option value="8748b1f032e2418183a6ffb920724755">성우 4</option>
                   <option value="off">성우 끄기</option>
                 </select>
               </div>
@@ -8138,7 +8137,10 @@ function renderStoryArchetypesUI() {
         this.ttsLastError = errorCode || '';
         const badge = document.getElementById('ttsProviderBadge');
         if (!badge) return;
-        if (provider === 'fish') {
+        if (provider === 'fish' && this.ttsFreeModel) {
+          badge.textContent = '성우: Fish Audio 무료 모델 (크레딧 부족 · 음질 낮음)';
+          badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#f5a524]';
+        } else if (provider === 'fish') {
           badge.textContent = '성우: Fish Audio';
           badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#4cc38a]';
         } else if (provider === 'browser') {
@@ -8153,6 +8155,26 @@ function renderStoryArchetypesUI() {
         } else {
           badge.textContent = '성우: 준비 중';
           badge.className = 'tag-chip px-2 py-0.5 font-mono text-[11px] text-[#85858b]';
+        }
+      },
+
+      // 서버가 알려 준 Fish Audio 모델 이름 확인 (/api/tts 의 X-TTS-Model, /api/tts-script 의 model)
+      // 유료 크레딧이 떨어지면 서버가 무료 모델로 바꿔 음질이 기계음처럼 떨어지므로,
+      // 배지를 바꾸고 관리자 모드에서는 한 번 알림을 띄움 (사장님·고객 화면에는 알림을 띄우지 않음)
+      ttsFreeModel: false,
+      ttsFreeNotified: false,
+      noteTtsModel(model) {
+        if (!model) return;
+        const free = /free/i.test(String(model));
+        if (free === this.ttsFreeModel) return;
+        this.ttsFreeModel = free;
+        if (this.ttsProvider === 'fish') this.setTtsProvider('fish');
+        if (free) {
+          console.warn('[AutoReels] Fish Audio 유료 크레딧 부족: 무료 모델로 음성을 만들고 있습니다 (' + model + ')');
+          if (!this.ttsFreeNotified && typeof isAdminMode !== 'undefined' && isAdminMode && typeof arToast === 'function') {
+            this.ttsFreeNotified = true;
+            arToast('Fish Audio 크레딧이 부족해 성우가 무료 모델(음질 낮음)로 바뀌었습니다. fish.audio에서 충전하면 바로 고품질로 돌아갑니다.');
+          }
         }
       },
 
@@ -8241,6 +8263,7 @@ function renderStoryArchetypesUI() {
             throw new Error(code);
           }
           const body = await res.json();
+          this.noteTtsModel(body && body.model);
           if (!body || !body.audio_base64 || !Array.isArray(body.lines) || body.lines.length !== lines.length) {
             throw new Error('bad_script_response');
           }
@@ -8367,6 +8390,7 @@ function renderStoryArchetypesUI() {
             } catch (e) {}
             throw new Error(code);
           }
+          this.noteTtsModel(res.headers.get('X-TTS-Model'));
           const bytes = await res.arrayBuffer();
           const buffer = await ctx.decodeAudioData(bytes);
           // 앞뒤 무음 구간을 잘라 실제 말하는 구간만 사용 (컷 길이를 불필요하게 늘리지 않도록)
@@ -21941,6 +21965,11 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         badge.className = `tag-chip px-2 py-0.5 text-[11px] font-mono ${isAdminMode ? 'text-[#d97706] border-[#d97706]/40' : 'text-[#4cc38a]'}`;
       }
       if (!isAdminMode) switchMainTab('preview');
+      // 관리자 모드로 들어왔을 때 이미 무료 성우 모델로 바뀌어 있었다면 알림
+      if (isAdminMode && typeof AudioEngine !== 'undefined' && AudioEngine.ttsFreeModel && !AudioEngine.ttsFreeNotified && typeof arToast === 'function') {
+        AudioEngine.ttsFreeNotified = true;
+        arToast('Fish Audio 크레딧이 부족해 성우가 무료 모델(음질 낮음)로 바뀌었습니다. fish.audio에서 충전하면 바로 고품질로 돌아갑니다.');
+      }
     }
 
     window.addEventListener('keydown', (e) => {
