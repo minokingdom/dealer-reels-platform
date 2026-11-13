@@ -39,7 +39,7 @@
       --border-strong: rgba(237, 237, 237, 0.14);
       --foreground: #ededed;
       --secondary-foreground: #a1a1a6;
-      --muted-foreground: #85858b;
+      --muted-foreground: #9b9ba1;
       --primary: #ededed;
       --primary-foreground: #141415;
       --secondary: #232325;
@@ -165,7 +165,7 @@
     }
     details.fold > summary::after {
       content: "펼치기 ▾";
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted-foreground);
       margin-left: 8px;
       white-space: nowrap;
@@ -382,7 +382,7 @@
     .pd-item.on { border-color: #ededed; background: #232326; }
     .pd-cats { display: flex; gap: 5px; overflow-x: auto; padding: 8px 10px 4px; scrollbar-width: none; }
     .pd-cats::-webkit-scrollbar { display: none; }
-    .pd-cat { flex: 0 0 auto; height: 24px; padding: 0 9px; border-radius: 6px; font-size: 11px; color: #a1a1a6; border: 1px solid rgba(255,255,255,0.08); background: #18181b; }
+    .pd-cat { flex: 0 0 auto; height: 32px; padding: 0 10px; border-radius: 6px; font-size: 12px; color: #a1a1a6; border: 1px solid rgba(255,255,255,0.08); background: #18181b; }
     .pd-cat.on { color: #fff; border-color: #ededed; background: #232326; }
     .pd-grid { display: grid !important; grid-template-columns: 1fr 1fr; gap: 6px; align-content: start; }
     .pd-card { padding: 4px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.07); background: #18181b; text-align: left; cursor: pointer; }
@@ -391,9 +391,9 @@
     .pd-random .pd-dice { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 9 / 16; border-radius: 6px; font-size: 34px;
       background: linear-gradient(135deg, #3b82f6 0%, #a855f7 50%, #f97316 100%); }
     .pd-random:hover .pd-dice { filter: brightness(1.12); }
-    .pd-card div { margin-top: 4px; padding: 0 2px; font-size: 11px; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pd-card div { margin-top: 4px; padding: 0 2px; font-size: 12px; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pd-handle { position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 25; display: flex; flex-direction: column; align-items: center; gap: 2px;
-      padding: 10px 5px; border-radius: 10px 0 0 10px; background: rgba(0,0,0,0.45); color: #ededed; font-size: 10px; font-weight: 600; writing-mode: horizontal-tb;
+      padding: 10px 5px; border-radius: 10px 0 0 10px; background: rgba(0,0,0,0.55); color: #ededed; font-size: 12px; font-weight: 600; writing-mode: horizontal-tb;
       -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.12); border-right: 0; opacity: 0.75; }
     .pd-handle:hover { opacity: 1; }
     .pd-handle span:first-child { writing-mode: vertical-rl; letter-spacing: 2px; }
@@ -444,7 +444,7 @@
           <button type="button" id="headerAuthBtn" onclick="openDealerAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">
             카마스터 로그인 · 가입
           </button>
-          <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#3b82f6] hover:bg-[#2563eb] text-white transition-colors cursor-pointer">
+          <button type="button" onclick="openBillingCheckoutModal()" class="h-8 px-3.5 rounded-[8px] text-[12px] font-medium bg-[#2563eb] hover:bg-[#1d4ed8] text-white transition-colors cursor-pointer">
             PRO 구독 결제
           </button>
         </div>
@@ -641,9 +641,10 @@
 
           <!-- 타임라인 시크바 -->
           <div class="space-y-1.5 pt-1">
-            <div class="flex items-center justify-between text-[12px] text-[#85858b] font-mono">
-              <span id="timeCodeText">t = 0.00s / 12.00s</span>
-              <span id="frameCountText">Frame: 0 / 720</span>
+            <div class="flex items-center justify-between text-[12px] text-[#85858b]">
+              <span id="timeCodeText">0.0초 / 12초</span>
+              <!-- 개발용 프레임 표시: 사장님 화면에서는 숨김 (값은 계속 갱신) -->
+              <span id="frameCountText" class="hidden">Frame: 0 / 720</span>
             </div>
             <input id="timelineSlider" type="range" min="0" max="12" step="0.016" value="0" oninput="onSliderScrub(this.value)" class="w-full accent-[#ededed] cursor-pointer" />
           </div>
@@ -8898,7 +8899,7 @@ function renderStoryArchetypesUI() {
       }
       const timeCode = document.getElementById('timeCodeText');
       if (timeCode) {
-        timeCode.textContent = `t = ${t.toFixed(2).padStart(5, '0')}s / ${TOTAL_DURATION.toFixed(2)}s`;
+        timeCode.textContent = `${t.toFixed(1)}초 / ${Number(TOTAL_DURATION.toFixed(1))}초`;
       }
       const frameCount = document.getElementById('frameCountText');
       if (frameCount) {
@@ -22548,5 +22549,35 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     window.__timelines['main'].seek(0);
     requestAnimationFrame(tick);
   </script>
+  <!--
+    가독성 보정 (A단계, 2026-11-13)
+    - Tailwind CDN 이 만드는 스타일보다 뒤에 오도록 body 끝에 둡니다.
+    - 미리보기 영상은 canvas 라서 이 규칙의 영향을 받지 않습니다.
+    - 원래 클래스는 그대로 두었으니, 이 블록만 지우면 이전 모양으로 돌아갑니다.
+  -->
+  <style id="ar-readability">
+    /* 1) 글자 크기: 최소 12px, 자주 쓰는 12·13px 은 한 단계씩 키움 */
+    body .text-\[8px\], body .text-\[9px\], body .text-\[10px\], body .text-\[11px\] { font-size: 12px !important; line-height: 1.45; }
+    body .text-\[12px\] { font-size: 13px !important; }
+    body .text-\[13px\] { font-size: 14px !important; }
+
+    /* 2) 회색 글씨 대비: 어두운 카드 배경(#232325)에서도 4.5:1 이상 */
+    body .text-\[\#85858b\] { color: #9b9ba1 !important; }
+    body .text-\[\#71717a\], body .text-\[\#6e6e73\], body .text-\[\#52525b\] { color: #8e8e94 !important; }
+    body input::placeholder, body textarea::placeholder { color: #8e8e94 !important; opacity: 1; }
+    /* 흰 글씨가 올라가는 진한 파랑·주황 버튼 */
+    body .bg-\[\#3b82f6\] { background-color: #2563eb !important; }
+    body .bg-\[\#ea580c\] { background-color: #c2410c !important; }
+
+    /* 3) 한글 라벨의 고정폭 폰트 제거 (숫자 자리 맞춤만 유지) */
+    body .font-mono { font-family: inherit !important; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+    body code, body kbd, body pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    /* 4) 누르기 쉬운 크기: 버튼·입력칸 최소 32px */
+    body button, body select, body [role="button"] { min-height: 32px; }
+    body button.h-6, body button.h-7, body input.h-6, body input.h-7, body select.h-7 { height: 32px !important; }
+    body button.w-6 { width: 32px !important; }
+    body .pd-close { min-width: 32px; }
+  </style>
 </body>
 </html>
