@@ -614,13 +614,13 @@
 
           <!-- 영상 총 길이(초) 원클릭 선택 -->
           <div class="flex items-center justify-between gap-1.5 bg-[#141415] px-2.5 py-1.5 rounded-[8px] border border-[var(--border)]">
-            <div class="flex items-center justify-between gap-1 w-full">
+            <div class="grid grid-cols-6 gap-1 w-full">
               <button type="button" id="durBtn_8" onclick="setVideoTotalDuration(8)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">8s</button>
               <button type="button" id="durBtn_12" onclick="setVideoTotalDuration(12)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono bg-[#232325] text-[#ededed] cursor-pointer">12s</button>
               <button type="button" id="durBtn_15" onclick="setVideoTotalDuration(15)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">15s</button>
               <button type="button" id="durBtn_20" onclick="setVideoTotalDuration(20)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">20s</button>
               <button type="button" id="durBtn_30" onclick="setVideoTotalDuration(30)" class="h-6 px-2 rounded-[5px] text-[11px] font-mono text-[#a1a1a6] hover:text-[#ededed] cursor-pointer">30s</button>
-              <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-11 h-6 px-1 text-[11px] font-mono text-center" title="영상 길이 직접 입력 (초)" aria-label="영상 길이 직접 입력 (초)" />
+              <input id="customDurationInput" type="number" min="6" max="60" value="12" onchange="setVideoTotalDuration(this.value)" class="studio-input w-full h-6 px-1 text-[11px] font-mono text-center" title="영상 길이 직접 입력 (초)" aria-label="영상 길이 직접 입력 (초)" />
             </div>
           </div>
 
@@ -711,6 +711,60 @@
             </select>
           </div>
 
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 타이틀</label>
+              <input id="inputVehicle" type="text" value="2026 쏘렌토 하이브리드" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
+            </div>
+            <div>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">최대 할인 금액 (만원)</label>
+              <input id="inputDiscountNum" type="number" value="480" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
+            </div>
+            <div>
+              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">월 납입금 · 출고 조건</label>
+              <input id="inputDiscount" type="text" value="월 46만원대 · 3일 즉시출고" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
+            </div>
+          </div>
+
+          <!-- 생성형 씬 디렉터 & 레이아웃 엔진 -->
+          <div class="studio-sub p-4 space-y-3">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[14px] font-semibold text-[#ededed]">AI로 대본 만들기</span>
+                <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
+                </span>
+                <span id="activeSceneRecipeBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
+              </div>
+            </div>
+
+            <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
+            <details class="fold rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
+              <summary class="px-3 py-2 text-[12px] text-[#a1a1a6]">AI 대본으로 영상이 만들어지는 과정 보기</summary>
+              <div class="px-3 pb-3"> 아래에 <code class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 입력 후 생성 버튼을 누르면 ① 차종·할인액·월납입금이 즉시 바뀌고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">차량 화보 컷 + 12종 모션 그래픽(카톡 대화·영수증 견적·할인 스탬프) + 한국어 성우(TTS) 음성 + 릴스 BGM</strong>이 즉시 합성되어 재생됩니다.</div>
+            </details>
+
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="aiPromptInput" type="text" placeholder="예: 30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리" class="studio-input flex-1 h-9 px-3 text-[13px]" />
+              <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">
+                AI로 만들기
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="aiExcludeInput" class="text-[11px] font-mono text-[#85858b] shrink-0">뺄 문구</label>
+              <input id="aiExcludeInput" type="text" placeholder="예: 견적, 최저가, 무료, 1등 (쉼표로 구분 · AI 대본에서 자동 제외)" class="studio-input flex-1 h-8 px-2.5 text-[12px] text-[#d4d4d8]" />
+            </div>
+            <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
+            <!-- AI 대본 3안: 생성 후 표시, 누르면 그 대본으로 바로 다시 재생 -->
+            <div id="aiVariantPicker" class="hidden flex flex-col gap-1.5">
+              <p class="text-[11px] font-mono text-[#85858b]">대본 3안 · 눌러서 바꿔 보기</p>
+              <div id="aiVariantList" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
+            </div>
+
+            <!-- 동적 N컷(4컷~10컷) 자막 + 성우 TTS 대본 카드 컨테이너 (시간이 늘어나면 컷 카드도 자동으로 늘어남) -->
+            <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
+          </div>
+
           <!-- ================================================================= -->
           <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
           <!-- ================================================================= -->
@@ -727,7 +781,9 @@
               </div>
             </div>
             <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
-            <div class="pt-2 border-t border-[var(--border)] space-y-2">
+            <details class="fold pt-2 border-t border-[var(--border)]">
+              <summary class="py-1.5 text-[12px] text-[#a1a1a6]">🔥 인기 릴스 스타일 가져오기 · 키워드로 찾기</summary>
+            <div class="pt-2 space-y-2">
               <div class="flex items-center justify-between gap-2">
                 <span class="text-[11px] text-[#fb923c] font-medium">🔥 이 업종 인기 템플릿 <span class="text-[#85858b] font-normal">(클릭 한 번으로 바로 적용)</span></span>
                 <div class="flex items-center gap-1.5 flex-wrap justify-end">
@@ -746,12 +802,16 @@
               </div>
               <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
             </div>
-            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
+            </details>
+            <div class="lg:hidden pt-2 border-t border-[var(--border)] space-y-1.5">
               <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
               <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
             </div>
           </div>
 
+          <details id="scriptTemplateFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
+            <summary class="px-4 py-3 text-[13px] font-medium text-[#ededed]">📝 대본 템플릿 더 보기 <span class="text-[12px] text-[#85858b] font-normal">상황별 문구 모음 · 고르면 문구만 바뀌어요</span></summary>
+            <div class="px-2 pb-2">
           <!-- ================================================================= -->
           <!-- ★ [루틴 완전 탈피] 12대 프로 세일즈 아키타입 & AI 무한 씬 믹서 (4,213,440+ 조합 엔진) -->
           <!-- ================================================================= -->
@@ -829,6 +889,12 @@
             </div>
           </div>
 
+            </div>
+          </details>
+
+          <details id="storyboardFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
+            <summary class="px-4 py-3 text-[13px] font-medium text-[#ededed]">🎬 컷 구성 · 추천 문구 칩 <span class="text-[12px] text-[#85858b] font-normal">컷별 시간 확인, 문구 한 번에 넣기</span></summary>
+            <div class="px-2 pb-2">
           <!-- ================================================================= -->
           <!-- ★ 인터랙티브 컷 스토리보드 타임라인 트랙 & 킬러 카피 인젝터 -->
           <!-- ================================================================= -->
@@ -856,59 +922,9 @@
             </div>
           </div>
 
-          <!-- 생성형 씬 디렉터 & 레이아웃 엔진 -->
-          <div class="studio-sub p-4 space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="text-[13px] font-medium text-[#ededed]">AI 대본 · 멀티컷 스토리보드 생성기</span>
-                <span id="aiEngineStatusBadge" class="tag-chip px-2 py-0.5 text-[12px] flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>중앙 AI 엔진 활성
-                </span>
-                <span id="activeSceneRecipeBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[12px]">테마: 로얄 골드 · 4컷 AI 위젯</span>
-              </div>
             </div>
+          </details>
 
-            <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
-            <details class="fold rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
-              <summary class="px-3 py-2 text-[12px] text-[#a1a1a6]">AI 대본으로 영상이 만들어지는 과정 보기</summary>
-              <div class="px-3 pb-3"> 아래에 <code class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 입력 후 생성 버튼을 누르면 ① 차종·할인액·월납입금이 즉시 바뀌고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">차량 화보 컷 + 12종 모션 그래픽(카톡 대화·영수증 견적·할인 스탬프) + 한국어 성우(TTS) 음성 + 릴스 BGM</strong>이 즉시 합성되어 재생됩니다.</div>
-            </details>
-
-            <div class="flex flex-col sm:flex-row gap-2">
-              <input id="aiPromptInput" type="text" placeholder="예: 30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리" class="studio-input flex-1 h-9 px-3 text-[13px]" />
-              <button type="button" id="aiGenBtn" onclick="generateStoryboardFromPrompt()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">
-                AI로 만들기
-              </button>
-            </div>
-            <div class="flex items-center gap-2">
-              <label for="aiExcludeInput" class="text-[11px] font-mono text-[#85858b] shrink-0">뺄 문구</label>
-              <input id="aiExcludeInput" type="text" placeholder="예: 견적, 최저가, 무료, 1등 (쉼표로 구분 · AI 대본에서 자동 제외)" class="studio-input flex-1 h-8 px-2.5 text-[12px] text-[#d4d4d8]" />
-            </div>
-            <p id="aiGenNotice" class="hidden text-[12px] text-[#4cc38a]"></p>
-            <!-- AI 대본 3안: 생성 후 표시, 누르면 그 대본으로 바로 다시 재생 -->
-            <div id="aiVariantPicker" class="hidden flex flex-col gap-1.5">
-              <p class="text-[11px] font-mono text-[#85858b]">대본 3안 · 눌러서 바꿔 보기</p>
-              <div id="aiVariantList" class="grid grid-cols-1 sm:grid-cols-3 gap-2"></div>
-            </div>
-
-            <!-- 동적 N컷(4컷~10컷) 자막 + 성우 TTS 대본 카드 컨테이너 (시간이 늘어나면 컷 카드도 자동으로 늘어남) -->
-            <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 타이틀</label>
-              <input id="inputVehicle" type="text" value="2026 쏘렌토 하이브리드" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
-            </div>
-            <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">최대 할인 금액 (만원)</label>
-              <input id="inputDiscountNum" type="number" value="480" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px] font-mono" />
-            </div>
-            <div>
-              <label class="block text-[12px] text-[#a1a1a6] mb-1.5">월 납입금 · 출고 조건</label>
-              <input id="inputDiscount" type="text" value="월 46만원대 · 3일 즉시출고" oninput="updateCampaignFromInputs()" class="studio-input w-full h-9 px-3 text-[13px]" />
-            </div>
-          </div>
           <div class="flex items-center justify-between gap-2 pt-1">
             <span></span>
             <button type="button" onclick="switchStudioTab('photo')" class="btn-primary h-9 px-4 text-[12px] cursor-pointer">다음: 사진 →</button>
