@@ -646,16 +646,15 @@
           <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
           <!-- ================================================================= -->
           <div class="studio-sub p-4 space-y-3">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <h3 class="text-[13px] font-semibold text-[#ededed]">디자인 스타일</h3>
-                <p class="text-[11px] text-[#85858b] mt-0.5">사진 배치·자막·글꼴·움직임·명함이 서로 다른 <span id="designStyleCount">136</span>가지 디자인입니다. 색상은 아래에서 따로 고릅니다.</p>
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-[11px] text-[#85858b]">디자인 스타일 <span id="designStyleCount" class="font-mono">136</span>종</div>
+                <div id="activeDesignName" class="text-[14px] font-semibold text-[#ededed] truncate"></div>
+                <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6] mt-0.5"></p>
               </div>
-              <span id="activeDesignName" class="tag-chip px-2.5 py-1 text-[11px] text-[#ededed]"></span>
+              <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] shrink-0 cursor-pointer">디자인 바꾸기 ›</button>
             </div>
-            <div id="designCatTabs" class="flex items-center gap-1.5 overflow-x-auto pb-1"></div>
-            <div id="designStyleGrid" class="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-6 gap-2 max-h-[560px] overflow-y-auto pr-1"></div>
-            <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6]"></p>
+            <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
             <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
               <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
               <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
@@ -12531,7 +12530,6 @@ function renderStoryArchetypesUI() {
 
     function renderDesignStylePicker() {
       const grid = document.getElementById('designStyleGrid');
-      if (!grid) return;
       syncDesignThumbKey();
       const urls = designThumbCache.urls;
       const active = getActiveDesign().id;
@@ -12544,7 +12542,7 @@ function renderStoryArchetypesUI() {
           return `<button type="button" onclick="selectDesignCat('${c}')" class="shrink-0 px-2.5 py-1 rounded-[6px] text-[11px] font-medium border cursor-pointer ${on ? 'border-[#ededed] bg-[#232325] text-white' : 'border-[var(--border)] text-[#a1a1a6] hover:text-[#ededed]'}">${c} <span class="text-[#6e6e73]">${n}</span></button>`;
         }).join('');
       }
-      grid.innerHTML = getDesignPickerList().map((ds) => {
+      if (grid) grid.innerHTML = getDesignPickerList().map((ds) => {
         const on = ds.id === active;
         const src = urls[ds.id] || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
         return `
@@ -17182,6 +17180,12 @@ function renderStoryArchetypesUI() {
       if (!dr) return;
       dr.classList.remove('open');
       dr.setAttribute('aria-hidden', 'true');
+    }
+    // 대본 탭의 "디자인 바꾸기" 버튼: 미리보기로 올라가서 사이드바 열기
+    function openDesignSidebarFromPanel() {
+      const vp = document.getElementById('previewViewport');
+      if (vp) vp.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => openPresetDrawer('right'), 350);
     }
     function choosePresetFromDrawer(id) {
       selectDesignStyle(id);
