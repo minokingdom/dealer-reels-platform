@@ -8163,9 +8163,10 @@ function renderStoryArchetypesUI() {
             campaign.hook;
         } else {
           // 마지막 엔딩 카드(명함/매장) 클로징 멘트: 매장 중심 업종은 매장명으로, 인물 중심 업종은 호칭으로 안내
-          text = IND.outroMode === 'store'
-            ? `${d.name}입니다. 댓글에 ${IND.cta || '예약'} 남겨주세요!`
-            : `${d.name} ${d.title}입니다. 댓글에 ${IND.cta || '문의'} 남겨주세요!`;
+          // 명함을 아직 안 채웠으면 이름 없이 안내만
+          const who = (IND.outroMode === 'store' ? [d.name] : [d.name, d.title]).filter(Boolean).join(' ');
+          const ask = `댓글에 ${IND.cta || (IND.outroMode === 'store' ? '예약' : '문의')} 남겨주세요!`;
+          text = who ? `${who}입니다. ${ask}` : ask;
         }
         return indWord(String(text || ''))
           .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
@@ -8269,6 +8270,9 @@ function renderStoryArchetypesUI() {
       fetchTtsBuffer(text) {
         const key = this.ttsKey(text);
         if (this.ttsCache.has(key)) return this.ttsCache.get(key);
+        // 대본 전체 녹음이 아직 시작 전이면(대본을 고친 직후 등) 문장별로 따로 녹음하지 않고 전체 녹음을 먼저 시작함
+        //   (문장마다 따로 녹음하면 톤·속도가 달라 끊어 읽은 티가 남. 문장별 녹음은 전체 녹음이 실패했을 때만)
+        if (!this.scriptPending && Date.now() >= this.ttsBlockedUntil && this.enabled) this.prefetchTtsBuffers();
         // 대본 전체 녹음이 진행 중이면 그 결과를 기다려 같은 녹음에서 잘라낸 음성을 씀
         if (this.scriptPending) {
           return this.scriptPending.then(() => this.ttsCache.get(key) || this.fetchLineBuffer(text));
@@ -8504,6 +8508,8 @@ function renderStoryArchetypesUI() {
           if (text) lines.push(text);
         }
         if (lines.length === 0) return Promise.resolve([]);
+        // 예약된 (타이핑 후) 녹음이 있으면 지금 바로 받으므로 취소
+        if (this.ttsPrefetchTimer) { clearTimeout(this.ttsPrefetchTimer); this.ttsPrefetchTimer = null; }
 
         // 1순위: 대본 전체를 한 번에 녹음. 실패하면 문장별 녹음으로 대체
         const perLine = () => Promise.all(lines.map((t) => this.fetchLineBuffer(t).catch(() => null)));
@@ -8711,6 +8717,8 @@ function renderStoryArchetypesUI() {
             // 음성을 받는 사이 다른 컷으로 넘어갔거나 사운드를 껐으면 재생하지 않음
             if (token !== this.ttsSpeakToken) return;
             if (!this.enabled && !forceSpeak) return;
+            // 기다리는 사이 한 호흡 녹음이 도착해 재생 중이면 컷 조각은 겹쳐 틀지 않음
+            if (this.masterBuffer && isPlaying && !forceSpeak) return;
             this.playTtsBuffer(buffer, cutIdx);
           },
           () => {
@@ -20817,9 +20825,10 @@ function renderStoryArchetypesUI() {
       // 영상 처음으로 이동 후 즉시 재생 & 한국어 성우(TTS) + BGM 즉시 발화
       isPlaying = true;
       AudioEngine.lastSpokenCut = -1;
+      // 대본 전체를 한 번에 녹음해 도착하면 처음부터 한 호흡으로 재생 (컷마다 끊어 읽지 않음)
+      AudioEngine.stopTts();
       AudioEngine.prefetchTtsBuffers();
       window.__timelines['main'].seek(0.12);
-      AudioEngine.speakCutLine(0, true);
     }
 
     function renderScriptVariantPicker() {
@@ -21169,7 +21178,8 @@ function renderStoryArchetypesUI() {
         if (expText) expText.textContent = '성우 음성 준비 중…';
         await Promise.race([
           AudioEngine.prefetchTtsBuffers(),
-          new Promise((resolve) => setTimeout(resolve, 20000))
+          // 무료 모델은 10컷 대본 한 번 녹음에 10초 넘게 걸리므로 넉넉히 기다림
+          new Promise((resolve) => setTimeout(resolve, 45000))
         ]);
       }
       if (AudioEngine.bgmStyle === 'custom_mp3' && AudioEngine.customBgmAudioEl) {
