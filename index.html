@@ -2272,11 +2272,7 @@
     // 업종은 회원가입 때 고르고, 로그인하면 그 업종으로 고정
     let arIndustryLocked = false;
     function arIndustryChipClick() {
-      if (arIndustryLocked) return openIndustryPicker();
-      if (typeof openDealerAuthModal === 'function') openDealerAuthModal();
-      if (typeof switchAuthModalTab === 'function') switchAuthModalTab('signup');
-      const sel = document.getElementById('authIndustryInput');
-      if (sel) setTimeout(() => sel.focus(), 50);
+      return openIndustryPicker();
     }
     // 가입 창에서 업종을 바꾸면 미리보기와 입력칸 안내도 그 업종으로
     function arSignupIndustryChanged(key) {
@@ -2353,7 +2349,7 @@
                 <span class="text-[18px]">${x.icon}</span><span>${x.name}</span>${x.key === IND.key ? '<span class="ml-auto text-[10px] text-[#85858b]">지금</span>' : ''}
               </button>`).join('')}
           </div>
-          <p class="text-[11px] text-[#85858b]">디자인 136종은 모든 업종에서 그대로 쓸 수 있어요.</p>
+          <p class="text-[11px] text-[#85858b]">고르신 업종에 맞는 전용 디자인·사진·대본·명함이 바로 적용됩니다.</p>
           <div class="ar-modal-foot">
             <button type="button" onclick="document.getElementById('industryPickerModal').remove()" class="btn-secondary h-9 px-4 text-[12px] cursor-pointer">취소</button>
             <button type="button" id="industryPickerSave" onclick="arChangeAccountIndustry(arPickerChoice)" class="btn-primary h-9 px-5 text-[12px] cursor-pointer" disabled style="opacity:.45">저장</button>
@@ -13937,28 +13933,44 @@ function renderStoryArchetypesUI() {
       return makeTrendDesignObj([id, `🔥 ${shortLabel}`, layout, cap, font, deco, trans, outro, grade, head, bg, shortLabel, accent, accent2], indKey, Math.floor(Math.random() * 90));
     }
 
+    function detectTrendIndustryFromQuery(qLow, fallbackKey) {
+      if (/미용|헤어|네일|살롱|뷰티|속눈썹|피부관리|염색|펌/.test(qLow)) return 'beauty';
+      if (/음식|맛집|식당|고기|국밥|포차|배달|먹방|요리/.test(qLow)) return 'restaurant';
+      if (/카페|커피|디저트|라떼|케이크|베이커리|빵/.test(qLow)) return 'cafe';
+      if (/부동산|매물|아파트|전세|월세|집들이|분양/.test(qLow)) return 'realestate';
+      if (/학원|공부|수업|시험|성적|과외|수능|입시/.test(qLow)) return 'academy';
+      if (/병원|의원|치과|피부과|한의원|진료|건강|스트레칭/.test(qLow)) return 'clinic';
+      if (/헬스|피트니스|필라테스|pt|운동|다이어트|오운완/.test(qLow)) return 'fitness';
+      if (/쇼핑|의류|코디|언박싱|패션|스토어|세일/.test(qLow)) return 'shop';
+      if (/인테리어|리모델링|시공|룸투어|가구|자재/.test(qLow)) return 'interior';
+      if (/자동차|중고차|신차|시승|출고|할부|리스/.test(qLow)) return 'auto';
+      return fallbackKey;
+    }
+
     function searchAndSwapTrendTheme(fromDrawer) {
       const inputEl = document.getElementById(fromDrawer ? 'pdTrendThemeQuery' : 'trendThemeQuery');
       const query = inputEl ? inputEl.value.trim() : '';
-      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
-      const bank = IND_TREND_BANK[indKey] || IND_TREND_BANK.auto;
+      const curIndKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const qLow = query.toLowerCase();
+      const targetIndKey = query ? detectTrendIndustryFromQuery(qLow, curIndKey) : curIndKey;
+      const bank = IND_TREND_BANK[targetIndKey] || IND_TREND_BANK[curIndKey] || IND_TREND_BANK.auto;
       const existingIds = new Set(DESIGN_STYLES.map((d) => d.id));
 
       let picked = null;
       if (query) {
-        const qLow = query.toLowerCase();
-        const matchRow = bank.find((r) => !existingIds.has(r[0]) && (r[1].toLowerCase().includes(qLow) || r[11].toLowerCase().includes(qLow)));
-        picked = matchRow ? makeTrendDesignObj(matchRow, indKey, DESIGN_STYLES.length) : synthesizeKeywordTrend(query, indKey);
+        const detected = detectTrendIndustryFromQuery(qLow, null);
+        const matchRow = bank.find((r) => !existingIds.has(r[0]) && (r[1].toLowerCase().includes(qLow) || r[11].toLowerCase().includes(qLow)))
+          || (detected ? bank.find((r) => !existingIds.has(r[0])) : null);
+        picked = matchRow ? makeTrendDesignObj(matchRow, curIndKey, DESIGN_STYLES.length) : synthesizeKeywordTrend(query, curIndKey);
       } else {
         const nextRow = bank.find((r) => !existingIds.has(r[0]));
         if (nextRow) {
-          picked = makeTrendDesignObj(nextRow, indKey, DESIGN_STYLES.length);
+          picked = makeTrendDesignObj(nextRow, curIndKey, DESIGN_STYLES.length);
         } else {
-          // 은행의 모든 기본 트렌드를 다 써봤다면 가장 오래된 트렌드를 새 조합으로 리프레시
           const fallbackRow = bank[Math.floor(Math.random() * bank.length)];
           const freshRow = [...fallbackRow];
           freshRow[0] = `${fallbackRow[0]}_${Date.now().toString(36).slice(-4)}`;
-          picked = makeTrendDesignObj(freshRow, indKey, DESIGN_STYLES.length);
+          picked = makeTrendDesignObj(freshRow, curIndKey, DESIGN_STYLES.length);
         }
       }
 
