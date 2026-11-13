@@ -10,16 +10,16 @@
 const { Pool } = require('pg');
 
 const INDUSTRY_QUERIES = {
-  auto: { yt: '신차 중고차 출고 릴스 쇼츠', ig: '자동차릴스' },
-  restaurant: { yt: '맛집 음식점 홍보 릴스 쇼츠', ig: '맛집릴스' },
-  cafe: { yt: '카페 디저트 신메뉴 릴스 쇼츠', ig: '카페릴스' },
-  beauty: { yt: '미용실 네일샵 릴스 쇼츠', ig: '미용실릴스' },
-  realestate: { yt: '부동산 매물 투어 릴스 쇼츠', ig: '부동산릴스' },
-  academy: { yt: '학원 공부법 성적 릴스 쇼츠', ig: '공부법릴스' },
-  clinic: { yt: '병원 의사 건강 릴스 쇼츠', ig: '건강릴스' },
-  fitness: { yt: '헬스 필라테스 오운완 릴스 쇼츠', ig: '오운완릴스' },
-  shop: { yt: '쇼핑몰 코디 언박싱 릴스 쇼츠', ig: '코디릴스' },
-  interior: { yt: '인테리어 룸투어 비포애프터 릴스 쇼츠', ig: '인테리어릴스' }
+  auto: { yt: '신차 중고차 출고 릴스 쇼츠', ig: '자동차' },
+  restaurant: { yt: '맛집 음식점 홍보 릴스 쇼츠', ig: '맛집추천' },
+  cafe: { yt: '카페 디저트 신메뉴 릴스 쇼츠', ig: '카페추천' },
+  beauty: { yt: '미용실 네일샵 릴스 쇼츠', ig: '미용실' },
+  realestate: { yt: '부동산 매물 투어 릴스 쇼츠', ig: '부동산' },
+  academy: { yt: '학원 공부법 성적 릴스 쇼츠', ig: '공부법' },
+  clinic: { yt: '병원 의사 건강 릴스 쇼츠', ig: '건강정보' },
+  fitness: { yt: '헬스 필라테스 오운완 릴스 쇼츠', ig: '오운완' },
+  shop: { yt: '쇼핑몰 코디 언박싱 릴스 쇼츠', ig: '데일리룩' },
+  interior: { yt: '인테리어 룸투어 비포애프터 릴스 쇼츠', ig: '인테리어' }
 };
 
 let trendPool = null;
@@ -137,7 +137,7 @@ async function fetchInstagramApify(hashtag, diag) {
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hashtags: [tag], resultsLimit: 6 }),
+    body: JSON.stringify({ hashtags: [tag], resultsLimit: 30 }),
     signal: AbortSignal.timeout(25000)
   });
   if (diag) diag.apifyStatus = r.status;
@@ -147,18 +147,36 @@ async function fetchInstagramApify(hashtag, diag) {
   }
   const rows = await r.json();
   if (!Array.isArray(rows)) return [];
-  return rows.slice(0, 6).map((p) => {
-    const firstLine = String(p.caption || '').split('\n').map((s) => s.trim()).find(Boolean) || `#${tag} 인기 릴스`;
-    const views = p.videoViewCount || p.videoPlayCount || p.likesCount || 0;
+  const scored = rows
+    .filter((p) => {
+      const cap = String(p.caption || '').trim();
+      return cap.length >= 4 && cap !== '-';
+    })
+    .map((p) => {
+      const play = Number(p.videoViewCount || p.videoPlayCount || 0);
+      const likes = Number(p.likesCount) > 0 ? Number(p.likesCount) : 0;
+      const comments = Number(p.commentsCount) > 0 ? Number(p.commentsCount) : 0;
+      const score = play + likes * 10 + comments * 20;
+      return { p, play, likes, score };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, 6).map(({ p, play, likes }) => {
+    const firstLine = String(p.caption || '').split('\n').map((s) => s.trim()).find((s) => s && s !== '-') || `#${tag} 인기 릴스`;
+    const statLabel = play > 0
+      ? `인스타 조회 ${play.toLocaleString()}회`
+      : likes > 0
+        ? `인스타 좋아요 ${likes.toLocaleString()}개`
+        : '인스타 인기 게시물';
     return {
       videoId: p.shortCode || p.id || '',
       url: p.url || (p.shortCode ? `https://www.instagram.com/reel/${p.shortCode}/` : 'https://www.instagram.com/'),
       title: firstLine.slice(0, 80),
-      views: views ? `인스타 ${Number(views).toLocaleString()}회/좋아요` : '인스타 인기 릴스',
+      views: statLabel,
       author: p.ownerUsername ? `@${p.ownerUsername}` : 'Instagram',
       platform: 'instagram'
     };
-  }).filter((x) => x.title);
+  });
 }
 
 async function fetchInstagramGraph(hashtag) {
