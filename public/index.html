@@ -2301,7 +2301,6 @@
     function arApplyIndustryDemoDealers() {
       if (typeof dealers === 'undefined') return;
       dealers.forEach((d, idx) => {
-        if (!AR_DEMO_DEALER_IDS.includes(d.id)) return;
         if (!d._autoOrig) {
           d._autoOrig = {
             name: d.name,
@@ -2347,6 +2346,15 @@
           });
         }
       });
+      const nameIn = document.getElementById('dlrInputName');
+      const titleIn = document.getElementById('dlrInputTitle');
+      const branchIn = document.getElementById('dlrInputBranch');
+      const promoIn = document.getElementById('dlrInputPromo');
+      if (nameIn) nameIn.placeholder = IND.outroMode === 'store' ? (IND.branchPlaceholder || '매장명') : '김민준';
+      if (titleIn) titleIn.placeholder = IND.outroMode === 'store' ? (IND.storeSubtitle || '매장 공식 안내') : (IND.title || '대표');
+      if (branchIn) branchIn.placeholder = IND.outroMode === 'store' ? (IND.storeLocation || IND.branchPlaceholder) : (IND.branchPlaceholder || '소속 지점');
+      if (promoIn) promoIn.placeholder = IND.promoPlaceholder || '';
+      if (typeof syncPreviewPanel === 'function') { try { syncPreviewPanel(); } catch (e) {} }
     }
 
     // 업종별 10개 디폴트 장면 덱 (각 업장마다 10개의 서로 다른 테마·구도·배경의 기본 이미지를 생성)
