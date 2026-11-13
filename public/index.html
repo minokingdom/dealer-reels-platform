@@ -581,8 +581,8 @@
                   <input id="pdTrendThemeQuery" type="text" placeholder="업종 유행 키워드 (비우면 자동 추천)"
                     onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(true);}"
                     class="flex-1 min-w-0 h-7 px-2 rounded-[6px] bg-[#0f0f11] border border-[var(--border)] text-[11px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
-                  <button type="button" onclick="searchAndSwapTrendTheme(true)" class="h-7 px-2 rounded-[6px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[11px] font-semibold shrink-0 cursor-pointer" title="덜 쓰는 기존 디자인 1개를 지우고 업종별 유행 테마 1개로 교체합니다">🔥 교체</button>
-                  <button id="pdTrendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden h-7 px-1.5 rounded-[6px] border border-[var(--border)] text-[10px] text-[#a1a1a6] hover:text-white shrink-0 cursor-pointer" title="기본 디자인 목록으로 복원">↺</button>
+                  <button type="button" onclick="searchAndSwapTrendTheme(true)" class="h-7 px-2 rounded-[6px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[11px] font-semibold shrink-0 cursor-pointer" title="기존 디자인을 유지한 채 업종별 유행 테마를 추가합니다">🔥 추가</button>
+                  <button id="pdTrendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden h-7 px-1.5 rounded-[6px] border border-[var(--border)] text-[10px] text-[#a1a1a6] hover:text-white shrink-0 cursor-pointer" title="추가한 유행 테마 비우기">↺</button>
                 </div>
                 <div id="pdTrendSwapStatus" class="hidden text-[10px] text-[#fb923c] truncate"></div>
               </div>
@@ -723,14 +723,14 @@
             <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
             <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] text-[#fb923c] font-medium">🔥 업종별 유행 테마 교체 <span class="text-[#85858b] font-normal">(덜 쓰는 1개 삭제 → 새 테마 1개 추가)</span></span>
-                <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 기본 복원</button>
+                <span class="text-[11px] text-[#fb923c] font-medium">🔥 업종별 유행 테마 추가 <span class="text-[#85858b] font-normal">(다이어트된 기본 목록에 새 유행 테마만 추가)</span></span>
+                <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
               </div>
               <div class="flex items-center gap-1.5">
                 <input id="trendThemeQuery" type="text" placeholder="키워드 입력 (예: 비포애프터, 오픈런, 1등급 루틴... 비우면 자동)"
                   onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[7px] bg-[#0f0f11] border border-[var(--border)] text-[12px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
-                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 유행 테마 교체</button>
+                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 유행 테마 추가</button>
               </div>
               <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
             </div>
@@ -13898,7 +13898,7 @@ function renderStoryArchetypesUI() {
           el.textContent = msg;
           el.classList.remove('hidden');
         } else if (hasSwaps) {
-          el.textContent = `교체 적용됨: ${st.added.length}개 유행 테마 사용 중 (총 개수 고정)`;
+          el.textContent = `유행 테마 ${st.added.length}개 추가됨`;
           el.classList.remove('hidden');
         } else {
           el.classList.add('hidden');
@@ -13962,17 +13962,7 @@ function renderStoryArchetypesUI() {
         }
       }
 
-      const victim = pickVictimDesignForSwap(indKey);
       const st = getTrendSwapState();
-      if (victim) {
-        const idx = DESIGN_STYLES.findIndex((d) => d.id === victim.id);
-        if (idx >= 0) DESIGN_STYLES.splice(idx, 1);
-        if (victim.isTrend) {
-          st.added = st.added.filter((x) => x.id !== victim.id);
-        } else if (!st.removedIds.includes(victim.id)) {
-          st.removedIds.push(victim.id);
-        }
-      }
       DESIGN_STYLES.unshift(picked);
       st.added.unshift(picked);
       saveTrendSwapState(st);
@@ -13985,10 +13975,7 @@ function renderStoryArchetypesUI() {
       selectDesignStyle(picked.id);
 
       const totalCount = arVisibleDesigns().length;
-      const msg = victim
-        ? `'${victim.name}' 삭제 → '${picked.name}' 추가 (총 ${totalCount}종 유지)`
-        : `'${picked.name}' 추가 (총 ${totalCount}종)`;
-      updateTrendSwapStatusUI(msg);
+      updateTrendSwapStatusUI(`'${picked.name}' 추가됨 (현재 총 ${totalCount}종)`);
     }
 
     function resetTrendSwaps() {
