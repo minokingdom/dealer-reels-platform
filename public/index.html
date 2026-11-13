@@ -227,11 +227,56 @@
       max-width: 100vw;
       box-sizing: border-box;
     }
-    .fixed.inset-0 > div {
-      max-width: min(100%, calc(100vw - 32px)) !important;
+    :where(.fixed.inset-0) > div {
+      max-width: min(100%, calc(100vw - 32px));
       margin-left: auto;
       margin-right: auto;
     }
+
+    /* ===== 모달 공통 디자인 (모든 팝업 창이 같은 모양) ===== */
+    .ar-modal {
+      background: rgba(6, 6, 7, 0.74);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-y: auto;
+    }
+    .ar-modal > .ar-modal-card {
+      width: 100%;
+      max-width: min(var(--mw, 480px), calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: var(--card);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      padding: 22px 22px 20px;
+      animation: arModalIn 180ms var(--ease-out);
+    }
+    @keyframes arModalIn { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: none; } }
+    .ar-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ar-modal-head h3 { font-size: 16px !important; font-weight: 600 !important; color: var(--foreground); line-height: 1.35; margin-top: 0 !important; }
+    .ar-modal-head p { font-size: 12px; margin-top: 3px; }
+    .ar-modal-x {
+      width: 32px; height: 32px; min-height: 32px !important; padding: 0 !important; flex: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 8px; color: var(--secondary-foreground); background: transparent; border: 1px solid transparent; cursor: pointer;
+      font-size: 18px; line-height: 1;
+    }
+    .ar-modal-x:hover { background: var(--raised); border-color: var(--border); color: var(--foreground); }
+    .ar-modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; }
+    .ar-choice { border: 1px solid var(--border); background: var(--raised); color: #d4d4d8; border-radius: 10px; }
+    .ar-choice:hover { border-color: var(--border-strong); }
+    .ar-choice.on { border-color: #ededed; background: #2b2b2f; color: #fff; box-shadow: inset 0 0 0 1px #ededed; }
 
     /* 작은 배지/칩: 한 줄 유지, 넘치면 말줄임 */
     .tag-chip {
@@ -1237,11 +1282,11 @@
   </div>
 
   <!-- 신규 카마스터 추가 모달 -->
-  <div id="newDealerModal" class="hidden fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-    <div class="studio-card max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+  <div id="newDealerModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:480px">
+      <div class="ar-modal-head">
         <h3 class="text-[15px] font-medium text-[#ededed]">새 구독 카마스터 등록</h3>
-        <button onclick="closeNewDealerModal()" class="text-[12px] text-[#85858b] hover:text-[#ededed]">닫기</button>
+        <button type="button" onclick="closeNewDealerModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
       <div class="space-y-3 text-[13px]">
         <div class="grid grid-cols-2 gap-3">
@@ -1285,14 +1330,14 @@
   </div>
 
   <!-- 추출된 실제 영상 재생 & 공유/다운로드 모달 -->
-  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="studio-card max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+  <div id="exportedVideoModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:440px">
+      <div class="ar-modal-head">
         <div>
           <h3 class="text-[15px] font-medium text-[#ededed]">영상 완성</h3>
           <p id="exportedVideoMeta" class="text-[12px] text-[#4cc38a] mt-0.5">0~8초 차량 본편 + 8~12초 카마스터 명함 합성 완료</p>
         </div>
-        <button onclick="closeExportedVideoModal()" class="btn-secondary h-7 px-2.5 text-[12px]">닫기</button>
+        <button type="button" onclick="closeExportedVideoModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
 
       <div class="w-full max-w-[240px] mx-auto aspect-[9/16] rounded-[12px] overflow-hidden bg-black border border-[var(--border)]">
@@ -1304,7 +1349,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           MP4 영상 다운로드 (PC · 스마트폰)
         </button>
-        <button type="button" onclick="openRecordedVideoInNewTab()" class="w-full h-9 px-4 rounded-[8px] text-[12px] font-medium bg-[#1e293b] hover:bg-[#334155] text-[#38bdf8] border border-[#38bdf8]/30 transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+        <button type="button" onclick="openRecordedVideoInNewTab()" class="btn-secondary w-full h-9 px-4 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           새 창에서 영상 열기 · 직접 저장 (다운로드 오류 시 우회)
         </button>
@@ -1324,14 +1369,13 @@
   </div>
 
   <!-- 카마스터 본인 SNS 계정 연결 & OAuth 연동 모달 -->
-  <div id="snsConnectModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="studio-card max-w-lg w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+  <div id="snsConnectModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:560px">
+      <div class="ar-modal-head">
         <div>
-          <span class="font-mono text-[11px] text-[#85858b]">SNS 계정 연동</span>
           <h3 id="snsModalHeaderTitle" class="text-[15px] font-medium text-[#ededed] mt-0.5">내 4대 SNS 계정 연결 설정</h3>
         </div>
-        <button onclick="closeSnsConnectModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+        <button type="button" onclick="closeSnsConnectModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
 
       <p class="text-[13px] text-[#a1a1a6] leading-relaxed">
@@ -1384,14 +1428,13 @@
   <!-- ========================================================================= -->
   <!-- 모달 A: 카마스터 로그인 & 1분 회원가입 모달 (휴대폰 번호 = Rust Wasm DRM 바인딩 ID) -->
   <!-- ========================================================================= -->
-  <div id="dealerAuthModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="studio-card max-w-md w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+  <div id="dealerAuthModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:480px">
+      <div class="ar-modal-head">
         <div>
-          <span class="font-mono text-[11px] text-[#85858b]">CAR MASTER AUTH</span>
           <h3 class="text-[16px] font-medium text-[#ededed] mt-0.5">카마스터 전용 스튜디오 로그인 · 회원가입</h3>
         </div>
-        <button type="button" onclick="closeDealerAuthModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+        <button type="button" onclick="closeDealerAuthModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
 
       <!-- 로그인 / 신규가입 탭 -->
@@ -1473,14 +1516,13 @@
   <!-- ========================================================================= -->
   <!-- 모달 B: AutoReels PRO 멤버십 정기구독 결제창 (카카오페이 / 토스페이 / 카드결제) -->
   <!-- ========================================================================= -->
-  <div id="billingCheckoutModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="studio-card max-w-lg w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
+  <div id="billingCheckoutModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:560px">
+      <div class="ar-modal-head">
         <div>
-          <span class="font-mono text-[11px] text-[#4cc38a]">SUBSCRIPTION CHECKOUT</span>
           <h3 class="text-[16px] font-medium text-[#ededed] mt-0.5">AutoReels PRO 카마스터 정기구독 결제</h3>
         </div>
-        <button type="button" onclick="closeBillingCheckoutModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+        <button type="button" onclick="closeBillingCheckoutModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
 
       <!-- 회원 서버 모드: 내 구독 상태 -->
@@ -1500,7 +1542,7 @@
       <div class="space-y-2">
         <label class="block text-[12px] text-[#a1a1a6]">1. 구독 플랜 선택 (부가세 포함)</label>
         <div class="grid grid-cols-1 gap-2">
-          <button type="button" id="planCard_monthly_150k" onclick="selectBillingPlan('monthly_150k')" class="p-3.5 rounded-[10px] border border-[#3b82f6] bg-[#19191b] text-left flex items-center justify-between cursor-pointer">
+          <button type="button" id="planCard_monthly_150k" onclick="selectBillingPlan('monthly_150k')" class="p-3.5 rounded-[10px] border border-[#ededed] bg-[#19191b] text-left flex items-center justify-between cursor-pointer">
             <div>
               <div class="flex items-center gap-2">
                 <span class="text-[14px] font-medium text-[#ededed]">월간 PRO (매달 자동결제)</span>
@@ -1550,7 +1592,7 @@
       <div id="billingPayMethodSection" class="space-y-2">
         <label class="block text-[12px] text-[#a1a1a6]">2. 간편결제 · 카드 선택</label>
         <div class="grid grid-cols-3 gap-2">
-          <button type="button" id="payMethod_kakaopay" onclick="selectPayMethod('kakaopay')" class="h-10 rounded-[8px] border border-[#3b82f6] bg-[#232325] text-[12px] font-medium text-[#ededed] cursor-pointer">
+          <button type="button" id="payMethod_kakaopay" onclick="selectPayMethod('kakaopay')" class="h-10 rounded-[8px] border border-[#ededed] bg-[#232325] text-[12px] font-medium text-[#ededed] cursor-pointer">
             카카오페이
           </button>
           <button type="button" id="payMethod_tosspay" onclick="selectPayMethod('tosspay')" class="h-10 rounded-[8px] border border-[var(--border)] bg-[#141415] text-[12px] font-normal text-[#a1a1a6] cursor-pointer">
@@ -1569,7 +1611,7 @@
         <div id="billingReceiptDetail" class="font-mono text-[11px] text-[#a1a1a6]"></div>
       </div>
 
-      <button type="button" id="executePayBtn" onclick="executeSubscriptionPayment()" class="w-full h-11 rounded-[10px] bg-[#3b82f6] hover:bg-[#2563eb] text-white font-medium text-[14px] transition-colors cursor-pointer">
+      <button type="button" id="executePayBtn" onclick="executeSubscriptionPayment()" class="btn-primary w-full h-11 text-[14px] cursor-pointer">
         150,000원 결제하고 워터마크 즉시 해제하기
       </button>
     </div>
@@ -1578,14 +1620,14 @@
   <!-- ========================================================================= -->
   <!-- 모달 C: 본사 대표님 관리자 콘솔 전용 비밀번호 인증 모달 -->
   <!-- ========================================================================= -->
-  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="studio-card max-w-sm w-full p-6 border-[#d97706]/50 space-y-4 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
-        <div class="flex items-center gap-2 text-[#fbbf24]">
+  <div id="adminAuthModal" class="hidden fixed inset-0 z-50 flex ar-modal">
+    <div class="studio-card w-full space-y-4 ar-modal-card" style="--mw:400px">
+      <div class="ar-modal-head">
+        <div class="flex items-center gap-2 text-[#ededed]">
           <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           <h3 class="font-medium text-[15px] text-[#ededed]">본사 관리자 콘솔 인증</h3>
         </div>
-        <button type="button" onclick="closeAdminAuthModal()" class="btn-secondary h-7 px-2.5 text-[12px] cursor-pointer">닫기</button>
+        <button type="button" onclick="closeAdminAuthModal()" class="ar-modal-x" aria-label="닫기">×</button>
       </div>
       <p class="text-[12px] text-[#85858b] leading-relaxed">
         전체 카마스터 계정 관리, DRM 라이선스 차단 시뮬레이션 및 매출 본부 콘솔에 접속하려면 관리자 암호를 입력해주세요.
@@ -1601,7 +1643,7 @@
         </div>
         <div class="flex items-center justify-end gap-2 pt-2">
           <button type="button" onclick="closeAdminAuthModal()" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">취소</button>
-          <button type="submit" class="h-8 px-4 rounded-[8px] bg-[#d97706] hover:bg-[#b45309] text-white text-[12px] font-medium transition-colors cursor-pointer">인증 및 접속</button>
+          <button type="submit" class="btn-primary h-8 px-4 text-[12px] cursor-pointer">인증 및 접속</button>
         </div>
       </form>
     </div>
@@ -2175,7 +2217,6 @@
       if (m) m.remove();
       if (!AR_INDUSTRIES[key] || key === IND.key) return;
       const next = AR_INDUSTRIES[key];
-      if (!confirm(`업종을 ${next.icon} ${next.name}(으)로 바꿀까요?\n상품 프리셋과 대본 템플릿이 새 업종 것으로 바뀝니다.`)) return;
       arLockIndustry(key);
       try {
         if (window.AR_SERVER && AR_SERVER.mode) {
@@ -2201,31 +2242,46 @@
       const m = document.getElementById('industryPickerModal');
       if (m) m.remove();
     }
+    let arPickerChoice = '';
     function openIndustryPicker() {
       let m = document.getElementById('industryPickerModal');
       if (!m) {
         m = document.createElement('div');
         m.id = 'industryPickerModal';
         m.setAttribute('data-noind', '');
-        m.className = 'fixed inset-0 z-[90] flex items-center justify-center bg-black/70 p-4';
+        m.className = 'fixed inset-0 z-[90] flex ar-modal';
         m.onclick = (ev) => { if (ev.target === m) m.remove(); };
         document.body.appendChild(m);
       }
+      arPickerChoice = IND.key;
       m.innerHTML = `
-        <div class="w-full max-w-[460px] rounded-[14px] bg-[#111113] border border-[#27272a] p-5">
-          <div class="flex items-center justify-between mb-1">
-            <div class="text-[15px] font-semibold text-[#ededed]">업종 바꾸기</div>
-            <button type="button" onclick="document.getElementById('industryPickerModal').remove()" class="text-[#85858b] hover:text-white text-[18px] leading-none cursor-pointer">×</button>
+        <div class="ar-modal-card space-y-4" style="--mw:480px">
+          <div class="ar-modal-head">
+            <div>
+              <h3>업종 바꾸기</h3>
+              <p class="text-[#85858b]">고른 뒤 [저장]을 누르면 화면 문구·상품 프리셋·대본 템플릿이 그 업종으로 바뀌고 내 계정에도 저장됩니다.</p>
+            </div>
+            <button type="button" onclick="document.getElementById('industryPickerModal').remove()" class="ar-modal-x" aria-label="닫기">×</button>
           </div>
-          <p class="text-[12px] text-[#85858b] mb-4">고르면 화면 문구, 상품 프리셋, 대본 템플릿이 그 업종에 맞게 바뀌고 내 계정 업종도 함께 바뀝니다. 디자인 136종은 모든 업종에서 그대로 쓸 수 있어요.</p>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-2" id="industryPickerGrid">
             ${Object.values(AR_INDUSTRIES).map((x) => `
-              <button type="button" onclick="arChangeAccountIndustry('${x.key}')"
-                class="h-12 px-3 rounded-[10px] border text-left text-[13px] cursor-pointer flex items-center gap-2 ${x.key === IND.key ? 'border-[#3b82f6] bg-[#3b82f6]/15 text-white' : 'border-[#27272a] bg-[#18181a] text-[#d4d4d8] hover:border-[#52525b]'}">
-                <span class="text-[18px]">${x.icon}</span><span>${x.name}</span>
+              <button type="button" data-ind="${x.key}" onclick="arPickIndustry('${x.key}')"
+                class="ar-choice h-12 px-3 text-left text-[13px] cursor-pointer flex items-center gap-2 ${x.key === IND.key ? 'on' : ''}">
+                <span class="text-[18px]">${x.icon}</span><span>${x.name}</span>${x.key === IND.key ? '<span class="ml-auto text-[10px] text-[#85858b]">지금</span>' : ''}
               </button>`).join('')}
           </div>
+          <p class="text-[11px] text-[#85858b]">디자인 136종은 모든 업종에서 그대로 쓸 수 있어요.</p>
+          <div class="ar-modal-foot">
+            <button type="button" onclick="document.getElementById('industryPickerModal').remove()" class="btn-secondary h-9 px-4 text-[12px] cursor-pointer">취소</button>
+            <button type="button" id="industryPickerSave" onclick="arChangeAccountIndustry(arPickerChoice)" class="btn-primary h-9 px-5 text-[12px] cursor-pointer" disabled style="opacity:.45">저장</button>
+          </div>
         </div>`;
+    }
+    function arPickIndustry(key) {
+      arPickerChoice = key;
+      document.querySelectorAll('#industryPickerGrid [data-ind]').forEach((b) => b.classList.toggle('on', b.dataset.ind === key));
+      const save = document.getElementById('industryPickerSave');
+      if (save) { const same = key === IND.key; save.disabled = same; save.style.opacity = same ? '.45' : '1'; save.textContent = same ? '저장' : `${AR_INDUSTRIES[key].name}(으)로 저장`; }
     }
 
     // 체험용 견본 카마스터(김민준 등)는 업종에 맞는 직함·가게 이름·혜택 문구로 바꿔 보여 줌
@@ -19076,7 +19132,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       Object.keys(BILLING_PLANS).forEach((k) => {
         const el = document.getElementById(`planCard_${k}`);
         if (!el) return;
-        el.classList.toggle('border-[#3b82f6]', k === selectedPlanKey);
+        el.classList.toggle('border-[#ededed]', k === selectedPlanKey);
         el.classList.toggle('bg-[#19191b]', k === selectedPlanKey);
         el.classList.toggle('border-[var(--border)]', k !== selectedPlanKey);
         el.classList.toggle('bg-[#141415]', k !== selectedPlanKey);
@@ -19093,7 +19149,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         if (!el) return;
         const on = k === selectedPayMethodKey;
         el.className = `h-10 rounded-[8px] border text-[12px] cursor-pointer ${
-          on ? 'border-[#3b82f6] bg-[#232325] font-medium text-[#ededed]' : 'border-[var(--border)] bg-[#141415] font-normal text-[#a1a1a6]'
+          on ? 'border-[#ededed] bg-[#232325] font-medium text-[#ededed]' : 'border-[var(--border)] bg-[#141415] font-normal text-[#a1a1a6]'
         }`;
       });
     }
@@ -19565,7 +19621,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       if (!s) return;
       if (s === 'connected') arToast('SNS 계정을 연결했습니다.', true);
       else arToast(`SNS 연결 실패: ${p.get('msg') || p.get('reason') || '다시 시도해 주세요'}`);
-      try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+      try { history.replaceState({ arTab: 'script' }, '', window.location.pathname); } catch (e) {}
       if (typeof switchStudioTab === 'function') { try { switchStudioTab('publish'); } catch (e) {} }
     }
 
@@ -19660,6 +19716,68 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         try { renderQuickSelector(); renderAdminDealerList(); syncPreviewPanel(); } catch (e) {}
       }
     }
+
+
+    // ==========================================================================
+    // ★ 휴대폰 [뒤로 가기]: 사이트를 벗어나지 않고 열린 창 → 이전 탭 순서로 돌아감
+    // ==========================================================================
+    (function arBackNav() {
+      if (!window.history || !history.pushState) return;
+      let depth = 0;      // 열린 창 때문에 쌓아 둔 기록 수
+      let ignorePop = 0;  // 버튼으로 창을 닫아 기록을 되돌릴 때 생기는 popstate는 무시
+      let curTab = 'script';
+      const openOverlays = () => {
+        const list = [];
+        const dr = document.getElementById('presetDrawer');
+        if (dr && dr.classList.contains('open')) list.push(dr);
+        document.querySelectorAll('.ar-modal').forEach((m) => { if (!m.classList.contains('hidden')) list.push(m); });
+        return list;
+      };
+      const closeOverlay = (el) => {
+        if (el.id === 'presetDrawer') return closePresetDrawer();
+        if (el.id === 'industryPickerModal') return el.remove();
+        const x = el.querySelector('.ar-modal-x');
+        if (x) x.click(); else el.classList.add('hidden');
+      };
+      let pending = false;
+      const sync = () => {
+        pending = false;
+        const n = openOverlays().length;
+        if (n > depth) {
+          while (depth < n) { depth++; history.pushState({ arTab: curTab, arOverlay: depth }, ''); }
+        } else if (n < depth) {
+          const k = depth - n;
+          depth = n;
+          ignorePop++;
+          history.go(-k);
+        }
+      };
+      const schedule = () => { if (!pending) { pending = true; requestAnimationFrame(sync); } };
+      new MutationObserver(schedule).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+
+      // 탭을 옮길 때마다 기록을 남겨서, 뒤로 가기로 이전 탭으로 돌아감
+      const baseSwitch = switchStudioTab;
+      switchStudioTab = function (key, fromHistory) {
+        const prev = curTab;
+        baseSwitch(key);
+        if (!STUDIO_TABS.includes(key)) return;
+        curTab = key;
+        if (!fromHistory && key !== prev) history.pushState({ arTab: key }, '');
+      };
+      try { history.replaceState({ arTab: 'script' }, ''); } catch (e) {}
+
+      window.addEventListener('popstate', (e) => {
+        if (ignorePop > 0) { ignorePop--; return; }
+        const ov = openOverlays();
+        if (ov.length) {
+          depth = Math.max(0, depth - 1); // 이 기록은 방금 브라우저가 지움
+          closeOverlay(ov[ov.length - 1]);
+          return;
+        }
+        const tab = (e.state && e.state.arTab) || 'script';
+        if (tab !== curTab) switchStudioTab(tab, true);
+      });
+    })();
 
     // 초기 구동
     loadSavedDealerProfiles();
