@@ -270,6 +270,46 @@ async function readKieStream(resp) {
   return { text, data: errData };
 }
 
+// kie.ai 모델별 응답 확인 (진단용)
+let lastKieDiagAt = 0;
+const KIE_DIAG_MODELS = [
+  'gemini-3-8-flash-openai', 'gemini-3-7-flash-openai', 'gemini-3-6-flash-openai', 'gemini-3-5-flash-openai',
+  'gemini-4-hydrogen-openai', 'gemini-3-1-pro-openai'
+];
+async function kieDiagnose() {
+  const key = String(process.env.KIE_API_KEY || '').trim();
+  if (!key) return { ok: false, reason: 'KIE_API_KEY 없음' };
+  if (Date.now() - lastKieDiagAt < 60000) return { ok: false, reason: '1분에 한 번만 실행할 수 있습니다' };
+  lastKieDiagAt = Date.now();
+  const one = async (model) => {
+    const started = Date.now();
+    const out = { model };
+    try {
+      const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        signal: AbortSignal.timeout(40000),
+        body: JSON.stringify({ stream: false, messages: [{ role: 'user', content: [{ type: 'text', text: 'OK 라고만 답하세요.' }] }] })
+      });
+      out.status = resp.status;
+      let t = await resp.text().catch(() => '');
+      t = t.split(key).join('***');
+      try {
+        const j = JSON.parse(t);
+        const c = j && j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+        if (typeof c === 'string') out.reply = c.slice(0, 40);
+        else out.error = `code ${j.code}: ${String(j.msg || (j.error && j.error.message) || '').slice(0, 120)}`;
+      } catch (e) { out.error = t.replace(/\s+/g, ' ').slice(0, 120); }
+    } catch (err) {
+      out.error = err && err.name === 'TimeoutError' ? '40초 안에 응답 없음' : String(err && err.message || err).slice(0, 120);
+    }
+    out.ms = Date.now() - started;
+    return out;
+  };
+  const results = await Promise.all(KIE_DIAG_MODELS.map(one));
+  return { ok: true, results };
+}
+
 // AI 응답에서 대본 목록 꺼내기: {variants:[...]} 또는 예전 형식(대본 1개)
 function extractAiVariants(aiResult) {
   if (!aiResult || typeof aiResult !== 'object') return [];
@@ -284,6 +324,12 @@ async function handler(req, res) {
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  // 진단: GET /api/generate-script?diag=kie — 여러 kie.ai 모델에 짧은 요청을 동시에 보내 응답 여부·시간만 돌려줌
+  // (키 값은 돌려주지 않음, 인스턴스당 1분에 한 번)
+  if (req.method === 'GET' && String((req.query && req.query.diag) || '') === 'kie') {
+    return res.status(200).json(await kieDiagnose());
   }
 
   if (req.method !== 'POST') {
