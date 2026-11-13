@@ -178,7 +178,8 @@ async function handler(req, res) {
       body.debug = { eventCount, segments, spoken, fullText };
       res.setHeader('Cache-Control', 'no-store');
     } else {
-      res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
+      // 무료 모델(크레딧 부족) 음성은 CDN에 저장하지 않음
+      res.setHeader('Cache-Control', modelUsed === FREE_MODEL ? 'no-store' : 'public, max-age=86400, s-maxage=604800');
     }
     return res.status(200).json(body);
   } catch (err) {

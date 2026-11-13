@@ -148,7 +148,8 @@ async function handler(req, res) {
 
     res.setHeader('Content-Type', 'audio/mpeg');
     // 같은 문장·같은 성우는 CDN에서 7일간 재사용해 크레딧 소모를 줄입니다.
-    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800');
+    // 단, 무료 모델(크레딧 부족) 음성은 저장하지 않음 — 충전 후에도 저음질 음성이 7일간 남지 않도록
+    res.setHeader('Cache-Control', modelUsed === FREE_MODEL ? 'no-store' : 'public, max-age=86400, s-maxage=604800');
     return res.status(200).send(buffer);
   } catch (err) {
     res.setHeader('Cache-Control', 'no-store');

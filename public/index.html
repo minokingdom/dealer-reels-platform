@@ -753,7 +753,8 @@
             <!-- AI 대본으로 영상이 만들어지는 원리 안내 -->
             <details data-advanced class="fold rounded-[8px] bg-[#141415] border border-[var(--border)] text-[12px] text-[#a1a1a6] leading-relaxed">
               <summary class="px-3 py-2 text-[12px] text-[#a1a1a6]">AI 대본으로 영상이 만들어지는 과정 보기</summary>
-              <div class="px-3 pb-3"> 아래에 <code class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 입력 후 생성 버튼을 누르면 ① 차종·할인액·월납입금이 즉시 바뀌고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">차량 화보 컷 + 12종 모션 그래픽(카톡 대화·영수증 견적·할인 스탬프) + 한국어 성우(TTS) 음성 + 릴스 BGM</strong>이 즉시 합성되어 재생됩니다.</div>
+              <!-- 업종을 바꾸면 arRenderAiPromptHints() 가 예시 문구를 바꿈 -->
+              <div class="px-3 pb-3"> 아래에 <code id="aiHowtoExample" class="text-[#ededed] font-mono">"30대 여성, 그랜저"</code>처럼 상황을 적고 [AI로 만들기]를 누르면 ① 대본 3안이 만들어지고, ② 설정된 영상 길이(4컷~10컷)에 맞춰 <strong class="text-[#ededed]">사진 컷 + 모션 그래픽 + 한국어 성우 음성 + 배경음악</strong>이 합성되어 바로 재생됩니다.</div>
             </details>
 
             <div class="flex flex-col sm:flex-row gap-2">
@@ -2729,9 +2730,33 @@
         if (typeof applyStoryArchetype === 'function' && STORY_ARCHETYPES[tpl]) applyStoryArchetype(tpl);
       }
       if (typeof renderStoryArchetypesUI === 'function') renderStoryArchetypesUI();
+      arRenderAiPromptHints();
       arIndWalk(document.body);
       arIndStartObserver();
       if (typeof renderPresetDrawer === 'function') { try { renderPresetDrawer(); } catch (e) {} }
+    }
+
+    // AI 대본 입력칸 예시: 업종에 맞는 상황 예시 (설명 문구의 짧은 예시도 함께)
+    const AR_AI_PROMPT_HINTS = {
+      auto: ['30대 여성, 그랜저 하브 선점차 2대 즉시출고 / 법인 대표님 GV80 비용처리', '30대 여성, 그랜저', '견적, 최저가, 무료, 1등'],
+      restaurant: ['점심 한정 갈비탕 정식, 직장인 단골 / 주말 가족 외식 세트 예약', '점심 한정 갈비탕 정식', '최저가, 무료, 1등, 원조'],
+      cafe: ['가을 신메뉴 밤 라떼 출시 / 평일 오후 디저트 세트 할인', '가을 신메뉴 밤 라떼', '최저가, 무료, 1등'],
+      beauty: ['첫 방문 염색 20% 할인 / 웨딩 전 피부 관리 패키지', '첫 방문 염색 할인', '최저가, 무료, 효과 보장'],
+      realestate: ['역세권 신축 투룸 전세 / 신혼부부 추천 30평대 아파트', '역세권 신축 투룸 전세', '급매, 최저가, 무조건'],
+      academy: ['중2 수학 겨울방학 특강 / 고3 내신 대비 소수정예반', '중2 수학 겨울방학 특강', '성적 보장, 1등, 무조건'],
+      clinic: ['환절기 비염 진료 안내 / 직장인 야간 진료 시간', '환절기 비염 진료 안내', '완치, 효과 보장, 최고, 할인'],
+      fitness: ['PT 10회 등록 이벤트 / 3개월 바디프로필 챌린지', 'PT 10회 등록 이벤트', '무조건, 보장, 최저가'],
+      shop: ['겨울 니트 신상 입고 / 첫 구매 무료배송 이벤트', '겨울 니트 신상 입고', '최저가, 1등, 정품 보장'],
+      interior: ['30평 아파트 전체 리모델링 / 주방 상판 교체 시공 사례', '30평 아파트 전체 리모델링', '최저가, 무료, 1등']
+    };
+    function arRenderAiPromptHints() {
+      const h = AR_AI_PROMPT_HINTS[IND.key] || AR_AI_PROMPT_HINTS.auto;
+      const promptEl = document.getElementById('aiPromptInput');
+      if (promptEl) promptEl.setAttribute('placeholder', `예: ${h[0]}`);
+      const ex = document.getElementById('aiHowtoExample');
+      if (ex) ex.textContent = `"${h[1]}"`;
+      const exEl = document.getElementById('aiExcludeInput');
+      if (exEl) exEl.setAttribute('placeholder', `예: ${h[2]} (쉼표로 구분 · AI 대본에서 자동 제외)`);
     }
 
     // 대본 템플릿 분류 버튼: 자동차가 아니면 자동차 전용 분류는 숨김
@@ -8248,7 +8273,7 @@ function renderStoryArchetypesUI() {
         const job = (async () => {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
-          const url = `/api/tts-script?v=4&speed=${speed}&ref=${encodeURIComponent(voice)}&lines=${encodeURIComponent(JSON.stringify(lines))}`;
+          const url = `/api/tts-script?v=5&speed=${speed}&ref=${encodeURIComponent(voice)}&lines=${encodeURIComponent(JSON.stringify(lines))}`;
           const res = await this.runTtsRequest(() => fetch(url));
           if (!res.ok) {
             let code = `http_${res.status}`;
@@ -8372,7 +8397,7 @@ function renderStoryArchetypesUI() {
           if (!ctx) throw new Error('no_audio_context');
           if (!window.location.protocol.startsWith('http')) throw new Error('offline');
           // v: 서버의 읽기 규칙이 바뀌면 올려서, 예전에 저장된 음성 대신 새 음성을 받게 함
-          const url = `/api/tts?v=4&speed=${speed}` + (voice !== 'auto' ? `&ref=${encodeURIComponent(voice)}` : '') + `&text=${encodeURIComponent(text)}`;
+          const url = `/api/tts?v=5&speed=${speed}` + (voice !== 'auto' ? `&ref=${encodeURIComponent(voice)}` : '') + `&text=${encodeURIComponent(text)}`;
           let res = await this.runTtsRequest(() => fetch(url));
           if (!res.ok && (res.status === 429 || res.status >= 500) && res.status !== 503) {
             await new Promise((r) => setTimeout(r, 900));
@@ -20664,7 +20689,7 @@ function renderStoryArchetypesUI() {
       } finally {
         if (btnEl) {
           btnEl.disabled = false;
-          btnEl.textContent = '✨ AI 대본 · 씬 구도 새로 생성';
+          btnEl.textContent = 'AI로 다시 만들기';
         }
       }
 
