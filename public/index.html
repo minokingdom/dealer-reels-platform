@@ -13732,49 +13732,34 @@ function renderStoryArchetypesUI() {
       const pop = gEase(Math.min(1, p * 2.6));
       c.save();
 
-      // 1) 상단 진행 게이지 바 (컷 흐름 시각화)
-      const progW = W - 56;
+      // 1) 상단 인스타 릴스형 진행 게이지 바 (깔끔하게 최상단 12px)
+      const progW = W - 48;
       const segW = progW / Math.max(1, totalCuts);
       for (let i = 0; i < totalCuts; i++) {
-        const sx = 28 + i * segW;
-        c.fillStyle = 'rgba(255,255,255,0.18)';
-        c.fillRect(sx, 22, segW - 6, 3.5);
+        const sx = 24 + i * segW;
+        c.fillStyle = 'rgba(255,255,255,0.2)';
+        c.fillRect(sx, 12, segW - 5, 3);
         if (i < cutIdx) {
           c.fillStyle = col;
-          c.fillRect(sx, 22, segW - 6, 3.5);
+          c.fillRect(sx, 12, segW - 5, 3);
         } else if (i === cutIdx) {
           c.fillStyle = col;
-          c.fillRect(sx, 22, (segW - 6) * p, 3.5);
+          c.fillRect(sx, 12, (segW - 5) * p, 3);
         }
       }
 
-      // 2) 움직이는 기하학 그래픽 (링 + 회전 사각 + 사선 바)
-      const drift = Math.sin(t * 2.1 + cutIdx) * 8;
-      c.save();
-      c.globalAlpha = 0.72 * pop;
-      c.strokeStyle = col;
-      c.lineWidth = 2.5;
-      c.beginPath();
-      c.arc(W - 46, 86 + drift, 18 + Math.sin(t * 3) * 3, 0, Math.PI * 2);
-      c.stroke();
-      c.fillStyle = col2;
-      c.beginPath();
-      c.arc(W - 46, 86 + drift, 5.5, 0, Math.PI * 2);
-      c.fill();
-      c.restore();
-
-      // 3) 분할/사선 레이아웃일 때 경계선 그래픽 액센트
+      // 2) 분할/사선 레이아웃일 때 경계선 그래픽 액센트
       if (spec.layout === 'duo' || spec.layout === 'split') {
         const seamY = spec.layout === 'duo' ? 480 : 540;
         c.save();
         c.fillStyle = col;
-        c.globalAlpha = 0.9 * pop;
+        c.globalAlpha = 0.88 * pop;
         c.fillRect(W / 2 - (W * 0.42 * pop), seamY - 2, W * 0.84 * pop, 4);
         c.restore();
       } else if (spec.layout === 'diag') {
         c.save();
         c.strokeStyle = col;
-        c.lineWidth = 5;
+        c.lineWidth = 4;
         c.globalAlpha = 0.85 * pop;
         c.beginPath();
         c.moveTo(0, 640);
@@ -13783,70 +13768,27 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 4) 모서리 프레임 브래킷
-      const m = 18, len = 20;
-      c.strokeStyle = col;
-      c.lineWidth = 2.5;
-      c.globalAlpha = 0.65;
-      c.beginPath();
-      c.moveTo(m, m + len); c.lineTo(m, m); c.lineTo(m + len, m);
-      c.moveTo(W - m - len, H - m); c.lineTo(W - m, H - m); c.lineTo(W - m, H - m - len);
-      c.stroke();
-
-      // 5) 키네틱 타이포 그래픽 (대형 외곽선 인덱스 + 바운스 키워드 + 흐르는 마키 띠)
-      const kBounce = typeof gBack === 'function' ? gBack(Math.min(1, p * 2.8)) : pop;
-      const numStr = `0${cutIdx + 1}`;
-      c.save();
-      c.translate(36, 98);
-      c.scale(0.85 + 0.15 * kBounce, 0.85 + 0.15 * kBounce);
-      c.font = '900 44px "Black Han Sans", "Do Hyeon", sans-serif';
-      c.textAlign = 'left';
-      c.lineWidth = 2.2;
-      c.strokeStyle = col;
-      c.globalAlpha = 0.55 * pop;
-      c.strokeText(numStr, 0, 0);
-      c.fillStyle = col;
-      c.globalAlpha = 0.16 * pop;
-      c.fillText(numStr, 3, 3);
-      c.restore();
-
-      const rawCap = String((typeof campaign !== 'undefined' && campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || spec.label || '').trim();
-      const firstWord = rawCap.replace(/[^\w가-힣\s!?]/g, ' ').trim().split(/\s+/).find((w) => w.length >= 2) || (spec.label || 'FOCUS');
-      const kWord = firstWord.slice(0, 7);
-      c.save();
-      c.translate(36 + (1 - pop) * -28, 128);
-      c.rotate(-0.04 * (1 - pop));
-      c.font = '900 18px "Do Hyeon", "Pretendard Variable", sans-serif';
-      const kw = Math.min(180, c.measureText(kWord).width + 22);
-      c.fillStyle = col;
-      c.globalAlpha = 0.92 * pop;
-      if (typeof gRoundRect === 'function') { gRoundRect(c, 0, -18, kw, 26, 6); c.fill(); }
-      else c.fillRect(0, -18, kw, 26);
-      c.fillStyle = gLuminance(col) > 0.45 ? '#111111' : '#ffffff';
-      c.textAlign = 'left';
-      c.fillText(kWord, 11, 1);
-      c.restore();
-
-      if (cutIdx % 2 === 1) {
+      // 3) 모션 도형 / 트렌드 테마 전용: 키네틱 마키 띠 + 우상단 링 (다른 요소와 겹치지 않는 위치)
+      const isMotionTheme = spec.cat === '모션 도형' || spec.deco === 'shapes' || spec.isTrend;
+      if (isMotionTheme && cutIdx % 2 === 1) {
         c.save();
-        const bandY = spec.layout === 'duo' ? 472 : 168;
+        const bandY = spec.layout === 'duo' ? 472 : 532;
         c.translate(W / 2, bandY);
-        c.rotate(-0.035);
-        c.fillStyle = 'rgba(12,12,16,0.72)';
-        c.fillRect(-W * 0.6, -13, W * 1.2, 26);
+        c.fillStyle = 'rgba(12,12,16,0.82)';
+        c.fillRect(-W * 0.5, -13, W, 26);
         c.strokeStyle = col;
         c.lineWidth = 1.2;
         c.beginPath();
-        c.moveTo(-W * 0.6, -13); c.lineTo(W * 0.6, -13);
-        c.moveTo(-W * 0.6, 13); c.lineTo(W * 0.6, 13);
+        c.moveTo(-W * 0.5, -13); c.lineTo(W * 0.5, -13);
+        c.moveTo(-W * 0.5, 13); c.lineTo(W * 0.5, 13);
         c.stroke();
-        const ticker = `★ ${spec.label || 'HOT'}  ·  ${kWord}  ·  POINT 0${cutIdx + 1}  ·  `;
+        const ticker = `★ ${spec.label || 'TREND'}  ·  POINT 0${cutIdx + 1}  ·  `;
         c.font = '800 12px "Pretendard Variable", sans-serif';
         c.fillStyle = col2;
         c.textAlign = 'left';
-        const tw = Math.max(180, c.measureText(ticker).width);
-        const offset = -((t * 95) % tw);
-        for (let x = offset - tw; x < W * 0.7; x += tw) {
+        const tw = Math.max(160, c.measureText(ticker).width);
+        const offset = -((t * 90) % tw);
+        for (let x = offset - tw; x < W * 0.6; x += tw) {
           c.fillText(ticker, x - W * 0.5, 4);
         }
         c.restore();
@@ -13862,11 +13804,12 @@ function renderStoryArchetypesUI() {
         const cutPlan = (typeof campaign !== 'undefined' && Array.isArray(campaign.scenePlan) && campaign.scenePlan[cutIdx]) || {};
         const autoLayout = kitAutoCutLayout(spec, cutIdx);
         const kineticCaps = ['words', 'stack', 'slam', 'marquee', 'longshadow'];
-        const autoCap = (cutIdx === 2 && !kineticCaps.includes(spec.cap)) ? 'words' : spec.cap;
+        const allowKineticCap = spec.cat === '모션 도형' || spec.cat === '타이포' || spec.cat === '스포츠' || spec.isTrend;
+        const autoCap = (cutIdx === 2 && allowKineticCap && !kineticCaps.includes(spec.cap)) ? 'words' : spec.cap;
         const cutSpec = Object.assign({}, spec, {
           layout: cutPlan.customLayout || autoLayout,
           cap: cutPlan.customCap || autoCap,
-          deco: cutPlan.customDeco || (cutIdx % 2 === 1 && spec.deco === 'none' ? 'shapes' : spec.deco)
+          deco: cutPlan.customDeco || spec.deco
         });
         const K = kitContext(cutSpec, V);
         K.dealer = d;
@@ -14696,31 +14639,33 @@ function renderStoryArchetypesUI() {
     }
 
     function randomizePreviewDesignOnly() {
-      // 대본·업종·사진은 유지하고 디자인 스타일 + 색상 팔레트 + 컷별 위젯/모션만 랜덤으로 섞기
+      // 대본·업종·사진은 유지하고, 디자인 고유의 색 조합을 살려 깔끔하게 추천 스타일로 전환
       const designs = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
       if (designs.length > 0 && typeof selectDesignStyle === 'function') {
-        const pool = designs.length > 1 ? designs.filter((x) => x.id !== campaign.designId) : designs;
+        const curId = campaign.designStyle;
+        const preferred = designs.filter((x) => x.id !== curId && (x.cat === '모션 도형' || x.industry || x.isTrend));
+        const pool = preferred.length ? preferred : (designs.length > 1 ? designs.filter((x) => x.id !== curId) : designs);
         const pick = pool[Math.floor(Math.random() * pool.length)] || designs[0];
         selectDesignStyle(pick.id);
       }
-      if (typeof COLOR_PALETTES !== 'undefined' && Array.isArray(COLOR_PALETTES) && COLOR_PALETTES.length > 0 && typeof selectColorPalette === 'function') {
-        const pal = COLOR_PALETTES[Math.floor(Math.random() * COLOR_PALETTES.length)];
-        if (pal && pal.id) selectColorPalette(pal.id);
+      if (typeof selectColorPalette === 'function') {
+        // 대부분 디자인 고유의 조화로운 기본색을 유지하고, 가끔만 다른 팔레트 적용
+        if (Math.random() < 0.7 || !Array.isArray(COLOR_PALETTES) || !COLOR_PALETTES.length) {
+          selectColorPalette('default');
+        } else {
+          const pal = COLOR_PALETTES[Math.floor(Math.random() * COLOR_PALETTES.length)];
+          if (pal && pal.id) selectColorPalette(pal.id);
+        }
       }
-      const totalCuts = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
-      const shuffledWidgets = [...(WIDGET_POOL || [])].sort(() => Math.random() - 0.5);
-      const camLen = typeof MOTION_COUNT !== 'undefined' ? MOTION_COUNT : 14;
-      if (!Array.isArray(campaign.scenePlan)) campaign.scenePlan = [];
-      for (let i = 0; i < totalCuts; i++) {
-        const prev = campaign.scenePlan[i] || {};
-        const w = shuffledWidgets[i % shuffledWidgets.length] || prev.widget || 'LOWER_THIRD';
-        campaign.scenePlan[i] = {
-          ...prev,
-          cut: i + 1,
-          widget: w,
-          pos: w === 'DYNAMIC_ISLAND' ? 'top' : (w === 'LOWER_THIRD' || w === 'RECEIPT_QUOTE' ? 'bottom' : 'center'),
-          customCam: Math.floor(Math.random() * camLen)
-        };
+      if (Array.isArray(campaign.scenePlan)) {
+        campaign.scenePlan = campaign.scenePlan.map((p) => {
+          if (!p) return p;
+          const next = { ...p };
+          delete next.customLayout;
+          delete next.customCap;
+          delete next.customDeco;
+          return next;
+        });
       }
       campaign.motionSeed = Math.floor(Math.random() * 9973);
       if (typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
