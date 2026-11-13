@@ -162,6 +162,31 @@ async function handler(req, res) {
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
   const prompt = (body.prompt || '').trim();
+  const excludeRaw = String(body.exclude || '').trim();
+  const excludeTerms = excludeRaw.split(/[,，/\n]+/).map((s) => s.trim()).filter(Boolean).slice(0, 20);
+  const stripExcluded = (txt) => {
+    let out = String(txt || '');
+    excludeTerms.forEach((term) => {
+      const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      out = out.replace(new RegExp(esc, 'gi'), '');
+    });
+    return out.replace(/\s{2,}/g, ' ').trim();
+  };
+  const sanitizeScript = (obj) => {
+    if (!obj || excludeTerms.length === 0) return obj;
+    return {
+      ...obj,
+      hook: stripExcluded(obj.hook),
+      discount: stripExcluded(obj.discount),
+      cutCaptions: Array.isArray(obj.cutCaptions) ? obj.cutCaptions.map(stripExcluded) : obj.cutCaptions,
+      ttsLines: Array.isArray(obj.ttsLines) ? obj.ttsLines.map(stripExcluded) : obj.ttsLines,
+      bullets: Array.isArray(obj.bullets) ? obj.bullets.map(stripExcluded) : obj.bullets,
+      kakaoChat: Array.isArray(obj.kakaoChat)
+        ? obj.kakaoChat.map((m) => (m && typeof m === 'object' ? { ...m, text: stripExcluded(m.text) } : m))
+        : obj.kakaoChat
+    };
+  };
+  const excludeRule = excludeTerms.length > 0 ? `\n절대 사용하지 말아야 할 금지어(뺄 문구): ${excludeTerms.join(', ')}` : '';
   const currentVehicle = body.vehicle || '2026 쏘렌토 하이브리드';
   const currentDiscountNum = Number(body.discountNum) || 480;
   const currentDiscount = body.discount || '월 46만원대 · 3일 즉시출고';
@@ -210,12 +235,12 @@ async function handler(req, res) {
     const systemInstruction = isOther ? `당신은 대한민국 ${I.name} 업종의 숏폼(릴스·쇼츠) 대본 작가입니다. 화자는 ${I.aiRole}입니다.
 입력된 상황에 맞춰 vehicle(소개할 ${I.product} 이름), discount(혜택·조건 한 줄), hook, cutCaptions(4컷 자막), ttsLines(4컷 성우 문장), kakaoChat(4개 대화), bullets(3개)를 JSON으로만 출력하세요.
 ttsLines의 각 문장은 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요. 마지막 "댓글에 [${I.cta}]" 안내는 명함 화면에서 따로 나오므로 넣지 마세요.
-지어낸 고객 후기, 지어낸 숫자·통계, 효과를 보장하는 표현은 쓰지 마세요. 입력에 없는 가격은 만들지 마세요.${I.caution ? `\n반드시 지킬 것: ${I.caution}` : ''}
+지어낸 고객 후기, 지어낸 숫자·통계, 효과를 보장하는 표현은 쓰지 마세요. 입력에 없는 가격은 만들지 마세요.${I.caution ? `\n반드시 지킬 것: ${I.caution}` : ''}${excludeRule}
 JSON 스키마: {"vehicle":"","discountNum":0,"discount":"","hook":"24자 이내","themeId":"royal","cutCaptions":["","","",""],"ttsLines":["","","",""],"kakaoChat":[{"role":"customer","text":""},{"role":"dealer","text":""},{"role":"customer","text":""},{"role":"dealer","text":""}],"bullets":["✔ ","✔ ","✔ "],"ctaKeyword":"${I.cta}"}` : `당신은 대한민국 자동차 카마스터 전문 숏폼 AI 영상 감독(Scene Director)입니다.
 카마스터가 입력한 상황(예: "30대 여성, 그랜저")에서 차종과 고객 특성을 정확히 반영하여 vehicle(차종명), discountNum(할인액), discount(월납입조건), themeId, scenePlan, cutCaptions(4컷 자막), ttsLines(4컷 성우 내레이션 대본), kakaoChat(4개 대화)을 JSON으로만 출력하세요.
 ttsLines의 각 문장은 숏폼 한 컷(약 2초) 안에 읽을 수 있도록 공백 포함 20자 이내의 짧은 한 문장으로 쓰세요.
 "댓글에 견적" 안내는 영상 마지막 명함 화면에서 따로 나오므로 cutCaptions와 ttsLines에는 넣지 마세요.
-주의: "30대 여성"의 "30대"는 나이(연령대)이지 차량 30대가 아닙니다! 절대 혼동하지 마세요.
+주의: "30대 여성"의 "30대"는 나이(연령대)이지 차량 30대가 아닙니다! 절대 혼동하지 마세요.${excludeRule}
 
 [themeId 선택지]: "crimson" | "emerald" | "royal" | "cyber" | "cobalt" | "sunset" | "violet" | "obsidian"
 [widget 선택지]: "BREAKING_NEWS" | "MAGAZINE_COVER" | "GIANT_DISCOUNT_STAMP" | "SPEC_FLOATING_TAGS" | "KAKAO_CHAT_PAIR" | "RECEIPT_QUOTE" | "VS_FINANCE_BATTLE" | "CHECKLIST_GLASS" | "STOCK_COUNTDOWN" | "SMARTKEY_DELIVERY" | "COMMENT_DM_MAGNET" | "MONTHLY_PAYMENT_HERO"
@@ -302,12 +327,12 @@ JSON 스키마:
       return res.status(200).json({
         ok: true,
         provider: providerUsed,
-        data: {
+        data: sanitizeScript({
           ...fallback,
           ...aiResult,
           ...(isOther ? { scenePlan: fallback.scenePlan } : {}),
           ttsLines: Array.isArray(aiResult.ttsLines) && aiResult.ttsLines.length >= 4 ? aiResult.ttsLines : fallback.ttsLines
-        }
+        })
       });
     }
   } catch (e) {
@@ -317,7 +342,7 @@ JSON 스키마:
   return res.status(200).json({
     ok: true,
     provider: isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director',
-    data: fallback
+    data: sanitizeScript(fallback)
   });
 };
 
