@@ -780,8 +780,9 @@
 
           <!-- ================================================================= -->
           <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
+          <!--   모바일은 위쪽 미리보기에 디자인 손잡이·색상이 이미 있어 겹치므로 숨김 (PC에서만 보임) -->
           <!-- ================================================================= -->
-          <div class="studio-sub p-4 space-y-3">
+          <div id="scriptDesignBox" class="studio-sub p-4 space-y-3 hidden lg:block">
             <div class="flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <div class="text-[11px] text-[#85858b]">디자인 스타일 <span id="designStyleCount" class="font-mono">136</span>종</div>
