@@ -5,6 +5,7 @@
  * 인스타그램 릴스 인기 게시물을 가져오고, 미등록 시 YouTube Shorts(#릴스 #쇼츠)로 자동 폴백합니다.
  * 기본 업종 조회는 Postgres(ar_trend_cache) + Vercel Edge 캐시(s-maxage)에 저장해
  * 다수 사용자에게 0.1초 만에 무료·안정적으로 제공합니다.
+ * industry=capcut 은 업종이 아닌 모션 참고용 수집입니다(인스타 캡컷 템플릿 릴스, 시간당 조회수순 12개).
  */
 
 const { Pool } = require('pg');
@@ -19,8 +20,19 @@ const INDUSTRY_QUERIES = {
   clinic: { yt: '병원 의사 건강 릴스 쇼츠', ig: '건강정보' },
   fitness: { yt: '헬스 필라테스 오운완 릴스 쇼츠', ig: '오운완' },
   shop: { yt: '쇼핑몰 코디 언박싱 릴스 쇼츠', ig: '데일리룩' },
-  interior: { yt: '인테리어 룸투어 비포애프터 릴스 쇼츠', ig: '인테리어' }
+  interior: { yt: '인테리어 룸투어 비포애프터 릴스 쇼츠', ig: '인테리어' },
+  // 업종이 아닌 모션 참고용: 인스타 캡컷 템플릿 릴스의 전환·컷 박자·텍스트 모션을 디자인 키트 프리셋으로 옮기기 위한 수집
+  // 영상은 가져오지 않고 링크·지표·음악·길이만 저장합니다. (GET /api/trends?industry=capcut)
+  capcut: { yt: '캡컷 템플릿 트랜지션 릴스', ig: ['캡컷템플릿', 'capcuttemplate', 'capcut'], motion: true, limit: 12 }
 };
+
+// 게시 후 시간당 조회수(없으면 좋아요) — 작은 계정에서 빠르게 뜨는 영상을 위로
+function perHourScore(plays, likes, timestamp) {
+  const ts = Date.parse(timestamp || '');
+  const hours = Number.isNaN(ts) ? 0 : Math.max(1, (Date.now() - ts) / 3600000);
+  const base = plays > 0 ? plays : likes;
+  return hours ? Math.round(base / hours) : 0;
+}
 
 let trendPool = null;
 let trendTableReady = false;
@@ -140,16 +152,20 @@ function themeSpecFromTitle(title, indKey, idx, prefix = '📡', fullCaption = '
   };
 }
 
-async function fetchInstagramApify(hashtag, diag) {
+async function fetchInstagramApify(hashtag, diag, opts = {}) {
   const token = String(process.env.APIFY_TOKEN || '').trim();
   if (!token) return [];
-  const tag = String(hashtag || '').replace(/^#/, '').replace(/\s+/g, '');
-  if (!tag) return [];
+  const tags = (Array.isArray(hashtag) ? hashtag : [hashtag])
+    .map((h) => String(h || '').replace(/^#/, '').replace(/\s+/g, ''))
+    .filter(Boolean);
+  if (!tags.length) return [];
+  const tag = tags[0];
+  const limit = opts.limit || 6;
   const url = `https://api.apify.com/v2/acts/apify~instagram-hashtag-scraper/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&timeout=24`;
   const r = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ hashtags: [tag], resultsType: 'reels', resultsLimit: 50 }),
+    body: JSON.stringify({ hashtags: tags, resultsType: 'reels', resultsLimit: 50 }),
     signal: AbortSignal.timeout(25000)
   });
   if (diag) diag.apifyStatus = r.status;
@@ -168,17 +184,27 @@ async function fetchInstagramApify(hashtag, diag) {
     return Number.isNaN(ts) || ts >= monthAgo;
   });
   const pool = recentRows.length ? recentRows : rows.filter((p) => String(p.caption || '').trim().length >= 4);
+  const seen = new Set();
   const scored = pool
+    .filter((p) => {
+      // 해시태그 여러 개로 받으면 같은 게시물이 겹칠 수 있음
+      const key = p.shortCode || p.id || p.url;
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .map((p) => {
       const play = Number(p.videoViewCount || p.videoPlayCount || 0);
       const likes = Number(p.likesCount) > 0 ? Number(p.likesCount) : 0;
-      // 한 달 기준 조회수 최우선 정렬 (조회수가 없는 경우에만 좋아요 보조)
-      const score = play > 0 ? play * 1000 + likes : likes;
-      return { p, play, likes, score };
+      const perHour = perHourScore(play, likes, p.timestamp);
+      // 기본: 한 달 기준 조회수 최우선 (조회수가 없는 경우에만 좋아요 보조)
+      // 모션 수집(캡컷): 시간당 조회수 우선 — 지금 막 뜨는 템플릿
+      const score = opts.motion ? perHour : (play > 0 ? play * 1000 + likes : likes);
+      return { p, play, likes, perHour, score };
     })
     .sort((a, b) => b.score - a.score);
 
-  return scored.slice(0, 6).map(({ p, play, likes }) => {
+  return scored.slice(0, limit).map(({ p, play, likes, perHour }) => {
     const firstLine = String(p.caption || '').split('\n').map((s) => s.trim()).find((s) => s && s !== '-') || `#${tag} 인기 릴스`;
     const statLabel = play > 0
       ? `인스타 조회 ${play.toLocaleString()}회`
@@ -192,7 +218,14 @@ async function fetchInstagramApify(hashtag, diag) {
       fullCaption: String(p.caption || '').slice(0, 300),
       views: statLabel,
       author: p.ownerUsername ? `@${p.ownerUsername}` : 'Instagram',
-      platform: 'instagram'
+      platform: 'instagram',
+      // 모션 분석·급상승 판단용 지표 (영상 파일은 저장하지 않음)
+      stats: { plays: play, likes, comments: Number(p.commentsCount) || 0, perHour },
+      postedAt: p.timestamp || null,
+      durationSec: Number(p.videoDuration) > 0 ? Math.round(Number(p.videoDuration) * 10) / 10 : null,
+      music: p.musicInfo && (p.musicInfo.song_name || p.musicInfo.artist_name)
+        ? `${p.musicInfo.song_name || ''}${p.musicInfo.artist_name ? ` - ${p.musicInfo.artist_name}` : ''}`.trim()
+        : null
     };
   });
 }
@@ -238,13 +271,36 @@ function extractVideosFromYtHtml(html) {
     const data = JSON.parse(sub.slice(0, end));
     const sections = data?.contents?.twoColumnSearchResultsRenderer?.primaryContents?.sectionListRenderer?.contents || [];
     const results = [];
+    const seen = new Set();
+    // 2026년 이후 YouTube 쇼츠 검색 결과 형식: gridShelfViewModel > shortsLockupViewModel
+    const pushShort = (sl) => {
+      const videoId = sl?.onTap?.innertubeCommand?.reelWatchEndpoint?.videoId
+        || String(sl?.entityId || '').replace(/^shorts-shelf-item-/, '');
+      const title = sl?.overlayMetadata?.primaryText?.content || '';
+      if (!videoId || !title || seen.has(videoId)) return;
+      seen.add(videoId);
+      results.push({
+        videoId,
+        url: `https://www.youtube.com/shorts/${videoId}`,
+        title,
+        views: sl?.overlayMetadata?.secondaryText?.content || '',
+        author: '',
+        platform: 'youtube'
+      });
+    };
     for (const sec of sections) {
       const items = sec?.itemSectionRenderer?.contents || [];
       for (const item of items) {
+        const shelf = item.gridShelfViewModel?.contents || item.reelShelfRenderer?.items || [];
+        for (const s of shelf) {
+          if (s?.shortsLockupViewModel) pushShort(s.shortsLockupViewModel);
+          if (results.length >= 6) return results;
+        }
         const vr = item.videoRenderer;
-        if (!vr || !vr.videoId) continue;
+        if (!vr || !vr.videoId || seen.has(vr.videoId)) continue;
         const title = vr.title?.runs?.map((r) => r.text).join('') || '';
         if (!title) continue;
+        seen.add(vr.videoId);
         results.push({
           videoId: vr.videoId,
           url: `https://www.youtube.com/watch?v=${vr.videoId}`,
@@ -264,8 +320,11 @@ function extractVideosFromYtHtml(html) {
 
 async function fetchTrendsForIndustry(indKey, customQ = '') {
   const conf = INDUSTRY_QUERIES[indKey] || INDUSTRY_QUERIES.auto;
-  const igTag = customQ ? customQ.replace(/\s+/g, '') : conf.ig;
+  // ig 는 해시태그 하나(문자열) 또는 여러 개(배열)
+  const igTags = customQ ? [customQ.replace(/\s+/g, '')] : (Array.isArray(conf.ig) ? conf.ig : [conf.ig]);
+  const igTag = igTags[0];
   const ytQuery = customQ ? `${customQ} 릴스 쇼츠` : conf.yt;
+  const apifyOpts = { motion: Boolean(conf.motion), limit: conf.limit || 6 };
 
   let source = 'empty';
   let rawVideos = [];
@@ -273,11 +332,11 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
 
   // 1) 운영자 Apify 토큰이 있으면 인스타 릴스 우선 조회
   if (process.env.APIFY_TOKEN) {
-    rawVideos = await fetchInstagramApify(igTag, diag).catch((e) => { diag.apifyEx = e?.message; return []; });
+    rawVideos = await fetchInstagramApify(igTags, diag, apifyOpts).catch((e) => { diag.apifyEx = e?.message; return []; });
     if (rawVideos.length) source = 'instagram_apify';
   }
 
-  // 2) 운영자 Meta Graph API 토큰이 있으면 공식 인스타 해시태그 조회
+  // 2) 운영자 Meta Graph API 토큰이 있으면 공식 인스타 해시태그 조회 (첫 해시태그)
   if (!rawVideos.length && process.env.IG_ACCESS_TOKEN && process.env.IG_USER_ID) {
     rawVideos = await fetchInstagramGraph(igTag).catch(() => []);
     if (rawVideos.length) source = 'instagram_graph';
@@ -324,7 +383,8 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
     ...v,
     theme: themeSpecFromTitle(v.title, indKey, idx, prefix, v.fullCaption || '')
   }));
-  return { source, query: source.startsWith('instagram') ? `#${igTag}` : ytQuery, items, diag };
+  const igLabel = source === 'instagram_apify' ? igTags.map((t) => `#${t}`).join(' ') : `#${igTag}`;
+  return { source, query: source.startsWith('instagram') ? igLabel : ytQuery, items, diag };
 }
 
 async function handler(req, res) {
