@@ -343,7 +343,9 @@ async function handler(req, res) {
   const openaiModel = String(process.env.OPENAI_SCRIPT_MODEL || 'gpt-4o-mini').trim();
   const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.0-flash').trim();
   const kieKey = String(process.env.KIE_API_KEY || '').trim();
-  const kieModel = String(process.env.KIE_SCRIPT_MODEL || 'gemini-3-8-flash-openai').trim();
+  // 쉼표로 여러 개 지정 가능, 앞에서부터 차례로 시도
+  const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-3-8-flash-openai,gemini-3-7-flash-openai')
+    .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
   const aiDiag = { kieKey: Boolean(kieKey), openaiKey: Boolean(adminOpenAiKey), geminiKey: Boolean(adminGeminiKey) };
   const secrets = [kieKey, adminOpenAiKey, adminGeminiKey].filter(Boolean);
   const errSnippet = async (resp) => {
@@ -405,37 +407,51 @@ JSON 스키마:
     let providerUsed = '';
 
     // 1순위: kie.ai (OpenAI 호환 chat.completions, 모델은 주소로 고름 · 오류도 HTTP 200 + {code,msg} 로 올 수 있음)
+    // 생각 시간을 줄이고(reasoning_effort low) 모델당 25초까지만 기다린 뒤 다음 모델로 넘어감
+    // (기본 모델이 대본 3안을 쓰다 kie.ai 쪽에서 약 44초 만에 503 을 돌려주던 문제)
     if (kieKey) {
-      aiDiag.kieModel = kieModel;
-      const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(kieModel)}/v1/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
-        signal: AbortSignal.timeout(45000),
-        body: JSON.stringify({
-          stream: false,
-          messages: [
-            { role: 'system', content: [{ type: 'text', text: `${systemWithAngles}\n\n반드시 JSON만 출력하세요. 설명이나 코드블록 표시는 넣지 마세요.` }] },
-            { role: 'user', content: [{ type: 'text', text: userMessage }] }
-          ]
-        })
-      });
-      aiDiag.kieStatus = resp.status;
-      if (resp.ok) {
-        const data = await resp.json().catch(() => null);
-        const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-        if (typeof text === 'string' && text.trim()) {
-          const parsed = parseJsonLoose(text);
-          if (parsed) {
-            aiResult = parsed;
-            providerUsed = `kie.ai ${kieModel} Director`;
+      aiDiag.kieTries = [];
+      for (const model of kieModels) {
+        if (aiResult) break;
+        const tryInfo = { model };
+        aiDiag.kieTries.push(tryInfo);
+        const started = Date.now();
+        try {
+          const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
+            signal: AbortSignal.timeout(25000),
+            body: JSON.stringify({
+              stream: false,
+              reasoning_effort: 'low',
+              messages: [
+                { role: 'system', content: [{ type: 'text', text: `${systemWithAngles}\n\n반드시 JSON만 출력하세요. 설명이나 코드블록 표시는 넣지 마세요.` }] },
+                { role: 'user', content: [{ type: 'text', text: userMessage }] }
+              ]
+            })
+          });
+          tryInfo.status = resp.status;
+          if (resp.ok) {
+            const data = await resp.json().catch(() => null);
+            const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            if (typeof text === 'string' && text.trim()) {
+              const parsed = parseJsonLoose(text);
+              if (parsed) {
+                aiResult = parsed;
+                providerUsed = `kie.ai ${model} Director`;
+              } else {
+                tryInfo.error = 'JSON 해석 실패: ' + text.replace(/\s+/g, ' ').slice(0, 120);
+              }
+            } else {
+              tryInfo.error = data ? `code ${data.code}: ${String(data.msg || '').slice(0, 160)}` : '빈 응답';
+            }
           } else {
-            aiDiag.kieError = 'JSON 해석 실패: ' + text.replace(/\s+/g, ' ').slice(0, 120);
+            tryInfo.error = await errSnippet(resp);
           }
-        } else {
-          aiDiag.kieError = data ? `code ${data.code}: ${String(data.msg || '').slice(0, 160)}` : '빈 응답';
+        } catch (err) {
+          tryInfo.error = String(err && (err.name === 'TimeoutError' ? '25초 안에 응답 없음' : err.message) || err).slice(0, 160);
         }
-      } else {
-        aiDiag.kieError = await errSnippet(resp);
+        tryInfo.ms = Date.now() - started;
       }
     }
 
