@@ -317,6 +317,80 @@ function extractAiVariants(aiResult) {
   return list.filter((v) => v && typeof v === 'object' && Array.isArray(v.cutCaptions) && v.cutCaptions.length >= 4);
 }
 
+// ----------------------------------------------------------------------------
+// 오늘의 주제 추천 (POST {mode:'topics', industry, industryInfo, dateContext, trends, storeHint})
+//  - 사장님이 "오늘 뭘 올리지?"에서 막히지 않게, 요일·계절·다가오는 기념일·그날 인기 키워드를 보고
+//    오늘 올리기 좋은 주제 6개를 고름. 각 주제의 prompt 는 바로 대본 생성에 넣는 상황 한 줄.
+//  - 서버 함수 개수 한도(12개) 때문에 별도 파일 대신 대본 생성 함수에 붙임
+// 응답: { ok, provider, topics: [{ title, why, prompt }] }  (실패하면 ok:false → 화면이 기본 주제를 씀)
+// ----------------------------------------------------------------------------
+async function handleTopics(body, res) {
+  res.setHeader('Cache-Control', 'no-store');
+  const kieKey = String(process.env.KIE_API_KEY || '').trim();
+  if (!kieKey) return res.status(200).json({ ok: false, error: 'no_ai_key', topics: [] });
+  const info = body.industryInfo && typeof body.industryInfo === 'object' ? body.industryInfo : {};
+  const clip = (v, n) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, n);
+  const indName = clip(info.name || (body.industry === 'auto' || !body.industry ? '자동차 영업' : body.industry), 20);
+  const role = clip(info.aiRole || info.role || '사장님', 30);
+  const product = clip(info.product || '상품', 20);
+  const dc = body.dateContext && typeof body.dateContext === 'object' ? body.dateContext : {};
+  const events = (Array.isArray(dc.events) ? dc.events : []).slice(0, 6).map((e) => clip(e, 40)).filter(Boolean);
+  const trends = (Array.isArray(body.trends) ? body.trends : []).slice(0, 8).map((t) => clip(t, 60)).filter(Boolean);
+  const storeHint = clip(body.storeHint, 60);
+
+  const system = `당신은 대한민국 ${indName} 업종 사장님을 돕는 숏폼(릴스·쇼츠) 기획자입니다.
+오늘 날짜 정보와 요즘 인기 키워드를 보고, 오늘 올리기 좋은 영상 주제 6개를 고르세요.
+- 주제마다 방향이 서로 달라야 합니다 (예: 오늘의 추천, 시즌·기념일, 혜택·이벤트, 만드는 과정 보여주기, 정보·팁, 인기 키워드 활용).
+- title: 화면 카드에 쓸 주제 이름, 공백 포함 14자 이내.
+- why: 왜 오늘 이 주제인지 한 줄, 25자 이내 (예: "금요일 저녁 외식 수요", "수능 D-5").
+- prompt: 이 주제로 대본을 만들 때 AI에 넣을 상황 한 줄, 40자 이내. ${product} 이름을 모르면 일반적으로 쓰고 지어내지 마세요.
+- 가게 이름·주소·가격·후기·통계는 지어내지 마세요. 인기 키워드는 업종과 어울릴 때만 쓰세요.
+JSON으로만 출력: {"topics":[{"title":"","why":"","prompt":""}]}`;
+  const user = `[업종]: ${indName} / 화자: ${role}
+[오늘]: ${clip(dc.dateStr, 30)} ${clip(dc.weekday, 10)} · 계절 ${clip(dc.season, 10)}${dc.timeOfDay ? ` · ${clip(dc.timeOfDay, 10)}` : ''}
+[다가오는 날]: ${events.length ? events.join(', ') : '없음'}
+[요즘 인기 키워드·영상 제목]: ${trends.length ? trends.join(' / ') : '없음'}${storeHint ? `\n[가게 정보]: ${storeHint}` : ''}`;
+
+  const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-4-hydrogen-openai,gemini-3-6-flash-openai')
+    .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
+  const deadline = Date.now() + 40000;
+  const tries = [];
+  for (const model of kieModels) {
+    const left = deadline - Date.now();
+    if (left < 10000) break;
+    const t = { model };
+    tries.push(t);
+    try {
+      const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
+        signal: AbortSignal.timeout(left),
+        body: JSON.stringify({
+          stream: true,
+          reasoning_effort: 'low',
+          messages: [
+            { role: 'system', content: [{ type: 'text', text: `${system}\n\n반드시 JSON만 출력하세요.` }] },
+            { role: 'user', content: [{ type: 'text', text: user }] }
+          ]
+        })
+      });
+      t.status = resp.status;
+      if (!resp.ok) continue;
+      const { text } = await readKieStream(resp);
+      const parsed = parseJsonLoose(text);
+      const topics = (parsed && Array.isArray(parsed.topics) ? parsed.topics : [])
+        .map((x) => ({ title: clip(x && x.title, 20), why: clip(x && x.why, 40), prompt: clip(x && x.prompt, 80) }))
+        .filter((x) => x.title && x.prompt)
+        .slice(0, 6);
+      if (topics.length >= 3) return res.status(200).json({ ok: true, provider: `kie.ai ${model}`, topics });
+      t.error = 'topics 부족';
+    } catch (err) {
+      t.error = String(err && (err.name === 'TimeoutError' ? 'timeout' : err.message) || err).slice(0, 120);
+    }
+  }
+  return res.status(200).json({ ok: false, error: 'ai_failed', tries, topics: [] });
+}
+
 async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -342,6 +416,8 @@ async function handler(req, res) {
   }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  // 오늘의 주제 추천: {mode:'topics'} — 대본 대신 오늘 올릴 주제 후보 6개를 돌려줌
+  if (body.mode === 'topics') return handleTopics(body, res);
   const prompt = (body.prompt || '').trim();
   const excludeRaw = String(body.exclude || '').trim();
   const excludeTerms = excludeRaw.split(/[,，/\n]+/).map((s) => s.trim()).filter(Boolean).slice(0, 20);

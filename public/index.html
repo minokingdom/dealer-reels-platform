@@ -688,30 +688,54 @@
           <!-- 단계 탭 바 (스크롤해도 상단에 고정) -->
           <div class="sticky top-0 z-20 bg-[var(--card)] px-5 sm:px-6 pt-4 pb-3 border-b border-[var(--border)] rounded-t-[16px]">
             <div role="tablist" aria-label="영상 제작 단계" class="studio-tablist">
-            <button type="button" role="tab" id="studioTabBtn_script" aria-controls="studioPanel_script" aria-selected="true" onclick="switchStudioTab('script')" class="studio-tab bg-[#232325] text-[#ededed] font-medium">
-              <span class="font-mono text-[11px] text-[#85858b]">1</span> 대본
+            <button type="button" role="tab" id="studioTabBtn_topic" aria-controls="studioPanel_topic" aria-selected="true" onclick="switchStudioTab('topic')" class="studio-tab bg-[#232325] text-[#ededed] font-medium">
+              <span class="font-mono text-[11px] text-[#85858b]">1</span> 주제
+            </button>
+            <button type="button" role="tab" id="studioTabBtn_script" aria-controls="studioPanel_script" aria-selected="false" onclick="switchStudioTab('script')" class="studio-tab text-[#85858b] hover:text-[#ededed] font-normal">
+              <span class="font-mono text-[11px] text-[#85858b]">2</span> 대본
             </button>
             <button type="button" role="tab" id="studioTabBtn_photo" aria-controls="studioPanel_photo" aria-selected="false" onclick="switchStudioTab('photo')" class="studio-tab text-[#85858b] hover:text-[#ededed] font-normal">
-              <span class="font-mono text-[11px] text-[#85858b]">2</span> 사진
+              <span class="font-mono text-[11px] text-[#85858b]">3</span> 사진
             </button>
             <button type="button" role="tab" id="studioTabBtn_sound" aria-controls="studioPanel_sound" aria-selected="false" onclick="switchStudioTab('sound')" class="studio-tab text-[#85858b] hover:text-[#ededed] font-normal">
-              <span class="font-mono text-[11px] text-[#85858b]">3</span> 사운드
+              <span class="font-mono text-[11px] text-[#85858b]">4</span> 사운드
             </button>
             <button type="button" role="tab" id="studioTabBtn_card" aria-controls="studioPanel_card" aria-selected="false" onclick="switchStudioTab('card')" class="studio-tab text-[#85858b] hover:text-[#ededed] font-normal">
-              <span class="font-mono text-[11px] text-[#85858b]">4</span> 명함
+              <span class="font-mono text-[11px] text-[#85858b]">5</span> 명함
             </button>
             <button type="button" role="tab" id="studioTabBtn_publish" aria-controls="studioPanel_publish" aria-selected="false" onclick="switchStudioTab('publish')" class="studio-tab text-[#85858b] hover:text-[#ededed] font-normal">
-              <span class="font-mono text-[11px] text-[#85858b]">5</span> 발행
+              <span class="font-mono text-[11px] text-[#85858b]">6</span> 발행
             </button>
             </div>
           </div>
 
         <!-- 쉬운 모드 단계 안내: 탭을 바꾸면 문구가 바뀜 -->
         <div id="easyStepGuide" class="ar-easy-only mx-5 sm:mx-6 mt-4 px-4 py-3 rounded-[10px] bg-[#12201a] border border-[#4cc38a]/30" aria-live="polite">
-          <div class="text-[12px] text-[#4cc38a] font-semibold"><span id="easyStepCount">1 / 5</span> · <span id="easyStepTitle">대본 고르기</span></div>
+          <div class="text-[12px] text-[#4cc38a] font-semibold"><span id="easyStepCount">1 / 6</span> · <span id="easyStepTitle">오늘의 주제</span></div>
           <p id="easyStepText" class="text-[14px] text-[#ededed] mt-1 leading-relaxed"></p>
         </div>
-        <div id="studioPanel_script" role="tabpanel" aria-labelledby="studioTabBtn_script" class="studio-panel p-5 sm:p-6 space-y-5">
+        <!-- ★ 1단계 · 오늘의 주제: 요일·계절·다가오는 날·인기 키워드로 오늘 올릴 주제 후보를 보여 주고, 고르면 AI 대본을 바로 만듦 -->
+        <div id="studioPanel_topic" role="tabpanel" aria-labelledby="studioTabBtn_topic" class="studio-panel p-5 sm:p-6 space-y-4">
+          <div>
+            <div class="text-[16px] font-semibold text-[#ededed]">오늘은 어떤 내용으로 올릴까요?</div>
+            <p id="topicDateLine" class="text-[12px] text-[#85858b] mt-1"></p>
+          </div>
+          <div id="topicCards" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <p id="topicStatus" class="text-[11px] text-[#85858b]"></p>
+            <button type="button" onclick="arLoadTopics(true)" class="btn-secondary h-8 px-3 text-[12px] cursor-pointer">↻ 다른 주제 보기</button>
+          </div>
+          <div class="studio-sub p-3 space-y-2">
+            <label for="topicCustomInput" class="block text-[12px] text-[#a1a1a6]">직접 적기</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input id="topicCustomInput" type="text" placeholder="예: 짬뽕 신메뉴 출시, 오늘만 1천 원 할인" onkeydown="if(event.key==='Enter'){event.preventDefault();arPickCustomTopic();}" class="studio-input flex-1 h-9 px-3 text-[13px]" />
+              <button type="button" onclick="arPickCustomTopic()" class="btn-primary h-9 px-4 text-[13px] cursor-pointer shrink-0">이 주제로 만들기</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="studioPanel_script" role="tabpanel" aria-labelledby="studioTabBtn_script" class="studio-panel hidden p-5 sm:p-6 space-y-5">
+          <p id="todayTopicBadge" class="hidden text-[12px] text-[#4cc38a]"></p>
           <div>
             <label class="block text-[12px] text-[#a1a1a6] mb-1.5">차종 프리셋</label>
             <select id="presetSelect" onchange="applyPreset(this.value)" class="studio-input w-full h-9 px-3 text-[13px] cursor-pointer">
@@ -897,7 +921,7 @@
           </details>
 
           <div class="flex items-center justify-between gap-2 pt-1">
-            <span></span>
+            <button type="button" onclick="switchStudioTab('topic')" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">← 주제</button>
             <button type="button" onclick="switchStudioTab('photo')" class="btn-primary h-9 px-4 text-[12px] cursor-pointer">다음: 사진 →</button>
           </div>
         </div>
@@ -2757,6 +2781,8 @@
       }
       if (typeof renderStoryArchetypesUI === 'function') renderStoryArchetypesUI();
       arRenderAiPromptHints();
+      // 스크립트를 다 읽은 뒤 실행되도록 미룸 (처음 불러올 때 주제 코드가 아직 준비 전일 수 있음)
+      setTimeout(() => { if (typeof arLoadTopics === 'function') { try { arLoadTopics(false); } catch (e) {} } }, 0);
       arIndWalk(document.body);
       arIndStartObserver();
       if (typeof renderPresetDrawer === 'function') { try { renderPresetDrawer(); } catch (e) {} }
@@ -20169,15 +20195,182 @@ function renderStoryArchetypesUI() {
     }
 
     // 스튜디오 우측 단계 탭 전환 (대본 · 사진 · 사운드 · 명함 · 발행)
-    const STUDIO_TABS = ['script', 'photo', 'sound', 'card', 'publish'];
+    // ==========================================================================
+    // ★ 오늘의 주제: 처음에 막막하지 않게 "오늘 무엇을 올릴지"부터 고름
+    //   - 요일·계절·시간대·다가오는 기념일(21일 안) + 그날 인기 키워드(/api/trends)를 AI에 넘겨 주제 6개를 받음
+    //   - 같은 날·같은 업종은 브라우저에 저장해 다시 묻지 않음 ([다른 주제 보기]는 새로 받음)
+    //   - AI가 실패하면 날짜로 만든 기본 주제를 보여 줌
+    //   - 주제를 고르면 그 주제로 AI 대본 3안을 바로 만듦
+    // ==========================================================================
+    const AR_KO_WEEKDAYS = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+    function arNthWeekday(y, m, weekday, n) { // m: 0~11, n번째 weekday(0=일)
+      const d = new Date(y, m, 1);
+      const shift = (weekday - d.getDay() + 7) % 7;
+      return new Date(y, m, 1 + shift + (n - 1) * 7);
+    }
+    function arUpcomingEvents(now) {
+      const y = now.getFullYear();
+      const fixed = [[0, 1, '새해'], [1, 14, '발렌타인데이'], [2, 1, '삼일절'], [2, 14, '화이트데이'], [4, 5, '어린이날'], [4, 8, '어버이날'],
+        [4, 15, '스승의 날'], [5, 6, '현충일'], [7, 15, '광복절'], [9, 3, '개천절'], [9, 9, '한글날'], [9, 31, '핼러윈'], [10, 11, '빼빼로데이'],
+        [11, 24, '크리스마스이브'], [11, 25, '크리스마스'], [11, 31, '연말']];
+      const lunar = { 2026: [[1, 17, '설날'], [8, 25, '추석']], 2027: [[1, 7, '설날'], [8, 15, '추석']], 2028: [[0, 27, '설날'], [9, 3, '추석']] };
+      const list = [];
+      [y, y + 1].forEach((yy) => {
+        fixed.forEach(([m, d, n]) => list.push([new Date(yy, m, d), n]));
+        (lunar[yy] || []).forEach(([m, d, n]) => list.push([new Date(yy, m, d), n]));
+        list.push([arNthWeekday(yy, 10, 4, 3), '수능']); // 11월 셋째 목요일
+        list.push([arNthWeekday(yy, 10, 5, 4), '블랙프라이데이']); // 11월 넷째 금요일
+      });
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return list
+        .map(([d, n]) => ({ name: n, days: Math.round((d - today) / 86400000) }))
+        .filter((e) => e.days >= 0 && e.days <= 21)
+        .sort((a, b) => a.days - b.days)
+        .map((e) => (e.days === 0 ? `오늘 ${e.name}` : `${e.name} D-${e.days}`));
+    }
+    function arDateContext() {
+      const now = new Date();
+      const m = now.getMonth() + 1;
+      const h = now.getHours();
+      return {
+        dateKey: `${now.getFullYear()}-${String(m).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`,
+        dateStr: `${m}월 ${now.getDate()}일`,
+        weekday: AR_KO_WEEKDAYS[now.getDay()],
+        weekend: now.getDay() === 0 || now.getDay() === 6,
+        season: m >= 3 && m <= 5 ? '봄' : m >= 6 && m <= 8 ? '여름' : m >= 9 && m <= 11 ? '가을' : '겨울',
+        timeOfDay: h < 11 ? '오전' : h < 14 ? '점심' : h < 18 ? '오후' : '저녁',
+        events: arUpcomingEvents(now)
+      };
+    }
+    // AI가 안 될 때 쓰는 기본 주제 (날짜·업종 단어로 만듦)
+    function arFallbackTopics(dc) {
+      const P = IND.product || '상품';
+      const out = [];
+      if (dc.events[0]) {
+        const ev = dc.events[0].replace(/ D-\d+$|^오늘 /g, '');
+        out.push({ title: `${ev} 맞이 ${P}`, why: dc.events[0], prompt: `${ev}에 어울리는 ${P} 추천과 혜택` });
+      }
+      if (IND.key === 'auto') {
+        out.push({ title: '즉시출고 재고 안내', why: '바로 받을 수 있는 차 찾는 고객', prompt: '이번 주 즉시출고 가능한 재고 안내' });
+        out.push({ title: '이달의 프로모션', why: `${dc.dateStr.split(' ')[0]} 조건 정리`, prompt: '이달 할인·금리 프로모션 핵심 정리' });
+        out.push({ title: '출고 현장 보여주기', why: '신뢰를 주는 현장 영상', prompt: '오늘 출고 현장과 꼼꼼한 검수 과정' });
+      } else {
+        out.push({ title: `오늘의 추천 ${P}`, why: `${dc.weekday} ${dc.timeOfDay} 추천`, prompt: `오늘 꼭 소개하고 싶은 추천 ${P}` });
+        out.push({ title: dc.weekend ? '주말 방문 혜택' : '평일 한정 혜택', why: dc.weekend ? '주말 나들이 수요' : `${dc.weekday} 한산한 시간 공략`, prompt: dc.weekend ? `주말에 방문하면 받는 ${P} 혜택` : `평일에만 드리는 ${P} 혜택` });
+        out.push({ title: '준비 과정 보여주기', why: '정성과 신뢰를 보여 주기', prompt: `${P}을(를) 준비하는 과정과 정성` });
+      }
+      out.push({ title: `${dc.season} 시즌 추천`, why: `${dc.season}에 찾는 사람이 많음`, prompt: `${dc.season}에 딱 맞는 ${P} 추천` });
+      out.push({ title: '자주 묻는 질문 답하기', why: '문의를 줄이고 신뢰를 높임', prompt: `손님들이 자주 묻는 ${P} 질문에 답하기` });
+      return out.slice(0, 6);
+    }
+    let arTopicsLoading = 0;
+    function arRenderTopics(topics, statusText) {
+      const box = document.getElementById('topicCards');
+      if (!box) return;
+      window.__arTopics = topics;
+      const esc = (v) => String(v || '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+      box.innerHTML = topics.map((t, i) => `
+        <button type="button" data-topic-idx="${i}" class="text-left p-3.5 rounded-[10px] bg-[#141415] hover:bg-[#1c1c20] border border-[var(--border)] hover:border-[#4cc38a] cursor-pointer transition">
+          <div class="text-[14px] font-semibold text-[#ededed]">${esc(t.title)}</div>
+          <div class="text-[12px] text-[#4cc38a] mt-0.5">${esc(t.why)}</div>
+          <div class="text-[11px] text-[#85858b] mt-1">${esc(t.prompt)}</div>
+        </button>`).join('');
+      const st = document.getElementById('topicStatus');
+      if (st) st.textContent = statusText || '';
+    }
+    async function arLoadTopics(force) {
+      const dc = arDateContext();
+      const line = document.getElementById('topicDateLine');
+      if (line) line.textContent = `${dc.dateStr} ${dc.weekday} · ${dc.season}${dc.events.length ? ' · ' + dc.events.slice(0, 2).join(' · ') : ''}`;
+      const cacheKey = `ar_topics_${IND.key}_${dc.dateKey}`;
+      if (!force) {
+        try {
+          const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+          if (cached && Array.isArray(cached.topics) && cached.topics.length) {
+            arRenderTopics(cached.topics, '오늘의 추천 주제예요. 마음에 드는 게 없으면 [다른 주제 보기]를 눌러 보세요.');
+            return;
+          }
+        } catch (e) {}
+      }
+      // 먼저 기본 주제를 바로 보여 주고, AI 추천이 오면 바꿈
+      const myJob = ++arTopicsLoading;
+      arRenderTopics(arFallbackTopics(dc), '오늘 요일·계절·인기 키워드로 주제를 고르는 중… (10초 정도)');
+      if (!window.location.protocol.startsWith('http')) return;
+      let trends = [];
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 6000);
+        const tr = await fetch(`/api/trends?industry=${encodeURIComponent(IND.key)}`, { signal: ctrl.signal }).then((r) => r.json());
+        clearTimeout(timer);
+        trends = (tr && Array.isArray(tr.items) ? tr.items : [])
+          .map((it) => [it.hookCaption || it.label || '', (it.hashtags || []).join(' ')].join(' ').trim())
+          .filter(Boolean).slice(0, 8);
+      } catch (e) {}
+      if (myJob !== arTopicsLoading) return;
+      try {
+        const d = typeof getSelectedDealer === 'function' ? getSelectedDealer() : null;
+        const copy = d && typeof arDealerForCopy === 'function' ? arDealerForCopy(d) : null;
+        const res = await fetch('/api/generate-script', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'topics',
+            industry: IND.key,
+            industryInfo: { name: IND.name, role: IND.role, product: IND.product, aiRole: IND.aiRole },
+            dateContext: dc,
+            trends,
+            storeHint: copy ? [copy.name, copy.branch].filter(Boolean).join(' ') : ''
+          })
+        }).then((r) => r.json());
+        if (myJob !== arTopicsLoading) return;
+        if (res && res.ok && Array.isArray(res.topics) && res.topics.length) {
+          try { localStorage.setItem(cacheKey, JSON.stringify({ topics: res.topics, at: Date.now() })); } catch (e) {}
+          arRenderTopics(res.topics, `오늘 날짜${trends.length ? '와 요즘 인기 키워드' : ''}로 고른 주제예요. 하나를 누르면 대본을 바로 만들어요.`);
+          return;
+        }
+      } catch (e) {}
+      if (myJob === arTopicsLoading) {
+        const st = document.getElementById('topicStatus');
+        if (st) st.textContent = 'AI 추천을 받지 못해 기본 주제를 보여 드려요. 잠시 뒤 [다른 주제 보기]를 눌러 보세요.';
+      }
+    }
+    // 주제 선택 → 대본 탭으로 이동해 그 주제로 AI 대본을 바로 만듦
+    function arPickTopic(topic) {
+      if (!topic || !topic.prompt) return;
+      window.arTodayTopic = topic;
+      const promptEl = document.getElementById('aiPromptInput');
+      if (promptEl) promptEl.value = topic.prompt;
+      const badge = document.getElementById('todayTopicBadge');
+      if (badge) { badge.textContent = `오늘 주제: ${topic.title} — 이 주제로 대본을 만들고 있어요`; badge.classList.remove('hidden'); }
+      switchStudioTab('script');
+      if (typeof generateStoryboardFromPrompt === 'function') {
+        Promise.resolve(generateStoryboardFromPrompt()).finally(() => {
+          if (badge) badge.textContent = `오늘 주제: ${topic.title}`;
+        });
+      }
+    }
+    function arPickCustomTopic() {
+      const el = document.getElementById('topicCustomInput');
+      const v = (el && el.value || '').trim();
+      if (!v) { if (el) el.focus(); return; }
+      arPickTopic({ title: v.slice(0, 20), why: '직접 입력', prompt: v });
+    }
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest && e.target.closest('[data-topic-idx]');
+      if (!btn) return;
+      const t = (window.__arTopics || [])[Number(btn.getAttribute('data-topic-idx'))];
+      if (t) arPickTopic(t);
+    });
+
+    const STUDIO_TABS = ['topic', 'script', 'photo', 'sound', 'card', 'publish'];
     // ★ 성우 목소리는 단계를 순서대로 명함까지 마친 뒤 발행 단계에서 처음 들려줌
     //   그 전에는 성우 녹음을 받지도 틀지도 않음 (배경음악 미리 듣기는 가능)
     //   발행 단계에 들어오면 고른 배경음악 + 성우 목소리를 섞은 완성본을 처음부터 재생
-    const arStepsVisited = new Set(['script']);
+    const arStepsVisited = new Set(['topic']);
     let arFinalAudioUnlocked = false;
     function arVoiceAllowed() { return arFinalAudioUnlocked; }
     function arFirstMissingStep() {
-      return ['script', 'photo', 'sound', 'card'].find((k) => !arStepsVisited.has(k)) || null;
+      return ['topic', 'script', 'photo', 'sound', 'card'].find((k) => !arStepsVisited.has(k)) || null;
     }
     function arSetFinalPreviewStatus(text) {
       const el = document.getElementById('finalPreviewStatus');
@@ -20214,7 +20407,7 @@ function renderStoryArchetypesUI() {
       if (key === 'publish' && !arFinalAudioUnlocked) {
         const missing = arFirstMissingStep();
         if (missing) {
-          const names = { script: '대본', photo: '사진', sound: '사운드', card: '명함' };
+          const names = { topic: '주제', script: '대본', photo: '사진', sound: '사운드', card: '명함' };
           if (typeof arToast === 'function') arToast(`${names[missing]} 단계부터 순서대로 마쳐 주세요. 명함까지 끝내면 완성본을 들려드려요.`);
           key = missing;
         }
@@ -20250,6 +20443,7 @@ function renderStoryArchetypesUI() {
     // ==========================================================================
     function arUpdateEasyGuide(key) {
       const steps = {
+        topic: ['오늘의 주제', '오늘 올릴 주제를 골라 주세요. 고르면 그 주제로 AI가 대본 3안을 바로 만들어 드려요.'],
         script: ['대본 고르기', '상품 이름과 혜택을 확인하고 [AI로 만들기]를 누르세요. 대본 3안 중 마음에 드는 것을 고르면 됩니다.'],
         photo: ['사진 넣기', '내 사진이나 영상을 올리세요. 올리지 않으면 기본 사진으로 만들어집니다.'],
         sound: ['소리 고르기', '배경음악과 성우 목소리를 고르세요. 성우 목소리는 명함까지 마치면 발행 단계에서 음악과 함께 완성본으로 들려드려요.'],
@@ -23046,7 +23240,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       if (!window.history || !history.pushState) return;
       let depth = 0;      // 열린 창 때문에 쌓아 둔 기록 수
       let ignorePop = 0;  // 버튼으로 창을 닫아 기록을 되돌릴 때 생기는 popstate는 무시
-      let curTab = 'script';
+      let curTab = 'topic';
       const openOverlays = () => {
         const list = [];
         const dr = document.getElementById('presetDrawer');
@@ -23085,7 +23279,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
         curTab = key;
         if (!fromHistory && key !== prev) history.pushState({ arTab: key }, '');
       };
-      try { history.replaceState({ arTab: 'script' }, ''); } catch (e) {}
+      try { history.replaceState({ arTab: 'topic' }, ''); } catch (e) {}
 
       window.addEventListener('popstate', (e) => {
         if (ignorePop > 0) { ignorePop--; return; }
@@ -23141,7 +23335,8 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     syncTechPanel();
     applyRoleViewModeUI();
     arSetUiMode(arLoadUiMode(), false);
-    arUpdateEasyGuide('script');
+    arUpdateEasyGuide('topic');
+    setTimeout(() => { try { if (!window.__arTopics) arLoadTopics(false); } catch (e) {} }, 0);
     window.__timelines['main'].seek(0);
     requestAnimationFrame(tick);
   </script>
