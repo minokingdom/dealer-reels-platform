@@ -780,51 +780,6 @@
             <div id="dynamicCutCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 max-h-[430px] overflow-y-auto pr-1"></div>
           </div>
 
-          <!-- ================================================================= -->
-          <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
-          <!--   모바일은 위쪽 미리보기에 디자인 손잡이·색상이 이미 있어 겹치므로 숨김 (PC에서만 보임) -->
-          <!-- ================================================================= -->
-          <div id="scriptDesignBox" class="studio-sub p-4 space-y-3 hidden lg:block">
-            <div class="flex items-center justify-between gap-2">
-              <div class="min-w-0">
-                <div class="text-[11px] text-[#85858b]">디자인 스타일 <span id="designStyleCount" class="font-mono">136</span>종</div>
-                <div id="activeDesignName" class="text-[14px] font-semibold text-[#ededed] truncate"></div>
-                <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6] mt-0.5"></p>
-              </div>
-              <div class="flex gap-1.5 shrink-0">
-                <button type="button" onclick="pickRandomTheme(false)" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer" title="디자인과 색을 무작위로">🎲 랜덤</button>
-                <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">디자인 바꾸기 ›</button>
-              </div>
-            </div>
-            <p data-advanced class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
-            <details data-advanced class="fold pt-2 border-t border-[var(--border)]">
-              <summary class="py-1.5 text-[12px] text-[#a1a1a6]">🔥 인기 릴스 스타일 가져오기 · 키워드로 찾기</summary>
-            <div class="pt-2 space-y-2">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] text-[#fb923c] font-medium">🔥 이 업종 인기 템플릿 <span class="text-[#85858b] font-normal">(클릭 한 번으로 바로 적용)</span></span>
-                <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                  <button id="liveTrendsBtn" type="button" onclick="fetchLiveReelsTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#0ea5e9]/15 hover:bg-[#0ea5e9] text-[#38bdf8] hover:text-white border border-[#0ea5e9]/40 text-[10px] font-semibold cursor-pointer transition">📡 실시간 릴스 가져오기</button>
-                  <button type="button" onclick="importAllPopularTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#ea580c]/20 hover:bg-[#ea580c] text-[#fb923c] hover:text-white border border-[#ea580c]/40 text-[10px] font-semibold cursor-pointer transition">✨ 인기 5종 한 번에 가져오기</button>
-                  <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
-                </div>
-              </div>
-              <div id="popularTrendChips" class="flex items-center gap-1.5 flex-wrap"></div>
-              <div id="liveTrendResults" class="hidden space-y-1.5 rounded-[8px] border border-[#0ea5e9]/30 bg-[#0b1219] p-2"></div>
-              <div class="flex items-center gap-1.5">
-                <input id="trendThemeQuery" type="text" placeholder="원하는 키워드 직접 검색·생성 (예: 비포애프터, 오픈런...)"
-                  onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
-                  class="flex-1 min-w-0 h-8 px-2.5 rounded-[7px] bg-[#0f0f11] border border-[var(--border)] text-[12px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
-                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 키워드 추가</button>
-              </div>
-              <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
-            </div>
-            </details>
-            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
-              <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
-              <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
-            </div>
-          </div>
-
           <details data-advanced id="scriptTemplateFold" class="fold rounded-[12px] border border-[var(--border)] bg-[#111113]">
             <summary class="px-4 py-3 text-[13px] font-medium text-[#ededed]">📝 대본 템플릿 더 보기 <span class="text-[12px] text-[#85858b] font-normal">상황별 문구 모음 · 고르면 문구만 바뀌어요</span></summary>
             <div class="px-2 pb-2">
@@ -979,6 +934,59 @@
             <div id="aiPhotoThumbnails" class="grid grid-cols-4 sm:grid-cols-5 gap-2 pt-0.5"></div>
             <p id="photoUploadStatus" class="text-[12px] text-[#85858b]">기본 실사 화보가 적용되어 있습니다</p>
             <input type="file" id="customVideoInput" accept="video/*" onchange="handleCustomVideoUpload(event)" class="hidden" />
+          </div>
+
+          <!-- 컷별 사진/영상 · 화면 디자인 · 카메라 모션 (대본 탭에서 옮겨 옴) -->
+          <div class="studio-sub p-4 space-y-3">
+            <div>
+              <span class="text-[13px] font-medium text-[#ededed]">컷별 사진 · 화면 바꾸기</span>
+              <p class="text-[12px] text-[#85858b] mt-0.5">컷마다 사진·영상을 바꾸거나 화면 디자인과 카메라 움직임을 고를 수 있어요</p>
+            </div>
+            <div id="cutMediaCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[430px] overflow-y-auto pr-1"></div>
+          </div>
+          <!-- ================================================================= -->
+          <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
+          <!--   모바일은 위쪽 미리보기에 디자인 손잡이·색상이 이미 있어 겹치므로 숨김 (PC에서만 보임) -->
+          <!-- ================================================================= -->
+          <div id="scriptDesignBox" class="studio-sub p-4 space-y-3 hidden lg:block">
+            <div class="flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-[11px] text-[#85858b]">디자인 스타일 <span id="designStyleCount" class="font-mono">136</span>종</div>
+                <div id="activeDesignName" class="text-[14px] font-semibold text-[#ededed] truncate"></div>
+                <p id="activeDesignDesc" class="text-[11px] text-[#a1a1a6] mt-0.5"></p>
+              </div>
+              <div class="flex gap-1.5 shrink-0">
+                <button type="button" onclick="pickRandomTheme(false)" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer" title="디자인과 색을 무작위로">🎲 랜덤</button>
+                <button type="button" onclick="openDesignSidebarFromPanel()" class="btn-secondary h-9 px-3 text-[12px] cursor-pointer">디자인 바꾸기 ›</button>
+              </div>
+            </div>
+            <p data-advanced class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
+            <details data-advanced class="fold pt-2 border-t border-[var(--border)]">
+              <summary class="py-1.5 text-[12px] text-[#a1a1a6]">🔥 인기 릴스 스타일 가져오기 · 키워드로 찾기</summary>
+            <div class="pt-2 space-y-2">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] text-[#fb923c] font-medium">🔥 이 업종 인기 템플릿 <span class="text-[#85858b] font-normal">(클릭 한 번으로 바로 적용)</span></span>
+                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                  <button id="liveTrendsBtn" type="button" onclick="fetchLiveReelsTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#0ea5e9]/15 hover:bg-[#0ea5e9] text-[#38bdf8] hover:text-white border border-[#0ea5e9]/40 text-[10px] font-semibold cursor-pointer transition">📡 실시간 릴스 가져오기</button>
+                  <button type="button" onclick="importAllPopularTrends()" class="px-2 py-0.5 rounded-[5px] bg-[#ea580c]/20 hover:bg-[#ea580c] text-[#fb923c] hover:text-white border border-[#ea580c]/40 text-[10px] font-semibold cursor-pointer transition">✨ 인기 5종 한 번에 가져오기</button>
+                  <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 추가분 비우기</button>
+                </div>
+              </div>
+              <div id="popularTrendChips" class="flex items-center gap-1.5 flex-wrap"></div>
+              <div id="liveTrendResults" class="hidden space-y-1.5 rounded-[8px] border border-[#0ea5e9]/30 bg-[#0b1219] p-2"></div>
+              <div class="flex items-center gap-1.5">
+                <input id="trendThemeQuery" type="text" placeholder="원하는 키워드 직접 검색·생성 (예: 비포애프터, 오픈런...)"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
+                  class="flex-1 min-w-0 h-8 px-2.5 rounded-[7px] bg-[#0f0f11] border border-[var(--border)] text-[12px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
+                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 키워드 추가</button>
+              </div>
+              <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
+            </div>
+            </details>
+            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
+              <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
+              <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
+            </div>
           </div>
 
           <div class="flex items-center justify-between gap-2 pt-1">
@@ -7528,6 +7536,7 @@ function renderStoryArchetypesUI() {
       const camNames = typeof CAMERA_NAMES !== 'undefined' ? CAMERA_NAMES : [];
 
       let html = '';
+      let mediaHtml = '';
       for (let i = 0; i < targetCuts; i++) {
         const s = getCutStart(i).toFixed(1).replace(/\.0$/, '');
         const e = (getCutStart(i) + getCutLengths()[i]).toFixed(1).replace(/\.0$/, '');
@@ -7559,28 +7568,33 @@ function renderStoryArchetypesUI() {
         const camOpts = `<option value="auto" ${curCam === 'auto' ? 'selected' : ''}>모션: 자동</option>` +
           camNames.map((cn, cIdx) => `<option value="${cIdx}" ${curCam === String(cIdx) ? 'selected' : ''}>모션: ${cn}</option>`).join('');
 
+        // 대본 탭: 컷별 헤드라인·성우 대사만 (사진·화면·모션은 사진 탭)
         html += `
+          <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-1.5">
+            <button type="button" onclick="seekToTime(${seekSec})" id="cutTimeLabel${i}" class="font-mono text-[12px] text-[#ededed] font-medium hover:text-[#38bdf8] cursor-pointer" title="이 장면(${s}초)으로 미리보기 이동">CUT ${i + 1} (${s}~${e}초)</button>
+            <input id="cutSub${i}" type="text" value="${subVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
+            <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 성우 대사 (짧을수록 영상이 짧아집니다)" title="숫자가 다르게 읽히면 한글로 적어 주세요. 예: 네 대" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+          </div>
+        `;
+        // 사진 탭: 컷별 사진/영상 · 화면 디자인 · 카메라 모션
+        mediaHtml += `
           <div class="p-3 rounded-[8px] bg-[#141415] border border-[var(--border)] space-y-2">
             <div class="flex items-start gap-2.5">
               <button type="button" onclick="seekToTime(${seekSec})" title="이 장면(${s}초)으로 미리보기 이동" class="w-10 aspect-[9/14] rounded-[6px] overflow-hidden border border-[var(--border)] hover:border-[#3b82f6] bg-black shrink-0 cursor-pointer relative">
                 ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover" />` : ''}
                 ${activeImg && activeImg._isVideo ? '<span class="absolute bottom-0 inset-x-0 bg-[#3b82f6]/90 text-[8px] text-white text-center">영상</span>' : ''}
               </button>
-              <div class="flex-1 min-w-0 space-y-1.5">
+              <div class="flex-1 min-w-0 space-y-1">
                 <div class="flex items-center justify-between gap-1 text-[12px]">
-                  <span id="cutTimeLabel${i}" class="font-mono text-[#ededed] font-medium">CUT ${i + 1} (${s}~${e}초)</span>
+                  <span class="font-mono text-[#ededed] font-medium">CUT ${i + 1} (${s}~${e}초)</span>
                   <div class="flex items-center gap-1">
                     <span id="cutWidgetBadge${i}" class="font-mono text-[10px] text-[#85858b] truncate max-w-[110px]">${wLabel}</span>
                     <button type="button" onclick="cycleCutDesign(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="누를 때마다 이 컷의 디자인을 바꾸고 바로 미리보기로 보여줍니다">
                       변경
                     </button>
-                    <button type="button" onclick="testCutTts(${i})" class="px-1.5 py-0.5 rounded bg-[#232325] hover:bg-[#3b82f6] text-[10px] font-mono text-[#ededed] cursor-pointer" title="이 컷의 한국어 성우 음성을 즉시 들어봅니다">
-                      듣기
-                    </button>
                   </div>
                 </div>
-                <input id="cutSub${i}" type="text" value="${subVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 화면 헤드라인" class="studio-input w-full h-8 px-2.5 text-[12px]" />
-                <input id="cutTts${i}" type="text" value="${ttsVal}" oninput="updateCustomCutCaptions()" placeholder="${i + 1}컷 성우 대사 (짧을수록 영상이 짧아집니다)" title="숫자가 다르게 읽히면 한글로 적어 주세요. 예: 네 대" class="studio-input w-full h-7 px-2.5 text-[11px] text-[#a1a1a6]" />
+                <p class="text-[12px] text-[#a1a1a6] truncate">${subVal || '(대본 탭에서 문구를 적어 주세요)'}</p>
               </div>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1 border-t border-[#222225]">
@@ -7602,6 +7616,8 @@ function renderStoryArchetypesUI() {
         `;
       }
       container.innerHTML = html;
+      const mediaBox = document.getElementById('cutMediaCardsContainer');
+      if (mediaBox) mediaBox.innerHTML = mediaHtml;
     }
 
     // ============================================================================
