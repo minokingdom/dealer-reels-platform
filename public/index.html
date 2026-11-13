@@ -22651,6 +22651,17 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     body button.h-6, body button.h-7, body input.h-6, body input.h-7, body select.h-7 { height: 32px !important; }
     body button.w-6 { width: 32px !important; }
     body .pd-close { min-width: 32px; }
+    /* 4-1) 디자인 사이드바: 카드는 최소 높이 규칙에서 제외
+       (min-height 32px 때문에 격자 줄이 32px로 눌려 미리보기 이미지가 서로 겹치던 문제) */
+    body .pd-card { min-height: auto; min-width: 0; }
+    .pd-grid { grid-auto-rows: max-content; }
+    /* 좁은 사이드바(약 280px)에서 버튼 글자 줄바꿈·잘림 방지 */
+    .preset-drawer button { white-space: nowrap; }
+    .preset-drawer .pd-head > div:first-child { min-width: 0; }
+    .preset-drawer .pd-head > div:first-child > div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* 가로 스크롤 칩 줄의 스크롤바 숨김 (클래스는 쓰였지만 정의가 없었음) */
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
 
     /* 5) 쉬운 모드 (C단계) */
     body.ar-easy [data-advanced] { display: none !important; }

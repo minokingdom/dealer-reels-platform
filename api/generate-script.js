@@ -164,51 +164,59 @@ function buildAutoFallbackVariants(base, dealerName, dealerTitle) {
   const n = base.discountNum;
   const won = Number(n).toLocaleString();
   const who = `${dealerName} ${dealerTitle}`;
-  return [
-    base,
-    {
-      ...base,
-      hook: `${persona}, 아직 ${shortCarName} 고민 중이세요?`,
-      cutCaptions: [
-        `${shortCarName}, 출고 대기 때문에 망설이셨죠?`,
-        `선점 물량 ${stockCount}대로 기다림 없이`,
-        `최대 -${won}만원 · ${base.discount}`,
-        `${who} 끝까지 책임 관리`
-      ],
-      ttsLines: ['출고 대기, 지치셨죠?', `선점 물량 ${stockCount}대 준비했어요.`, `최대 ${n}만 원 할인됩니다.`, '끝까지 책임지고 챙길게요.']
-    },
-    {
-      ...base,
-      hook: `${shortCarName}, 제대로 사고 싶다면`,
-      cutCaptions: [
-        `${shortCarName} 출고 전문 · ${who}`,
-        '견적부터 출고까지 한 사람이 책임',
-        `최대 -${won}만원 · ${base.discount}`,
-        `${who} 직통 상담`
-      ],
-      ttsLines: [`${shortCarName}, 제대로 사고 싶다면.`, '견적부터 출고까지 제가 맡습니다.', `최대 ${n}만 원 혜택 챙겨드려요.`, '편하게 연락 주세요.']
-    }
-  ];
+  const offer = `최대 -${won}만원 · ${base.discount}`;
+  const benefit = pickOne([
+    { hook: base.hook, cap: base.cutCaptions, tts: base.ttsLines },
+    { hook: `${shortCarName}, 이번 달 조건 공개`, cap: [`${shortCarName} 이번 달 조건 공개`, `선점 물량 ${stockCount}대 즉시 배정`, offer, `${who} 직통 출고`], tts: ['이번 달 조건 공개합니다.', `선점 물량 ${stockCount}대 있어요.`, `최대 ${n}만 원 할인됩니다.`, '지금 바로 출고 가능해요.'] },
+    { hook: `${persona} 주목! ${shortCarName}`, cap: [`${persona} 주목`, `${shortCarName} 즉시 출고 가능`, offer, `${who} 책임 출고`], tts: [`${shortCarName} 찾으셨죠?`, '대기 없이 바로 나와요.', `최대 ${n}만 원 혜택이에요.`, '계약 즉시 챙겨드려요.'] }
+  ]);
+  const empathy = pickOne([
+    { hook: `${persona}, 아직 ${shortCarName} 고민 중이세요?`, cap: [`${shortCarName}, 출고 대기 때문에 망설이셨죠?`, `선점 물량 ${stockCount}대로 기다림 없이`, offer, `${who} 끝까지 책임 관리`], tts: ['출고 대기, 지치셨죠?', `선점 물량 ${stockCount}대 준비했어요.`, `최대 ${n}만 원 할인됩니다.`, '끝까지 책임지고 챙길게요.'] },
+    { hook: '견적만 받다 지치셨죠?', cap: ['견적만 몇 번째 받으셨나요?', `${shortCarName} 조건 한 번에 정리`, offer, `${who} 직통 상담`], tts: ['견적만 받다 지치셨죠?', '조건 한 번에 정리해 드려요.', `최대 ${n}만 원 할인돼요.`, '편하게 물어보세요.'] },
+    { hook: '월 납입금 부담되시죠?', cap: ['월 납입금 부담되시죠?', `${shortCarName} 맞춤 설계`, offer, `${who} 비교 견적`], tts: ['월 납입금 부담되시죠?', '맞춤으로 설계해 드려요.', `최대 ${n}만 원 할인까지.`, '비교 견적 받아 보세요.'] }
+  ]);
+  const trust = pickOne([
+    { hook: `${shortCarName}, 제대로 사고 싶다면`, cap: [`${shortCarName} 출고 전문 · ${who}`, '견적부터 출고까지 한 사람이 책임', offer, `${who} 직통 상담`], tts: [`${shortCarName}, 제대로 사고 싶다면.`, '견적부터 출고까지 제가 맡습니다.', `최대 ${n}만 원 혜택 챙겨드려요.`, '편하게 연락 주세요.'] },
+    { hook: '숨은 비용 없이 투명하게', cap: ['숨은 비용 없이 투명하게', `${shortCarName} 조건 그대로 공개`, offer, `${who} 책임 상담`], tts: ['숨은 비용 없이 알려드려요.', '조건 그대로 공개합니다.', `최대 ${n}만 원 혜택이에요.`, '믿고 연락 주세요.'] },
+    { hook: '출고 후에도 끝까지 챙깁니다', cap: [`${shortCarName} 출고 그 후까지`, '사후 관리도 직접 챙깁니다', offer, `${who} 평생 관리`], tts: ['출고 후에도 챙겨드려요.', '사후 관리도 제가 직접.', `최대 ${n}만 원 할인돼요.`, '오래 함께하겠습니다.'] }
+  ]);
+  return [benefit, empathy, trust].map((p) => ({ ...base, hook: p.hook, cutCaptions: p.cap, ttsLines: p.tts }));
 }
 
 // 자동차 외 업종 기본 대본 3안 (AI 호출 실패 시). 지어낸 숫자는 넣지 않습니다.
+// 같은 대본이 반복되지 않도록 방향마다 문장 묶음 여러 개 중 하나를 무작위로 고릅니다.
+// (조사 오류를 피하려고 이름 뒤에 은/는·이/가를 붙이지 않는 문장만 씁니다)
+function pickOne(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
 function buildOtherFallbackVariants(base, item, I, discountText) {
   const offer = discountText || '자세한 내용은 문의 주세요';
-  return [
-    base,
-    {
-      ...base,
-      hook: `${item}, 고민만 하고 계셨나요?`.slice(0, 24),
-      cutCaptions: [`${item}, 고민만 하셨다면`, '직접 보고 결정하세요', offer, `${I.cta} 문의 환영합니다`],
-      ttsLines: ['아직 고민 중이신가요?', '직접 보시면 달라요.', '궁금한 점 편하게 물어보세요.', `${I.cta} 문의 기다릴게요.`]
-    },
-    {
-      ...base,
-      hook: `${item}, 정직하게 준비했습니다`.slice(0, 24),
-      cutCaptions: [`${item} · ${I.role} 직접 준비`, '하나하나 꼼꼼하게', offer, `${I.cta} 문의 환영합니다`],
-      ttsLines: [`${item}, 직접 준비했어요.`, '하나하나 꼼꼼하게 챙겼어요.', '궁금한 점 편하게 물어보세요.', `${I.cta} 문의 기다릴게요.`]
-    }
+  const cta = I.cta;
+  const pools = [
+    // 혜택 강조형
+    [
+      { hook: `${item}, 지금 소개합니다`, cap: [`${item}`, '직접 준비했습니다', offer, `${cta} 문의 환영합니다`], tts: [`${item} 소개해 드릴게요.`, '정성껏 준비했습니다.', '궁금한 점은 편하게 물어보세요.', `${cta} 문의 기다릴게요.`] },
+      { hook: `이번 주 추천 · ${item}`, cap: [`이번 주 추천 · ${item}`, '한 번 보시면 압니다', offer, `${cta} 문의는 댓글로`], tts: ['이번 주 추천 드려요.', '한 번 보시면 압니다.', '조건 꼭 확인하세요.', '댓글로 편하게 남겨 주세요.'] },
+      { hook: `${item}, 놓치면 아쉬워요`, cap: [`${item} 지금 진행 중`, '이번에 꼭 챙기세요', offer, `${cta} 문의 바로 답해 드려요`], tts: ['지금 진행 중이에요.', '이번에 꼭 챙기세요.', '혜택 확인해 보세요.', '문의 주시면 바로 답할게요.'] }
+    ],
+    // 고객 공감형
+    [
+      { hook: `${item}, 고민만 하고 계셨나요?`, cap: [`${item}, 고민만 하셨다면`, '직접 보고 결정하세요', offer, `${cta} 문의 환영합니다`], tts: ['아직 고민 중이신가요?', '직접 보시면 달라요.', '궁금한 점 편하게 물어보세요.', `${cta} 문의 기다릴게요.`] },
+      { hook: '뭘 고를지 고민되시죠?', cap: ['뭘 고를지 고민되시죠?', `그래서 ${item} 준비했어요`, offer, '부담 없이 물어보세요'], tts: ['뭘 고를지 고민되시죠?', '그래서 준비했어요.', '조건도 확인해 보세요.', '부담 없이 물어보세요.'] },
+      { hook: '이런 분께 딱 맞아요', cap: ['바쁜 일상, 시간 아끼고 싶다면', `${item}`, offer, `${cta} 문의 기다릴게요`], tts: ['시간 아끼고 싶으시죠?', '그럴 때 딱 맞아요.', '혜택도 챙겨 가세요.', '편하게 연락 주세요.'] }
+    ],
+    // 신뢰·전문성형
+    [
+      { hook: `${item}, 정직하게 준비했습니다`, cap: [`${item} · ${I.role} 직접 준비`, '하나하나 꼼꼼하게', offer, `${cta} 문의 환영합니다`], tts: [`${item}, 직접 준비했어요.`, '하나하나 꼼꼼하게 챙겼어요.', '궁금한 점 편하게 물어보세요.', `${cta} 문의 기다릴게요.`] },
+      { hook: '처음부터 끝까지 직접 챙깁니다', cap: [`${item}`, '처음부터 끝까지 직접', offer, `${I.role} 직통 문의`], tts: ['처음부터 끝까지 제가 챙겨요.', '대충 하지 않습니다.', '조건도 투명하게 알려드려요.', '언제든 편하게 물어보세요.'] },
+      { hook: '믿고 맡겨 주세요', cap: [`${item}, 믿고 맡겨 주세요`, '설명부터 정확하게', offer, `${cta} 문의 환영합니다`], tts: ['믿고 맡겨 주세요.', '설명부터 정확하게 드려요.', '조건 꼭 비교해 보세요.', '상담은 부담 없이 오세요.'] }
+    ]
   ];
+  return pools.map((pool) => {
+    const p = pickOne(pool);
+    return { ...base, hook: p.hook.slice(0, 24), cutCaptions: p.cap, ttsLines: p.tts };
+  });
 }
 
 // AI 응답에서 대본 목록 꺼내기: {variants:[...]} 또는 예전 형식(대본 1개)
@@ -317,9 +325,19 @@ async function handler(req, res) {
     const a = SCRIPT_ANGLES[i] || SCRIPT_ANGLES[0];
     return sanitizeScript({ ...rest, angle: a.id, angleLabel: a.label });
   };
-  const respond = (provider, variants) => {
+  const respond = (provider, variants, fallbackDiag) => {
     const list = variants.map(finalizeVariant);
-    return res.status(200).json({ ok: true, provider, data: list[0], variants: list });
+    return res.status(200).json({ ok: true, provider, data: list[0], variants: list, ...(fallbackDiag ? { aiFallback: fallbackDiag } : {}) });
+  };
+  // AI 모델 이름은 환경변수로 바꿀 수 있음 (예전 모델이 지원 종료되면 여기서 교체)
+  const openaiModel = String(process.env.OPENAI_SCRIPT_MODEL || 'gpt-4o-mini').trim();
+  const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.0-flash').trim();
+  const aiDiag = { openaiKey: Boolean(adminOpenAiKey), geminiKey: Boolean(adminGeminiKey) };
+  const secrets = [adminOpenAiKey, adminGeminiKey].filter(Boolean);
+  const errSnippet = async (resp) => {
+    let t = await resp.text().catch(() => '');
+    secrets.forEach((s) => { t = t.split(s).join('***'); });
+    return t.replace(/\s+/g, ' ').slice(0, 200);
   };
   const anglesRule = `\n\n[대본 3안] 같은 상황으로 방향이 다른 대본 3개를 만들어 {"variants":[대본1, 대본2, 대본3]} 형태의 JSON으로만 출력하세요. 각 대본은 아래 스키마를 따릅니다.
 ${SCRIPT_ANGLES.map((a, i) => `대본${i + 1} (${a.label}): ${a.guide}`).join('\n')}
@@ -375,14 +393,16 @@ JSON 스키마:
     let providerUsed = '';
 
     if (adminOpenAiKey) {
+      aiDiag.openaiModel = openaiModel;
       const resp = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${adminOpenAiKey}`
         },
+        signal: AbortSignal.timeout(45000),
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: openaiModel,
           temperature: 0.85,
           response_format: { type: 'json_object' },
           messages: [
@@ -391,18 +411,23 @@ JSON 스키마:
           ]
         })
       });
+      aiDiag.openaiStatus = resp.status;
       if (resp.ok) {
         const data = await resp.json();
         aiResult = JSON.parse(data.choices?.[0]?.message?.content || '{}');
-        providerUsed = 'OpenAI GPT-4o-mini Director';
+        providerUsed = `OpenAI ${openaiModel} Director`;
+      } else {
+        aiDiag.openaiError = await errSnippet(resp);
       }
     }
 
     if (!aiResult && adminGeminiKey) {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(adminGeminiKey)}`;
+      aiDiag.geminiModel = geminiModel;
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent?key=${encodeURIComponent(adminGeminiKey)}`;
       const resp = await fetch(geminiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(45000),
         body: JSON.stringify({
           contents: [{ parts: [{ text: `${systemWithAngles}\n\n${userMessage}` }] }],
           generationConfig: {
@@ -411,12 +436,16 @@ JSON 스키마:
           }
         })
       });
+      aiDiag.geminiStatus = resp.status;
       if (resp.ok) {
         const data = await resp.json();
         aiResult = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
-        providerUsed = 'Google Gemini 2.0 Flash Director';
+        providerUsed = `Google ${geminiModel} Director`;
+      } else {
+        aiDiag.geminiError = await errSnippet(resp);
       }
     }
+    if (aiResult && !extractAiVariants(aiResult).length) aiDiag.parse = 'AI 응답에 쓸 수 있는 대본이 없음';
 
     const aiVariants = extractAiVariants(aiResult).slice(0, SCRIPT_ANGLES.length);
     if (aiVariants.length > 0) {
@@ -437,9 +466,12 @@ JSON 스키마:
     }
   } catch (e) {
     // 외부 LLM 타임아웃/오류 시에도 아래 내장 스마트 엔진으로 즉시 200 응답 반환
+    aiDiag.exception = String(e && e.message || e).slice(0, 160);
   }
 
-  return respond(isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director', fallbackVariants);
+  // 기본 대본으로 대신 응답: 왜 AI를 못 썼는지 aiFallback 에 남김 (키 값은 넣지 않음)
+  if (!aiDiag.openaiKey && !aiDiag.geminiKey) aiDiag.reason = 'AI 키가 설정되어 있지 않음 (OPENAI_API_KEY / GEMINI_API_KEY)';
+  return respond(isOther ? 'AutoReels 기본 대본' : 'AutoReels AI Automotive Director', fallbackVariants, aiDiag);
 };
 
 // 사용량 계산·한도 (회원 서버가 켜져 있을 때만 동작)
