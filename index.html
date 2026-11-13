@@ -576,6 +576,16 @@
                 </div>
               </div>
               <div id="pdCats" class="pd-cats"></div>
+              <div class="px-2.5 py-1.5 border-b border-[var(--border)] bg-[#141416] space-y-1">
+                <div class="flex items-center gap-1">
+                  <input id="pdTrendThemeQuery" type="text" placeholder="업종 유행 키워드 (비우면 자동 추천)"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(true);}"
+                    class="flex-1 min-w-0 h-7 px-2 rounded-[6px] bg-[#0f0f11] border border-[var(--border)] text-[11px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
+                  <button type="button" onclick="searchAndSwapTrendTheme(true)" class="h-7 px-2 rounded-[6px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[11px] font-semibold shrink-0 cursor-pointer" title="덜 쓰는 기존 디자인 1개를 지우고 업종별 유행 테마 1개로 교체합니다">🔥 교체</button>
+                  <button id="pdTrendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden h-7 px-1.5 rounded-[6px] border border-[var(--border)] text-[10px] text-[#a1a1a6] hover:text-white shrink-0 cursor-pointer" title="기본 디자인 목록으로 복원">↺</button>
+                </div>
+                <div id="pdTrendSwapStatus" class="hidden text-[10px] text-[#fb923c] truncate"></div>
+              </div>
               <div id="presetDrawerList" class="pd-list pd-grid"></div>
             </div>
             <video id="hiddenCustomVideo" class="hidden" muted playsinline loop crossorigin="anonymous"></video>
@@ -711,6 +721,19 @@
               </div>
             </div>
             <p class="text-[11px] text-[#6e6e73]">미리보기 화면을 옆으로 밀어도 디자인 목록이 열립니다.</p>
+            <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] text-[#fb923c] font-medium">🔥 업종별 유행 테마 교체 <span class="text-[#85858b] font-normal">(덜 쓰는 1개 삭제 → 새 테마 1개 추가)</span></span>
+                <button id="trendSwapResetBtn" type="button" onclick="resetTrendSwaps()" class="hidden text-[10px] text-[#a1a1a6] hover:text-white underline cursor-pointer">↺ 기본 복원</button>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input id="trendThemeQuery" type="text" placeholder="키워드 입력 (예: 비포애프터, 오픈런, 1등급 루틴... 비우면 자동)"
+                  onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndSwapTrendTheme(false);}"
+                  class="flex-1 min-w-0 h-8 px-2.5 rounded-[7px] bg-[#0f0f11] border border-[var(--border)] text-[12px] text-[#ededed] placeholder-[#6e6e73] focus:outline-none focus:border-[#f97316]" />
+                <button type="button" onclick="searchAndSwapTrendTheme(false)" class="h-8 px-3 rounded-[7px] bg-[#ea580c] hover:bg-[#f97316] text-white text-[12px] font-semibold shrink-0 cursor-pointer">🔥 유행 테마 교체</button>
+              </div>
+              <div id="trendSwapStatus" class="hidden text-[11px] text-[#fb923c]"></div>
+            </div>
             <div class="pt-2 border-t border-[var(--border)] space-y-1.5">
               <div class="text-[12px] text-[#a1a1a6]">색상 <span class="text-[#85858b]">— 어떤 디자인에나 적용됩니다</span></div>
               <div id="designColorSwatches" class="flex items-center gap-1.5 flex-wrap"></div>
@@ -13560,148 +13583,29 @@ function renderStoryArchetypesUI() {
       }
     }
 
-    // ---------- 키트 디자인 88종 ----------
+    // ---------- 키트 디자인 20종 (핵심 큐레이션) ----------
     //   [id, 이름, 묶음, 사진배치, 자막, 글꼴, 장식, 전환, 명함, 색보정, 머리표, 바탕, 라벨, 기본색, 보조색]
     const KIT_ROWS = [
       ['k_redband', '레드 띠지', '특가', 'full', 'band', 'impact', 'dots', 'zoom', 'ticket', 'vivid', 'pill', 'dark', '오늘만 특가', '#ef4444', '#facc15'],
-      ['k_neonnight', '네온 나이트', '재미', 'full', 'neon', 'dohyeon', 'grain', 'glitch', 'neon', 'noir', 'box', 'dark', 'NIGHT DRIVE', '#f472b6', '#a78bfa'],
-      ['k_subtitle', '극장 자막', '고급', 'full', 'cinema', 'serif', 'bars', 'fade', 'minimal', 'film', 'kicker', 'dark', 'A FILM BY', '#f2c46d', '#ffffff'],
-      ['k_vhs', 'VHS 캠코더', '감성', 'full', 'typer', 'mono', 'vhs', 'glitch', 'receipt', 'warm', 'none', 'dark', 'HOME VIDEO', '#facc15', '#ffffff'],
+      ['s_shoplive', '쇼핑 라이브', '특가', 'split', 'pill', 'jua', 'sparkle', 'slide', 'ticket', 'vivid', 'pill', 'accent', '라이브 특가', '#ec4899', '#fde047'],
+      ['k_neonnight', '네온 나이트', '재미', 'full', 'neon', 'dohyeon', 'grain', 'glitch', 'neon', 'noir', 'box', 'dark', 'NIGHT MOOD', '#f472b6', '#a78bfa'],
       ['k_popbubble', '팝 말풍선', '재미', 'full', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'vivid', 'counter', 'white', '이거 실화?', '#f59e0b', '#ffffff'],
+      ['k_subtitle', '극장 자막', '고급', 'full', 'cinema', 'serif', 'bars', 'fade', 'minimal', 'film', 'kicker', 'dark', 'A FILM BY', '#f2c46d', '#ffffff'],
+      ['a_gallery', '갤러리 액자', '고급', 'mat', 'vertical', 'serif', 'none', 'fade', 'minimal', 'mono', 'kicker', 'paper', 'EXHIBITION', '#78716c', '#e7e5e4'],
+      ['r_window', '아치 윈도우', '고급', 'arch', 'cinema', 'serif', 'none', 'fade', 'minimal', 'warm', 'kicker', 'paper', 'MAISON', '#a16207', '#fef3c7'],
+      ['m_strip', '필름 스트립', '고급', 'film', 'cinema', 'serif', 'grain', 'slide', 'polaroid', 'film', 'none', 'dark', 'FILM No.35', '#f2c46d', '#ffffff'],
+      ['p_diary', '폴라로이드 일기', '감성', 'polaroid', 'sticky', 'pen', 'leak', 'drop', 'polaroid', 'warm', 'none', 'paper', '오늘의 기록', '#fb923c', '#fed7aa'],
+      ['g_fourcut', '네 컷 사진', '감성', 'grid', 'pill', 'jua', 'sparkle', 'flash', 'polaroid', 'pastel', 'none', 'white', '네컷', '#f9a8d4', '#fce7f3'],
       ['k_highlighter', '형광펜 정리', '상담·정보', 'full', 'marker', 'sans', 'none', 'wipe', 'card', 'none', 'pill', 'dark', '핵심 정리', '#facc15', '#fef9c3'],
+      ['u_compare', '위아래 비교', '상담·정보', 'duo', 'band', 'sans', 'none', 'slide', 'split', 'none', 'counter', 'dark', 'BEFORE / AFTER', '#0ea5e9', '#e0f2fe'],
       ['k_lowerthird', '방송 하단 자막', '뉴스·방송', 'full', 'lower3', 'sans', 'corners', 'slide', 'news', 'none', 'box', 'dark', 'LIVE', '#2563eb', '#dbeafe'],
       ['k_kinetic', '키네틱 타이포', '스포츠', 'full', 'words', 'impact', 'leak', 'flash', 'bigname', 'sports', 'counter', 'dark', 'GO', '#facc15', '#ffffff'],
       ['k_approved', '승인 도장', '신뢰', 'full', 'stamp', 'gugi', 'border', 'flash', 'badge', 'trust', 'kicker', 'dark', '승인 완료', '#dc2626', '#fee2e2'],
-      ['k_vserif', '세로 명조', '고급', 'full', 'vertical', 'serif', 'grain', 'fade', 'ring', 'mono', 'none', 'dark', '品格', '#e7d8b5', '#ffffff'],
-      ['k_outline', '외곽선 헤드라인', '스포츠', 'full', 'outline', 'dohyeon', 'grid', 'slide', 'split', 'cool', 'counter', 'dark', 'PERFORMANCE', '#22d3ee', '#ffffff'],
-
-      ['s_magazine', '매거진 하프', '고급', 'split', 'headline', 'serif', 'none', 'wipe', 'news', 'mono', 'kicker', 'paper', 'AUTO MAGAZINE', '#b91c1c', '#111111'],
-      ['s_shoplive', '쇼핑 라이브', '특가', 'split', 'pill', 'jua', 'sparkle', 'slide', 'ticket', 'vivid', 'pill', 'accent', '라이브 특가', '#ec4899', '#fde047'],
       ['s_datapanel', '데이터 패널', '테크', 'split', 'typer', 'mono', 'grid', 'glitch', 'receipt', 'ev', 'counter', 'ink', 'SYS.REPORT', '#22d3ee', '#a5f3fc'],
-      ['s_cleanhalf', '클린 하프', '신뢰', 'split', 'lower3', 'sans', 'corners', 'fade', 'card', 'trust', 'box', 'white', '정식 인증', '#2563eb', '#dbeafe'],
-      ['s_colorblock', '컬러 블록', '재미', 'split', 'words', 'dohyeon', 'dots', 'drop', 'split', 'vivid', 'counter', 'accent', 'HOT', '#f97316', '#fde68a'],
-      ['s_memo', '메모 하프', '감성', 'split', 'sticky', 'pen', 'none', 'fade', 'polaroid', 'pastel', 'none', 'paper', '오늘의 메모', '#facc15', '#fef9c3'],
-      ['s_neonhalf', '네온 하프', '재미', 'split', 'neon', 'gugi', 'grain', 'flash', 'neon', 'noir', 'box', 'dark', 'NEON', '#a855f7', '#f0abfc'],
-      ['s_stamphalf', '보증 스탬프', '신뢰', 'split', 'stamp', 'impact', 'border', 'zoom', 'badge', 'warm', 'kicker', 'paper', '보증 완료', '#b91c1c', '#fee2e2'],
-
-      ['p_diary', '폴라로이드 일기', '감성', 'polaroid', 'sticky', 'pen', 'leak', 'drop', 'polaroid', 'warm', 'none', 'paper', '출고 일기', '#fb923c', '#fed7aa'],
-      ['p_album', '파스텔 앨범', '감성', 'polaroid', 'marker', 'jua', 'sparkle', 'slide', 'card', 'pastel', 'kicker', 'white', 'MY ALBUM', '#f9a8d4', '#fce7f3'],
-      ['p_scrapbook', '스크랩북', '재미', 'polaroid', 'bubble', 'dohyeon', 'confetti', 'zoom', 'chat', 'vivid', 'pill', 'accent', 'SCRAP', '#22c55e', '#bbf7d0'],
-      ['p_postcard', '여행 엽서', '감성', 'polaroid', 'stamp', 'gugi', 'grain', 'fade', 'ticket', 'sepia', 'box', 'paper', 'POST CARD', '#0f766e', '#ccfbf1'],
-      ['p_gallery', '다크 갤러리', '고급', 'polaroid', 'glass', 'serif', 'none', 'drop', 'ring', 'noir', 'kicker', 'dark', 'GALLERY', '#d4af37', '#f5e6b8'],
-      ['p_frontpage', '사진 기사', '뉴스·방송', 'polaroid', 'headline', 'serif', 'corners', 'slide', 'news', 'mono', 'counter', 'paper', '포토 뉴스', '#dc2626', '#111111'],
-
-      ['m_strip', '필름 스트립', '고급', 'film', 'cinema', 'serif', 'grain', 'slide', 'polaroid', 'film', 'none', 'dark', 'FILM No.35', '#f2c46d', '#ffffff'],
-      ['m_retro', '레트로 필름', '감성', 'film', 'typer', 'mono', 'vhs', 'glitch', 'receipt', 'sepia', 'none', 'ink', 'RETRO', '#fb923c', '#fed7aa'],
-      ['m_contact', '컨택트 시트', '상담·정보', 'film', 'marker', 'sans', 'corners', 'slide', 'card', 'mono', 'counter', 'paper', 'CONTACT SHEET', '#facc15', '#fef9c3'],
-      ['m_vertical', '세로 필름', '고급', 'film', 'vertical', 'serif', 'none', 'drop', 'ring', 'warm', 'none', 'dark', '映畵', '#e7d8b5', '#ffffff'],
-      ['m_diary', '필름 다이어리', '감성', 'film', 'pill', 'jua', 'sparkle', 'zoom', 'chat', 'pastel', 'pill', 'accent', 'DIARY', '#a78bfa', '#ede9fe'],
-      ['m_cyber', '사이버 필름', '테크', 'film', 'neon', 'dohyeon', 'grid', 'flash', 'neon', 'cool', 'box', 'ink', 'CYBER', '#22d3ee', '#a5f3fc'],
-      ['m_sale', '필름 특가', '특가', 'film', 'stamp', 'impact', 'border', 'wipe', 'ticket', 'vivid', 'kicker', 'paper', '한정 특가', '#dc2626', '#fde047'],
-
-      ['c_lens', '원형 렌즈', '테크', 'circle', 'glass', 'sans', 'grid', 'zoom', 'badge', 'ev', 'box', 'ink', 'LENS VIEW', '#38bdf8', '#e0f2fe'],
-      ['c_spotlight', '스포트라이트', '고급', 'circle', 'cinema', 'serif', 'sparkle', 'fade', 'ring', 'noir', 'kicker', 'dark', 'SPOTLIGHT', '#d4af37', '#ffffff'],
-      ['c_sticker', '동그라미 스티커', '재미', 'circle', 'pill', 'jua', 'confetti', 'drop', 'polaroid', 'vivid', 'pill', 'accent', '스티커 특가', '#facc15', '#ffffff'],
-      ['c_target', '타깃 조준', '스포츠', 'circle', 'outline', 'impact', 'corners', 'flash', 'bigname', 'sports', 'counter', 'dark', 'TARGET', '#ef4444', '#ffffff'],
-      ['c_seal', '원형 인증', '신뢰', 'circle', 'stamp', 'gugi', 'dots', 'zoom', 'card', 'trust', 'none', 'white', '인증 매물', '#1d4ed8', '#dbeafe'],
-      ['c_talk', '토크 서클', '상담·정보', 'circle', 'bubble', 'dohyeon', 'leak', 'slide', 'chat', 'pastel', 'kicker', 'paper', '1:1 상담', '#6366f1', '#e0e7ff'],
-      ['c_newsround', '뉴스 서클', '뉴스·방송', 'circle', 'lower3', 'sans', 'border', 'wipe', 'news', 'cool', 'box', 'white', '오늘의 소식', '#0ea5e9', '#e0f2fe'],
-
-      ['a_gallery', '갤러리 액자', '고급', 'mat', 'vertical', 'serif', 'none', 'fade', 'minimal', 'mono', 'kicker', 'paper', 'EXHIBITION', '#78716c', '#e7e5e4'],
-      ['a_poster', '아트 포스터', '감성', 'mat', 'headline', 'serif', 'grain', 'wipe', 'news', 'film', 'box', 'paper', 'ART PRINT', '#b45309', '#fef3c7'],
-      ['a_label', '전시 라벨', '고급', 'mat', 'ticket', 'mono', 'corners', 'slide', 'receipt', 'cool', 'counter', 'white', 'ITEM CARD', '#334155', '#e2e8f0'],
-      ['a_memo', '메모 액자', '감성', 'mat', 'sticky', 'pen', 'dots', 'fade', 'card', 'pastel', 'pill', 'white', '손편지', '#f472b6', '#fce7f3'],
-      ['a_black', '블랙 액자', '재미', 'mat', 'neon', 'impact', 'sparkle', 'flash', 'ring', 'noir', 'counter', 'dark', 'BLACK', '#f43f5e', '#fecdd3'],
-      ['a_note', '노트 정리', '상담·정보', 'mat', 'marker', 'dohyeon', 'grid', 'slide', 'chat', 'none', 'counter', 'white', '구매 노트', '#facc15', '#fef9c3'],
-      ['a_popart', '팝아트 액자', '재미', 'mat', 'words', 'jua', 'confetti', 'zoom', 'split', 'vivid', 'pill', 'accent', 'POP!', '#ec4899', '#fde047'],
-
-      ['d_speed', '사선 스피드', '스포츠', 'diag', 'band', 'impact', 'none', 'slide', 'bigname', 'sports', 'counter', 'accent', 'SPEED', '#ef4444', '#ffffff'],
-      ['d_mag', '사선 매거진', '고급', 'diag', 'headline', 'serif', 'grain', 'wipe', 'split', 'mono', 'kicker', 'paper', 'COVER STORY', '#111111', '#e5e5e5'],
-      ['d_coupon', '사선 쿠폰', '특가', 'diag', 'ticket', 'dohyeon', 'dots', 'zoom', 'ticket', 'vivid', 'pill', 'ink', '쿠폰 지급', '#f97316', '#fde68a'],
-      ['d_tech', '사선 테크', '테크', 'diag', 'typer', 'mono', 'corners', 'glitch', 'badge', 'ev', 'box', 'ink', 'DIAG.SYS', '#4ade80', '#bbf7d0'],
-      ['d_pop', '사선 팝', '재미', 'diag', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'pastel', 'none', 'accent', '꿀팁', '#38bdf8', '#e0f2fe'],
-      ['d_neon', '사선 네온', '재미', 'diag', 'neon', 'impact', 'leak', 'flash', 'neon', 'noir', 'counter', 'dark', 'MIDNIGHT', '#22d3ee', '#f0abfc'],
-      ['d_trust', '사선 신뢰', '신뢰', 'diag', 'stamp', 'sans', 'border', 'fade', 'card', 'trust', 'kicker', 'white', '검수 통과', '#0284c7', '#e0f2fe'],
-
-      ['k2_stack', '카드 스택', '상담·정보', 'cards', 'glass', 'sans', 'none', 'slide', 'card', 'none', 'pill', 'ink', '견적 카드', '#6366f1', '#e0e7ff'],
-      ['k2_swipe', '스와이프 카드', '재미', 'cards', 'stamp', 'dohyeon', 'sparkle', 'drop', 'chat', 'vivid', 'counter', 'accent', 'LIKE', '#22c55e', '#bbf7d0'],
-      ['k2_memo', '카드 메모', '감성', 'cards', 'sticky', 'pen', 'dots', 'fade', 'polaroid', 'pastel', 'kicker', 'paper', '추천 메모', '#fb923c', '#fed7aa'],
-      ['k2_receipt', '카드 영수증', '상담·정보', 'cards', 'ticket', 'mono', 'corners', 'zoom', 'receipt', 'cool', 'box', 'white', '견적서', '#0ea5e9', '#e0f2fe'],
-      ['k2_racer', '레이서 카드', '스포츠', 'cards', 'outline', 'dohyeon', 'grid', 'slide', 'badge', 'sports', 'counter', 'dark', 'RACER', '#facc15', '#ffffff'],
-      ['k2_warm', '웜 하이라이트', '감성', 'cards', 'marker', 'jua', 'leak', 'wipe', 'split', 'warm', 'none', 'paper', '오늘의 추천', '#f97316', '#fed7aa'],
-      ['k2_news', '카드 뉴스', '뉴스·방송', 'cards', 'lower3', 'sans', 'border', 'slide', 'news', 'trust', 'kicker', 'white', '카드뉴스', '#dc2626', '#fee2e2'],
-
-      ['g_fourcut', '네 컷 사진', '감성', 'grid', 'pill', 'jua', 'sparkle', 'flash', 'polaroid', 'pastel', 'none', 'white', '네컷', '#f9a8d4', '#fce7f3'],
-      ['g_mosaic', '모자이크 특가', '특가', 'grid', 'band', 'dohyeon', 'confetti', 'flash', 'receipt', 'sale', 'counter', 'ink', '모아보기 특가', '#ef4444', '#fde047'],
-      ['g_monitor', '감시 모니터', '테크', 'grid', 'typer', 'mono', 'vhs', 'glitch', 'badge', 'noir', 'none', 'ink', 'CAM', '#4ade80', '#bbf7d0'],
-      ['g_mag', '그리드 매거진', '고급', 'grid', 'headline', 'serif', 'grain', 'fade', 'minimal', 'mono', 'box', 'paper', 'LOOKBOOK', '#111111', '#e5e5e5'],
-      ['g_neon', '그리드 네온', '재미', 'grid', 'neon', 'gugi', 'grain', 'zoom', 'neon', 'cool', 'counter', 'dark', 'ARCADE', '#a855f7', '#22d3ee'],
-      ['g_check', '그리드 체크', '신뢰', 'grid', 'stamp', 'sans', 'corners', 'zoom', 'card', 'trust', 'box', 'white', '4면 점검', '#16a34a', '#dcfce7'],
-      ['g_talk', '그리드 말풍선', '상담·정보', 'grid', 'bubble', 'dohyeon', 'leak', 'drop', 'chat', 'warm', 'pill', 'paper', '고객 후기 Q&A', '#f59e0b', '#fef3c7'],
-
-      ['r_window', '아치 윈도우', '고급', 'arch', 'cinema', 'serif', 'none', 'fade', 'minimal', 'warm', 'kicker', 'paper', 'MAISON', '#a16207', '#fef3c7'],
-      ['r_vertical', '아치 세로', '고급', 'arch', 'vertical', 'serif', 'sparkle', 'drop', 'ring', 'film', 'none', 'dark', '雅', '#d4af37', '#f5e6b8'],
-      ['r_sticker', '아치 스티커', '재미', 'arch', 'pill', 'jua', 'dots', 'zoom', 'polaroid', 'pastel', 'pill', 'accent', '스윗 딜', '#f472b6', '#fce7f3'],
-      ['r_glass', '아치 글래스', '테크', 'arch', 'glass', 'sans', 'leak', 'slide', 'card', 'cool', 'box', 'ink', 'GLASS', '#38bdf8', '#e0f2fe'],
-      ['r_memo', '아치 메모', '감성', 'arch', 'sticky', 'pen', 'grain', 'fade', 'chat', 'sepia', 'counter', 'paper', '카마스터 노트', '#84cc16', '#ecfccb'],
-      ['r_marker', '아치 마커', '상담·정보', 'arch', 'marker', 'dohyeon', 'corners', 'wipe', 'receipt', 'none', 'kicker', 'white', '체크 포인트', '#facc15', '#fef9c3'],
-      ['r_type', '아치 타이포', '스포츠', 'arch', 'words', 'impact', 'border', 'flash', 'split', 'vivid', 'counter', 'dark', 'ARCH', '#f97316', '#ffffff'],
-
-      ['b_cut', '블라인드 컷', '스포츠', 'blinds', 'outline', 'impact', 'none', 'blinds', 'bigname', 'sports', 'counter', 'dark', 'CUT', '#ef4444', '#ffffff'],
-      ['b_sale', '블라인드 특가', '특가', 'blinds', 'band', 'dohyeon', 'dots', 'blinds', 'ticket', 'sale', 'pill', 'dark', '오픈 특가', '#f97316', '#fde047'],
-      ['b_news', '블라인드 뉴스', '뉴스·방송', 'blinds', 'lower3', 'dohyeon', 'corners', 'blinds', 'card', 'none', 'box', 'dark', 'BREAKING', '#dc2626', '#fee2e2'],
-      ['b_cinema', '블라인드 시네마', '고급', 'blinds', 'cinema', 'serif', 'bars', 'blinds', 'ring', 'film', 'box', 'dark', 'PREMIERE', '#f2c46d', '#ffffff'],
-      ['b_neon', '블라인드 네온', '재미', 'blinds', 'neon', 'gugi', 'grain', 'blinds', 'neon', 'noir', 'none', 'dark', 'NEON CITY', '#f472b6', '#22d3ee'],
-      ['b_term', '블라인드 터미널', '테크', 'blinds', 'typer', 'mono', 'grid', 'blinds', 'receipt', 'ev', 'counter', 'dark', 'BOOT', '#4ade80', '#bbf7d0'],
-      ['b_glass', '블라인드 글래스', '상담·정보', 'blinds', 'glass', 'sans', 'leak', 'blinds', 'ring', 'cool', 'kicker', 'dark', '스마트 견적', '#818cf8', '#e0e7ff'],
-
-      ['u_compare', '위아래 비교', '상담·정보', 'duo', 'band', 'sans', 'none', 'slide', 'split', 'none', 'counter', 'dark', 'BEFORE / AFTER', '#0ea5e9', '#e0f2fe'],
-      ['u_mag', '듀오 매거진', '고급', 'duo', 'headline', 'serif', 'grain', 'wipe', 'news', 'mono', 'kicker', 'dark', 'DOUBLE ISSUE', '#111111', '#e5e5e5'],
-      ['u_bubble', '듀오 말풍선', '재미', 'duo', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'vivid', 'pill', 'dark', '이거 봐요', '#facc15', '#ffffff'],
-      ['u_stamp', '듀오 스탬프', '특가', 'duo', 'stamp', 'impact', 'border', 'zoom', 'ticket', 'warm', 'box', 'dark', '두 배 혜택', '#dc2626', '#fde047'],
-      ['u_neon', '듀오 네온', '재미', 'duo', 'neon', 'dohyeon', 'vhs', 'glitch', 'neon', 'noir', 'none', 'dark', 'DUAL', '#a855f7', '#22d3ee'],
-      ['u_glass', '듀오 글래스', '테크', 'duo', 'glass', 'sans', 'grid', 'fade', 'badge', 'ev', 'box', 'dark', 'DUAL VIEW', '#22d3ee', '#a5f3fc'],
-      ['u_words', '듀오 워드', '스포츠', 'duo', 'words', 'gugi', 'sparkle', 'flash', 'bigname', 'sports', 'counter', 'dark', 'DOUBLE', '#facc15', '#ffffff'],
-
-
       ['h_signature', '시그니처', '손글씨', 'mat', 'scriptkick', 'serif7', 'none', 'fade', 'signature', 'warm', 'kicker', 'paper', 'SIGNATURE', '#a16207', '#fef3c7', 'With care', 'greatvibes'],
-      ['h_thankyou', '감사 카드', '손글씨', 'cards', 'notecard', 'serif7', 'none', 'slide', 'signature', 'none', 'none', 'paper', 'THANK YOU', '#9f1239', '#ffe4e6', 'Thank you', 'greatvibes'],
-      ['h_delivered', '딜리버드', '손글씨', 'full', 'scriptkick', 'sans', 'grain', 'zoom', 'card', 'film', 'pill', 'dark', 'DELIVERED', '#f2c46d', '#ffffff', 'Delivered', 'greatvibes'],
-      ['h_promise', '약속', '손글씨', 'arch', 'quotecard', 'serif7', 'grain', 'slide', 'signature', 'film', 'kicker', 'paper', 'PROMISE', '#78350f', '#fef3c7', 'Promise', 'pinyon'],
-      ['h_handpicked', '핸드픽', '손글씨', 'split', 'signline', 'sans', 'corners', 'wipe', 'minimal', 'none', 'box', 'white', 'HANDPICKED', '#1d4ed8', '#dbeafe', 'Handpicked', 'greatvibes'],
-      ['h_letterpress', '레터프레스', '손글씨', 'poster', 'notecard', 'songmyung', 'grain', 'fade', 'minimal', 'mono', 'kicker', 'paper', 'LETTERPRESS', '#111111', '#e5e5e5', 'Dear customer', 'pinyon'],
-      ['h_goldscript', '골드 스크립트', '손글씨', 'dim', 'scriptkick', 'serif7', 'grain', 'fade', 'ring', 'noir', 'none', 'dark', 'GOLD', '#d4af37', '#f5e6b8', 'Special for you', 'greatvibes'],
-      ['h_sincerely', '진심 레터', '손글씨', 'full', 'quotecard', 'serif7', 'none', 'slide', 'signature', 'warm', 'kicker', 'dark', 'SINCERELY', '#e7d8b5', '#ffffff', 'Sincerely', 'pinyon'],
-      ['h_newowner', '새 주인', '손글씨', 'duo', 'signline', 'sans', 'grain', 'fade', 'card', 'warm', 'kicker', 'dark', 'NEW OWNER', '#f2c46d', '#ffffff', 'Your new car', 'greatvibes'],
-      ['h_brushpoint', '붓 서명', '손글씨', 'mat', 'signline', 'serif7', 'corners', 'wipe', 'signature', 'mono', 'box', 'white', '추천', '#b91c1c', '#fee2e2', '믿고 추천합니다', 'brush'],
-      ['h_cursive', '커시브', '손글씨', 'circle', 'scriptkick', 'serif7', 'none', 'zoom', 'minimal', 'none', 'kicker', 'paper', 'CURSIVE', '#be185d', '#fce7f3', 'Lovely day', 'greatvibes'],
-      ['h_seal', '서명 인증', '손글씨', 'split', 'quotecard', 'sans', 'corners', 'slide', 'signature', 'trust', 'box', 'white', '서명 인증', '#1e3a8a', '#dbeafe', 'Certified', 'pinyon'],
-
       ['t_stack', '빅 스택', '타이포', 'dim', 'stack', 'gasoek', 'none', 'flash', 'bigname', 'noir', 'counter', 'dark', 'BIG TYPE', '#facc15', '#ffffff'],
-      ['t_credits', '크레딧 스크롤', '타이포', 'dim', 'scroll', 'songmyung', 'grain', 'fade', 'minimal', 'film', 'kicker', 'dark', 'CREDITS', '#f2c46d', '#ffffff'],
-      ['t_oneword', '원 워드', '타이포', 'dim', 'slam', 'impact', 'bars', 'flash', 'split', 'sports', 'box', 'dark', 'ONE WORD', '#ef4444', '#ffffff'],
       ['t_inside', '글자 속 사진', '타이포', 'full', 'knockout', 'bagel', 'none', 'zoom', 'card', 'vivid', 'pill', 'dark', 'INSIDE', '#22d3ee', '#ffffff'],
-      ['t_nonstop', '무한 띠', '타이포', 'full', 'marquee', 'impact', 'none', 'slide', 'ticket', 'vivid', 'none', 'dark', 'NON-STOP', '#facc15', '#ffffff'],
-      ['t_pop3d', '입체 팝', '타이포', 'poster', 'longshadow', 'bagel', 'dots', 'drop', 'chat', 'vivid', 'counter', 'accent', 'POP 3D', '#f97316', '#fde68a'],
-      ['t_poster', '포스터 스택', '타이포', 'poster', 'stack', 'bwpicture', 'grain', 'fade', 'news', 'mono', 'kicker', 'paper', 'POSTER', '#111111', '#e5e5e5'],
-      ['t_postword', '원 워드 포스터', '타이포', 'poster', 'slam', 'gasoek', 'border', 'flash', 'badge', 'none', 'box', 'white', '한 단어', '#2563eb', '#dbeafe'],
-      ['t_postscroll', '스크롤 포스터', '타이포', 'poster', 'scroll', 'dongle', 'sparkle', 'slide', 'polaroid', 'pastel', 'pill', 'accent', 'SCROLL', '#ec4899', '#fce7f3'],
-      ['t_banner', '배너 포스터', '타이포', 'poster', 'marquee', 'dohyeon', 'none', 'wipe', 'receipt', 'none', 'counter', 'ink', 'BANNER', '#22c55e', '#dcfce7'],
-      ['t_depth', '입체 다크', '타이포', 'dim', 'longshadow', 'impact', 'grain', 'zoom', 'neon', 'noir', 'none', 'dark', 'DEPTH', '#a855f7', '#f0abfc'],
-      ['t_phototype', '사진 글씨', '타이포', 'split', 'knockout', 'gasoek', 'none', 'slide', 'card', 'none', 'pill', 'ink', 'PHOTO TYPE', '#facc15', '#ffffff'],
-
-      ['v_delivery', '출고 브이로그', '브이로그', 'handheld', 'vsub', 'sans', 'none', 'fade', 'vlogend', 'warm', 'profile', 'dark', '출고 브이로그', '#facc15', '#fef9c3'],
-      ['v_camera', '카메라 앱', '브이로그', 'full', 'timestamp', 'sans', 'camera', 'slide', 'polaroid', 'none', 'none', 'dark', 'VLOG', '#facc15', '#ffffff'],
-      ['v_chapter', '챕터 브이로그', '브이로그', 'handheld', 'chapter', 'dohyeon', 'grain', 'wipe', 'card', 'film', 'kicker', 'dark', 'EP.03 출고', '#f97316', '#fed7aa'],
-      ['v_location', '위치 태그', '브이로그', 'handheld', 'loctag', 'jua', 'leak', 'zoom', 'chat', 'vivid', 'profile', 'dark', '출고 현장', '#38bdf8', '#e0f2fe'],
-      ['v_checklist', '출고 체크리스트', '브이로그', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'none', 'counter', 'white', '출고 체크리스트', '#16a34a', '#dcfce7'],
-      ['v_diary', '다이어리 브이로그', '브이로그', 'polaroid', 'timestamp', 'gaegu', 'sparkle', 'drop', 'vlogend', 'pastel', 'none', 'cream', 'DAY LOG', '#f472b6', '#fce7f3'],
-      ['v_story', '인스타 스토리', '브이로그', 'full', 'vsub', 'jua', 'none', 'slide', 'chat', 'vivid', 'profile', 'dark', '출고 스토리', '#ec4899', '#fce7f3'],
-      ['v_cine', '시네 브이로그', '브이로그', 'dim', 'chapter', 'serif', 'bars', 'fade', 'vlogend', 'film', 'kicker', 'dark', 'CHAPTER', '#f2c46d', '#ffffff'],
-      ['v_split', '분할 일상', '브이로그', 'duo', 'loctag', 'sans', 'camera', 'slide', 'vlogend', 'warm', 'none', 'dark', '오늘의 출고', '#facc15', '#ffffff'],
-      ['v_note', '점검 노트', '브이로그', 'notebook', 'checkl', 'pen', 'dots', 'fade', 'split', 'none', 'profile', 'cream', '인도 전 점검', '#2563eb', '#dbeafe'],
-      ['v_timelapse', '타임랩스', '브이로그', 'handheld', 'timestamp', 'mono', 'camera', 'flash', 'badge', 'teal', 'box', 'dark', 'TIMELAPSE', '#22d3ee', '#a5f3fc'],
-      ['v_handover', '키 전달 순간', '브이로그', 'arch', 'vsub', 'yeonsung', 'sparkle', 'fade', 'vlogend', 'warm', 'none', 'paper', '키 전달 순간', '#b45309', '#fef3c7']
+      ['v_delivery', '일상 브이로그', '브이로그', 'handheld', 'vsub', 'sans', 'none', 'fade', 'vlogend', 'warm', 'profile', 'dark', '오늘의 브이로그', '#facc15', '#fef9c3']
     ];
     const KIT_PART_NAMES = {
       layout: { full: '전체 화면', split: '위 사진·아래 패널', polaroid: '겹친 폴라로이드', film: '흐르는 필름', circle: '원형 렌즈', mat: '액자', diag: '사선 분할', cards: '겹친 카드', grid: '4분할 그리드', arch: '아치 창', blinds: '블라인드 전환', duo: '위아래 두 장', notebook: '공책', chalkboard: '칠판', dim: '어두운 사진 위 큰 글씨', poster: '타이포 포스터', handheld: '손에 든 카메라' },
@@ -13842,6 +13746,267 @@ function renderStoryArchetypesUI() {
         });
       });
     });
+    // ★ 업종별 유행 릴스·쇼츠 트렌드 테마 뱅크 (검색/교체 시 기존 저사용 디자인을 삭제하고 1:1 교체)
+    const IND_TREND_BANK = {
+      auto: [
+        ['tr_auto_pov', '🔥 시승 1인칭 POV', 'handheld', 'timestamp', 'mono', 'camera', 'zoom', 'vlogend', 'cool', 'profile', 'dark', '시승 POV', '#38bdf8', '#e0f2fe'],
+        ['tr_auto_monthly', '🔥 월 납입금 3초컷', 'split', 'band', 'impact', 'dots', 'flash', 'ticket', 'vivid', 'pill', 'dark', '월 납입금 공개', '#ef4444', '#fde047'],
+        ['tr_auto_ambient', '🔥 야간 엠비언트', 'dim', 'neon', 'dohyeon', 'grain', 'fade', 'neon', 'noir', 'box', 'dark', 'NIGHT AMBIENT', '#a855f7', '#22d3ee'],
+        ['tr_auto_opt', '🔥 옵션 비교 스플릿', 'duo', 'pill', 'sans', 'corners', 'wipe', 'split', 'cool', 'counter', 'dark', '트림별 비교', '#0ea5e9', '#e0f2fe'],
+        ['tr_auto_delivery', '🔥 3초 출고 훅', 'full', 'slam', 'gasoek', 'sparkle', 'flash', 'signature', 'warm', 'kicker', 'dark', '오늘 출고!', '#facc15', '#ffffff']
+      ],
+      restaurant: [
+        ['tr_rest_asmr', '🔥 지글지글 ASMR', 'full', 'vsub', 'dohyeon', 'leak', 'zoom', 'vlogend', 'warm', 'pill', 'dark', '소리 켜고 보세요', '#f97316', '#fde68a'],
+        ['tr_rest_openrun', '🔥 줄 서는 오픈런', 'handheld', 'timestamp', 'mono', 'camera', 'slide', 'ticket', 'vivid', 'profile', 'dark', '오픈런 현장', '#ef4444', '#fef08a'],
+        ['tr_rest_value', '🔥 가성비 정식 3초컷', 'split', 'band', 'impact', 'dots', 'flash', 'receipt', 'warm', 'counter', 'cream', '이 가격 실화?', '#dc2626', '#fee2e2'],
+        ['tr_rest_fire', '🔥 시그니처 불쇼', 'dim', 'slam', 'gasoek', 'grain', 'flash', 'bigname', 'noir', 'box', 'dark', '시그니처 메뉴', '#f59e0b', '#ffffff'],
+        ['tr_rest_night', '🔥 심야 포차 감성', 'polaroid', 'neon', 'jua', 'grain', 'fade', 'neon', 'noir', 'kicker', 'dark', '오늘 밤 한잔', '#f472b6', '#fde047']
+      ],
+      cafe: [
+        ['tr_cafe_pour', '🔥 아아 붓기 ASMR', 'full', 'vsub', 'sans', 'leak', 'fade', 'minimal', 'warm', 'kicker', 'dark', 'ICED COFFEE', '#fbbf24', '#fff7ed'],
+        ['tr_cafe_cross', '🔥 디저트 반갈샷', 'split', 'pill', 'jua', 'sparkle', 'zoom', 'polaroid', 'pastel', 'pill', 'paper', '단면 미쳤다', '#f472b6', '#fce7f3'],
+        ['tr_cafe_receipt', '🔥 감성 영수증 컷', 'cards', 'ticket', 'mono', 'none', 'slide', 'receipt', 'sepia', 'box', 'paper', 'CAFE RECEIPT', '#78350f', '#fef3c7'],
+        ['tr_cafe_new', '🔥 시즌 한정 신메뉴', 'poster', 'slam', 'gasoek', 'dots', 'flash', 'split', 'vivid', 'counter', 'accent', '시즌 한정', '#ea580c', '#ffffff'],
+        ['tr_cafe_sun', '🔥 햇살 창가 브이로그', 'arch', 'scriptkick', 'serif7', 'leak', 'fade', 'signature', 'warm', 'none', 'cream', 'SUNLIGHT', '#b45309', '#fef3c7', 'Coffee mood', 'greatvibes']
+      ],
+      beauty: [
+        ['tr_beau_ba', '🔥 3초 비포·애프터', 'duo', 'band', 'sans', 'sparkle', 'wipe', 'card', 'pastel', 'kicker', 'white', 'BEFORE → AFTER', '#ec4899', '#fce7f3'],
+        ['tr_beau_rank', '🔥 이달의 네일 랭킹', 'grid', 'pill', 'jua', 'sparkle', 'slide', 'polaroid', 'pastel', 'counter', 'white', 'BEST 4', '#a855f7', '#f3e8ff'],
+        ['tr_beau_color', '🔥 퍼스널컬러 진단', 'split', 'marker', 'sans', 'corners', 'wipe', 'card', 'cool', 'pill', 'white', '퍼스널 진단', '#f43f5e', '#ffe4e6'],
+        ['tr_beau_close', '🔥 마감 임박 예약', 'full', 'bubble', 'jua', 'confetti', 'drop', 'chat', 'vivid', 'box', 'dark', '이번주 잔여석', '#ec4899', '#fde047'],
+        ['tr_beau_glow', '🔥 물광 시술 줌인', 'circle', 'scriptkick', 'serif7', 'sparkle', 'zoom', 'ring', 'pastel', 'none', 'dark', 'GLOW UP', '#fda4af', '#fff1f2', 'Glow up', 'greatvibes']
+      ],
+      realestate: [
+        ['tr_real_tour', '🔥 30초 랜선 집들이', 'handheld', 'loctag', 'sans', 'camera', 'slide', 'vlogend', 'warm', 'profile', 'dark', '30초 룸투어', '#0ea5e9', '#e0f2fe'],
+        ['tr_real_urg', '🔥 급매물 속보', 'full', 'lower3', 'dohyeon', 'corners', 'flash', 'news', 'vivid', 'box', 'dark', '급매 속보', '#dc2626', '#fee2e2'],
+        ['tr_real_safe', '🔥 전세 안전 체크', 'cards', 'checkl', 'sans', 'border', 'wipe', 'receipt', 'trust', 'counter', 'white', '안전 체크 4', '#16a34a', '#dcfce7'],
+        ['tr_real_view', '🔥 한강뷰 야경 컷', 'dim', 'cinema', 'serif', 'bars', 'fade', 'minimal', 'noir', 'kicker', 'dark', 'RIVER VIEW', '#f2c46d', '#ffffff'],
+        ['tr_real_walk', '🔥 역세권 도보 3분', 'split', 'pill', 'sans', 'corners', 'zoom', 'card', 'cool', 'pill', 'white', '초역세권', '#2563eb', '#dbeafe']
+      ],
+      academy: [
+        ['tr_acad_top1', '🔥 1등급 공부 루틴', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'cool', 'counter', 'white', '1등급 루틴', '#2563eb', '#dbeafe'],
+        ['tr_acad_dday', '🔥 시험 D-7 족보', 'poster', 'slam', 'gasoek', 'dots', 'flash', 'bigname', 'vivid', 'box', 'accent', '시험 D-7', '#ef4444', '#ffffff'],
+        ['tr_acad_qa', '🔥 학부모 30초 Q&A', 'split', 'bubble', 'jua', 'none', 'drop', 'chat', 'pastel', 'kicker', 'white', '학부모 Q&A', '#0ea5e9', '#e0f2fe'],
+        ['tr_acad_up', '🔥 성적 수직 상승', 'duo', 'band', 'dohyeon', 'confetti', 'wipe', 'badge', 'vivid', 'pill', 'dark', '성적 상승 사례', '#16a34a', '#dcfce7'],
+        ['tr_acad_camp', '🔥 방학 특강 선착순', 'chalkboard', 'chalk', 'gaegu', 'none', 'fade', 'ticket', 'none', 'kicker', 'dark', '방학 특강', '#fde047', '#ffffff']
+      ],
+      clinic: [
+        ['tr_clin_fact', '🔥 의사쌤 30초 팩트', 'split', 'lower3', 'sans', 'corners', 'slide', 'news', 'trust', 'box', 'white', '전문의 팩트체크', '#0284c7', '#e0f2fe'],
+        ['tr_clin_1min', '🔥 하루 1분 스트레칭', 'full', 'pill', 'sans', 'none', 'fade', 'minimal', 'cool', 'counter', 'dark', '하루 1분 루틴', '#22c55e', '#dcfce7'],
+        ['tr_clin_ba', '🔥 시술 전후 비교', 'duo', 'glass', 'sans', 'none', 'wipe', 'card', 'trust', 'kicker', 'white', 'BEFORE · AFTER', '#0ea5e9', '#e0f2fe'],
+        ['tr_clin_check', '🔥 건강검진 체크', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'cool', 'counter', 'white', '필수 체크', '#14b8a6', '#ccfbf1'],
+        ['tr_clin_night', '🔥 야간·주말 진료', 'grid', 'lower3', 'sans', 'grid', 'blinds', 'card', 'trust', 'pill', 'white', '야간 진료 안내', '#2563eb', '#dbeafe']
+      ],
+      fitness: [
+        ['tr_fit_4wk', '🔥 4주 바디 체인지', 'duo', 'band', 'impact', 'none', 'wipe', 'split', 'vivid', 'box', 'dark', '4주 변화', '#22c55e', '#dcfce7'],
+        ['tr_fit_oun', '🔥 오운완 루틴 3종', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'sports', 'counter', 'white', '오늘의 루틴', '#f97316', '#ffedd5'],
+        ['tr_fit_pt', '🔥 PT 1회 체험 특가', 'full', 'slam', 'gasoek', 'dots', 'flash', 'ticket', 'sports', 'pill', 'dark', '1회 체험 특가', '#ef4444', '#fde047'],
+        ['tr_fit_meal', '🔥 식단 칼로리 컷', 'notebook', 'marker', 'sans', 'none', 'slide', 'polaroid', 'none', 'kicker', 'paper', '식단 가이드', '#16a34a', '#dcfce7'],
+        ['tr_fit_am', '🔥 새벽 6시 헬스장', 'handheld', 'timestamp', 'mono', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', 'AM 06:00', '#facc15', '#ffffff']
+      ],
+      shop: [
+        ['tr_shop_fit', '🔥 착샷 3초 코디', 'full', 'vsub', 'jua', 'sparkle', 'zoom', 'minimal', 'vivid', 'pill', 'dark', '데일리 코디', '#ec4899', '#fce7f3'],
+        ['tr_shop_unbox', '🔥 언박싱 첫인상', 'cards', 'sticky', 'gamja', 'confetti', 'drop', 'polaroid', 'pastel', 'counter', 'cream', 'UNBOXING', '#f472b6', '#fce7f3'],
+        ['tr_shop_restock', '🔥 품절대란 재입고', 'split', 'bubble', 'jua', 'dots', 'drop', 'chat', 'vivid', 'kicker', 'white', '긴급 재입고!', '#2563eb', '#dbeafe'],
+        ['tr_shop_1plus1', '🔥 1+1 타임세일', 'full', 'band', 'impact', 'dots', 'flash', 'ticket', 'sale', 'pill', 'dark', '1+1 타임세일', '#ef4444', '#fde047'],
+        ['tr_shop_pack', '🔥 사장님 포장 브이로그', 'handheld', 'timestamp', 'mono', 'camera', 'fade', 'vlogend', 'warm', 'profile', 'dark', '오늘 출발!', '#f59e0b', '#fef3c7']
+      ],
+      interior: [
+        ['tr_int_3wk', '🔥 구축 3주 대변신', 'duo', 'pill', 'sans', 'none', 'wipe', 'card', 'warm', 'kicker', 'white', '구축 3주 변신', '#0ea5e9', '#e0f2fe'],
+        ['tr_int_tour', '🔥 30초 룸투어', 'handheld', 'loctag', 'sans', 'camera', 'slide', 'vlogend', 'warm', 'profile', 'dark', '30초 룸투어', '#d97706', '#fef3c7'],
+        ['tr_int_mat', '🔥 자재·조명 톤매치', 'polaroid', 'sticky', 'pen', 'none', 'drop', 'polaroid', 'sepia', 'none', 'paper', '자재 톤매치', '#78716c', '#f5f5f4'],
+        ['tr_int_est', '🔥 평수별 견적 공개', 'cards', 'checkl', 'sans', 'corners', 'slide', 'receipt', 'cool', 'counter', 'cream', '견적 공개', '#16a34a', '#dcfce7'],
+        ['tr_int_show', '🔥 쇼룸 미니멀 컷', 'arch', 'glass', 'serif', 'leak', 'fade', 'minimal', 'mono', 'none', 'paper', 'ROOM MOOD', '#44403c', '#f5f5f4']
+      ]
+    };
+    const KIT_LEGACY_ALIASES = {
+      k_vhs: 'm_strip', k_vserif: 'a_gallery', k_outline: 'k_kinetic', s_magazine: 'a_gallery', s_cleanhalf: 'k_approved',
+      s_colorblock: 'k_popbubble', s_memo: 'p_diary', s_neonhalf: 'k_neonnight', s_stamphalf: 'k_approved',
+      p_album: 'p_diary', p_scrapbook: 'k_popbubble', p_postcard: 'p_diary', p_gallery: 'k_subtitle', p_frontpage: 'k_lowerthird',
+      m_retro: 'm_strip', m_contact: 'k_highlighter', m_vertical: 'm_strip', m_diary: 'p_diary', m_cyber: 's_datapanel', m_sale: 'k_redband',
+      c_lens: 's_datapanel', c_spotlight: 'k_subtitle', c_sticker: 'k_popbubble', c_target: 'k_kinetic', c_seal: 'k_approved', c_talk: 'k_highlighter', c_newsround: 'k_lowerthird',
+      a_poster: 'a_gallery', a_label: 'a_gallery', a_memo: 'p_diary', a_black: 'k_neonnight', a_note: 'k_highlighter', a_popart: 'k_popbubble',
+      d_speed: 'k_kinetic', d_mag: 'a_gallery', d_coupon: 'k_redband', d_tech: 's_datapanel', d_pop: 'k_popbubble', d_neon: 'k_neonnight', d_trust: 'k_approved',
+      k2_stack: 'k_highlighter', k2_swipe: 'k_popbubble', k2_memo: 'p_diary', k2_receipt: 'k_highlighter', k2_racer: 'k_kinetic', k2_warm: 'p_diary', k2_news: 'k_lowerthird',
+      g_mosaic: 'g_fourcut', g_monitor: 's_datapanel', g_mag: 'a_gallery', g_neon: 'k_neonnight', g_check: 'k_approved', g_talk: 'k_highlighter',
+      r_vertical: 'r_window', r_sticker: 'k_popbubble', r_glass: 's_datapanel', r_memo: 'p_diary', r_marker: 'k_highlighter', r_type: 'k_kinetic',
+      b_cut: 'k_kinetic', b_sale: 'k_redband', b_news: 'k_lowerthird', b_cinema: 'k_subtitle', b_neon: 'k_neonnight', b_term: 's_datapanel', b_glass: 'k_highlighter',
+      u_mag: 'u_compare', u_bubble: 'u_compare', u_stamp: 'k_redband', u_neon: 'k_neonnight', u_glass: 's_datapanel', u_words: 'k_kinetic',
+      h_thankyou: 'h_signature', h_delivered: 'h_signature', h_promise: 'h_signature', h_handpicked: 'h_signature', h_letterpress: 'h_signature',
+      h_goldscript: 'h_signature', h_sincerely: 'h_signature', h_newowner: 'h_signature', h_brushpoint: 'h_signature', h_cursive: 'h_signature', h_seal: 'h_signature',
+      t_credits: 't_stack', t_oneword: 't_stack', t_nonstop: 't_inside', t_pop3d: 't_inside', t_poster: 't_stack', t_postword: 't_stack', t_postscroll: 't_stack', t_banner: 't_inside', t_depth: 't_stack', t_phototype: 't_inside',
+      v_camera: 'v_delivery', v_chapter: 'v_delivery', v_location: 'v_delivery', v_checklist: 'v_delivery', v_diary: 'v_delivery', v_story: 'v_delivery', v_cine: 'v_delivery', v_split: 'v_delivery', v_note: 'v_delivery', v_timelapse: 'v_delivery', v_handover: 'v_delivery'
+    };
+    const BASE_DESIGN_SNAPSHOT = DESIGN_STYLES.map((d) => ({ ...d }));
+
+    function getDesignStats() {
+      try { return JSON.parse(localStorage.getItem('autoreels_design_stats') || '{}') || {}; } catch (e) { return {}; }
+    }
+    function recordDesignUse(id) {
+      if (!id) return;
+      try {
+        const stats = getDesignStats();
+        const prev = stats[id] || { count: 0, lastUsed: 0 };
+        stats[id] = { count: (prev.count || 0) + 1, lastUsed: Date.now() };
+        localStorage.setItem('autoreels_design_stats', JSON.stringify(stats));
+      } catch (e) {}
+    }
+    function getTrendSwapState() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('autoreels_trend_swaps') || '{}') || {};
+        return { removedIds: Array.isArray(raw.removedIds) ? raw.removedIds : [], added: Array.isArray(raw.added) ? raw.added : [] };
+      } catch (e) { return { removedIds: [], added: [] }; }
+    }
+    function saveTrendSwapState(st) {
+      try { localStorage.setItem('autoreels_trend_swaps', JSON.stringify(st)); } catch (e) {}
+    }
+    function makeTrendDesignObj(r, indKey, seedOffset) {
+      return {
+        id: r[0], name: r[1], cat: '내 업종', industry: indKey, engine: 'kit', isTrend: true,
+        layout: r[2], cap: r[3], font: r[4], deco: r[5], trans: r[6], outro: r[7], grade: r[8], head: r[9], bg: r[10],
+        label: r[11], accent: r[12], accent2: r[13], script: r[14] || '', sfont: r[15] || '', seed: 800 + (seedOffset || 0), genre: 'kit',
+        desc: `🔥 업종 트렌드 · ${KIT_PART_NAMES.layout[r[2]] || r[2]} · ${KIT_PART_NAMES.cap[r[3]] || r[3]} 자막`
+      };
+    }
+    function applySavedTrendSwaps() {
+      const st = getTrendSwapState();
+      if (st.removedIds.length) {
+        const rm = new Set(st.removedIds);
+        for (let i = DESIGN_STYLES.length - 1; i >= 0; i--) {
+          if (rm.has(DESIGN_STYLES[i].id)) DESIGN_STYLES.splice(i, 1);
+        }
+      }
+      if (st.added.length) {
+        st.added.forEach((ds) => {
+          if (ds && ds.id && !DESIGN_STYLES.some((x) => x.id === ds.id)) DESIGN_STYLES.unshift(ds);
+        });
+      }
+    }
+    applySavedTrendSwaps();
+
+    function updateTrendSwapStatusUI(msg) {
+      const st = getTrendSwapState();
+      const hasSwaps = st.removedIds.length > 0 || st.added.length > 0;
+      ['trendSwapResetBtn', 'pdTrendSwapResetBtn'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !hasSwaps);
+      });
+      ['trendSwapStatus', 'pdTrendSwapStatus'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (msg) {
+          el.textContent = msg;
+          el.classList.remove('hidden');
+        } else if (hasSwaps) {
+          el.textContent = `교체 적용됨: ${st.added.length}개 유행 테마 사용 중 (총 개수 고정)`;
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+    }
+
+    function pickVictimDesignForSwap(indKey) {
+      const vis = arVisibleDesigns().filter((d) => d.id !== campaign.designStyle);
+      if (!vis.length) return null;
+      const stats = getDesignStats();
+      // 공통(비업종) 또는 오래된 교체 테마 중 사용 횟수가 가장 적은 것을 우선 삭제 대상으로 선택
+      const pool = vis.filter((d) => !d.industry || d.isTrend);
+      const candidates = pool.length ? pool : vis;
+      candidates.sort((a, b) => {
+        const sa = stats[a.id] || { count: 0, lastUsed: 0 };
+        const sb = stats[b.id] || { count: 0, lastUsed: 0 };
+        if (sa.count !== sb.count) return sa.count - sb.count;
+        return sa.lastUsed - sb.lastUsed;
+      });
+      return candidates[0] || null;
+    }
+
+    function synthesizeKeywordTrend(query, indKey) {
+      const q = String(query || '').trim();
+      const lower = q.toLowerCase();
+      let layout = 'full', cap = 'band', font = 'dohyeon', deco = 'leak', trans = 'zoom', outro = 'card', grade = 'vivid', head = 'pill', bg = 'dark';
+      let accent = '#ef4444', accent2 = '#fde047';
+      if (/비교|전후|비포|애프터|차이/.test(lower)) { layout = 'duo'; cap = 'band'; trans = 'wipe'; accent = '#0ea5e9'; accent2 = '#e0f2fe'; }
+      else if (/브이로그|일상|현장|출근|오픈|하루/.test(lower)) { layout = 'handheld'; cap = 'vsub'; font = 'sans'; deco = 'camera'; outro = 'vlogend'; grade = 'warm'; head = 'profile'; accent = '#facc15'; accent2 = '#fef9c3'; }
+      else if (/속보|뉴스|공지|긴급|할인|특가|세일|타임/.test(lower)) { layout = 'full'; cap = 'lower3'; trans = 'flash'; outro = 'ticket'; accent = '#dc2626'; accent2 = '#fde047'; }
+      else if (/감성|무드|카페|야경|밤|포차|힐링/.test(lower)) { layout = 'arch'; cap = 'cinema'; font = 'serif'; deco = 'grain'; trans = 'fade'; grade = 'film'; bg = 'paper'; accent = '#d97706'; accent2 = '#fef3c7'; }
+      else if (/체크|정리|꿀팁|루틴|질문|q&a|공부|가이드/.test(lower)) { layout = 'cards'; cap = 'checkl'; font = 'sans'; deco = 'corners'; trans = 'slide'; outro = 'receipt'; bg = 'white'; head = 'counter'; accent = '#2563eb'; accent2 = '#dbeafe'; }
+      const shortLabel = q.slice(0, 12);
+      const id = `tr_${indKey}_${Date.now().toString(36)}`;
+      return makeTrendDesignObj([id, `🔥 ${shortLabel}`, layout, cap, font, deco, trans, outro, grade, head, bg, shortLabel, accent, accent2], indKey, Math.floor(Math.random() * 90));
+    }
+
+    function searchAndSwapTrendTheme(fromDrawer) {
+      const inputEl = document.getElementById(fromDrawer ? 'pdTrendThemeQuery' : 'trendThemeQuery');
+      const query = inputEl ? inputEl.value.trim() : '';
+      const indKey = typeof IND !== 'undefined' ? IND.key : 'auto';
+      const bank = IND_TREND_BANK[indKey] || IND_TREND_BANK.auto;
+      const existingIds = new Set(DESIGN_STYLES.map((d) => d.id));
+
+      let picked = null;
+      if (query) {
+        const qLow = query.toLowerCase();
+        const matchRow = bank.find((r) => !existingIds.has(r[0]) && (r[1].toLowerCase().includes(qLow) || r[11].toLowerCase().includes(qLow)));
+        picked = matchRow ? makeTrendDesignObj(matchRow, indKey, DESIGN_STYLES.length) : synthesizeKeywordTrend(query, indKey);
+      } else {
+        const nextRow = bank.find((r) => !existingIds.has(r[0]));
+        if (nextRow) {
+          picked = makeTrendDesignObj(nextRow, indKey, DESIGN_STYLES.length);
+        } else {
+          // 은행의 모든 기본 트렌드를 다 써봤다면 가장 오래된 트렌드를 새 조합으로 리프레시
+          const fallbackRow = bank[Math.floor(Math.random() * bank.length)];
+          const freshRow = [...fallbackRow];
+          freshRow[0] = `${fallbackRow[0]}_${Date.now().toString(36).slice(-4)}`;
+          picked = makeTrendDesignObj(freshRow, indKey, DESIGN_STYLES.length);
+        }
+      }
+
+      const victim = pickVictimDesignForSwap(indKey);
+      const st = getTrendSwapState();
+      if (victim) {
+        const idx = DESIGN_STYLES.findIndex((d) => d.id === victim.id);
+        if (idx >= 0) DESIGN_STYLES.splice(idx, 1);
+        if (victim.isTrend) {
+          st.added = st.added.filter((x) => x.id !== victim.id);
+        } else if (!st.removedIds.includes(victim.id)) {
+          st.removedIds.push(victim.id);
+        }
+      }
+      DESIGN_STYLES.unshift(picked);
+      st.added.unshift(picked);
+      saveTrendSwapState(st);
+
+      if (typeof designThumbCache !== 'undefined' && designThumbCache.fresh) {
+        delete designThumbCache.fresh[picked.id];
+      }
+      if (inputEl) inputEl.value = '';
+      campaign.designCat = '전체';
+      selectDesignStyle(picked.id);
+
+      const totalCount = arVisibleDesigns().length;
+      const msg = victim
+        ? `'${victim.name}' 삭제 → '${picked.name}' 추가 (총 ${totalCount}종 유지)`
+        : `'${picked.name}' 추가 (총 ${totalCount}종)`;
+      updateTrendSwapStatusUI(msg);
+    }
+
+    function resetTrendSwaps() {
+      localStorage.removeItem('autoreels_trend_swaps');
+      DESIGN_STYLES.length = 0;
+      BASE_DESIGN_SNAPSHOT.forEach((d) => DESIGN_STYLES.push({ ...d }));
+      const vis = arVisibleDesigns();
+      if (!DESIGN_STYLES.some((d) => d.id === campaign.designStyle) && vis[0]) {
+        campaign.designStyle = vis[0].id;
+      }
+      if (typeof designThumbCache !== 'undefined') designThumbCache.fresh = {};
+      renderDesignStylePicker();
+      renderColorPalettePicker();
+      if (typeof renderPresetDrawer === 'function') renderPresetDrawer();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      updateTrendSwapStatusUI('기본 큐레이션 목록으로 복원했습니다.');
+    }
+
     // 지금 업종에서 보여 줄 디자인: 업종 전용 테마 + 공통 테마 (자동차 전용 고전 테마·테크는 자동차에서만)
     function arDesignVisible(ds) {
       const key = typeof IND !== 'undefined' ? IND.key : 'auto';
@@ -13860,12 +14025,15 @@ function renderStoryArchetypesUI() {
 
     function loadDesignPrefs() {
       try {
-        const s = localStorage.getItem('autoreels_design_style');
+        let s = localStorage.getItem('autoreels_design_style');
         const c = localStorage.getItem('autoreels_color');
+        if (s && KIT_LEGACY_ALIASES[s] && !DESIGN_STYLES.some((d) => d.id === s)) {
+          s = KIT_LEGACY_ALIASES[s];
+        }
         if (s && DESIGN_STYLES.some((d) => d.id === s)) campaign.designStyle = s;
         if (c && COLOR_PALETTES.some((p) => p.id === c)) campaign.colorKey = c;
       } catch (e) {}
-      if (!campaign.designStyle) campaign.designStyle = DESIGN_STYLES[0].id;
+      if (!campaign.designStyle || !DESIGN_STYLES.some((d) => d.id === campaign.designStyle)) campaign.designStyle = DESIGN_STYLES[0].id;
       if (!campaign.colorKey) campaign.colorKey = 'default';
     }
     function getActiveDesign() {
@@ -14033,6 +14201,7 @@ function renderStoryArchetypesUI() {
       }
       const countEl = document.getElementById('designStyleCount');
       if (countEl) countEl.textContent = String(arVisibleDesigns().length);
+      if (typeof updateTrendSwapStatusUI === 'function') updateTrendSwapStatusUI();
       scheduleDesignThumbs();
       const pd = document.getElementById('presetDrawer');
       if (pd && pd.classList.contains('open') && typeof renderPresetDrawer === 'function') renderPresetDrawer();
@@ -14100,6 +14269,7 @@ function renderStoryArchetypesUI() {
       if (!DESIGN_STYLES.some((d) => d.id === id)) return;
       campaign.designStyle = id;
       try { localStorage.setItem('autoreels_design_style', id); } catch (e) {}
+      if (typeof recordDesignUse === 'function') recordDesignUse(id);
       const dsel = DESIGN_STYLES.find((d) => d.id === id);
       applyDesignBgm(dsel, true);
       if (dsel && dsel.engine === 'kit') {
