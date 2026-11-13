@@ -148,7 +148,7 @@ module.exports = async function handler(req, res) {
 
     if (action === 'profile' && req.method === 'POST') {
       const b = await readBody(req);
-      const industry = user.industry; // 업종은 가입할 때 정하고 바꾸지 않음
+      const industry = INDUSTRY_KEYS.includes(b.industry) ? b.industry : user.industry;
       const r = await db.query(
         `UPDATE ar_users SET name = $2, title = $3, branch = $4, email = $5, industry = $6, promo = $7, updated_at = now()
           WHERE id = $1 RETURNING *`,
