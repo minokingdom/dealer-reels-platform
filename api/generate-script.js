@@ -229,6 +229,47 @@ function parseJsonLoose(text) {
   try { return JSON.parse(t.slice(s, e + 1)); } catch (err) { return null; }
 }
 
+// kie.ai 스트리밍 응답 읽기: "data: {...}" 줄의 choices[0].delta.content 를 이어 붙임.
+// 스트림이 아니라 JSON 한 덩어리({code,msg} 오류 포함)로 오면 그대로 해석해서 돌려줌.
+async function readKieStream(resp) {
+  const raw = resp.body && typeof resp.body.getReader === 'function' ? null : await resp.text();
+  let all = raw;
+  if (all == null) {
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    all = '';
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      all += dec.decode(value, { stream: true });
+    }
+    all += dec.decode();
+  }
+  const trimmed = all.trim();
+  if (trimmed.startsWith('{')) {
+    // 스트림이 아닌 일반 JSON
+    try {
+      const data = JSON.parse(trimmed);
+      const msg = data && data.choices && data.choices[0] && data.choices[0].message;
+      return { text: msg && msg.content, data };
+    } catch (e) { return { text: '', data: null }; }
+  }
+  let text = '';
+  let errData = null;
+  for (const line of all.split(/\r?\n/)) {
+    const m = line.match(/^data:\s*(.*)$/);
+    if (!m || !m[1] || m[1] === '[DONE]') continue;
+    try {
+      const ev = JSON.parse(m[1]);
+      if (ev && ev.code && ev.code !== 200 && !ev.choices) errData = ev;
+      const c = ev && ev.choices && ev.choices[0];
+      const piece = c && ((c.delta && c.delta.content) || (c.message && c.message.content));
+      if (typeof piece === 'string') text += piece;
+    } catch (e) { /* 깨진 줄은 건너뜀 */ }
+  }
+  return { text, data: errData };
+}
+
 // AI 응답에서 대본 목록 꺼내기: {variants:[...]} 또는 예전 형식(대본 1개)
 function extractAiVariants(aiResult) {
   if (!aiResult || typeof aiResult !== 'object') return [];
@@ -407,12 +448,16 @@ JSON 스키마:
     let providerUsed = '';
 
     // 1순위: kie.ai (OpenAI 호환 chat.completions, 모델은 주소로 고름 · 오류도 HTTP 200 + {code,msg} 로 올 수 있음)
-    // 생각 시간을 줄이고(reasoning_effort low) 모델당 25초까지만 기다린 뒤 다음 모델로 넘어감
-    // (기본 모델이 대본 3안을 쓰다 kie.ai 쪽에서 약 44초 만에 503 을 돌려주던 문제)
+    // 스트리밍으로 받음: stream:false 로 대본 3안을 요청하면 kie.ai 가 다 만들 때까지 연결을 붙잡다가
+    // 약 44초 만에 503 을 돌려줬음. 생성되는 대로 받으면 게이트웨이가 끊지 않음.
+    // 전체 50초 안에서 첫 모델을 쓰고, 시간이 15초 이상 남으면 다음 모델을 시도 (Vercel 한도 60초)
     if (kieKey) {
       aiDiag.kieTries = [];
+      const deadline = Date.now() + 50000;
       for (const model of kieModels) {
         if (aiResult) break;
+        const left = deadline - Date.now();
+        if (left < 15000) break;
         const tryInfo = { model };
         aiDiag.kieTries.push(tryInfo);
         const started = Date.now();
@@ -420,9 +465,9 @@ JSON 스키마:
           const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
-            signal: AbortSignal.timeout(25000),
+            signal: AbortSignal.timeout(left),
             body: JSON.stringify({
-              stream: false,
+              stream: true,
               reasoning_effort: 'low',
               messages: [
                 { role: 'system', content: [{ type: 'text', text: `${systemWithAngles}\n\n반드시 JSON만 출력하세요. 설명이나 코드블록 표시는 넣지 마세요.` }] },
@@ -432,8 +477,7 @@ JSON 스키마:
           });
           tryInfo.status = resp.status;
           if (resp.ok) {
-            const data = await resp.json().catch(() => null);
-            const text = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            const { text, data } = await readKieStream(resp);
             if (typeof text === 'string' && text.trim()) {
               const parsed = parseJsonLoose(text);
               if (parsed) {
@@ -449,7 +493,7 @@ JSON 스키마:
             tryInfo.error = await errSnippet(resp);
           }
         } catch (err) {
-          tryInfo.error = String(err && (err.name === 'TimeoutError' ? '25초 안에 응답 없음' : err.message) || err).slice(0, 160);
+          tryInfo.error = String(err && (err.name === 'TimeoutError' ? '시간 안에 응답이 끝나지 않음' : err.message) || err).slice(0, 160);
         }
         tryInfo.ms = Date.now() - started;
       }
