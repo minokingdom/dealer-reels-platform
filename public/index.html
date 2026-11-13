@@ -7514,17 +7514,17 @@ function renderStoryArchetypesUI() {
           if (longestCut > 0) mainDur = Math.max(mainDur, cuts * (longestCut + 0.3));
         }
 
-        // 마지막 엔딩 명함 멘트 길이 확보 (음성이 완전히 끝나고도 1.5초 이상 유지 -> 절대 잘리지 않음!)
+        // 마지막 엔딩 명함 멘트 길이 확보 (음성이 완전히 끝나고도 2.2초 이상 유지 -> 절대 잘리지 않음!)
         if (outroSec > 0) {
-          outro = Math.max(outro, outroSec + 1.5);
+          outro = Math.max(outro, outroSec + 2.2);
         } else {
-          outro = Math.max(outro, 3.8); // 멘트 길이를 아직 모를 때도 3.8초 이상 확보
+          outro = Math.max(outro, 4.2); // 멘트 길이를 아직 모를 때도 4.2초 이상 확보
         }
 
         // 원테이크 마스터 음성이 있을 때:
         if (AudioEngine.masterBuffer && AudioEngine.masterDuration > 0) {
           const masterDur = AudioEngine.masterDuration;
-          const targetTotal = Math.max(BASE_DURATION, masterDur + 1.8);
+          const targetTotal = Math.max(BASE_DURATION, masterDur + 2.4);
           if (mainDur + outro < targetTotal) {
             outro = Math.max(outro, targetTotal - mainDur);
           }
@@ -8269,14 +8269,15 @@ function renderStoryArchetypesUI() {
             const v = Math.abs(data[i]);
             if (v > peak) peak = v;
           }
-          const threshold = peak * 0.04;
+          const threshold = peak * 0.012;
           let first = 0;
           let last = data.length - 1;
           while (first < last && Math.abs(data[first]) < threshold) first++;
           while (last > first && Math.abs(data[last]) < threshold) last--;
-          const pad = Math.floor(buffer.sampleRate * 0.04);
-          first = Math.max(0, first - pad);
-          last = Math.min(data.length - 1, last + pad);
+          const padHead = Math.floor(buffer.sampleRate * 0.05);
+          const padTail = Math.floor(buffer.sampleRate * 0.18);
+          first = Math.max(0, first - padHead);
+          last = Math.min(data.length - 1, last + padTail);
           buffer.__peak = peak;
           buffer.__start = first / buffer.sampleRate;
           buffer.__len = Math.max(0.2, (last - first) / buffer.sampleRate);
@@ -8430,9 +8431,21 @@ function renderStoryArchetypesUI() {
         if (!ctx || !buffer) return;
         this.stopMasterSource();
         if (this.ttsSource) {
-          try { this.ttsSource.stop(); } catch (e) {}
+          const prevSrc = this.ttsSource;
+          const prevG = this.ttsSourceGain;
           this.ttsSource = null;
           this.ttsSourceGain = null;
+          try {
+            if (prevG) {
+              const now0 = ctx.currentTime;
+              prevG.gain.cancelScheduledValues(now0);
+              prevG.gain.setValueAtTime(prevG.gain.value, now0);
+              prevG.gain.linearRampToValueAtTime(0.0001, now0 + 0.04);
+              prevSrc.stop(now0 + 0.05);
+            } else {
+              prevSrc.stop();
+            }
+          } catch (e) {}
         }
         const src = ctx.createBufferSource();
         const g = ctx.createGain();
@@ -8444,7 +8457,8 @@ function renderStoryArchetypesUI() {
         const slotDur = cutIdx < totalCuts ? getCutLengths()[cutIdx] : OUTRO_DURATION;
         const speechLen = typeof buffer.__len === 'number' ? buffer.__len : buffer.duration;
         const fit = speechLen / Math.max(0.5, slotDur - 0.1);
-        src.playbackRate.value = Math.min(1.12, Math.max(1.0, fit));
+        const rate = Math.min(1.12, Math.max(1.0, fit));
+        src.playbackRate.value = rate;
 
         // 성우 음량 자동 보정: 음성마다 녹음 크기가 달라 BGM에 묻히지 않게 최대 음량 기준으로 맞춤 (최대 4배)
         if (typeof buffer.__peak !== 'number') {
@@ -8458,7 +8472,17 @@ function renderStoryArchetypesUI() {
           }
           buffer.__peak = peak;
         }
-        g.gain.value = buffer.__peak > 0.01 ? Math.min(4, 0.9 / buffer.__peak) : 1.0;
+        const targetGain = buffer.__peak > 0.01 ? Math.min(4, 0.9 / buffer.__peak) : 1.0;
+        const startOffset = buffer.__start || 0;
+        const playDur = Math.min(Math.max(0.2, buffer.duration - startOffset), speechLen + 0.12);
+        const realDur = playDur / rate;
+        const now = ctx.currentTime;
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.linearRampToValueAtTime(targetGain, now + 0.015);
+        if (realDur > 0.08) {
+          g.gain.setValueAtTime(targetGain, now + realDur - 0.035);
+          g.gain.linearRampToValueAtTime(0.0001, now + realDur);
+        }
         src.connect(g);
         g.connect(this.ttsGain);
         src.onended = () => {
@@ -8467,7 +8491,7 @@ function renderStoryArchetypesUI() {
             this.ttsSourceGain = null;
           }
         };
-        src.start(0, buffer.__start || 0, speechLen + 0.05);
+        src.start(now, startOffset, playDur);
         this.ttsSource = src;
         this.ttsSourceGain = g;
       },
