@@ -14925,10 +14925,17 @@ function renderStoryArchetypesUI() {
       // 대본·업종·사진은 유지하고, 디자인 고유의 색 조합을 살려 깔끔하게 추천 스타일로 전환
       const designs = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
       if (designs.length > 0 && typeof selectDesignStyle === 'function') {
+        // 보이는 디자인 전체(81종 등)를 섞은 순서대로 한 번씩 다 보여 준 뒤 다시 섞음 (같은 몇 개만 반복되지 않게)
         const curId = campaign.designStyle;
-        const preferred = designs.filter((x) => x.id !== curId && (x.cat === '모션 도형' || x.industry || x.isTrend));
-        const pool = preferred.length ? preferred : (designs.length > 1 ? designs.filter((x) => x.id !== curId) : designs);
-        const pick = pool[Math.floor(Math.random() * pool.length)] || designs[0];
+        const ids = designs.map((x) => x.id);
+        if (!Array.isArray(window.__arStyleBag) || window.__arStyleBagKey !== ids.join(',')) { window.__arStyleBag = []; window.__arStyleBagKey = ids.join(','); }
+        if (!window.__arStyleBag.length) {
+          const bag = ids.filter((id) => id !== curId);
+          for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+          window.__arStyleBag = bag.length ? bag : ids.slice();
+        }
+        const pickId = window.__arStyleBag.shift();
+        const pick = designs.find((x) => x.id === pickId) || designs[0];
         selectDesignStyle(pick.id);
       }
       if (typeof selectColorPalette === 'function') {
