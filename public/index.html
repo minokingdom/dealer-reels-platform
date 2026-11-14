@@ -27,7 +27,6 @@
         if (sp.get('landing') === '1' || location.pathname === '/intro') return;
         var toStudio = ['sns', 'admin', 'role', 'billing', 'plan', 'code', 'state', 'paymentId'].some(function (k) { return sp.has(k); })
           || (location.hash || '').toLowerCase() === '#publish';
-        try { if (localStorage.getItem('ar_visited_studio') === '1') toStudio = true; } catch (e) {}
         if (toStudio) location.replace('/studio' + location.search + location.hash);
       } catch (e) {}
     })();
