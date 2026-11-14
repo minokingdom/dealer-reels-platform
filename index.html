@@ -609,7 +609,7 @@
                 </div>
               </div>
               <!-- 인스타 스타일 실시간 글씨 입력 모드 -->
-              <div id="igTextComposeOverlay" class="hidden pointer-events-auto absolute inset-0 bg-black/65 backdrop-blur-[3px] flex flex-col justify-between p-2.5 gap-2">
+              <div id="igTextComposeOverlay" class="hidden pointer-events-auto absolute inset-0 z-30 bg-black/65 backdrop-blur-[3px] flex flex-col justify-between p-2.5 gap-2 select-text">
                 <div class="flex items-center justify-between gap-1">
                   <div class="flex items-center gap-1">
                     <button type="button" id="igComposeStyleBtn" onclick="cycleIgComposeStyle()" class="h-7 px-2.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white text-[11px] font-semibold cursor-pointer">박스</button>
@@ -618,10 +618,11 @@
                   </div>
                   <button type="button" onclick="closeIgTextCompose(true)" class="h-7 px-3 rounded-full bg-white text-[#09090b] text-[11px] font-bold cursor-pointer">완료</button>
                 </div>
-                <div class="flex-1 flex items-center justify-center px-2">
-                  <textarea id="igComposeTextarea" rows="2" placeholder="여기에 입력..."
+                <div class="flex-1 flex items-center justify-center px-2 cursor-text" onclick="var t=document.getElementById('igComposeTextarea');if(t)t.focus();">
+                  <textarea id="igComposeTextarea" rows="3" placeholder="여기에 입력..."
                     oninput="previewIgComposeStyle()"
-                    class="w-full bg-transparent text-center font-extrabold text-[22px] leading-snug focus:outline-none resize-none placeholder-white/40"></textarea>
+                    style="user-select:text;-webkit-user-select:text;"
+                    class="w-full select-text bg-transparent text-center font-extrabold text-[22px] leading-snug focus:outline-none resize-none placeholder-white/40"></textarea>
                 </div>
                 <div class="space-y-1.5">
                   <div id="igComposeFontBar" class="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-none"></div>
@@ -629,7 +630,7 @@
                 </div>
               </div>
               <!-- 인스타 스타일 그리기(펜·형광펜·네온) 모드 -->
-              <div id="igDrawOverlay" class="hidden pointer-events-auto absolute inset-0 flex flex-col justify-between p-2.5" style="touch-action:none;">
+              <div id="igDrawOverlay" class="hidden pointer-events-auto absolute inset-0 z-30 flex flex-col justify-between p-2.5" style="touch-action:none;">
                 <div class="flex items-center justify-between gap-1 z-10">
                   <div class="flex items-center gap-1">
                     <button type="button" id="igDrawBrushBtn" onclick="cycleIgDrawBrush()" class="h-7 px-2.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold cursor-pointer">펜</button>
@@ -17670,6 +17671,11 @@ function renderStoryArchetypesUI() {
       return img && img.complete && img.naturalWidth > 0 ? img : null;
     }
 
+    function ensureActivePinCut() {
+      if (typeof window.__arPinnedCut === 'number' && window.__arPinnedCut >= 0) return window.__arPinnedCut;
+      return -1;
+    }
+
     function handleIgPhotoStickerUpload(event) {
       const file = event && event.target && event.target.files && event.target.files[0];
       if (event && event.target) event.target.value = '';
@@ -18726,7 +18732,7 @@ function renderStoryArchetypesUI() {
     }
     function openIgTextCompose(editIdx) {
       const cutIdx = window.__arPinnedCut;
-      if (cutIdx < 0) return;
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
       closeIgSheet();
       const ov = document.getElementById('igTextComposeOverlay');
       const ta = document.getElementById('igComposeTextarea');
@@ -18819,7 +18825,7 @@ function renderStoryArchetypesUI() {
       const ta = document.getElementById('igComposeTextarea');
       if (ov) ov.classList.add('hidden');
       const cutIdx = window.__arPinnedCut;
-      if (!commit || cutIdx < 0 || !ta) return;
+      if (!commit || typeof cutIdx !== 'number' || cutIdx < 0 || !ta) return;
       const txt = ta.value.trim();
       if (!txt) return;
       pushCutOverlayUndo();
