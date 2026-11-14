@@ -340,10 +340,45 @@ function extractAiVariants(aiResult) {
 //  - 서버 함수 개수 한도(12개) 때문에 별도 파일 대신 대본 생성 함수에 붙임
 // 응답: { ok, provider, topics: [{ title, why, prompt }] }  (실패하면 ok:false → 화면이 기본 주제를 씀)
 // ----------------------------------------------------------------------------
+async function geminiDiagnose() {
+  const key = String(process.env.GEMINI_API_KEY || '').trim();
+  if (!key) return { ok: false, reason: 'GEMINI_API_KEY 환경변수가 설정되어 있지 않습니다' };
+  const models = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+  const one = async (model) => {
+    const started = Date.now();
+    const out = { model };
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(15000),
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'OK 라고만 답하세요.' }] }] })
+      });
+      out.status = resp.status;
+      let t = await resp.text().catch(() => '');
+      t = t.split(key).join('***');
+      if (resp.ok) {
+        const j = JSON.parse(t);
+        out.reply = String(j?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim().slice(0, 40);
+      } else {
+        out.error = t.replace(/\s+/g, ' ').slice(0, 160);
+      }
+    } catch (err) {
+      out.error = String((err && err.message) || err).slice(0, 120);
+    }
+    out.ms = Date.now() - started;
+    return out;
+  };
+  const results = await Promise.all(models.map(one));
+  return { ok: true, results };
+}
+
 async function handleTopics(body, res) {
   res.setHeader('Cache-Control', 'no-store');
+  const geminiKey = String(process.env.GEMINI_API_KEY || '').trim();
   const kieKey = String(process.env.KIE_API_KEY || '').trim();
-  if (!kieKey) return res.status(200).json({ ok: false, error: 'no_ai_key', topics: [] });
+  if (!geminiKey && !kieKey) return res.status(200).json({ ok: false, error: 'no_ai_key', topics: [] });
   const info = body.industryInfo && typeof body.industryInfo === 'object' ? body.industryInfo : {};
   const clip = (v, n) => String(v || '').replace(/\s+/g, ' ').trim().slice(0, n);
   const indName = clip(info.name || (body.industry === 'auto' || !body.industry ? '자동차 영업' : body.industry), 20);
@@ -369,41 +404,80 @@ JSON으로만 출력: {"topics":[{"title":"","why":"","prompt":""}]}`;
 [다가오는 날]: ${events.length ? events.join(', ') : '없음'}
 [요즘 인기 키워드·영상 제목]: ${trends.length ? trends.join(' / ') : '없음'}${storeHint ? `\n[가게 정보]: ${storeHint}` : ''}`;
 
-  const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-4-hydrogen-openai,gemini-3-6-flash-openai')
-    .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
-  const deadline = Date.now() + 40000;
   const tries = [];
-  for (const model of kieModels) {
-    const left = deadline - Date.now();
-    if (left < 10000) break;
-    const t = { model };
-    tries.push(t);
-    try {
-      const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
-        signal: AbortSignal.timeout(left),
-        body: JSON.stringify({
-          stream: true,
-          reasoning_effort: 'low',
-          messages: [
-            { role: 'system', content: [{ type: 'text', text: `${system}\n\n반드시 JSON만 출력하세요.` }] },
-            { role: 'user', content: [{ type: 'text', text: user }] }
-          ]
-        })
-      });
-      t.status = resp.status;
-      if (!resp.ok) continue;
-      const { text } = await readKieStream(resp);
-      const parsed = parseJsonLoose(text);
-      const topics = (parsed && Array.isArray(parsed.topics) ? parsed.topics : [])
-        .map((x) => ({ title: clip(x && x.title, 20), why: clip(x && x.why, 40), prompt: clip(x && x.prompt, 80) }))
-        .filter((x) => x.title && x.prompt)
-        .slice(0, 6);
-      if (topics.length >= 3) return res.status(200).json({ ok: true, provider: `kie.ai ${model}`, topics });
-      t.error = 'topics 부족';
-    } catch (err) {
-      t.error = String(err && (err.name === 'TimeoutError' ? 'timeout' : err.message) || err).slice(0, 120);
+
+  // 1순위: Google Gemini 무료 등급 (gemini-2.5-flash / gemini-2.5-flash-lite)
+  if (geminiKey) {
+    const geminiModels = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.5-flash,gemini-2.5-flash-lite')
+      .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
+    for (const model of geminiModels) {
+      const t = { provider: 'gemini', model };
+      tries.push(t);
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(geminiKey)}`;
+        const resp = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(25000),
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `${system}\n\n${user}` }] }],
+            generationConfig: { temperature: 0.85, responseMimeType: 'application/json' }
+          })
+        });
+        t.status = resp.status;
+        if (!resp.ok) continue;
+        const data = await resp.json();
+        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const parsed = parseJsonLoose(rawText);
+        const topics = (parsed && Array.isArray(parsed.topics) ? parsed.topics : [])
+          .map((x) => ({ title: clip(x && x.title, 20), why: clip(x && x.why, 40), prompt: clip(x && x.prompt, 80) }))
+          .filter((x) => x.title && x.prompt)
+          .slice(0, 6);
+        if (topics.length >= 3) return res.status(200).json({ ok: true, provider: `Google ${model}`, topics });
+        t.error = 'topics 부족';
+      } catch (err) {
+        t.error = String(err && (err.name === 'TimeoutError' ? 'timeout' : err.message) || err).slice(0, 120);
+      }
+    }
+  }
+
+  // 2순위(백업): kie.ai
+  if (kieKey) {
+    const kieModels = String(process.env.KIE_SCRIPT_MODEL || 'gemini-4-hydrogen-openai,gemini-3-6-flash-openai')
+      .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
+    const deadline = Date.now() + 35000;
+    for (const model of kieModels) {
+      const left = deadline - Date.now();
+      if (left < 10000) break;
+      const t = { provider: 'kie', model };
+      tries.push(t);
+      try {
+        const resp = await fetch(`https://api.kie.ai/${encodeURIComponent(model)}/v1/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${kieKey}` },
+          signal: AbortSignal.timeout(left),
+          body: JSON.stringify({
+            stream: true,
+            reasoning_effort: 'low',
+            messages: [
+              { role: 'system', content: [{ type: 'text', text: `${system}\n\n반드시 JSON만 출력하세요.` }] },
+              { role: 'user', content: [{ type: 'text', text: user }] }
+            ]
+          })
+        });
+        t.status = resp.status;
+        if (!resp.ok) continue;
+        const { text } = await readKieStream(resp);
+        const parsed = parseJsonLoose(text);
+        const topics = (parsed && Array.isArray(parsed.topics) ? parsed.topics : [])
+          .map((x) => ({ title: clip(x && x.title, 20), why: clip(x && x.why, 40), prompt: clip(x && x.prompt, 80) }))
+          .filter((x) => x.title && x.prompt)
+          .slice(0, 6);
+        if (topics.length >= 3) return res.status(200).json({ ok: true, provider: `kie.ai ${model}`, topics });
+        t.error = 'topics 부족';
+      } catch (err) {
+        t.error = String(err && (err.name === 'TimeoutError' ? 'timeout' : err.message) || err).slice(0, 120);
+      }
     }
   }
   return res.status(200).json({ ok: false, error: 'ai_failed', tries, topics: [] });
@@ -419,10 +493,12 @@ async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // 진단: GET /api/generate-script?diag=kie — 여러 kie.ai 모델에 짧은 요청을 동시에 보내 응답 여부·시간만 돌려줌
-  // (키 값은 돌려주지 않음, 인스턴스당 1분에 한 번)
+  // 진단: GET /api/generate-script?diag=kie 또는 ?diag=gemini
   if (req.method === 'GET' && String((req.query && req.query.diag) || '') === 'kie') {
     return res.status(200).json(await kieDiagnose());
+  }
+  if (req.method === 'GET' && String((req.query && req.query.diag) || '') === 'gemini') {
+    return res.status(200).json(await geminiDiagnose());
   }
 
   if (req.method !== 'POST') {
@@ -621,11 +697,53 @@ ${speakerLine}${prompt ? '' : `\n[지금 ${I.product}]: ${currentVehicle} / ${bo
     let aiResult = null;
     let providerUsed = '';
 
-    // 1순위: kie.ai (OpenAI 호환 chat.completions, 모델은 주소로 고름 · 오류도 HTTP 200 + {code,msg} 로 올 수 있음)
-    // 스트리밍으로 받음: stream:false 로 대본 3안을 요청하면 kie.ai 가 다 만들 때까지 연결을 붙잡다가
-    // 약 44초 만에 503 을 돌려줬음. 생성되는 대로 받으면 게이트웨이가 끊지 않음.
-    // 전체 50초 안에서 첫 모델을 쓰고, 시간이 15초 이상 남으면 다음 모델을 시도 (Vercel 한도 60초)
-    if (kieKey) {
+    // 1순위: Google Gemini 무료 등급 (GEMINI_API_KEY: gemini-2.5-flash → gemini-2.5-flash-lite)
+    if (adminGeminiKey) {
+      const geminiModels = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.5-flash,gemini-2.5-flash-lite')
+        .split(',').map((s) => s.trim()).filter(Boolean).slice(0, 2);
+      aiDiag.geminiTries = [];
+      for (const gModel of geminiModels) {
+        if (aiResult) break;
+        const gTry = { model: gModel };
+        aiDiag.geminiTries.push(gTry);
+        const started = Date.now();
+        try {
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(gModel)}:generateContent?key=${encodeURIComponent(adminGeminiKey)}`;
+          const resp = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(35000),
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: `${systemWithAngles}\n\n${userMessage}` }] }],
+              generationConfig: {
+                temperature: 0.85,
+                responseMimeType: 'application/json'
+              }
+            })
+          });
+          gTry.status = resp.status;
+          if (resp.ok) {
+            const data = await resp.json();
+            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const parsed = parseJsonLoose(rawText);
+            if (parsed && extractAiVariants(parsed).length > 0) {
+              aiResult = parsed;
+              providerUsed = `Google ${gModel} Director`;
+            } else {
+              gTry.error = 'JSON 해석 실패';
+            }
+          } else {
+            gTry.error = await errSnippet(resp);
+          }
+        } catch (err) {
+          gTry.error = String((err && (err.name === 'TimeoutError' ? '시간 초과' : err.message)) || err).slice(0, 160);
+        }
+        gTry.ms = Date.now() - started;
+      }
+    }
+
+    // 2순위(백업): kie.ai (OpenAI 호환 chat.completions)
+    if (!aiResult && kieKey) {
       aiDiag.kieTries = [];
       const deadline = Date.now() + 50000;
       for (const model of kieModels) {
@@ -699,31 +817,6 @@ ${speakerLine}${prompt ? '' : `\n[지금 ${I.product}]: ${currentVehicle} / ${bo
         providerUsed = `OpenAI ${openaiModel} Director`;
       } else {
         aiDiag.openaiError = await errSnippet(resp);
-      }
-    }
-
-    if (!aiResult && adminGeminiKey) {
-      aiDiag.geminiModel = geminiModel;
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(geminiModel)}:generateContent?key=${encodeURIComponent(adminGeminiKey)}`;
-      const resp = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(45000),
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${systemWithAngles}\n\n${userMessage}` }] }],
-          generationConfig: {
-            temperature: 0.85,
-            responseMimeType: 'application/json'
-          }
-        })
-      });
-      aiDiag.geminiStatus = resp.status;
-      if (resp.ok) {
-        const data = await resp.json();
-        aiResult = JSON.parse(data.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
-        providerUsed = `Google ${geminiModel} Director`;
-      } else {
-        aiDiag.geminiError = await errSnippet(resp);
       }
     }
     if (aiResult && !extractAiVariants(aiResult).length) aiDiag.parse = 'AI 응답에 쓸 수 있는 대본이 없음';

@@ -75,7 +75,7 @@
     //   색상은 여기서 정하지 않습니다 (COLOR_PALETTES에서 따로 선택).
     // ==========================================================================
     const KIT_FONTS = {
-      impact: { f: GENRE_FONTS.impact, w: 400, k: 1 },
+      impact: { f: GENRE_FONTS.sans, w: 800, k: 0.96 },
       serif: { f: GENRE_FONTS.serif, w: 700, k: 1 },
       sans: { f: GENRE_FONTS.sans, w: 800, k: 1 },
       mono: { f: GENRE_FONTS.mono, w: 700, k: 0.9 },

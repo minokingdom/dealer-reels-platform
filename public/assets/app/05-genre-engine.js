@@ -206,7 +206,7 @@
     const USE_GENRE_ENGINE = true;
 
     const GENRE_FONTS = {
-      impact: '"Black Han Sans", "Pretendard Variable", sans-serif',
+      impact: '"Pretendard Variable", Pretendard, "Do Hyeon", sans-serif', // Black Han Sans 획 뭉개짐 방지 → 선명한 Pretendard ExtraBold
       serif: '"MaruBuri", "Gowun Batang", "Noto Serif KR", serif', // 인스타 감성: 굵은 Noto Serif 대신 마루부리
       sans: '"Pretendard Variable", Pretendard, sans-serif',
       mono: '"JetBrains Mono", ui-monospace, monospace'
@@ -283,7 +283,8 @@
       c.closePath();
     }
     function gFont(weight, size, family) {
-      return `${weight} ${size}px ${family}`;
+      const w = (family === GENRE_FONTS.impact && Number(weight) === 400) ? 800 : weight;
+      return `${w} ${size}px ${family}`;
     }
     // 앞쪽 이모지·기호 제거 (굵은 제목 글꼴에서 이모지가 어색하게 섞이지 않도록)
     function gCleanCaption(s) {

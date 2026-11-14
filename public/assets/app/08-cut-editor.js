@@ -109,8 +109,8 @@
     const CUT_TEXT_FONTS = [
       { id: 'sans', label: '모던', css: "'Pretendard', 'Noto Sans KR', sans-serif", weight: 800 },
       { id: 'dohyeon', label: '릴스', css: "'Do Hyeon', 'Noto Sans KR', sans-serif", weight: 400 },
-      { id: 'blackhan', label: '임팩트', css: "'Black Han Sans', sans-serif", weight: 400 },
-      { id: 'bagel', label: '통통', css: "'Bagel Fat One', sans-serif", weight: 400 },
+      { id: 'blackhan', label: '임팩트', css: "'Pretendard Variable', 'Pretendard', sans-serif", weight: 900 },
+      { id: 'bagel', label: '통통', css: "'Jua', 'Do Hyeon', sans-serif", weight: 400 },
       { id: 'jua', label: '동글', css: "'Jua', sans-serif", weight: 400 },
       { id: 'gugi', label: '레트로', css: "'Gugi', sans-serif", weight: 400 },
       { id: 'singleday', label: '다이어리', css: "'Single Day', cursive", weight: 400 },
