@@ -452,7 +452,8 @@ async function handler(req, res) {
   const isAutoReq = !body.industry || body.industry === 'auto';
   const dealerName = body.dealerName || (isAutoReq ? '김민준' : '');
   const dealerTitle = body.dealerTitle || (isAutoReq ? '수석 카마스터' : '');
-  const dealerBranch = body.dealerBranch || (isAutoReq ? '현대·기아 공식전시장' : '');
+  // 소속도 사장님이 적은 것만 (견본 소속 "현대·기아 공식전시장"을 채우면 대본에 남의 전시장이 나옴)
+  const dealerBranch = body.dealerBranch || '';
   // 혜택은 사장님이 직접 적은 것만 씀 (견본 혜택을 채우면 대본에 남의 혜택이 들어감)
   const dealerPromo = body.dealerPromo || '';
   // 영상 컷 수만큼 대본을 씀 (예전에는 4컷만 쓰고 5~10컷은 화면이 템플릿으로 채웠음)

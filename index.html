@@ -7400,10 +7400,21 @@ function renderStoryArchetypesUI() {
       '11월 한정 추가할인 + 전국 무료 캐리어 탁송 지원',
       '1년/2만km 보증연장 + 엔진오일 쿠폰 무상 제공'
     ];
+    // 견본 딜러 3명의 소속 (예시 값이면 대본에 쓰지 않음)
+    const AR_DEMO_BRANCHES = ['현대·기아 강남오토스퀘어', '기아 오토큐브 서초전시장', '현대·기아 법인특판 오토허브', '현대·기아 공식전시장'];
+    function arIsDemoPromo(v) { return AR_DEMO_PROMO_TAGS.includes(String(v || '').trim()); }
+    // 영상 화면에 그릴 명함: 혜택이 견본 그대로면 비워서 🎁 혜택 장식이 나오지 않게 함 (원본 명함은 그대로 둠)
+    function arDisplayDealer(d) {
+      if (!d || !arIsDemoPromo(d.promoTag)) return d;
+      const view = Object.create(d);
+      view.promoTag = '';
+      return view;
+    }
     function arDealerForCopy(d) {
       const out = { name: (d && d.name) || '', title: (d && d.title) || '', branch: (d && d.branch) || '', promoTag: (d && d.promoTag) || '' };
       // 혜택 문구가 견본(자동차 견본 딜러·업종 예시) 그대로면 대본에 쓰지 않음 — 사장님이 직접 적은 혜택만 씀
       if (d && out.promoTag && AR_DEMO_PROMO_TAGS.includes(out.promoTag.trim())) out.promoTag = '';
+      if (d && out.branch && AR_DEMO_BRANCHES.includes(out.branch.trim())) out.branch = '';
       if (!d || IND.key === 'auto') return out;
       if ((IND.storeNames || []).includes(out.name)) { out.name = ''; if (out.title === (IND.storeSubtitle || `${IND.place} 공식 안내`)) out.title = ''; }
       if (out.branch && (out.branch === IND.storeLocation || out.branch === IND.branchPlaceholder)) out.branch = '';
@@ -10972,7 +10983,7 @@ function renderStoryArchetypesUI() {
       c.fillRect(32, 758, 60, 4);
       c.fillStyle = ink;
       c.textAlign = 'left';
-      gDrawLine(c, `${arPriceLine()} · ${gCleanCaption(d.promoTag || '')}`, 32, 796, W - 64, 18, 12, GENRE_FONTS.sans, 700);
+      gDrawLine(c, [arPriceLine(), gCleanCaption(d.promoTag || '')].filter(Boolean).join(' · '), 32, 796, W - 64, 18, 12, GENRE_FONTS.sans, 700);
       gRoundRect(c, 24, 830, W - 48, 70, V.genre === 'luxury' ? 4 : 35);
       c.fillStyle = V.accent;
       c.fill();
@@ -16417,7 +16428,7 @@ function renderStoryArchetypesUI() {
     // ★ 장르 엔진 끝
 
     function renderHyperFramesComposition(t) {
-      const d = getSelectedDealer();
+      const d = arDisplayDealer(getSelectedDealer());
       const W = canvas.width;
       const H = canvas.height;
       const HYUNDAI_NAVY = '#002C5F';
@@ -17484,7 +17495,7 @@ function renderStoryArchetypesUI() {
             ctx.fillStyle = '#2563eb';
             drawFittedText(subLine, 0, 50, 380, 17);
             ctx.fillStyle = '#64748b';
-            drawFittedText(`🎁 ${d.promoTag}`, 0, 74, 380, 14);
+            if (d.promoTag) drawFittedText(`🎁 ${d.promoTag}`, 0, 74, 380, 14);
           }
           ctx.restore();
         }
@@ -17575,7 +17586,7 @@ function renderStoryArchetypesUI() {
           const items = [
             activeBullets[0] || '✔ 선점 재고 3일 이내 즉시출고 가능',
             activeBullets[1] || `✔ 최대 -${campaign.discountNum.toLocaleString()}만원 특판 할인 혜택`,
-            `✔ ${d.promoTag}`
+            d.promoTag ? `✔ ${d.promoTag}` : '✔ 견적부터 출고까지 한 사람이 책임 상담'
           ];
 
           // 3단 글래스 체크리스트 바
@@ -17696,7 +17707,7 @@ function renderStoryArchetypesUI() {
           ctx.fillStyle = '#e11d48';
           drawFittedText(`전국 무료 캐리어 탁송 · ${campaign.discount}`, 0, 36, 410, 18);
           ctx.fillStyle = '#475569';
-          drawFittedText(`🎁 ${d.promoTag}`, 0, 62, 410, 14);
+          if (d.promoTag) drawFittedText(`🎁 ${d.promoTag}`, 0, 62, 410, 14);
           ctx.restore();
         }
 
@@ -18764,7 +18775,7 @@ function renderStoryArchetypesUI() {
           ctx.fill();
           ctx.textAlign = 'left';
           ctx.fillStyle = '#1e293b';
-          drawFittedText(`🎁 ${d.promoTag}`, 138, H - 27, 372, 15, 10);
+          if (d.promoTag) drawFittedText(`🎁 ${d.promoTag}`, 138, H - 27, 372, 15, 10);
           ctx.restore();
         }
       } else {
@@ -18984,9 +18995,9 @@ function renderStoryArchetypesUI() {
           ctx.fill();
           ctx.stroke();
           ctx.fillStyle = theme.accent || '#d4af37';
-          drawFittedText('🎁 VVIP 딜리버리 기프트 패키지', 0, 124, 370, 13, 10);
+          if (d.promoTag) { drawFittedText('🎁 VVIP 딜리버리 기프트 패키지', 0, 124, 370, 13, 10);
           ctx.fillStyle = '#cbd5e1';
-          drawFittedText(d.promoTag, 0, 144, 370, 12, 9);
+          drawFittedText(d.promoTag, 0, 144, 370, 12, 9); }
 
           // 하단 골드 QR & 모노그램 인증
           ctx.fillStyle = '#080a10';
@@ -19133,9 +19144,9 @@ function renderStoryArchetypesUI() {
           ctx.fill();
           ctx.stroke();
           ctx.fillStyle = '#dc2626';
-          drawFittedText('🎁 취재팀 단독 보도 출고 패키지', 0, 98, 430, 14, 11);
+          if (d.promoTag) { drawFittedText('🎁 취재팀 단독 보도 출고 패키지', 0, 98, 430, 14, 11);
           ctx.fillStyle = '#1e293b';
-          drawFittedText(d.promoTag, 0, 124, 430, 13, 9);
+          drawFittedText(d.promoTag, 0, 124, 430, 13, 9); }
 
           // 하단 프레스 QR 코드 & 팩트체크 보증
           ctx.fillStyle = '#0f172a';
@@ -19308,9 +19319,9 @@ function renderStoryArchetypesUI() {
           ctx.stroke();
 
           ctx.fillStyle = '#38bdf8';
-          drawFittedText('⚡ SPECIAL SYSTEM GEAR BUNDLE', 0, 64, 390, 13, 10, 'monospace');
+          if (d.promoTag) { drawFittedText('⚡ SPECIAL SYSTEM GEAR BUNDLE', 0, 64, 390, 13, 10, 'monospace');
           ctx.fillStyle = '#e2e8f0';
-          drawFittedText(d.promoTag, 0, 92, 390, 12, 9, 'monospace');
+          drawFittedText(d.promoTag, 0, 92, 390, 12, 9, 'monospace'); }
 
           // 하단 사이버 매트릭스 QR & 업링크
           ctx.fillStyle = '#020617';
@@ -19470,9 +19481,9 @@ function renderStoryArchetypesUI() {
           ctx.stroke();
 
           ctx.fillStyle = '#ef4444';
-          drawFittedText('🎁 SCUDERIA PERFORMANCE GEAR', 0, 88, 430, 13, 10);
+          if (d.promoTag) { drawFittedText('🎁 SCUDERIA PERFORMANCE GEAR', 0, 88, 430, 13, 10);
           ctx.fillStyle = '#ffffff';
-          drawFittedText(d.promoTag, 0, 112, 430, 12, 9);
+          drawFittedText(d.promoTag, 0, 112, 430, 12, 9); }
 
           // 하단 서킷 QR 패스
           ctx.fillStyle = '#08090f';
@@ -19661,7 +19672,7 @@ function renderStoryArchetypesUI() {
           ctx.stroke();
 
           ctx.fillStyle = '#f472b6';
-          drawFittedText(`🎁 특별혜택: ${d.promoTag}`, 80, 89, 260, 12, 9);
+          if (d.promoTag) drawFittedText(`🎁 특별혜택: ${d.promoTag}`, 80, 89, 260, 12, 9);
 
           // 하단 인스타 메시지 입력창
           ctx.fillStyle = '#1a1d28';
@@ -19815,9 +19826,9 @@ function renderStoryArchetypesUI() {
           ctx.stroke();
 
           ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
-          drawFittedText('🎁 공식 전시장 출고 고객 특별 패키지', 0, 96, 390, 13, 10);
+          if (d.promoTag) { drawFittedText('🎁 공식 전시장 출고 고객 특별 패키지', 0, 96, 390, 13, 10);
           ctx.fillStyle = '#334155';
-          drawFittedText(d.promoTag, 0, 116, 390, 12, 9);
+          drawFittedText(d.promoTag, 0, 116, 390, 12, 9); }
 
           // 하단 공식 QR 코드 + 상담 안내
           ctx.fillStyle = theme.primary || HYUNDAI_NAVY;
@@ -20180,7 +20191,7 @@ function renderStoryArchetypesUI() {
           (campaign.priceLine ? `• ${campaign.priceLine}\n` : '') +
           (campaign.discount ? `• ${campaign.discount}\n` : '') +
           `${activeBullets.join('\n')}\n` +
-          (dealer.promoTag ? `• ${dealer.promoTag}\n` : '') +
+          (dealer.promoTag && !arIsDemoPromo(dealer.promoTag) ? `• ${dealer.promoTag}\n` : '') +
           `\n──────────────────\n` +
           // 명함을 아직 안 채웠으면 빈 줄 대신 해당 줄을 뺌
           ([dealer.branch, dealer.name, dealer.title].filter(Boolean).join(' ') ? `${[dealer.branch, dealer.name, dealer.title].filter(Boolean).join(' ')}\n` : '') +
@@ -20194,7 +20205,7 @@ function renderStoryArchetypesUI() {
         `• 최대 할인 혜택: -${campaign.discountNum.toLocaleString()}만 원\n` +
         `• 월 납입 조건: ${campaign.discount}\n` +
         `${activeBullets.join('\n')}\n` +
-        `• 출고 고객 혜택: ${dealer.promoTag}\n\n` +
+        (dealer.promoTag && !arIsDemoPromo(dealer.promoTag) ? `• 출고 고객 혜택: ${dealer.promoTag}\n\n` : '\n') +
         `──────────────────\n` +
         `담당: ${dealer.branch} ${dealer.name} ${dealer.title}\n` +
         `직통 상담: ${dealer.phone}\n` +
