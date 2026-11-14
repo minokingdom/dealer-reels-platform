@@ -4,9 +4,9 @@ name: smoke
 on:
   push:
     branches: [main]
-    paths: ['public/**', 'tests/**', '.github/workflows/smoke.yml']
+    paths: ['public/**', 'tests/**', 'scripts/build-app.mjs', '.github/workflows/smoke.yml']
   pull_request:
-    paths: ['public/**', 'tests/**', '.github/workflows/smoke.yml']
+    paths: ['public/**', 'tests/**', 'scripts/build-app.mjs', '.github/workflows/smoke.yml']
   workflow_dispatch:
 
 jobs:
@@ -18,8 +18,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Syntax check (app scripts)
+      - name: Build + syntax check (app scripts)
         run: |
+          node scripts/build-app.mjs
           for f in public/assets/app/*.js; do node --check "$f" || exit 1; done
           echo "syntax ok"
       - name: Install Playwright

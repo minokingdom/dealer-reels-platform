@@ -6,7 +6,8 @@
 ## 1. 코드 위치 (2026-11-14 구조 변경)
 - 화면은 `public/index.html`(HTML 뼈대만) + `public/assets/app/` 스크립트 13개·CSS 2개입니다. 파일별 내용은 `docs/code-structure.md`.
 - **고칠 곳은 `public/` 아래뿐입니다.** Vercel은 `public/`만 배포합니다. 루트 `index.html`은 없앴으니 다시 만들거나 복사하지 마세요.
-- 스크립트는 `index.html`에서 번호 순서대로 일반 `<script src>`로 불러오고 전역 이름을 공유합니다.
+- 원본 13개 파일을 `scripts/build-app.mjs`가 번호 순서대로 합쳐 `public/assets/app/app.js`를 만들고, `index.html`은 그 하나만 불러옵니다(Vercel 배포·`npm start`·스모크 테스트가 자동으로 합침). **`app.js`는 자동 생성 파일 — 직접 고치거나 커밋하지 마세요.** 모든 파일이 전역 이름을 공유합니다.
+  - 파일을 따로 불러오게 되돌리지 마세요. 파일 사이에 타이머가 끼어들어 썸네일이 멈추는 문제가 있었습니다.
   - `type="module"`, `defer`, `async`로 바꾸지 마세요.
   - 파일을 **불러오는 순간** 실행되는 코드(최상위 호출·변수 초기값)에서 뒤 번호 파일의 함수·변수를 쓰면 안 됩니다. 버튼 클릭이나 화면이 다 뜬 뒤 실행되는 코드는 괜찮습니다.
   - 새 기능은 맞는 번호 파일에 넣습니다. 새 파일이 필요하면 `index.html`의 순서 목록과 `docs/code-structure.md`를 같이 고칩니다.
@@ -16,7 +17,7 @@
 1. 시작 전 `git pull --ff-only`. 다른 에이전트가 같은 파일을 자주 고칩니다.
 2. 필요한 곳만 고칩니다. 파일 전체 재정렬·포맷 변경·관련 없는 수정 금지.
 3. 검사 (둘 다 통과해야 올림)
-   - 문법: `for f in public/assets/app/*.js; do node --check "$f"; done`
+   - 문법: `node scripts/build-app.mjs && node --check public/assets/app/app.js`
    - 화면: `npm i --no-save playwright@1.48.2 && npx playwright install chromium && node tests/smoke-render.mjs`
      (모든 디자인을 5개 업종 × 5개 시점으로 그리고, 버튼 함수·단계 탭까지 확인. 오류 0이어야 함)
 4. 관련 파일만 `git add`(`git add .` 금지 — 루트의 임시 `.ps1` 스크립트가 섞입니다). 커밋 후 `main`에 push하면 Vercel이 바로 운영에 배포합니다.

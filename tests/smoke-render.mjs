@@ -22,14 +22,35 @@ async function serve() {
   return srv;
 }
 
+if (!process.argv[2]) {
+  const { buildApp } = await import('../scripts/build-app.mjs');
+  buildApp(path.resolve(root, '..'));
+}
 const srv = process.argv[2] ? null : await serve();
 const url = process.argv[2] || `http://127.0.0.1:${srv.address().port}/`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const pageErrors = [];
 page.on('pageerror', (e) => pageErrors.push(String(e && e.stack || e).split('\n').slice(0, 3).join(' | ')));
+// Promise 안에서 난 오류(처리 안 된 rejection)도 모음 — 화면이 조용히 멈추는 원인
+await page.addInitScript(() => {
+  window.__smokeAsyncErrors = [];
+  window.addEventListener('unhandledrejection', (ev) => {
+    const r = ev.reason;
+    window.__smokeAsyncErrors.push(String((r && (r.stack || r.message)) || r).split('\n').slice(0, 3).join(' | '));
+  });
+});
 await page.goto(url, { waitUntil: 'load', timeout: 90000 });
-await page.waitForTimeout(2500);
+// 디자인 썸네일이 실제로 채워지는지 (배경 작업이 멈추지 않았는지)
+const thumbs = await page.waitForFunction(
+  () => typeof designThumbCache !== 'undefined' && Object.keys(designThumbCache.fresh || {}).length >= 12,
+  null, { timeout: 30000 }
+).then(() => 'ok').catch(() => 'stuck');
+if (thumbs !== 'ok') pageErrors.push('design thumbnails did not fill within 30s (background job stuck)');
+const asyncErrors = await page.evaluate(() => window.__smokeAsyncErrors || []);
+// 서버 API 가 없는 환경이라 /api 호출 실패는 제외
+for (const e of asyncErrors) if (!/\/api\/|Failed to fetch|NetworkError|503/.test(e)) pageErrors.push('async: ' + e);
+await page.waitForTimeout(1000);
 
 const result = await page.evaluate(async () => {
   const out = { designs: 0, frames: 0, errors: [] };

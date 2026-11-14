@@ -1,6 +1,8 @@
 {
   "version": 2,
   "framework": null,
+  "buildCommand": "node scripts/build-app.mjs",
+  "outputDirectory": "public",
   "functions": {
     "api/tts-script.js": {
       "maxDuration": 60

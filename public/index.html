@@ -1557,20 +1557,8 @@
     </div>
   </div>
 
-  <!-- 앱 스크립트: public/assets/app/ (순서 중요, 일반 script 로 전역 공유) -->
-  <script src="/assets/app/00-wasm-core.js"></script>
-  <script src="/assets/app/01-industries.js"></script>
-  <script src="/assets/app/02-story-presets.js"></script>
-  <script src="/assets/app/03-campaign-timing.js"></script>
-  <script src="/assets/app/04-audio-engine.js"></script>
-  <script src="/assets/app/05-genre-engine.js"></script>
-  <script src="/assets/app/06-design-kit.js"></script>
-  <script src="/assets/app/07-motion-styles.js"></script>
-  <script src="/assets/app/08-cut-editor.js"></script>
-  <script src="/assets/app/09-renderer.js"></script>
-  <script src="/assets/app/10-studio-steps.js"></script>
-  <script src="/assets/app/11-script-presets.js"></script>
-  <script src="/assets/app/12-account-billing-sns.js"></script>
+  <!-- 앱 스크립트: 원본은 public/assets/app/NN-*.js, 배포 때 scripts/build-app.mjs 가 app.js 하나로 합침 (한 번에 실행되어야 함) -->
+  <script src="/assets/app/app.js"></script>
   <!--
     가독성 보정 (A단계, 2026-11-13)
     - Tailwind CDN 이 만드는 스타일보다 뒤에 오도록 body 끝에 둡니다.
