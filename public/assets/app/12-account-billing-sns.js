@@ -1122,6 +1122,7 @@
     function runAutoReelsSplash() {
       const sp = document.getElementById('arSplashIntro');
       if (!sp) return;
+      document.documentElement.classList.remove('ar-landing-boot'); // 랜딩에서 스튜디오로 들어갈 때는 보여 줌
       if (__arSplashTimer) clearTimeout(__arSplashTimer);
       sp.style.opacity = '1';
       sp.style.pointerEvents = 'auto';

@@ -32,6 +32,21 @@
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.css"></script>
   <link rel="stylesheet" href="/assets/app/app.css" />
   <link rel="stylesheet" href="/assets/app/splash.css" />
+  <script>
+    // 랜딩(첫 방문자의 /)으로 열릴 때는 스플래시를 그리지 않음 — 12-account-billing-sns.js 의 shouldShowLandingOnBoot 와 같은 판단
+    (function () {
+      try {
+        var path = (location.pathname || '/').toLowerCase(), sp = new URLSearchParams(location.search || ''), landing;
+        if (sp.get('landing') === '1') landing = true;
+        else if (path.indexOf('/studio') === 0 || path.indexOf('/admin') === 0) landing = false;
+        else if (['sns', 'admin', 'role', 'billing', 'plan', 'code', 'state', 'paymentId'].some(function (k) { return sp.has(k); })) landing = false;
+        else if ((location.hash || '').toLowerCase() === '#publish') landing = false;
+        else if (localStorage.getItem('ar_visited_studio') === '1') landing = false;
+        else landing = path === '/' || path === '';
+        if (landing) document.documentElement.classList.add('ar-landing-boot');
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
   <!-- 시작 스플래시 (코덱스 H 시안, 앱 색 톤): 페이지를 열자마자 보여 앱 로딩 시간을 가림. 준비되면 12-account-billing-sns.js 가 닫음. 누르면 바로 닫힘 -->

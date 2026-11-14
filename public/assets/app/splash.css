@@ -8,6 +8,7 @@
   transition: opacity .45s ease; background: var(--sp-bg); color: var(--sp-cream); font-family: 'Pretendard Variable', Pretendard, sans-serif;
 }
 #arSplashIntro.hidden { display: none; }
+html.ar-landing-boot #arSplashIntro { display: none; } /* 랜딩으로 열릴 때는 스플래시 없음 */
 #arSplashIntro .sp-lockup { position: relative; width: 88vw; display: flex; align-items: center; justify-content: center; gap: 4.5vw; }
 #arSplashIntro .sp-symbol { position: relative; flex: 0 0 auto; width: 17vw; max-width: 240px; aspect-ratio: 9 / 16; max-height: 48vh; }
 #arSplashIntro .sp-piece { position: absolute; will-change: transform; }
