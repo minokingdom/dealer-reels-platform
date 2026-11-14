@@ -50,7 +50,7 @@
 
 ## 프로젝트 구조
 
-- `public/index.html` + `public/assets/app/*.js` — 올인원 스튜디오 (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행). 파일 구성과 규칙은 `docs/code-structure.md`
+- `public/index.html` + `public/assets/app/*.js` — 올인원 스튜디오 (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행). 파일 구성과 규칙은 `docs/code-structure.md`, 작업 지침은 `AGENTS.md`
 - `public/assets/scenes/` — 업종별 장면 사진
 - `api/` — Vercel 서버리스 함수 (계정·결제, AI 대본, TTS, 트렌드, SNS 발행, 크론)
 - `lib/server/` — DB, 세션, 요금제·사용량, 결제, SNS 공통 모듈
