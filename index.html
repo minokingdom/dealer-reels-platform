@@ -599,22 +599,27 @@
                 ⚙️ 설정
               </button>
             </div>
-            <div id="shuffleFilterPanel" class="hidden rounded-[10px] bg-[#111318] border border-white/10 p-2.5 space-y-2">
-              <div class="flex items-center justify-between gap-2 text-[11px]">
-                <span class="text-[#a1a1a6] font-medium">섞기에 포함할 카테고리</span>
-                <div class="flex items-center gap-1.5">
-                  <button type="button" onclick="setShuffleIncludeCats([])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] cursor-pointer">전체</button>
-                  <button type="button" onclick="setShuffleIncludeCats(['신규'])" class="px-2 py-0.5 rounded bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] cursor-pointer">신규만</button>
-                  <button type="button" onclick="toggleShuffleFilterPanel(false)" class="px-1.5 py-0.5 text-[#85858b] hover:text-white cursor-pointer">✕</button>
+            <div id="shuffleFilterPanel" class="hidden fixed inset-0 z-[85] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onclick="if (event.target === this) toggleShuffleFilterPanel(false)">
+              <div class="w-full max-w-[380px] rounded-[16px] bg-[#14161d] border border-white/15 p-4 space-y-3 shadow-2xl">
+                <div class="flex items-center justify-between gap-2 text-[12px]">
+                  <span class="text-[#ededed] font-semibold">⚙️ 스타일 섞기 설정</span>
+                  <div class="flex items-center gap-1.5">
+                    <button type="button" onclick="setShuffleIncludeCats([])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer">전체</button>
+                    <button type="button" onclick="setShuffleIncludeCats(['신규'])" class="px-2 py-0.5 rounded bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] text-[11px] cursor-pointer">신규만</button>
+                    <button type="button" onclick="toggleShuffleFilterPanel(false)" class="px-2 py-0.5 text-[#85858b] hover:text-white cursor-pointer">✕</button>
+                  </div>
                 </div>
-              </div>
-              <div id="shuffleFilterChips" class="flex flex-wrap gap-1"></div>
-              <div class="pt-1.5 border-t border-white/10 space-y-1.5">
-                <div class="flex items-center justify-between text-[11px]">
-                  <span class="text-[#a1a1a6] font-medium">랜덤 섞기에서 제외된 스타일</span>
-                  <button type="button" id="clearShuffleExcludedBtn" onclick="clearShuffleExcluded()" class="hidden px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] cursor-pointer">모두 복구</button>
+                <div class="space-y-1.5">
+                  <div class="text-[11px] text-[#a1a1a6]">섞기에 포함할 카테고리</div>
+                  <div id="shuffleFilterChips" class="flex flex-wrap gap-1.5"></div>
                 </div>
-                <div id="shuffleExcludedChips" class="flex flex-wrap gap-1 text-[11px] text-[#71717a]"></div>
+                <div class="pt-2 border-t border-white/10 space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="text-[#a1a1a6] font-medium">랜덤 섞기에서 제외된 스타일</span>
+                    <button type="button" id="clearShuffleExcludedBtn" onclick="clearShuffleExcluded()" class="hidden px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] cursor-pointer">모두 복구</button>
+                  </div>
+                  <div id="shuffleExcludedChips" class="flex flex-wrap gap-1 text-[11px] text-[#71717a]"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -22171,6 +22176,7 @@ function renderStoryArchetypesUI() {
         } else {
           proceduralRestyleCurrentScene();
         }
+        if (typeof saveAiScriptPrefs === 'function') saveAiScriptPrefs();
     }
 
     // 자동차: 서버에 연결하지 못했을 때 화면에서 바로 채우는 기본 대본
@@ -22201,8 +22207,53 @@ function renderStoryArchetypesUI() {
         proceduralRestyleCurrentScene();
     }
 
+    function saveAiScriptPrefs() {
+      try {
+        const promptEl = document.getElementById('aiPromptInput');
+        const payload = {
+          industry: typeof IND !== 'undefined' ? IND.key : 'auto',
+          vehicle: campaign.vehicle || '',
+          discountNum: campaign.discountNum,
+          discount: campaign.discount || '',
+          hook: campaign.hook || '',
+          cutCaptions: Array.isArray(campaign.cutCaptions) ? campaign.cutCaptions : [],
+          ttsLines: Array.isArray(campaign.ttsLines) ? campaign.ttsLines : [],
+          kakaoChat: Array.isArray(campaign.kakaoChat) ? campaign.kakaoChat : [],
+          bullets: Array.isArray(campaign.bullets) ? campaign.bullets : [],
+          priceTag: campaign.priceTag || '',
+          rawPrompt: promptEl ? promptEl.value : ''
+        };
+        localStorage.setItem('autoreels_saved_ai_script', JSON.stringify(payload));
+      } catch (e) {}
+    }
+    function restoreAiScriptPrefs() {
+      try {
+        const raw = localStorage.getItem('autoreels_saved_ai_script');
+        if (!raw) return false;
+        const s = JSON.parse(raw);
+        if (!s || s.industry !== (typeof IND !== 'undefined' ? IND.key : 'auto')) return false;
+        if (!Array.isArray(s.cutCaptions) || s.cutCaptions.length < 4) return false;
+        if (s.vehicle) campaign.vehicle = s.vehicle;
+        if (s.discountNum !== undefined) campaign.discountNum = s.discountNum;
+        if (s.discount) campaign.discount = s.discount;
+        if (s.hook) campaign.hook = s.hook;
+        campaign.cutCaptions = [...s.cutCaptions];
+        campaign.ttsLines = Array.isArray(s.ttsLines) && s.ttsLines.length ? [...s.ttsLines] : [...s.cutCaptions];
+        if (Array.isArray(s.kakaoChat) && s.kakaoChat.length) campaign.kakaoChat = s.kakaoChat;
+        if (Array.isArray(s.bullets) && s.bullets.length) campaign.bullets = [...s.bullets];
+        if (s.priceTag !== undefined) campaign.priceTag = s.priceTag;
+        const vEl = document.getElementById('inputVehicle'); if (vEl) vEl.value = campaign.vehicle;
+        const dnEl = document.getElementById('inputDiscountNum'); if (dnEl) dnEl.value = campaign.discountNum;
+        const dEl = document.getElementById('inputDiscount'); if (dEl) dEl.value = campaign.discount;
+        const pEl = document.getElementById('aiPromptInput'); if (pEl && s.rawPrompt) pEl.value = s.rawPrompt;
+        if (typeof renderDynamicCutCardsUI === 'function') renderDynamicCutCardsUI();
+        return true;
+      } catch (e) { return false; }
+    }
+
     // 대본 반영 후 공통 마무리: 컷 수 맞추기 → 입력칸·패널 갱신 → 처음부터 재생
     function arFinishScriptApply(totalCuts) {
+      saveAiScriptPrefs();
       const noticeEl = document.getElementById('aiGenNotice');
       // 설정된 영상 길이(4~10컷)에 맞춰 추가 사진 및 추가 컷 대본·성우 문장 자동 확장!
       syncDynamicCutCountAndPhotos();
@@ -24368,6 +24419,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
     }
     // 저장된 업종 반영 (자동차가 아니면 그 업종의 첫 프리셋·템플릿으로 시작)
     setIndustry(IND.key, { silent: true, force: IND.key !== 'auto' });
+    if (typeof restoreAiScriptPrefs === 'function') restoreAiScriptPrefs();
     syncPreviewPanel();
     syncTechPanel();
     applyRoleViewModeUI();
