@@ -9733,12 +9733,8 @@ function renderStoryArchetypesUI() {
         c.font = gFont(400, 30, GENRE_FONTS.impact);
         c.fillText(campaign.priceTag ? '특별 혜택' : '최대 할인', 0, -78);
         c.font = gFont(400, campaign.priceTag ? Math.min(104, Math.floor(620 / Math.max(2, String(campaign.priceTag).length))) : 104, GENRE_FONTS.impact);
-        c.lineWidth = 8;
-        c.strokeStyle = '#111111';
         const txt = campaign.priceTag || `-${num}만`;
-        c.strokeText(txt, 0, 18);
-        c.fillStyle = V.accent2;
-        c.fillText(txt, 0, 18);
+        kLongShadow(c, txt, 0, 18, V.accent2, 'rgba(0,0,0,0.58)', 14, 0.85, 1);
         const mt = gMonthlyText();
         if (mt) {
           c.fillStyle = '#ffffff';
@@ -10157,11 +10153,7 @@ function renderStoryArchetypesUI() {
         c.font = gFont(400, wr.size, GENRE_FONTS.impact);
         wr.lines.forEach((ln, i) => {
           const y = by + lh * (i + 0.9);
-          c.lineWidth = 9;
-          c.strokeStyle = '#000000';
-          c.strokeText(ln, 24, y);
-          c.fillStyle = i === 0 ? '#ffffff' : V.accent;
-          c.fillText(ln, 24, y);
+          kLongShadow(c, ln, 24, y, i === 0 ? '#ffffff' : V.accent, 'rgba(0,0,0,0.62)', 12, 0.85, 1);
         });
         c.restore();
       }
@@ -11126,6 +11118,36 @@ function renderStoryArchetypesUI() {
     function kPad(n) {
       return String(n).padStart(2, '0');
     }
+    // 테두리(strokeText) 대신 세련된 긴 그림자(Long Shadow) & 소프트 섀도우 타이포 헬퍼
+    function kLongShadow(c, text, x, y, fillCol, shadowCol = 'rgba(0,0,0,0.48)', depth = 12, dx = 0.85, dy = 1.0) {
+      c.save();
+      c.shadowColor = 'transparent';
+      c.fillStyle = shadowCol;
+      for (let i = depth; i >= 1; i--) {
+        c.globalAlpha = 0.08 + 0.55 * (1 - i / (depth + 1));
+        c.fillText(text, x + i * dx, y + i * dy);
+      }
+      c.restore();
+      c.save();
+      c.shadowColor = 'rgba(0,0,0,0.32)';
+      c.shadowBlur = 10;
+      c.shadowOffsetY = 3;
+      c.fillStyle = fillCol;
+      c.fillText(text, x, y);
+      c.restore();
+    }
+    function kSoftDepthText(c, text, x, y, fillCol, shadowCol = 'rgba(0,0,0,0.72)', blur = 18, offsetY = 4) {
+      c.save();
+      c.shadowColor = shadowCol;
+      c.shadowBlur = blur;
+      c.shadowOffsetY = offsetY;
+      c.fillStyle = fillCol;
+      c.fillText(text, x, y);
+      c.shadowBlur = 5;
+      c.shadowOffsetY = 2;
+      c.fillText(text, x, y);
+      c.restore();
+    }
 
     // 잔 노이즈 (필름 질감) — 한 번만 만들어 둠
     let kitNoiseCanvas = null;
@@ -11857,14 +11879,9 @@ function renderStoryArchetypesUI() {
       } else if (cap === 'outline') {
         const r = kWrap(c, text, W - 60, 2, 74, 40, fk);
         c.textAlign = 'left';
-        c.lineJoin = 'round';
         r.lines.forEach((ln, i) => {
           const y = top + r.lh * (i + 0.85);
-          c.strokeStyle = ink;
-          c.lineWidth = 3;
-          shadowOn();
-          c.strokeText(ln, zone.x, y);
-          c.shadowColor = 'transparent';
+          kLongShadow(c, ln, zone.x, y, ink, K.light ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.58)', 13, 0.85, 1);
           const p = gEase((e - i * 0.18) / 0.6);
           c.save();
           c.beginPath();
@@ -11947,16 +11964,14 @@ function renderStoryArchetypesUI() {
         c.textAlign = 'center';
         c.fillStyle = hl;
         c.fillRect(W / 2 - 18, top + 4, 36, 3);
-        c.lineJoin = 'round';
         r.lines.forEach((ln, i) => {
           const y = top + 34 + r.lh * (i + 0.8);
           if (zone.onPhoto || !K.light) {
-            c.strokeStyle = 'rgba(0,0,0,0.85)';
-            c.lineWidth = 6;
-            c.strokeText(ln, W / 2, y);
-            c.fillStyle = '#ffffff';
-          } else c.fillStyle = K.ink;
-          c.fillText(ln, W / 2, y);
+            kSoftDepthText(c, ln, W / 2, y, '#ffffff', 'rgba(0,0,0,0.75)', 18, 4);
+          } else {
+            c.fillStyle = K.ink;
+            c.fillText(ln, W / 2, y);
+          }
         });
       } else if (cap === 'neon') {
         const r = kWrap(c, text, W - 80, 2, 54, 30, fk);
@@ -11965,12 +11980,15 @@ function renderStoryArchetypesUI() {
         c.textAlign = 'center';
         r.lines.forEach((ln, i) => {
           const y = top + r.lh * (i + 0.9);
+          c.save();
           c.shadowColor = hl;
-          c.shadowBlur = 30;
-          c.strokeStyle = hl;
-          c.lineWidth = 3;
-          c.strokeText(ln, W / 2, y);
-          c.shadowBlur = 12;
+          c.shadowBlur = 32;
+          c.fillStyle = hl;
+          c.globalAlpha = (on ? 1 : 0.22) * 0.72;
+          c.fillText(ln, W / 2, y);
+          c.restore();
+          c.shadowColor = hl;
+          c.shadowBlur = 14;
           c.fillStyle = '#ffffff';
           c.fillText(ln, W / 2, y);
         });
@@ -12388,9 +12406,7 @@ function renderStoryArchetypesUI() {
           const ei = gEase((e - i * 0.09) / 0.35);
           const dx = (1 - ei) * (i % 2 ? 1 : -1) * W;
           if (i % 3 === 2) {
-            c.strokeStyle = ink;
-            c.lineWidth = 2;
-            c.strokeText(f.text, zone.x + dx, y);
+            kLongShadow(c, f.text, zone.x + dx, y, ink, K.light ? 'rgba(0,0,0,0.22)' : 'rgba(0,0,0,0.58)', 11, 0.85, 1);
           } else {
             c.fillStyle = i % 3 === 1 ? hl : ink;
             c.fillText(f.text, zone.x + dx, y);
@@ -12418,10 +12434,9 @@ function renderStoryArchetypesUI() {
             c.fillStyle = hl;
             c.fillText(line, xs, y);
           } else {
-            c.strokeStyle = ink;
-            c.globalAlpha = 0.45;
-            c.lineWidth = 1.5;
-            c.strokeText(line, xs, y);
+            c.fillStyle = ink;
+            c.globalAlpha = 0.16;
+            c.fillText(line, xs, y);
             c.globalAlpha = 1;
           }
         }
@@ -12530,9 +12545,10 @@ function renderStoryArchetypesUI() {
               c.fillStyle = row.fg;
               c.fillText(unit, x, row.y);
             } else {
-              c.strokeStyle = row.fg;
-              c.lineWidth = 2;
-              c.strokeText(unit, x, row.y);
+              c.fillStyle = row.fg;
+              c.globalAlpha = ei * 0.35;
+              c.fillText(unit, x, row.y);
+              c.globalAlpha = ei;
             }
           }
           c.restore();
@@ -13917,12 +13933,15 @@ function renderStoryArchetypesUI() {
           gDrawLine(c, `${d.title} · ${d.branch || ''}`, W / 2, 300, W - 80, 22, 14, GENRE_FONTS.sans, 700);
         }, V.accent2, 16);
         glow(() => {
-          c.strokeStyle = col;
-          c.lineWidth = 3;
           const F = KIT_FONTS[fk] || KIT_FONTS.sans;
           const f = gFitLine(c, name, W - 70, Math.round(100 * F.k), Math.round(50 * F.k), F.f, F.w);
           c.font = gFont(F.w, f.size, F.f);
-          c.strokeText(f.text, W / 2, 440);
+          c.save();
+          c.fillStyle = col;
+          c.globalAlpha = 0.72;
+          c.fillText(f.text, W / 2, 440);
+          c.restore();
+          c.shadowBlur = 14;
           c.fillStyle = '#ffffff';
           c.fillText(f.text, W / 2, 440);
         }, col, 34);
@@ -16113,13 +16132,11 @@ function renderStoryArchetypesUI() {
         const sc = gBack(mClamp(local / 0.3));
         c.save(); c.translate(W / 2, H * 0.42); c.scale(sc, sc); c.rotate(-0.04);
         c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.lineWidth = 10; c.strokeStyle = '#000';
         c.font = gFont(900, 96, GENRE_FONTS.impact);
-        const fs = Math.min(1, (W - 50) / Math.max(1, c.measureText(isPrice ? arPriceTag() : key).width));
+        const punchWord = isPrice ? arPriceTag() : key;
+        const fs = Math.min(1, (W - 50) / Math.max(1, c.measureText(punchWord).width));
         c.scale(fs, fs);
-        c.strokeText(isPrice ? arPriceTag() : key, 0, 0);
-        c.fillStyle = isPrice ? sp.accent2 : '#fff';
-        c.fillText(isPrice ? arPriceTag() : key, 0, 0);
+        kLongShadow(c, punchWord, 0, 0, isPrice ? sp.accent2 : '#ffffff', 'rgba(0,0,0,0.65)', 16, 0.85, 1);
         c.restore();
         mCaption(c, caption, W / 2, capY + 10, W - 60, capH - 10, 30, 'sans', '#ffffff', mClamp((local - 0.25) / 0.8), 'center', sp.accent2);
       } else if (M === 'cube') {
