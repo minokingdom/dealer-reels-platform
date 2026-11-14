@@ -685,11 +685,11 @@
 
           <!-- 컷 번호 고정 (누르면 미리보기 화면 위에서 인스타 편집기 열림) -->
           <div class="flex items-center justify-between gap-2 pt-0.5">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[11px] text-[#85858b]">컷 편집</span>
-              <button type="button" id="clearAllCutEditsBtn" onclick="clearAllCutEdits()" class="hidden px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] text-[#a1a1a6] hover:text-white cursor-pointer" title="모든 컷의 꾸미기 초기화">초기화</button>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <span class="text-[11px] text-[#85858b] whitespace-nowrap">컷 편집</span>
+              <button type="button" id="clearAllCutEditsBtn" onclick="clearAllCutEdits()" class="hidden px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] text-[#a1a1a6] hover:text-white whitespace-nowrap cursor-pointer" title="모든 컷의 꾸미기 초기화">초기화</button>
             </div>
-            <div id="previewCutPinBar" class="flex items-center gap-1 flex-wrap justify-end"></div>
+            <div id="previewCutPinBar" class="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-none justify-end min-w-0"></div>
           </div>
 
           <!-- 핵심 액션 컨트롤 -->
@@ -18583,7 +18583,7 @@ function renderStoryArchetypesUI() {
         const pinned = window.__arPinnedCut === i;
         const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || !!frms[i] || (Array.isArray(ovs[i]) && ovs[i].length > 0) || (Array.isArray(stks[i]) && stks[i].length > 0);
         if (hasDeco) anyEdited = true;
-        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="px-2 py-0.5 rounded-[6px] text-[11px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
+        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="px-1.5 py-0.5 min-w-[20px] shrink-0 rounded-[6px] text-[10.5px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
       }).join('');
       const clearBtn = document.getElementById('clearAllCutEditsBtn');
       if (clearBtn) clearBtn.classList.toggle('hidden', !anyEdited);
