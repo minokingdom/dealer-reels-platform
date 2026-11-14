@@ -134,7 +134,7 @@
     }
     .studio-tablist {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr)); /* 주제·대본·사진·사운드·명함·발행 한 줄 */
       gap: 4px;
       padding: 4px;
       background-color: var(--bg-deep);
@@ -223,6 +223,8 @@
     button.h-11 { min-height: 44px; }
     button.h-12 { min-height: 48px; }
     .studio-tab { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #customDurationInput { -moz-appearance: textfield; appearance: textfield; padding: 0 2px; }
+    #customDurationInput::-webkit-inner-spin-button, #customDurationInput::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
     /* 모달 모바일 반응형: 화면 폭 100vw를 절대 넘지 않게 */
     .fixed.inset-0 {
@@ -491,44 +493,24 @@
     <!-- ========================================================================= -->
     <!-- 모바일 전용: 상단 고정 라이브 스튜디오 도크 (화면 스크롤 시 실시간 캔버스 & 8종 테마 상시 노출) -->
     <!-- ========================================================================= -->
-    <div id="mobileLiveDock" class="block lg:hidden sticky top-2 z-40 mb-3 bg-[#0d0d10]/95 backdrop-blur-md border border-[var(--border)] rounded-[14px] p-2.5 shadow-2xl">
-      <div class="flex items-center justify-between gap-2.5">
-        <!-- 좌측: 9:16 실시간 미니 프리뷰 미러 캔버스 -->
-        <div class="relative w-[50px] h-[88px] rounded-[8px] overflow-hidden bg-black border border-[var(--border)] shrink-0 shadow-lg cursor-pointer group" onclick="scrollToMainMonitor()" title="터치하여 메인 모니터로 이동">
+    <div id="mobileLiveDock" class="block lg:hidden sticky top-2 z-40 mb-3 bg-[#0d0d10]/95 backdrop-blur-md border border-[var(--border)] rounded-[14px] px-2.5 py-2 shadow-2xl">
+      <!-- 모바일 상단 바: 작은 미리보기 · 지금 컷 · 재생/소리 (2026-11 정리: 버튼 크기·정렬 통일, 색상은 사진 탭으로) -->
+      <div class="flex items-center gap-2.5">
+        <button type="button" class="relative w-[34px] h-[60px] rounded-[6px] overflow-hidden bg-black border border-[var(--border)] shrink-0" onclick="scrollToMainMonitor()" title="미리보기로 이동" aria-label="미리보기로 이동">
           <canvas id="mobileMiniCanvas" width="270" height="480" class="w-full h-full object-cover"></canvas>
-          <div class="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors flex items-end justify-end p-1">
-            <span class="px-1 py-0.2 bg-[#4cc38a] text-[8px] text-black font-bold font-mono rounded">LIVE</span>
+        </button>
+        <div class="flex-1 min-w-0">
+          <div id="mobileDockCutBadge" class="text-[13px] font-semibold text-[#ededed] truncate">1컷 · 오프닝 훅</div>
+          <div class="flex items-center gap-1.5 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a] shrink-0"></span>
+            <span id="mobileDockTimeBadge" class="text-[11px] font-mono text-[#85858b]">0.0s</span>
           </div>
         </div>
-
-        <!-- 중앙 & 우측: 상태 + 컨트롤 + 8종 테마 스와치 팔레트 -->
-        <div class="flex-1 min-w-0 flex flex-col justify-between h-[88px] py-0.5">
-          <!-- 상단: 컷 배지 & 재생/사운드/모니터 이동 -->
-          <div class="flex items-center justify-between gap-1">
-            <div class="flex items-center gap-1.5 truncate">
-              <span class="w-2 h-2 rounded-full bg-[#4cc38a] animate-pulse shrink-0"></span>
-              <span id="mobileDockCutBadge" class="text-[11px] font-semibold text-[#ededed] truncate">1컷 · 오프닝 훅</span>
-              <span id="mobileDockTimeBadge" class="text-[10px] font-mono text-[#85858b] shrink-0">0.0s</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <button type="button" onclick="togglePlayPause()" class="h-6 px-2 bg-[#232325] text-[#ededed] rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" id="mobileDockPlayBtn">⏸</button>
-              <button type="button" onclick="toggleAudioMaster()" class="h-6 px-2 bg-[#232325] text-[#ededed] rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" id="mobileDockSoundBtn">🔇 사운드</button>
-              <button type="button" onclick="scrollToMainMonitor()" class="h-6 px-1.5 bg-[#1a2333] text-[#38bdf8] border border-[#38bdf8]/40 rounded-[5px] text-[10px] font-medium active:scale-95 transition-transform" title="모니터로 스크롤">⛶ 모니터</button>
-            </div>
-          </div>
-
-          <!-- 하단: 8종 테마 컬러 스와치 팔레트 (가로 스크롤) -->
-          <div>
-            <div class="flex items-center justify-between text-[10px] text-[#a1a1a6] mb-1">
-              <span class="flex items-center gap-1">🎨 <strong class="text-[#ededed]">색상</strong></span>
-              <span id="mobileActiveThemeName" class="text-[#facc15] font-semibold text-[10px]">로얄 골드</span>
-            </div>
-            <div id="mobileThemeSwatches" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
-              <!-- 8종 컬러 버튼 동적 렌더링 -->
-            </div>
-          </div>
-        </div>
+        <button type="button" onclick="togglePlayPause()" class="w-10 h-10 rounded-[10px] bg-[#232325] text-[#ededed] text-[15px] flex items-center justify-center shrink-0 active:scale-95" id="mobileDockPlayBtn" aria-label="재생/일시정지">⏸</button>
+        <button type="button" onclick="toggleAudioMaster()" class="w-10 h-10 rounded-[10px] bg-[#232325] text-[#ededed] text-[15px] flex items-center justify-center shrink-0 active:scale-95" id="mobileDockSoundBtn" aria-label="소리 켜기/끄기">🔇</button>
       </div>
+      <!-- 예전 색상 칩 자리 (스크립트가 찾는 요소라 남겨 두고 숨김) -->
+      <div class="hidden"><span id="mobileActiveThemeName"></span><div id="mobileThemeSwatches"></div></div>
     </div>
 
     <!-- ========================================================================= -->
@@ -673,7 +655,7 @@
         <div class="studio-card">
           <div class="flex flex-wrap items-center justify-between gap-2 px-5 sm:px-6 pt-5">
             <div class="flex items-center gap-2 flex-wrap">
-              <h2 id="previewDealerHeader" class="text-[16px] font-medium text-[#ededed]">담당 카마스터 명함 정보 및 멀티 SNS 발행</h2>
+              <h2 id="previewDealerHeader" class="text-[16px] font-medium text-[#ededed]">오늘의 릴스 만들기</h2>
               <span id="wasmEngineBadge" class="hidden tag-chip px-2 py-0.5 font-mono text-[11px]">Rust Wasm v1.0</span>
               <span class="hidden text-xs text-[#85858b]"><code id="stagingUrlText">https://staging.autoreels.kr/v/tok_minjun</code></span>
             </div>
@@ -969,7 +951,7 @@
           <!-- ★ 디자인 스타일 (136종, 서로 다른 화면) + 색상 (따로 선택) -->
           <!--   모바일은 위쪽 미리보기에 디자인 손잡이·색상이 이미 있어 겹치므로 숨김 (PC에서만 보임) -->
           <!-- ================================================================= -->
-          <div id="scriptDesignBox" class="studio-sub p-4 space-y-3 hidden lg:block">
+          <div id="scriptDesignBox" class="studio-sub p-4 space-y-3">
             <div class="flex items-center justify-between gap-2">
               <div class="min-w-0">
                 <div class="text-[11px] text-[#85858b]">디자인 스타일 <span id="designStyleCount" class="font-mono">136</span>종</div>
@@ -7112,12 +7094,12 @@ function renderStoryArchetypesUI() {
 
       const playBtn = document.getElementById('mobileDockPlayBtn');
       if (playBtn) {
-        playBtn.textContent = isPlaying ? '⏸ 일시정지' : '▶ 재생';
+        playBtn.textContent = isPlaying ? '⏸' : '▶'; // 상단 바는 아이콘만 (버튼 크기 통일)
       }
 
       const soundBtn = document.getElementById('mobileDockSoundBtn');
       if (soundBtn) {
-        soundBtn.textContent = (AudioEngine && AudioEngine.enabled) ? '🔊 소리켬' : '🔇 음소거';
+        soundBtn.textContent = (AudioEngine && AudioEngine.enabled) ? '🔊' : '🔇';
         soundBtn.style.color = (AudioEngine && AudioEngine.enabled) ? '#4cc38a' : '#ededed';
       }
     }
@@ -21030,7 +21012,7 @@ function renderStoryArchetypesUI() {
       const d = getSelectedDealer();
       const v = d.variation || VARIATION_RECIPES[0];
       document.getElementById('stagingUrlText').textContent = `https://staging.autoreels.kr/v/${d.token}`;
-      document.getElementById('previewDealerHeader').textContent = `${[d.name, d.title].filter(Boolean).join(' ') || '내'} 명함 정보 및 멀티 SNS 발행`;
+      document.getElementById('previewDealerHeader').textContent = '오늘의 릴스 만들기';
       document.getElementById('dlrInputName').value = d.name;
       document.getElementById('dlrInputTitle').value = d.title;
       document.getElementById('dlrInputPhone').value = d.phone;
