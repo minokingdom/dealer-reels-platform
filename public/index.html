@@ -602,6 +602,13 @@
                 </div>
               </div>
               <div id="shuffleFilterChips" class="flex flex-wrap gap-1"></div>
+              <div class="pt-1.5 border-t border-white/10 space-y-1.5">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="text-[#a1a1a6] font-medium">랜덤 섞기에서 제외된 스타일</span>
+                  <button type="button" id="clearShuffleExcludedBtn" onclick="clearShuffleExcluded()" class="hidden px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] cursor-pointer">모두 복구</button>
+                </div>
+                <div id="shuffleExcludedChips" class="flex flex-wrap gap-1 text-[11px] text-[#71717a]"></div>
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-1.5">
               <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
@@ -15045,6 +15052,30 @@ function renderStoryArchetypesUI() {
       else if (sel.length === 1) badge.textContent = sel[0];
       else badge.textContent = `${sel.length}종`;
     }
+    function getShuffleExcludedIds() {
+      try {
+        const raw = localStorage.getItem('autoreels_shuffle_excluded');
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr.filter((x) => typeof x === 'string' && x) : [];
+      } catch (e) { return []; }
+    }
+    function setShuffleExcludedIds(arr) {
+      try { localStorage.setItem('autoreels_shuffle_excluded', JSON.stringify(Array.isArray(arr) ? arr : [])); } catch (e) {}
+      window.__arStyleBag = [];
+      renderShuffleFilterPanel();
+    }
+    function excludeStyleFromShuffle(id) {
+      if (!id) return;
+      const cur = getShuffleExcludedIds();
+      if (!cur.includes(id)) cur.push(id);
+      setShuffleExcludedIds(cur);
+    }
+    function restoreShuffleExcluded(id) {
+      setShuffleExcludedIds(getShuffleExcludedIds().filter((x) => x !== id));
+    }
+    function clearShuffleExcluded() {
+      setShuffleExcludedIds([]);
+    }
     function renderShuffleFilterPanel() {
       const box = document.getElementById('shuffleFilterChips');
       if (!box) return;
@@ -15055,6 +15086,21 @@ function renderStoryArchetypesUI() {
         const picked = sel.has(c);
         return `<button type="button" onclick="toggleShuffleCat('${c.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-[6px] text-[11px] border cursor-pointer transition ${picked ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-semibold' : active ? 'bg-white/5 border-white/10 text-[#d4d4d8]' : 'bg-transparent border-white/5 text-[#6b7280] opacity-60'}">${c}</button>`;
       }).join('');
+      const exBox = document.getElementById('shuffleExcludedChips');
+      const clearBtn = document.getElementById('clearShuffleExcludedBtn');
+      if (exBox) {
+        const exIds = getShuffleExcludedIds();
+        if (clearBtn) clearBtn.classList.toggle('hidden', exIds.length === 0);
+        if (!exIds.length) {
+          exBox.innerHTML = '<span>없음 · 섞기 후 위 알림을 누르면 현재 스타일이 빠집니다</span>';
+        } else {
+          exBox.innerHTML = exIds.map((id) => {
+            const d = (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []).find((x) => x.id === id);
+            const nm = d ? d.name : id;
+            return `<button type="button" onclick="restoreShuffleExcluded('${id.replace(/'/g, "\\'")}')" class="px-2 py-0.5 rounded-[6px] bg-[#2a1414] border border-[#e5484d]/50 text-[#fca5a5] hover:text-white cursor-pointer" title="클릭하면 다시 섞기에 포함됩니다">✕ ${nm}</button>`;
+          }).join('');
+        }
+      }
       updateShuffleFilterBadge();
     }
     function setShuffleIncludeCats(arr) {
@@ -15079,13 +15125,16 @@ function renderStoryArchetypesUI() {
     if (typeof document !== 'undefined') setTimeout(updateShuffleFilterBadge, 0);
 
     function randomizePreviewDesignOnly() {
-      // 대본·업종·사진은 유지하고, 설정한 카테고리(전체 또는 선택된 카테고리) 안에서 랜덤 전환
+      // 대본·업종·사진은 유지하고, 설정한 카테고리 및 제외 목록을 반영해 랜덤 전환
       const allDesigns = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
       const includeCats = getShuffleIncludeCats();
-      const filtered = includeCats.length
+      const catFiltered = includeCats.length
         ? allDesigns.filter((d) => includeCats.includes(d.industry ? '내 업종' : (d.cat || '')))
         : allDesigns;
-      const designs = filtered.length ? filtered : allDesigns;
+      const basePool = catFiltered.length ? catFiltered : allDesigns;
+      const excluded = new Set(getShuffleExcludedIds());
+      const pool = basePool.filter((d) => !excluded.has(d.id));
+      const designs = pool.length ? pool : basePool;
       if (designs.length > 0 && typeof selectDesignStyle === 'function') {
         // 보이는 디자인 전체(81종 등)를 섞은 순서대로 한 번씩 다 보여 준 뒤 다시 섞음 (같은 몇 개만 반복되지 않게)
         const curId = campaign.designStyle;
@@ -15112,10 +15161,21 @@ function renderStoryArchetypesUI() {
         const pickId = window.__arStyleBag.shift();
         const pick = designs.find((x) => x.id === pickId) || designs[0];
         selectDesignStyle(pick.id);
-        // 어떤 디자인으로 바뀌었는지 이름과 남은 개수를 잠깐 보여 줌 (버튼 바로 위)
+        // 어떤 디자인으로 바뀌었는지 버튼 바로 위에 보여 주고, 클릭하면 설정창 열기 + 현재 스타일 랜덤 제외
         if (typeof arToast === 'function') {
           const shuffleBtn = [document.getElementById('previewRandomDesignBtnMain'), document.getElementById('previewRandomDesignBtn')].find((b) => b && b.offsetParent !== null);
-          arToast(`🎲 ${pick.name}${pick.cat ? ' · ' + pick.cat : ''} (${(window.__arStyleBagTotal || designs.length) - window.__arStyleBag.length}/${window.__arStyleBagTotal || designs.length})`, true, shuffleBtn || null);
+          const idxNow = (window.__arStyleBagTotal || designs.length) - window.__arStyleBag.length;
+          const totalNow = window.__arStyleBagTotal || designs.length;
+          arToast(
+            `🎲 ${pick.name}${pick.cat ? ' · ' + pick.cat : ''} (${idxNow}/${totalNow}) · 누르면 설정·제외`,
+            true,
+            shuffleBtn || null,
+            () => {
+              excludeStyleFromShuffle(pick.id);
+              toggleShuffleFilterPanel(true);
+              arToast(`🚫 '${pick.name}'을 랜덤 섞기에서 뺐습니다`, false, shuffleBtn || null);
+            }
+          );
         }
       }
       if (typeof selectColorPalette === 'function') {
@@ -23452,7 +23512,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       return { status: r.status, ok: r.ok && j.ok !== false, body: j };
     }
 
-    function arToast(msg, ok = false, anchorEl = null) {
+    function arToast(msg, ok = false, anchorEl = null, onClick = null) {
       let el = document.getElementById('arToast');
       if (!el) {
         el = document.createElement('div');
@@ -23464,6 +23524,19 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       el.style.background = ok ? '#0f2a1d' : '#2a1414';
       el.style.borderColor = ok ? '#4cc38a' : '#e5484d';
       el.style.color = '#ededed';
+      if (typeof onClick === 'function') {
+        el.style.pointerEvents = 'auto';
+        el.style.cursor = 'pointer';
+        el.onclick = () => {
+          el.style.display = 'none';
+          clearTimeout(el._t);
+          onClick();
+        };
+      } else {
+        el.style.pointerEvents = 'none';
+        el.style.cursor = 'default';
+        el.onclick = null;
+      }
       const rect = anchorEl && anchorEl.getBoundingClientRect ? anchorEl.getBoundingClientRect() : null;
       if (rect && rect.width > 0 && rect.height > 0) {
         const cx = Math.max(120, Math.min(window.innerWidth - 120, rect.left + rect.width / 2));
