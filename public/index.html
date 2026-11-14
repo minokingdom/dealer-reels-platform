@@ -15816,15 +15816,15 @@ function renderStoryArchetypesUI() {
         if (isPrice) mPrice(c, W, capY, sp, e);
         mCaption(c, caption, 30, capY + (isPrice ? 40 : 4), W - 60, capH - (isPrice ? 40 : 4), 40, sp.font, '#ffffff', e, 'left');
       } else if (M === 'circle') {
-        // 모서리에서 원이 퍼지며 다음 사진으로 바뀜
-        const corner = [[0, 0], [W, 0], [W, stageH], [0, stageH]][cutIdx % 4];
-        const R = Math.hypot(W, stageH) * mEase(local / 0.75);
-        mPhoto(c, S, -1, 0, 0, W, stageH, 1.08);
+        // 모서리에서 원이 퍼지며 전체 화면 다음 사진으로 바뀜
+        const corner = [[0, 0], [W, 0], [W, H], [0, H]][cutIdx % 4];
+        const R = Math.hypot(W, H) * mEase(local / 0.75);
+        mPhoto(c, S, -1, 0, 0, W, H, 1.08);
         c.save();
         c.beginPath();
         c.arc(corner[0], corner[1], cutIdx === 0 ? 9999 : R, 0, Math.PI * 2);
         c.clip();
-        mPhoto(c, S, 0, 0, 0, W, stageH, 1.04 + lp * 0.05);
+        mPhoto(c, S, 0, 0, 0, W, H, 1.04 + lp * 0.05);
         c.restore();
         if (cutIdx > 0 && local < 0.8) {
           c.strokeStyle = sp.accent;
@@ -15842,12 +15842,11 @@ function renderStoryArchetypesUI() {
         c.strokeStyle = sp.accent;
         c.beginPath(); c.arc(0, 0, 18, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * lp); c.stroke();
         c.restore();
-        gRoundRect(c, 22, capY - 10, W - 44, capH + 20, 22);
-        c.fillStyle = 'rgba(255,255,255,0.07)';
-        c.fill();
-        c.strokeStyle = 'rgba(255,255,255,0.14)';
-        c.lineWidth = 1;
-        c.stroke();
+        const cg = c.createLinearGradient(0, H * 0.48, 0, H);
+        cg.addColorStop(0, 'rgba(0,0,0,0)');
+        cg.addColorStop(1, 'rgba(0,0,0,0.82)');
+        c.fillStyle = cg;
+        c.fillRect(0, H * 0.48, W, H * 0.52);
         if (isPrice) mPrice(c, W, capY - 10, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 30 : 4), W - 80, capH - (isPrice ? 30 : 8), 38, sp.font, '#ffffff', e);
       } else if (M === 'ribbon') {
@@ -16240,9 +16239,11 @@ function renderStoryArchetypesUI() {
           o.globalCompositeOperation = 'source-over';
           c.drawImage(off, 0, 0, W, H);
         }
-        gRoundRect(c, 22, capY - 10, W - 44, capH + 20, 22);
-        c.fillStyle = 'rgba(10,10,14,0.55)';
-        c.fill();
+        const bg = c.createLinearGradient(0, H * 0.48, 0, H);
+        bg.addColorStop(0, 'rgba(0,0,0,0)');
+        bg.addColorStop(1, 'rgba(0,0,0,0.82)');
+        c.fillStyle = bg;
+        c.fillRect(0, H * 0.48, W, H * 0.52);
         if (isPrice) mPrice(c, W, capY - 10, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 30 : 4), W - 80, capH - (isPrice ? 30 : 8), 38, sp.font, '#ffffff', e);
       } else if (M === 'in_film') {
