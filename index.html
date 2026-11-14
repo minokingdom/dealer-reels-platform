@@ -584,9 +584,25 @@
           <!-- 핵심 액션 컨트롤 -->
           <div class="space-y-2 pt-1">
             <!-- 영상 만들기는 완성본을 확인하는 발행 단계로 옮기고, 이 자리는 스타일 섞기 -->
-            <button type="button" id="previewRandomDesignBtnMain" onclick="randomizePreviewDesignOnly()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer" title="현재 대본·업종은 그대로 두고 디자인 스타일·색상·모션만 랜덤으로 섞습니다">
-              🎲 스타일 섞기
-            </button>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="previewRandomDesignBtnMain" onclick="randomizePreviewDesignOnly()" class="btn-primary flex-1 h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer" title="현재 대본·업종은 그대로 두고 설정한 카테고리 안에서 디자인을 랜덤으로 섞습니다">
+                🎲 스타일 섞기
+              </button>
+              <button type="button" id="shuffleFilterBtn" onclick="toggleShuffleFilterPanel()" class="btn-secondary h-10 px-3 text-[12px] flex items-center justify-center gap-1 cursor-pointer shrink-0" title="스타일 섞기에 포함할 카테고리 설정">
+                ⚙️ <span id="shuffleFilterBadge" class="text-[11px] text-[#38bdf8]">전체</span>
+              </button>
+            </div>
+            <div id="shuffleFilterPanel" class="hidden rounded-[10px] bg-[#111318] border border-white/10 p-2.5 space-y-2">
+              <div class="flex items-center justify-between gap-2 text-[11px]">
+                <span class="text-[#a1a1a6] font-medium">섞기에 포함할 카테고리</span>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="setShuffleIncludeCats([])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] cursor-pointer">전체</button>
+                  <button type="button" onclick="setShuffleIncludeCats(['신규'])" class="px-2 py-0.5 rounded bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] cursor-pointer">신규만</button>
+                  <button type="button" onclick="toggleShuffleFilterPanel(false)" class="px-1.5 py-0.5 text-[#85858b] hover:text-white cursor-pointer">✕</button>
+                </div>
+              </div>
+              <div id="shuffleFilterChips" class="flex flex-wrap gap-1"></div>
+            </div>
             <div class="grid grid-cols-2 gap-1.5">
               <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
                 <span id="soundDot" class="w-1.5 h-1.5 rounded-full bg-[#85858b]"></span>
@@ -14263,7 +14279,7 @@ function renderStoryArchetypesUI() {
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
     // 스타일 분류는 이 12개로 고정: 새 스타일을 추가할 때 분류를 새로 만들지 말고 아래 중 하나에 넣을 것
-    const DESIGN_CATS = ['전체', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    const DESIGN_CATS = ['전체', '신규', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
     // ★ 업종 전용 테마: 그 업종을 고른 사람에게만 보이고, 업종을 바꾸면 첫 테마가 바로 적용됨
     // [id, 이름, (분류는 '내 업종'), layout, cap, font, deco, trans, outro, grade, head, bg, label, accent, accent2, script, sfont]
     const IND_KIT_ROWS = {
@@ -15005,9 +15021,62 @@ function renderStoryArchetypesUI() {
       });
     }
 
+    function getShuffleIncludeCats() {
+      try {
+        const raw = localStorage.getItem('autoreels_shuffle_cats');
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr.filter((x) => typeof x === 'string' && x && x !== '전체') : [];
+      } catch (e) { return []; }
+    }
+    function updateShuffleFilterBadge() {
+      const badge = document.getElementById('shuffleFilterBadge');
+      if (!badge) return;
+      const sel = getShuffleIncludeCats();
+      if (!sel.length) badge.textContent = '전체';
+      else if (sel.length === 1) badge.textContent = sel[0];
+      else badge.textContent = `${sel.length}종`;
+    }
+    function renderShuffleFilterPanel() {
+      const box = document.getElementById('shuffleFilterChips');
+      if (!box) return;
+      const cats = (typeof arDesignCats === 'function' ? arDesignCats() : DESIGN_CATS).filter((c) => c !== '전체');
+      const sel = new Set(getShuffleIncludeCats());
+      box.innerHTML = cats.map((c) => {
+        const active = sel.size === 0 || sel.has(c);
+        const picked = sel.has(c);
+        return `<button type="button" onclick="toggleShuffleCat('${c.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-[6px] text-[11px] border cursor-pointer transition ${picked ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-semibold' : active ? 'bg-white/5 border-white/10 text-[#d4d4d8]' : 'bg-transparent border-white/5 text-[#6b7280] opacity-60'}">${c}</button>`;
+      }).join('');
+      updateShuffleFilterBadge();
+    }
+    function setShuffleIncludeCats(arr) {
+      try { localStorage.setItem('autoreels_shuffle_cats', JSON.stringify(Array.isArray(arr) ? arr : [])); } catch (e) {}
+      window.__arStyleBag = [];
+      renderShuffleFilterPanel();
+    }
+    function toggleShuffleCat(cat) {
+      const cur = getShuffleIncludeCats();
+      const idx = cur.indexOf(cat);
+      if (idx >= 0) cur.splice(idx, 1);
+      else cur.push(cat);
+      setShuffleIncludeCats(cur);
+    }
+    function toggleShuffleFilterPanel(force) {
+      const panel = document.getElementById('shuffleFilterPanel');
+      if (!panel) return;
+      const show = typeof force === 'boolean' ? force : panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !show);
+      if (show) renderShuffleFilterPanel();
+    }
+    if (typeof document !== 'undefined') setTimeout(updateShuffleFilterBadge, 0);
+
     function randomizePreviewDesignOnly() {
-      // 대본·업종·사진은 유지하고, 디자인 고유의 색 조합을 살려 깔끔하게 추천 스타일로 전환
-      const designs = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
+      // 대본·업종·사진은 유지하고, 설정한 카테고리(전체 또는 선택된 카테고리) 안에서 랜덤 전환
+      const allDesigns = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
+      const includeCats = getShuffleIncludeCats();
+      const filtered = includeCats.length
+        ? allDesigns.filter((d) => includeCats.includes(d.industry ? '내 업종' : (d.cat || '')))
+        : allDesigns;
+      const designs = filtered.length ? filtered : allDesigns;
       if (designs.length > 0 && typeof selectDesignStyle === 'function') {
         // 보이는 디자인 전체(81종 등)를 섞은 순서대로 한 번씩 다 보여 준 뒤 다시 섞음 (같은 몇 개만 반복되지 않게)
         const curId = campaign.designStyle;
@@ -15270,7 +15339,7 @@ function renderStoryArchetypesUI() {
       mo_cinema: '고급', mo_credits: '뉴스·방송',
       in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
       in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성',
-      ed_vogue: '고급', ed_glasspill: '감성', ed_kinetic: '타이포', ed_arch: '감성', ed_duotone: '타이포'
+      ed_vogue: '신규', ed_glasspill: '신규', ed_kinetic: '신규', ed_arch: '신규', ed_duotone: '신규'
     };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
