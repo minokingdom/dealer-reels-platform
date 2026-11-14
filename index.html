@@ -16688,14 +16688,14 @@ function renderStoryArchetypesUI() {
         c.fillRect(0, H - bh, W, bh);
         const n0 = new Date();
         const ds = `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`;
-        inLabel(c, ds, 28, bh / 2, 'rgba(235,224,210,0.75)', 'left', 12);
-        inLabel(c, `0${cutIdx + 1} / 0${totalCuts}`, W - 28, bh / 2, 'rgba(235,224,210,0.75)', 'right', 12);
+        inLabel(c, ds, 28, bh / 2, 'rgba(235,224,210,0.75)', 'left', Math.round(W * 0.026));
+        inLabel(c, `0${cutIdx + 1} / 0${totalCuts}`, W - 28, bh / 2, 'rgba(235,224,210,0.75)', 'right', Math.round(W * 0.026));
         c.save();
         c.shadowColor = 'rgba(0,0,0,0.24)';
         c.shadowBlur = 8;
-        mCaption(c, caption, W / 2, H - bh - 128, W - 84, 108, 28, 'gowun', '#f7f2eb', e);
+        mCaption(c, caption, W / 2, H - bh - 330, W - 84, 259, Math.round(W * 0.0599), 'gowun', '#f7f2eb', e);
         c.restore();
-        inSign(c, d, W / 2, H - bh / 2, 'rgba(235,224,210,0.8)', 'center', 16);
+        inSign(c, d, W / 2, H - bh / 2, 'rgba(235,224,210,0.8)', 'center', Math.round(W * 0.03));
         inGrain(c, W, H, t, 0.09);
       } else if (M === 'in_g_arch') {
         // 아치 무드: 따뜻한 코튼지 바탕 + 아치형 창문 액자 + 하단 에디토리얼 명조 자막
@@ -16718,7 +16718,7 @@ function renderStoryArchetypesUI() {
         inPhotoFade(c, S, cutIdx, local, ax, ay, aw, ah, 1.03 + lp * 0.04, 1.0);
         c.restore();
         const n0 = new Date();
-        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')} · ${String(n0.getDate()).padStart(2, '0')}`, W / 2, 46, '#8c735b', 'center', 13);
+        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')} · ${String(n0.getDate()).padStart(2, '0')}`, W / 2, 46, '#8c735b', 'center', Math.round(W * 0.026));
         c.save();
         c.globalAlpha = ent;
         gRoundRect(c, W / 2 - 150, ay + ah - 26, 300, 44, 22);
@@ -16727,8 +16727,8 @@ function renderStoryArchetypesUI() {
         c.shadowBlur = 10;
         c.fill();
         c.restore();
-        inSign(c, d, W / 2, ay + ah - 4, '#5e4d3e', 'center', 17);
-        mCaption(c, caption, W / 2, ay + ah + 38, W - 88, 120, 29, 'maru', '#2b2520', e);
+        inSign(c, d, W / 2, ay + ah - 4, '#5e4d3e', 'center', Math.round(W * 0.03));
+        mCaption(c, caption, W / 2, ay + ah + 38, W - 88, 288, Math.round(W * 0.0620), 'maru', '#2b2520', e);
         inGrain(c, W, H, t, 0.07);
       } else if (M === 'in_g_strip') {
         // 필름 스트립: 왼쪽에 살짝 기운 3컷 밀착 인화 스트립 + 오른쪽 손글씨 메모
@@ -16767,12 +16767,12 @@ function renderStoryArchetypesUI() {
         c.restore();
         const rx = 286, rw = W - rx - 28;
         const n0 = new Date();
-        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, rx, 170, '#8c7765', 'left', 12);
+        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, rx, 170, '#8c7765', 'left', Math.round(W * 0.026));
         c.strokeStyle = 'rgba(140,119,101,0.3)';
         c.lineWidth = 1;
         c.beginPath(); c.moveTo(rx, 192); c.lineTo(W - 32, 192); c.stroke();
-        mCaption(c, caption, rx, 224, rw, 260, 32, 'pen', '#2d2621', e, 'left');
-        inSign(c, d, rx, H - 120, '#6e5c4d', 'left', 17);
+        mCaption(c, caption, rx, 224, rw, 624, Math.round(W * 0.0684), 'pen', '#2d2621', e, 'left');
+        inSign(c, d, rx, H - 120, '#6e5c4d', 'left', Math.round(W * 0.03));
         inGrain(c, W, H, t, 0.08);
       } else if (M === 'in_g_postcard') {
         // 엽서 기록: 크림 질감 바탕 위 두꺼운 엽서 카드 + 우표 미니 컷 + 고운 명조 편지글
@@ -16808,10 +16808,10 @@ function renderStoryArchetypesUI() {
         const ty = py + ph + 26;
         c.strokeStyle = 'rgba(160,140,120,0.22)';
         c.beginPath(); c.moveTo(px, ty + 115); c.lineTo(px + pw, ty + 115); c.stroke();
-        mCaption(c, caption, px + 4, ty, pw - 8, 104, 27, 'gowun', '#2c2520', e, 'left');
+        mCaption(c, caption, px + 4, ty, pw - 8, 250, Math.round(W * 0.0577), 'gowun', '#2c2520', e, 'left');
         const n0 = new Date();
-        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, px + 4, ty + 142, '#9c8b7a', 'left', 12);
-        inSign(c, d, px + pw - 4, ty + 142, '#6e5d4f', 'right', 17);
+        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, px + 4, ty + 142, '#9c8b7a', 'left', Math.round(W * 0.026));
+        inSign(c, d, px + pw - 4, ty + 142, '#6e5d4f', 'right', Math.round(W * 0.03));
         c.restore();
         inGrain(c, W, H, t, 0.07);
       } else if (M === 'in_g_cam') {
@@ -16842,14 +16842,14 @@ function renderStoryArchetypesUI() {
         }
         const sec = String(Math.floor(t)).padStart(2, '0');
         const frm = String(Math.floor((t % 1) * 24)).padStart(2, '0');
-        inLabel(c, `00:${sec}:${frm}`, m + 32, m + 20, 'rgba(255,250,244,0.88)', 'left', 13);
-        inLabel(c, `${cutIdx + 1} / ${totalCuts}`, W - m - 14, m + 20, 'rgba(255,250,244,0.88)', 'right', 13);
+        inLabel(c, `00:${sec}:${frm}`, m + 32, m + 20, 'rgba(255,250,244,0.88)', 'left', Math.round(W * 0.026));
+        inLabel(c, `${cutIdx + 1} / ${totalCuts}`, W - m - 14, m + 20, 'rgba(255,250,244,0.88)', 'right', Math.round(W * 0.026));
         c.save();
         c.shadowColor = 'rgba(0,0,0,0.22)';
         c.shadowBlur = 9;
-        mCaption(c, caption, W / 2, H - 210, W - 100, 118, 29, 'pretL', '#ffffff', e);
+        mCaption(c, caption, W / 2, H - 440, W - 100, 283, Math.round(W * 0.0620), 'pretL', '#ffffff', e);
         c.restore();
-        inSign(c, d, W / 2, H - 64, 'rgba(255,250,244,0.82)', 'center', 16);
+        inSign(c, d, W / 2, H - 64, 'rgba(255,250,244,0.82)', 'center', Math.round(W * 0.03));
         inGrain(c, W, H, t, 0.06);
       } else if (M === 'in_g_bookmark') {
         // 책갈피 노트: 깊이감 있는 배경 사진 위에 반투명 트레싱지 책갈피 태그와 세로 감성 문구
@@ -16876,9 +16876,9 @@ function renderStoryArchetypesUI() {
         c.lineWidth = 2;
         c.beginPath(); c.moveTo(W / 2, by - 46); c.lineTo(W / 2, by + 24); c.stroke();
         const n0 = new Date();
-        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, W / 2, by + 58, '#8c7662', 'center', 12);
-        mCaption(c, caption, W / 2, by + 84, bw - 56, bh - 150, 27, 'maruL', '#2b2520', e);
-        inSign(c, d, W / 2, by + bh - 36, '#6e5c4e', 'center', 16);
+        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, W / 2, by + 58, '#8c7662', 'center', Math.round(W * 0.026));
+        mCaption(c, caption, W / 2, by + 84, bw - 56, (bh - 150) * 1.6, Math.round(W * 0.0577), 'maruL', '#2b2520', e);
+        inSign(c, d, W / 2, by + bh - 36, '#6e5c4e', 'center', Math.round(W * 0.03));
         c.restore();
         inGrain(c, W, H, t, 0.08);
       } else if (M === 'in_film') {
