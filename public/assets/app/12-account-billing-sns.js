@@ -1158,9 +1158,8 @@
     }
 
     function openLandingView() {
-      applyLandingRouteState(true);
-      try { history.pushState({ arView: 'landing' }, '', '/?landing=1'); } catch (e) {}
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // 2026-11-14: 랜딩은 가벼운 별도 페이지(/)로 분리됨 — 그쪽으로 이동
+      window.location.href = '/?landing=1';
     }
 
     window.addEventListener('popstate', () => {
@@ -1183,5 +1182,16 @@
         __arSplashTimer = setTimeout(() => dismissAutoReelsSplash(), Math.max(400, 2800 - shown));
       } else {
         dismissAutoReelsSplash();
+      }
+      // 랜딩(/)의 버튼에서 넘어온 경우: /studio?ind=업종 · /studio?plan=요금제
+      const indKey = sp.get('ind');
+      const planKey = sp.get('plan');
+      if (!showLanding && (indKey || planKey)) {
+        if (indKey && typeof AR_INDUSTRIES !== 'undefined' && AR_INDUSTRIES[indKey] && typeof setIndustry === 'function') setIndustry(indKey);
+        if (planKey && typeof BILLING_PLANS !== 'undefined' && BILLING_PLANS[planKey] && typeof openBillingCheckoutModal === 'function') {
+          selectedPlanKey = planKey;
+          setTimeout(() => openBillingCheckoutModal(false), 600);
+        }
+        try { history.replaceState({ arView: 'studio' }, '', '/studio' + (window.location.hash || '')); } catch (e) {}
       }
     })();

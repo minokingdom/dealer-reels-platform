@@ -1,0 +1,23 @@
+/* 랜딩 CSS 원본 — `npm run build:landing-css` 로 landing.css 를 만듦 (tailwind 가 랜딩에서 실제 쓰는 클래스만 뽑음) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #141415;
+  --card: #19191b;
+  --raised: #232325;
+  --border: rgba(237, 237, 237, 0.08);
+  --border-strong: rgba(237, 237, 237, 0.14);
+  --foreground: #ededed;
+}
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  word-break: keep-all;
+  font-variant-numeric: tabular-nums;
+}
+.font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.studio-card { background-color: var(--card); border: 1px solid var(--border); border-radius: 16px; }
+html { scroll-behavior: smooth; }

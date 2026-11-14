@@ -14,7 +14,7 @@ async function serve() {
     const u = decodeURIComponent(req.url.split('?')[0]);
     if (u.startsWith('/api/')) { res.writeHead(503, { 'content-type': 'application/json' }); return res.end('{"ok":false}'); }
     let f = path.join(root, u === '/' ? 'index.html' : u);
-    if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) f = path.join(root, 'index.html');
+    if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) f = path.join(root, 'studio.html');
     res.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' });
     fs.createReadStream(f).pipe(res);
   });
@@ -27,7 +27,7 @@ if (!process.argv[2]) {
   buildApp(path.resolve(root, '..'));
 }
 const srv = process.argv[2] ? null : await serve();
-const url = process.argv[2] || `http://127.0.0.1:${srv.address().port}/`;
+const url = process.argv[2] || `http://127.0.0.1:${srv.address().port}/studio`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 const pageErrors = [];

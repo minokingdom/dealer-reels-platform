@@ -46,7 +46,7 @@ async function currentUser(req) {
 function backTo(res, params) {
   const q = new URLSearchParams(params).toString();
   res.statusCode = 302;
-  res.setHeader('Location', `${siteUrl()}/?${q}#publish`);
+  res.setHeader('Location', `${siteUrl()}/studio?${q}#publish`);
   res.setHeader('Cache-Control', 'no-store');
   res.end();
 }

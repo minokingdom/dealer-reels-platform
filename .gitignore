@@ -5,3 +5,4 @@ node_modules/
 .DS_Store
 *.log
 public/assets/app/app.js
+public/assets/landing/industries.js

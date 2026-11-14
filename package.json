@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "node scripts/build-app.mjs",
-    "start": "node scripts/build-app.mjs && node server.js"
+    "start": "node scripts/build-app.mjs && node server.js",
+    "build:landing-css": "npx -y tailwindcss@3.4.17 -c tailwind.landing.config.cjs -i public/assets/landing/tailwind.input.css -o public/assets/landing/landing.css --minify"
   },
   "keywords": [
     "instagram-reels",

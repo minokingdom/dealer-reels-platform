@@ -50,7 +50,8 @@
 
 ## 프로젝트 구조
 
-- `public/index.html` + `public/assets/app/*.js` — 올인원 스튜디오 (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행). 파일 구성과 규칙은 `docs/code-structure.md`, 작업 지침은 `AGENTS.md`
+- `public/index.html` — 랜딩(`/`, 가벼운 별도 페이지)
+- `public/studio.html` + `public/assets/app/*.js` — 올인원 스튜디오(`/studio`) (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행). 파일 구성과 규칙은 `docs/code-structure.md`, 작업 지침은 `AGENTS.md`
 - `public/assets/scenes/` — 업종별 장면 사진
 - `api/` — Vercel 서버리스 함수 (계정·결제, AI 대본, TTS, 트렌드, SNS 발행, 크론)
 - `lib/server/` — DB, 세션, 요금제·사용량, 결제, SNS 공통 모듈
@@ -62,5 +63,5 @@
 
 ## 배포
 
-Vercel에 배포합니다(`vercel.json`). `/api/`, `/assets/`가 아닌 경로는 모두 `index.html`로 보냅니다.
+Vercel에 배포합니다(`vercel.json`). `/`는 랜딩(`index.html`), `/api/`·`/assets/`가 아닌 나머지 경로는 제작 화면(`studio.html`)으로 보냅니다.
 크론은 매일 01:00(UTC) `cron-billing`, 02:00(UTC) `cron-sns`가 실행됩니다.

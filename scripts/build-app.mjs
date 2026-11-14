@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import vm from 'node:vm';
 
 export function buildApp(repoRoot) {
   const dir = path.join(repoRoot, 'public', 'assets', 'app');
@@ -14,11 +15,30 @@ export function buildApp(repoRoot) {
   const body = parts.map((f) => `// ===== ${f} =====\n` + fs.readFileSync(path.join(dir, f), 'utf8').replace(/\s+$/, '') + '\n').join('\n');
   const out = `// 자동 생성 파일 — 고치지 마세요. 원본: public/assets/app/NN-*.js (scripts/build-app.mjs)\n` + body;
   fs.writeFileSync(path.join(dir, 'app.js'), out);
-  return { parts: parts.length, bytes: Buffer.byteLength(out) };
+  const lp = buildLandingIndustries(repoRoot);
+  return { parts: parts.length, bytes: Buffer.byteLength(out), landingIndustries: lp };
+}
+
+// 랜딩(/)용 업종 데이터: 01-industries.js 의 AR_INDUSTRIES 에서 미리보기에 필요한 필드만 뽑아 작은 파일로
+// (랜딩이 1.7MB 제작 화면 코드를 받지 않게)
+export function buildLandingIndustries(repoRoot) {
+  const src = fs.readFileSync(path.join(repoRoot, 'public', 'assets', 'app', '01-industries.js'), 'utf8');
+  const a = src.indexOf('const AR_INDUSTRIES = {');
+  if (a < 0) throw new Error('AR_INDUSTRIES not found');
+  let depth = 0, i = src.indexOf('{', a), end = -1;
+  for (; i < src.length; i++) { const ch = src[i]; if (ch === '{') depth++; else if (ch === '}') { depth--; if (depth === 0) { end = i + 1; break; } } }
+  const obj = vm.runInNewContext('(' + src.slice(src.indexOf('{', a), end) + ')', {});
+  const KEEP = ['key', 'name', 'icon', 'role', 'title', 'product', 'place', 'cta', 'promise', 'vlogDone', 'chatAsk', 'hashtags', 'branchPlaceholder', 'promoPlaceholder'];
+  const slim = {};
+  for (const [k, v] of Object.entries(obj)) { slim[k] = {}; for (const f of KEEP) if (v[f] !== undefined) slim[k][f] = v[f]; }
+  const out = '// 자동 생성 — 고치지 마세요 (scripts/build-app.mjs, 원본 01-industries.js)\nwindow.AR_LP_INDUSTRIES = ' + JSON.stringify(slim) + ';\n';
+  fs.mkdirSync(path.join(repoRoot, 'public', 'assets', 'landing'), { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, 'public', 'assets', 'landing', 'industries.js'), out);
+  return Object.keys(slim).length;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const r = buildApp(root);
-  console.log(`app.js built from ${r.parts} parts, ${r.bytes} bytes`);
+  console.log(`app.js built from ${r.parts} parts, ${r.bytes} bytes; landing industries: ${r.landingIndustries}`);
 }

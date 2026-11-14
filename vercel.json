@@ -28,8 +28,12 @@
   },
   "rewrites": [
     {
-      "source": "/((?!api/|assets/).*)",
+      "source": "/intro",
       "destination": "/index.html"
+    },
+    {
+      "source": "/((?!api/|assets/).*)",
+      "destination": "/studio.html"
     }
   ],
   "crons": [

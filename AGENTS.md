@@ -4,13 +4,17 @@
 같은 실수가 반복되지 않도록 실제로 겪은 문제를 기준으로 적었습니다. 사용자 답변과 코드 주석은 한국어로 씁니다.
 
 ## 1. 코드 위치 (2026-11-14 구조 변경)
-- 화면은 `public/index.html`(HTML 뼈대만) + `public/assets/app/` 스크립트 13개·CSS 2개입니다. 파일별 내용은 `docs/code-structure.md`.
+- **주소와 파일:** `/`는 랜딩 `public/index.html`(가벼운 별도 페이지), `/studio`와 그 밖의 주소는 제작 화면 `public/studio.html`(HTML 뼈대만) + `public/assets/app/` 스크립트 13개·CSS입니다. 파일별 내용은 `docs/code-structure.md`.
 - **고칠 곳은 `public/` 아래뿐입니다.** Vercel은 `public/`만 배포합니다. 루트 `index.html`은 없앴으니 다시 만들거나 복사하지 마세요.
-- 원본 13개 파일을 `scripts/build-app.mjs`가 번호 순서대로 합쳐 `public/assets/app/app.js`를 만들고, `index.html`은 그 하나만 불러옵니다(Vercel 배포·`npm start`·스모크 테스트가 자동으로 합침). **`app.js`는 자동 생성 파일 — 직접 고치거나 커밋하지 마세요.** 모든 파일이 전역 이름을 공유합니다.
+- 원본 13개 파일을 `scripts/build-app.mjs`가 번호 순서대로 합쳐 `public/assets/app/app.js`를 만들고, `studio.html`은 그 하나만 불러옵니다(Vercel 배포·`npm start`·스모크 테스트가 자동으로 합침). **`app.js`는 자동 생성 파일 — 직접 고치거나 커밋하지 마세요.** 모든 파일이 전역 이름을 공유합니다.
   - 파일을 따로 불러오게 되돌리지 마세요. 파일 사이에 타이머가 끼어들어 썸네일이 멈추는 문제가 있었습니다.
   - `type="module"`, `defer`, `async`로 바꾸지 마세요.
   - 파일을 **불러오는 순간** 실행되는 코드(최상위 호출·변수 초기값)에서 뒤 번호 파일의 함수·변수를 쓰면 안 됩니다. 버튼 클릭이나 화면이 다 뜬 뒤 실행되는 코드는 괜찮습니다.
-  - 새 기능은 맞는 번호 파일에 넣습니다. 새 파일이 필요하면 `index.html`의 순서 목록과 `docs/code-structure.md`를 같이 고칩니다.
+  - 새 기능은 맞는 번호 파일에 넣습니다. 새 파일이 필요하면 `studio.html`의 순서 목록과 `docs/code-structure.md`를 같이 고칩니다.
+- **랜딩(`public/index.html`)은 제작 화면 코드를 받지 않습니다.** 제작 화면의 1.7MB 스크립트·글꼴을 받으면 랜딩이 늦게 뜹니다(예전 4.5MB → 지금 약 0.4MB).
+  - 스타일은 tailwind 로 미리 만든 `public/assets/landing/landing.css`. 랜딩 마크업·`landing.js`의 클래스를 바꾸면 `npm run build:landing-css`로 다시 만들어 커밋합니다.
+  - 업종 미리보기 데이터는 배포 때 `scripts/build-app.mjs`가 `01-industries.js`에서 뽑아 `assets/landing/industries.js`(자동 생성, 커밋 안 함)를 만듭니다.
+  - 랜딩 버튼은 `/studio`, `/studio?ind=업종`, `/studio?plan=요금제`로 이동합니다. 제작 화면을 한 번 연 사람은 `/`에서 바로 `/studio`로 갑니다(`/?landing=1`·`/intro`는 항상 랜딩).
 - 서버 함수는 `api/*.js`입니다. Vercel 무료 한도(함수 12개) 때문에 **새 API 파일을 만들지 말고** 기존 파일에 `mode`를 추가합니다(예: `generate-script.js`의 `mode:'topics'`).
 
 ## 2. 작업 순서
