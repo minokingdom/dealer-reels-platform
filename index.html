@@ -551,12 +551,16 @@
             <!-- 인스타 스타일 상단 HUD 툴바 + 하단 휴지통/조절바 + 바텀시트 + 텍스트 입력 모드 -->
             <div id="igEditorHud" class="hidden absolute inset-0 z-20 pointer-events-none select-none">
               <!-- 상단 바: 좌측 컷 표시 / 우측 원형 아이콘 툴바 -->
-              <div id="igTopBar" class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 pointer-events-none">
-                <span id="igCutBadge" class="pointer-events-auto px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-white">1컷</span>
-                <div class="pointer-events-auto flex items-center gap-1.5">
+              <div id="igTopBar" class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5 pointer-events-none">
+                <span id="igCutBadge" class="pointer-events-auto px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-white shrink-0">1컷</span>
+                <div class="pointer-events-auto flex items-center gap-1">
+                  <button type="button" id="igUndoBtn" onclick="undoCutOverlay()" class="hidden w-7 h-7 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white text-[13px] flex items-center justify-center cursor-pointer active:scale-90 transition" title="되돌리기">↩</button>
                   <button type="button" onclick="openIgTextCompose(-1)" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white text-[13px] font-bold flex items-center justify-center cursor-pointer active:scale-90 transition" title="글씨 넣기">Aa</button>
                   <button type="button" onclick="openIgSheet('sticker')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="스티커 넣기">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/><path d="M8 13h.01"/><path d="M16 13h.01"/><path d="M9.5 16.5a3.5 3.5 0 0 0 5 0"/></svg>
+                  </button>
+                  <button type="button" onclick="openIgSheet('filter')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="컷 색감 필터">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="4.5"/><circle cx="8.5" cy="14.5" r="4.5"/><circle cx="15.5" cy="14.5" r="4.5"/></svg>
                   </button>
                   <button type="button" onclick="openIgSheet('deco')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="꾸밈효과">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
@@ -568,14 +572,27 @@
               <div id="igTrashZone" class="hidden absolute bottom-5 left-1/2 -translate-x-1/2 w-11 h-11 rounded-full bg-black/65 backdrop-blur-md border border-white/30 text-white flex items-center justify-center transition-all duration-150 pointer-events-none shadow-lg">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
               </div>
-              <!-- 선택된 요소 하단 컨트롤 필 (크기 슬라이더 + 회전 + 수정) -->
-              <div id="igSelectedBar" class="hidden pointer-events-auto absolute bottom-3 left-3 right-3 rounded-full bg-black/70 backdrop-blur-md border border-white/15 px-3 py-1.5 flex items-center gap-2 text-white">
-                <span class="text-[10px] text-white/70 shrink-0">크기</span>
-                <input id="igSelectedScaleSlider" type="range" min="0.45" max="2.5" step="0.05" value="1" oninput="setSelectedOverlayScale(this.value)" class="flex-1 min-w-0 accent-white h-1 cursor-pointer" />
-                <button type="button" onclick="nudgeSelectedOverlayRot(-10)" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[11px] flex items-center justify-center cursor-pointer shrink-0" title="회전">↺</button>
-                <button type="button" onclick="nudgeSelectedOverlayRot(10)" class="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-[11px] flex items-center justify-center cursor-pointer shrink-0" title="회전">↻</button>
-                <button type="button" id="igSelectedEditBtn" onclick="editSelectedOverlayText()" class="hidden px-2 h-6 rounded-full bg-white/15 hover:bg-white/25 text-[10px] font-semibold cursor-pointer shrink-0">수정</button>
-                <button type="button" onclick="removeSelectedOverlay()" class="w-6 h-6 rounded-full bg-[#e5484d]/25 hover:bg-[#e5484d] text-[#fca5a5] hover:text-white text-[11px] flex items-center justify-center cursor-pointer shrink-0" title="삭제">✕</button>
+              <!-- 선택된 요소 하단 컨트롤 필 -->
+              <div id="igSelectedBar" class="hidden pointer-events-auto absolute bottom-2.5 left-2.5 right-2.5 rounded-[14px] bg-black/75 backdrop-blur-md border border-white/15 px-2.5 py-2 space-y-1.5 text-white">
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-white/70 shrink-0">크기</span>
+                  <input id="igSelectedScaleSlider" type="range" min="0.45" max="2.5" step="0.05" value="1" oninput="setSelectedOverlayScale(this.value)" class="flex-1 min-w-0 accent-white h-1 cursor-pointer" />
+                  <button type="button" id="igSelectedAlphaBtn" onclick="cycleSelectedOverlayAlpha()" class="px-1.5 h-5 rounded-full bg-white/10 hover:bg-white/20 text-[10px] cursor-pointer shrink-0" title="투명도">100%</button>
+                  <button type="button" id="igSelectedAnimBtn" onclick="cycleSelectedOverlayAnim()" class="px-1.5 h-5 rounded-full bg-[#38bdf8]/20 hover:bg-[#38bdf8]/35 text-[#38bdf8] text-[10px] font-semibold cursor-pointer shrink-0" title="등장 모션">고정</button>
+                </div>
+                <div class="flex items-center justify-between gap-1 text-[10px]">
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="nudgeSelectedOverlayRot(-10)" class="px-1.5 h-6 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer" title="왼쪽 회전">↺</button>
+                    <button type="button" onclick="nudgeSelectedOverlayRot(10)" class="px-1.5 h-6 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer" title="오른쪽 회전">↻</button>
+                    <button type="button" onclick="resetSelectedOverlayRot()" class="px-1.5 h-6 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer" title="각도 0°">0°</button>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="duplicateSelectedOverlay()" class="px-2 h-6 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer" title="복제">복제</button>
+                    <button type="button" onclick="copySelectedOverlayToAllCuts()" class="px-2 h-6 rounded-full bg-white/10 hover:bg-white/20 cursor-pointer" title="모든 컷에 복사">전체컷</button>
+                    <button type="button" id="igSelectedEditBtn" onclick="editSelectedOverlayItem()" class="hidden px-2 h-6 rounded-full bg-white/20 hover:bg-white/30 font-semibold cursor-pointer">수정</button>
+                    <button type="button" onclick="removeSelectedOverlay()" class="w-6 h-6 rounded-full bg-[#e5484d]/25 hover:bg-[#e5484d] text-[#fca5a5] hover:text-white flex items-center justify-center cursor-pointer" title="삭제">✕</button>
+                  </div>
+                </div>
               </div>
               <!-- 인스타 스타일 Bottom Sheet (스티커 / 꾸밈효과) -->
               <div id="igSheetBackdrop" class="hidden pointer-events-auto absolute inset-0 bg-black/45 flex flex-col justify-end" onclick="if(event.target===this)closeIgSheet()">
@@ -17484,6 +17501,22 @@ function renderStoryArchetypesUI() {
       { text: 'DM문의', bg: '#db2777', fg: '#ffffff' },
       { text: 'SOLD OUT', bg: '#27272a', fg: '#f87171' }
     ];
+    const CUT_FILTER_OPTIONS = [
+      { id: 'none', label: '원본', tint: '', alpha: 0 },
+      { id: 'clear', label: '맑은톤', tint: 'rgba(224,242,254,0.12)', mode: 'screen' },
+      { id: 'warm', label: '따뜻함', tint: 'rgba(251,146,60,0.16)', mode: 'soft-light' },
+      { id: 'cinema', label: '시네마', tint: 'rgba(20,83,45,0.18)', mode: 'overlay' },
+      { id: 'mono', label: '흑백', mono: true },
+      { id: 'vivid', label: '비비드', tint: 'rgba(236,72,153,0.12)', mode: 'overlay' },
+      { id: 'pastel', label: '파스텔', tint: 'rgba(253,224,71,0.12)', mode: 'screen' },
+      { id: 'mood', label: '무드다크', tint: 'rgba(9,9,11,0.28)', mode: 'multiply' }
+    ];
+    const CUT_OVERLAY_ANIMS = [
+      { id: 'static', label: '고정' },
+      { id: 'pop', label: '팝업' },
+      { id: 'slide', label: '슬라이드' },
+      { id: 'float', label: '둥실' }
+    ];
     window.__arPinnedCut = -1;
     window.__arCutEditorTab = 'deco';
     window.__arCutTextFont = 'dohyeon';
@@ -17491,7 +17524,9 @@ function renderStoryArchetypesUI() {
     window.__arCutTextAlign = 'center';
     window.__arCutTextColor = '#ffffff';
     window.__arIgStickerTab = 'widget';
+    window.__arIgSheetMode = 'sticker';
     window.__arSelectedOverlayIdx = -1;
+    window.__arOverlayUndo = [];
 
     function loadCutDecos() {
       try {
@@ -17504,12 +17539,37 @@ function renderStoryArchetypesUI() {
         const arrO = rawO ? JSON.parse(rawO) : [];
         campaign.cutOverlays = Array.isArray(arrO) ? arrO : [];
       } catch (e) { campaign.cutOverlays = []; }
+      try {
+        const rawF = localStorage.getItem('autoreels_cut_filters');
+        const arrF = rawF ? JSON.parse(rawF) : [];
+        campaign.cutFilters = Array.isArray(arrF) ? arrF : [];
+      } catch (e) { campaign.cutFilters = []; }
     }
     function saveCutDecos() {
       try { localStorage.setItem('autoreels_cut_decos', JSON.stringify(campaign.cutDecos || [])); } catch (e) {}
     }
     function saveCutOverlays() {
       try { localStorage.setItem('autoreels_cut_overlays', JSON.stringify(campaign.cutOverlays || [])); } catch (e) {}
+    }
+    function saveCutFilters() {
+      try { localStorage.setItem('autoreels_cut_filters', JSON.stringify(campaign.cutFilters || [])); } catch (e) {}
+    }
+    function pushCutOverlayUndo() {
+      try {
+        window.__arOverlayUndo.push(JSON.stringify(campaign.cutOverlays || []));
+        if (window.__arOverlayUndo.length > 20) window.__arOverlayUndo.shift();
+      } catch (e) {}
+    }
+    function undoCutOverlay() {
+      if (!window.__arOverlayUndo || !window.__arOverlayUndo.length) return;
+      try {
+        const prev = JSON.parse(window.__arOverlayUndo.pop());
+        campaign.cutOverlays = Array.isArray(prev) ? prev : [];
+        window.__arSelectedOverlayIdx = -1;
+        saveCutOverlays();
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+        renderPreviewCutPinBar();
+      } catch (e) {}
     }
     function getCutOverlayList(cutIdx) {
       if (!Array.isArray(campaign.cutOverlays)) campaign.cutOverlays = [];
@@ -17537,7 +17597,7 @@ function renderStoryArchetypesUI() {
       const sub = item.sub || '';
       c.save();
       if (k === 'loc') {
-        const txt = `📍 ${(typeof IND !== 'undefined' && IND.place) ? IND.place : 'SEOUL HOTPLACE'}`;
+        const txt = item.customText || `📍 ${(typeof IND !== 'undefined' && IND.place) ? IND.place : 'SEOUL HOTPLACE'}`;
         c.font = `800 ${Math.round(25 * sc)}px 'Pretendard', 'Noto Sans KR', sans-serif`;
         const bw = Math.max(210 * sc, c.measureText(txt).width + 44 * sc);
         const bh = 54 * sc;
@@ -17606,7 +17666,7 @@ function renderStoryArchetypesUI() {
         c.shadowBlur = 0;
         c.fillStyle = '#09090b';
         c.font = `800 ${Math.round(19 * sc)}px 'Pretendard', sans-serif`;
-        c.fillText('지금 느낌 어때요?', 0, -28 * sc);
+        c.fillText(item.customText || '지금 느낌 어때요?', 0, -28 * sc);
         gRoundRect(c, -bw / 2 + 14 * sc, -4 * sc, bw - 28 * sc, 36 * sc, 10 * sc);
         c.fillStyle = '#f4f4f5';
         c.fill();
@@ -17649,7 +17709,7 @@ function renderStoryArchetypesUI() {
         c.fill();
         c.fillStyle = '#09090b';
         c.font = `900 ${Math.round(23 * sc)}px 'Do Hyeon', 'Pretendard', sans-serif`;
-        c.fillText(arPriceTag() || 'SPECIAL PRICE', 10 * sc, 2);
+        c.fillText(item.customText || arPriceTag() || 'SPECIAL PRICE', 10 * sc, 2);
       } else if (k === 'stars5') {
         const bw = 210 * sc, bh = 54 * sc;
         c.shadowColor = 'rgba(0,0,0,0.45)';
@@ -17674,7 +17734,7 @@ function renderStoryArchetypesUI() {
         c.shadowBlur = 0;
         c.fillStyle = '#18181b';
         c.font = `800 ${Math.round(18 * sc)}px 'Pretendard', sans-serif`;
-        c.fillText('💬 편하게 DM 주세요!', 0, -10 * sc);
+        c.fillText(item.customText || '💬 편하게 DM 주세요!', 0, -10 * sc);
         c.fillStyle = '#71717a';
         c.font = `500 ${Math.round(14 * sc)}px 'Pretendard', sans-serif`;
         c.fillText('예약 · 가격 · 상담 환영', 0, 16 * sc);
@@ -17759,13 +17819,29 @@ function renderStoryArchetypesUI() {
       c.restore();
     }
 
-    function drawSingleCutOverlayItem(c, W, H, item) {
+    function drawSingleCutOverlayItem(c, W, H, item, localT) {
       if (!item) return;
+      const anim = item.anim || 'static';
+      const lt = typeof localT === 'number' ? Math.max(0, localT) : 1;
+      let animScale = 1, animY = 0, animAlpha = 1;
+      if (anim === 'pop' && lt < 0.35) {
+        const p = lt / 0.35;
+        animScale = 0.4 + 0.6 * (1 + Math.sin(p * Math.PI * 1.1) * 0.14) * Math.min(1, p * 1.2);
+        animAlpha = Math.min(1, p * 2.2);
+      } else if (anim === 'slide' && lt < 0.4) {
+        const p = 1 - Math.pow(1 - lt / 0.4, 3);
+        animY = (1 - p) * 48;
+        animAlpha = p;
+      } else if (anim === 'float') {
+        animY = Math.sin(lt * 3.8) * 7;
+      }
       const px = (typeof item.x === 'number' ? item.x : 0.5) * W;
-      const py = (typeof item.y === 'number' ? item.y : 0.5) * H;
-      const sc = Math.max(0.4, Math.min(3.0, Number(item.scale) || 1));
+      const py = (typeof item.y === 'number' ? item.y : 0.5) * H + animY;
+      const sc = Math.max(0.4, Math.min(3.0, Number(item.scale) || 1)) * animScale;
       const rot = ((Number(item.rot) || 0) * Math.PI) / 180;
+      const itemAlpha = (typeof item.alpha === 'number' ? item.alpha : 1) * animAlpha;
       c.save();
+      c.globalAlpha *= Math.max(0, Math.min(1, itemAlpha));
       c.translate(px, py);
       c.rotate(rot);
       c.textAlign = 'center';
@@ -17877,6 +17953,24 @@ function renderStoryArchetypesUI() {
     function drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V) {
       if (t >= mainDuration) return;
       const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
+      const localT = t - cutIdx * cutDur;
+      const filterId = (campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+      if (filterId && filterId !== 'none') {
+        const fObj = CUT_FILTER_OPTIONS.find((f) => f.id === filterId);
+        if (fObj) {
+          c.save();
+          if (fObj.mono) {
+            c.globalCompositeOperation = 'saturation';
+            c.fillStyle = '#000000';
+            c.fillRect(0, 0, W, H);
+          } else if (fObj.tint) {
+            c.globalCompositeOperation = fObj.mode || 'overlay';
+            c.fillStyle = fObj.tint;
+            c.fillRect(0, 0, W, H);
+          }
+          c.restore();
+        }
+      }
       const decoKey = (campaign.cutDecos && campaign.cutDecos[cutIdx]) || '';
       if (decoKey && decoKey !== 'none' && typeof kitDeco === 'function') {
         const specLike = { deco: decoKey, label: (design && design.label) || '' };
@@ -17888,7 +17982,7 @@ function renderStoryArchetypesUI() {
       }
       const overlays = (campaign.cutOverlays && campaign.cutOverlays[cutIdx]) || [];
       if (Array.isArray(overlays) && overlays.length) {
-        overlays.forEach((item) => drawSingleCutOverlayItem(c, W, H, item));
+        overlays.forEach((item) => drawSingleCutOverlayItem(c, W, H, item, localT));
       }
     }
 
@@ -17898,9 +17992,10 @@ function renderStoryArchetypesUI() {
       const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
       const decos = Array.isArray(campaign.cutDecos) ? campaign.cutDecos : [];
       const ovs = Array.isArray(campaign.cutOverlays) ? campaign.cutOverlays : [];
+      const flts = Array.isArray(campaign.cutFilters) ? campaign.cutFilters : [];
       bar.innerHTML = Array.from({ length: n }, (_, i) => {
         const pinned = window.__arPinnedCut === i;
-        const hasDeco = (decos[i] && decos[i] !== 'none') || (Array.isArray(ovs[i]) && ovs[i].length > 0);
+        const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || (Array.isArray(ovs[i]) && ovs[i].length > 0);
         return `<button type="button" onclick="togglePinPreviewCut(${i})" class="px-2 py-0.5 rounded-[6px] text-[11px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
       }).join('');
       renderIgEditorHud();
@@ -17910,8 +18005,11 @@ function renderStoryArchetypesUI() {
     function renderIgEditorHud() {
       const hud = document.getElementById('igEditorHud');
       const badge = document.getElementById('igCutBadge');
+      const undoBtn = document.getElementById('igUndoBtn');
       const selBar = document.getElementById('igSelectedBar');
       const slider = document.getElementById('igSelectedScaleSlider');
+      const alphaBtn = document.getElementById('igSelectedAlphaBtn');
+      const animBtn = document.getElementById('igSelectedAnimBtn');
       const editBtn = document.getElementById('igSelectedEditBtn');
       const presetHandle = document.getElementById('presetHandle');
       if (!hud) return;
@@ -17925,13 +18023,20 @@ function renderStoryArchetypesUI() {
         return;
       }
       if (badge) badge.textContent = `${cutIdx + 1}컷 편집`;
+      if (undoBtn) undoBtn.classList.toggle('hidden', !window.__arOverlayUndo || window.__arOverlayUndo.length === 0);
       const list = getCutOverlayList(cutIdx);
       const selIdx = window.__arSelectedOverlayIdx;
       const selItem = selIdx >= 0 ? list[selIdx] : null;
       if (selBar) selBar.classList.toggle('hidden', !selItem);
       if (selItem) {
         if (slider) slider.value = Number(selItem.scale) || 1;
-        if (editBtn) editBtn.classList.toggle('hidden', selItem.type !== 'text');
+        if (alphaBtn) alphaBtn.textContent = `${Math.round((typeof selItem.alpha === 'number' ? selItem.alpha : 1) * 100)}%`;
+        if (animBtn) {
+          const aObj = CUT_OVERLAY_ANIMS.find((a) => a.id === (selItem.anim || 'static')) || CUT_OVERLAY_ANIMS[0];
+          animBtn.textContent = aObj.label;
+        }
+        const canEdit = selItem.type === 'text' || (selItem.type === 'sticker' && selItem.variant === 'widget' && ['loc', 'poll', 'tag', 'dm'].includes(selItem.key));
+        if (editBtn) editBtn.classList.toggle('hidden', !canEdit);
       }
     }
 
@@ -17979,6 +18084,7 @@ function renderStoryArchetypesUI() {
       const body = document.getElementById('igSheetContent');
       const applyAll = document.getElementById('igSheetApplyAllBtn');
       if (!back || !body) return;
+      window.__arIgSheetMode = mode;
       back.classList.remove('hidden');
       if (mode === 'deco') {
         if (title) title.textContent = `${cutIdx + 1}컷 꾸밈효과`;
@@ -17988,11 +18094,26 @@ function renderStoryArchetypesUI() {
           const on = cur === o.id;
           return `<button type="button" onclick="setCutDeco(${cutIdx}, '${o.id}');closeIgSheet()" class="py-2 px-1 rounded-[10px] text-[11px] border cursor-pointer transition ${on ? 'bg-white text-[#09090b] border-white font-bold' : 'bg-white/5 border-white/10 text-[#e4e4e7] hover:bg-white/10'}">${o.label}</button>`;
         }).join('')}</div>`;
+      } else if (mode === 'filter') {
+        if (title) title.textContent = `${cutIdx + 1}컷 색감 필터`;
+        if (applyAll) applyAll.classList.remove('hidden');
+        const curF = (campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+        body.innerHTML = `<div class="grid grid-cols-4 gap-1.5">${CUT_FILTER_OPTIONS.map((f) => {
+          const on = curF === f.id;
+          return `<button type="button" onclick="setCutFilter(${cutIdx}, '${f.id}');closeIgSheet()" class="py-2 px-1 rounded-[10px] text-[11px] border cursor-pointer transition ${on ? 'bg-white text-[#09090b] border-white font-bold' : 'bg-white/5 border-white/10 text-[#e4e4e7] hover:bg-white/10'}">${f.label}</button>`;
+        }).join('')}</div>`;
       } else {
         if (title) title.textContent = '스티커';
         if (applyAll) applyAll.classList.add('hidden');
         renderIgStickerSheetBody();
       }
+    }
+    function setCutFilter(idx, filterId) {
+      if (!Array.isArray(campaign.cutFilters)) campaign.cutFilters = [];
+      campaign.cutFilters[idx] = filterId;
+      saveCutFilters();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
     }
     function closeIgSheet() {
       const back = document.getElementById('igSheetBackdrop');
@@ -18106,6 +18227,7 @@ function renderStoryArchetypesUI() {
       if (!commit || cutIdx < 0 || !ta) return;
       const txt = ta.value.trim();
       if (!txt) return;
+      pushCutOverlayUndo();
       const list = getCutOverlayList(cutIdx);
       if (window.__arEditingOverlayIdx >= 0 && list[window.__arEditingOverlayIdx]) {
         const it = list[window.__arEditingOverlayIdx];
@@ -18140,6 +18262,7 @@ function renderStoryArchetypesUI() {
     function addCutStickerOverlay(variant, val) {
       const idx = window.__arPinnedCut;
       if (idx < 0) return;
+      pushCutOverlayUndo();
       const list = getCutOverlayList(idx);
       const offset = ((list.length % 5) - 2) * 0.04;
       if (variant === 'widget') {
@@ -18181,14 +18304,94 @@ function renderStoryArchetypesUI() {
       if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       renderCutOverlayEditorLayer();
     }
-    function editSelectedOverlayText() {
-      const ii = window.__arSelectedOverlayIdx;
-      if (ii >= 0) openIgTextCompose(ii);
+    function resetSelectedOverlayRot() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const it = getCutOverlayList(idx)[ii];
+      if (!it) return;
+      it.rot = 0;
+      saveCutOverlays();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderCutOverlayEditorLayer();
+    }
+    function cycleSelectedOverlayAlpha() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const it = getCutOverlayList(idx)[ii];
+      if (!it) return;
+      const steps = [1, 0.72, 0.45];
+      const cur = typeof it.alpha === 'number' ? it.alpha : 1;
+      const next = steps.find((s) => s < cur - 0.05) || 1;
+      it.alpha = next;
+      saveCutOverlays();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderIgEditorHud();
+    }
+    function cycleSelectedOverlayAnim() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const it = getCutOverlayList(idx)[ii];
+      if (!it) return;
+      const ids = CUT_OVERLAY_ANIMS.map((a) => a.id);
+      const cur = ids.indexOf(it.anim || 'static');
+      it.anim = ids[(cur + 1) % ids.length];
+      saveCutOverlays();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderIgEditorHud();
+    }
+    function duplicateSelectedOverlay() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const list = getCutOverlayList(idx);
+      const it = list[ii];
+      if (!it) return;
+      pushCutOverlayUndo();
+      const clone = JSON.parse(JSON.stringify(it));
+      clone.x = Math.min(0.88, (clone.x ?? 0.5) + 0.05);
+      clone.y = Math.min(0.88, (clone.y ?? 0.5) + 0.05);
+      list.push(clone);
+      window.__arSelectedOverlayIdx = list.length - 1;
+      saveCutOverlays();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
+    }
+    function copySelectedOverlayToAllCuts() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const it = getCutOverlayList(idx)[ii];
+      if (!it) return;
+      pushCutOverlayUndo();
+      const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      for (let k = 0; k < n; k++) {
+        if (k === idx) continue;
+        getCutOverlayList(k).push(JSON.parse(JSON.stringify(it)));
+      }
+      saveCutOverlays();
+      renderPreviewCutPinBar();
+      if (typeof arToast === 'function') arToast('📌 선택한 요소를 모든 컷에 복사했습니다');
+    }
+    function editSelectedOverlayItem() {
+      const idx = window.__arPinnedCut, ii = window.__arSelectedOverlayIdx;
+      if (idx < 0 || ii < 0) return;
+      const it = getCutOverlayList(idx)[ii];
+      if (!it) return;
+      if (it.type === 'text') {
+        openIgTextCompose(ii);
+      } else if (it.type === 'sticker' && it.variant === 'widget') {
+        const next = prompt('위젯 문구 수정', it.customText || '');
+        if (next !== null) {
+          pushCutOverlayUndo();
+          it.customText = next.trim();
+          saveCutOverlays();
+          if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+        }
+      }
     }
     function removeSelectedOverlay() {
       const idx = window.__arPinnedCut;
       const ii = window.__arSelectedOverlayIdx;
       if (idx < 0 || ii < 0) return;
+      pushCutOverlayUndo();
       getCutOverlayList(idx).splice(ii, 1);
       window.__arSelectedOverlayIdx = -1;
       saveCutOverlays();
@@ -18313,6 +18516,7 @@ function renderStoryArchetypesUI() {
             if (trash) trash.classList.add('hidden');
             if (topBar) topBar.classList.remove('opacity-0');
             if (wasTrash) {
+              pushCutOverlayUndo();
               getCutOverlayList(window.__arPinnedCut).splice(finishedIdx, 1);
               window.__arSelectedOverlayIdx = -1;
               if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
@@ -18364,10 +18568,17 @@ function renderStoryArchetypesUI() {
     function applyCutDecoToAll() {
       const idx = window.__arPinnedCut;
       if (idx < 0) return;
-      const cur = (campaign.cutDecos && campaign.cutDecos[idx]) || 'none';
       const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
-      campaign.cutDecos = Array.from({ length: n }, () => cur);
-      saveCutDecos();
+      if (window.__arIgSheetMode === 'filter') {
+        const curF = (campaign.cutFilters && campaign.cutFilters[idx]) || 'none';
+        campaign.cutFilters = Array.from({ length: n }, () => curF);
+        saveCutFilters();
+      } else {
+        const cur = (campaign.cutDecos && campaign.cutDecos[idx]) || 'none';
+        campaign.cutDecos = Array.from({ length: n }, () => cur);
+        saveCutDecos();
+      }
+      closeIgSheet();
       if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       renderPreviewCutPinBar();
     }
