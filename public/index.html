@@ -14750,7 +14750,12 @@ function renderStoryArchetypesUI() {
     }
 
     // 지금 업종에서 보여 줄 디자인: 업종 전용 테마 + 공통 테마 (자동차 전용 고전 테마·테크는 자동차에서만)
+    // 2026-11-14 정리: 핀터레스트 인스타 감성 기준으로 서로 비슷하거나(도형 전환 6종·어두운 사진+굵은 자막 상자 4종)
+    // 유행이 지난 모션(블롭·터널·이퀄라이저·큐브·하프톤·터미널)은 목록에서 뺌
+    const AR_RETIRED_DESIGNS = new Set(['g_diamond', 'g_hex', 'g_blocks', 'g_ringpop', 'g_diagshape', 'g_cardhex',
+      's_shoplive', 'b_sale', 'u_compare', 'k2_stack', 'ev_terminal', 'mo_blob', 'mo_tunnel', 'mo_eq', 'mo_cube', 'mo_dots']);
     function arDesignVisible(ds) {
+      if (AR_RETIRED_DESIGNS.has(ds.id)) return false;
       const key = typeof IND !== 'undefined' ? IND.key : 'auto';
       if (ds.industry) return ds.industry === key;
       // 자동차가 아닌 업종: 그 업종 전용 테마 + 업종 색으로 물드는 모션 템플릿만 (자동차 판매용 공통 디자인은 숨김)
@@ -15053,7 +15058,7 @@ function renderStoryArchetypesUI() {
       const dsel = DESIGN_STYLES.find((d) => d.id === id);
       applyDesignBgm(dsel, true);
       if (dsel && (dsel.engine === 'kit' || dsel.engine === 'motion')) {
-        Promise.all([dsel.font, dsel.sfont, dsel.engine === 'kit' ? 'brush' : null, dsel.insta ? 'maruL' : null, dsel.insta ? 'pretL' : null].filter(Boolean).map(kitEnsureFont)).then(() => {
+        Promise.all([dsel.font, dsel.sfont, dsel.engine === 'kit' ? 'brush' : null, dsel.insta ? 'maruL' : null, dsel.insta ? 'pretL' : null, dsel.insta ? 'maru' : null, dsel.insta ? 'pretM' : null].filter(Boolean).map(kitEnsureFont)).then(() => {
           if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
         });
       }
@@ -15214,7 +15219,13 @@ function renderStoryArchetypesUI() {
       ['in_diary', '다이어리 노트', 'in_diary', 'pen', '#fbf8f1', '#f6f1e6', '#b07a5a', '#3b2f28', true],
       ['in_letter', '미니멀 레터', 'in_letter', 'pretL', '#f7f5f0', '#f2efe8', '#9a8f80', '#2a2724', true],
       ['in_vlog', '브이로그 타임스탬프', 'in_vlog', 'pretM', '#111111', '#0b0b0b', '#f5e6c8', '#ffffff', false],
-      ['in_collage', '크림 콜라주', 'in_collage', 'maru', '#efe7da', '#e9dfcf', '#a0785a', '#2d2621', true]
+      ['in_collage', '크림 콜라주', 'in_collage', 'maru', '#efe7da', '#e9dfcf', '#a0785a', '#2d2621', true],
+      // 핀터레스트 "인스타 릴스 감성 템플릿"에서 자주 보이는 형식 (2026-11-14 확인)
+      ['in_music', '뮤직 플레이어', 'in_music', 'maru', '#1a1512', '#120e0c', '#e8d5bc', '#ffffff', false],
+      ['in_memo', '아이폰 메모', 'in_memo', 'pretM', '#fbfaf7', '#f7f5f0', '#e0a400', '#1c1c1e', true],
+      ['in_lock', '잠금화면 시계', 'in_lock', 'pretL', '#111111', '#0b0b0b', '#ffffff', '#ffffff', false],
+      ['in_dump', '포토덤프 리캡', 'in_dump', 'pen', '#f4efe6', '#efe8dc', '#c2603f', '#2d2621', true],
+      ['in_cal', '캘린더 카드', 'in_cal', 'maru', '#f3ece1', '#efe6d8', '#c2603f', '#2b2622', true]
     ];
     // 모션 디자인도 별도 분류를 만들지 않고 기존 분류에 넣음
     const MOTION_CAT = {
@@ -15223,7 +15234,8 @@ function renderStoryArchetypesUI() {
       mo_doors: '고급', mo_bounce: '타이포', ig_story: '브이로그', ig_feed: '브이로그', ig_poll: '재미', mo_vhs: '브이로그',
       mo_neon: '재미', mo_scrap: '감성', mo_punch: '스포츠', mo_cube: '테크', mo_glow: '감성', mo_bokeh: '고급',
       mo_cinema: '고급', mo_credits: '뉴스·방송',
-      in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그'
+      in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
+      in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성'
     };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
@@ -16313,6 +16325,189 @@ function renderStoryArchetypesUI() {
         c.restore();
         inLabel(c, inDateLabel(), 40, H - 120, '#8a7a6b');
         inSign(c, d, 40, H - 92, '#6f6156', 'left', 17);
+        inGrain(c, W, H, t, 0.06);
+      } else if (M === 'in_music') {
+        // 뮤직 플레이어: 따뜻한 사진 위에 반투명 플레이어 카드 (앨범 사진·곡명=자막·가게명·재생 막대)
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.06 + lp * 0.04, 1.1);
+        c.fillStyle = 'rgba(20,14,10,0.18)';
+        c.fillRect(0, 0, W, H);
+        const cw = W - 80, ch = 250, cx = 40, cy = H - ch - 120 + (1 - ent) * 30;
+        c.save();
+        c.globalAlpha = 0.25 + 0.75 * ent;
+        gRoundRect(c, cx, cy, cw, ch, 28);
+        c.fillStyle = 'rgba(250,246,240,0.82)';
+        c.fill();
+        const art = 84;
+        c.save();
+        gRoundRect(c, cx + 22, cy + 22, art, art, 12);
+        c.clip();
+        mPhoto(c, S, 0, cx + 22, cy + 22, art, art, 1.2);
+        c.restore();
+        c.textAlign = 'left';
+        c.textBaseline = 'middle';
+        c.fillStyle = '#1c1714';
+        const r = mFit(c, caption, cw - art - 64, 2, 22, 15, 'maru');
+        c.font = gFont(KIT_FONTS.maru.w, r.size, KIT_FONTS.maru.f);
+        r.lines.forEach((ln, i) => c.fillText(ln, cx + art + 40, cy + 44 + i * r.lh));
+        c.fillStyle = '#7d7066';
+        gDrawLine(c, String((d && d.name) || (typeof IND !== 'undefined' && IND.place) || ''), cx + art + 40, cy + 44 + r.lines.length * r.lh + 4, cw - art - 64, 15, 11, KIT_FONTS.pretL.f, 500);
+        const by = cy + 150, bw = cw - 44;
+        c.fillStyle = 'rgba(60,50,40,0.18)';
+        gRoundRect(c, cx + 22, by, bw, 5, 3); c.fill();
+        c.fillStyle = '#2b2622';
+        gRoundRect(c, cx + 22, by, Math.max(6, bw * ((cutIdx + lp) / totalCuts)), 5, 3); c.fill();
+        c.fillStyle = '#7d7066';
+        c.font = gFont(500, 12, GENRE_FONTS.sans);
+        const el = Math.floor(t);
+        c.fillText(`0:${String(el).padStart(2, '0')}`, cx + 22, by + 22);
+        c.textAlign = 'right';
+        c.fillText(`-0:${String(Math.max(0, Math.round(mainDuration - t))).padStart(2, '0')}`, cx + 22 + bw, by + 22);
+        // 재생 버튼: ◀◀  ❚❚  ▶▶
+        const my = cy + 212, mx = cx + cw / 2;
+        c.fillStyle = '#1c1714';
+        const tri = (x, dir) => { c.beginPath(); c.moveTo(x, my - 9); c.lineTo(x + 13 * dir, my); c.lineTo(x, my + 9); c.closePath(); c.fill(); };
+        tri(mx - 74, -1); tri(mx - 62, -1);
+        c.fillRect(mx - 9, my - 11, 6, 22); c.fillRect(mx + 3, my - 11, 6, 22);
+        tri(mx + 62, 1); tri(mx + 74, 1);
+        c.restore();
+        inGrain(c, W, H, t, 0.07);
+      } else if (M === 'in_memo') {
+        // 아이폰 메모: 메모 앱 화면처럼 — 노란 "< 메모", 날짜, 굵은 제목(자막)이 타이핑되듯, 아래 둥근 사진
+        c.textBaseline = 'middle';
+        c.fillStyle = '#e0a400';
+        c.textAlign = 'left';
+        c.font = gFont(500, 19, GENRE_FONTS.sans);
+        c.fillText('‹ 메모', 22, 42);
+        c.textAlign = 'right';
+        c.fillText('완료', W - 22, 42);
+        const n0 = new Date();
+        c.textAlign = 'center';
+        c.fillStyle = '#9a9a9f';
+        c.font = gFont(500, 13, GENRE_FONTS.sans);
+        c.fillText(`${n0.getFullYear()}년 ${n0.getMonth() + 1}월 ${n0.getDate()}일 ${n0.getHours() < 12 ? '오전' : '오후'} ${((n0.getHours() + 11) % 12) + 1}:${String(n0.getMinutes()).padStart(2, '0')}`, W / 2, 84);
+        const shown = caption.slice(0, Math.max(1, Math.ceil(caption.length * mClamp(local / 1.2))));
+        c.textAlign = 'left';
+        c.fillStyle = '#1c1c1e';
+        const r = mFit(c, shown, W - 56, 3, 30, 20, 'pretM');
+        c.font = gFont(700, r.size, KIT_FONTS.pretM.f);
+        r.lines.forEach((ln, i) => c.fillText(ln, 28, 130 + i * r.lh));
+        if (local < 1.3 && Math.floor(t * 2.5) % 2 === 0) {
+          const last = r.lines[r.lines.length - 1] || '';
+          c.fillStyle = '#e0a400';
+          c.fillRect(28 + c.measureText(last).width + 3, 130 + (r.lines.length - 1) * r.lh - r.size * 0.55, 2, r.size * 1.1);
+        }
+        const py = 150 + Math.max(1, r.lines.length) * r.lh, ph = Math.min(H - py - 90, 470);
+        c.save();
+        gRoundRect(c, 28, py, W - 56, ph, 14);
+        c.clip();
+        inPhotoFade(c, S, cutIdx, local, 28, py, W - 56, ph, 1.04 + lp * 0.03, 0.6);
+        c.restore();
+        inSign(c, d, 28, H - 52, '#8e8e93', 'left', 16);
+      } else if (M === 'in_lock') {
+        // 잠금화면: 꽉 찬 사진 + 얇고 큰 시계 + 아래 알림 말풍선(가게 이름·자막)
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.05 + lp * 0.04, 0.8);
+        const tg = c.createLinearGradient(0, 0, 0, H * 0.4);
+        tg.addColorStop(0, 'rgba(0,0,0,0.35)'); tg.addColorStop(1, 'rgba(0,0,0,0)');
+        c.fillStyle = tg; c.fillRect(0, 0, W, H * 0.4);
+        const n1 = new Date();
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillStyle = 'rgba(255,255,255,0.92)';
+        c.font = gFont(500, 18, GENRE_FONTS.sans);
+        c.fillText(`${n1.getMonth() + 1}월 ${n1.getDate()}일 ${['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][n1.getDay()]}`, W / 2, 96);
+        c.fillStyle = '#ffffff';
+        c.font = gFont(200, 104, GENRE_FONTS.sans);
+        c.fillText(`${String(n1.getHours()).padStart(2, '0')}:${String(n1.getMinutes()).padStart(2, '0')}`, W / 2, 172);
+        const ny = H - 230 + (1 - ent) * 40, nw = W - 40, nx = 20;
+        c.save();
+        c.globalAlpha = ent;
+        gRoundRect(c, nx, ny, nw, 104, 22);
+        c.fillStyle = 'rgba(245,242,238,0.78)';
+        c.fill();
+        gRoundRect(c, nx + 16, ny + 18, 38, 38, 9);
+        c.fillStyle = sp.accent2 === '#ffffff' ? '#2b2622' : sp.accent2;
+        c.fill();
+        c.fillStyle = '#ffffff';
+        c.textAlign = 'center';
+        c.font = gFont(700, 18, GENRE_FONTS.sans);
+        c.fillText(String((d && d.name) || (typeof IND !== 'undefined' && IND.place) || '·').slice(0, 1), nx + 35, ny + 38);
+        c.textAlign = 'left';
+        c.fillStyle = '#1c1c1e';
+        gDrawLine(c, String((d && d.name) || (typeof IND !== 'undefined' && IND.place) || ''), nx + 68, ny + 30, nw - 140, 16, 12, GENRE_FONTS.sans, 700);
+        c.fillStyle = '#8e8e93';
+        c.textAlign = 'right';
+        c.font = gFont(500, 13, GENRE_FONTS.sans);
+        c.fillText('지금', nx + nw - 16, ny + 30);
+        c.textAlign = 'left';
+        c.fillStyle = '#2c2c2e';
+        const r = mFit(c, caption, nw - 90, 2, 17, 13, 'pretL');
+        c.font = gFont(500, r.size, KIT_FONTS.pretL.f);
+        r.lines.forEach((ln, i) => c.fillText(ln, nx + 68, ny + 58 + i * r.lh));
+        c.restore();
+        c.fillStyle = 'rgba(255,255,255,0.85)';
+        gRoundRect(c, W / 2 - 66, H - 22, 132, 5, 3); c.fill();
+        inGrain(c, W, H, t, 0.05);
+      } else if (M === 'in_dump') {
+        // 포토덤프 리캡: 손글씨 제목, 흩어진 사진 세 장(하나씩 툭툭 놓임), 반짝이 낙서, 손글씨 자막
+        c.textAlign = 'left';
+        c.textBaseline = 'middle';
+        c.fillStyle = '#2d2621';
+        c.font = gFont(400, 44, KIT_FONTS.pen.f);
+        c.fillText("today's recap", 30, 58);
+        c.fillStyle = '#c2603f';
+        c.font = gFont(500, 14, GENRE_FONTS.sans);
+        c.fillText(`${cutIdx + 1}/${totalCuts}`, W - 64, 58);
+        const spots = [[-1, 150, 210, 200, 240, -6], [1, 360, 250, 180, 220, 5], [0, 250, 430, 280, 330, -1.5]];
+        spots.forEach(([k, x, y, w, h, deg], i) => {
+          const pe = i === 2 ? mEase(local / 0.45) : 1;
+          if (pe <= 0) return;
+          c.save();
+          c.globalAlpha = pe;
+          c.translate(x, y + (1 - pe) * -30);
+          c.rotate(deg * Math.PI / 180);
+          c.scale(0.9 + 0.1 * pe, 0.9 + 0.1 * pe);
+          c.shadowColor = 'rgba(60,40,20,0.2)'; c.shadowBlur = 12; c.shadowOffsetY = 4;
+          c.fillStyle = '#fffdf9';
+          c.fillRect(-w / 2 - 8, -h / 2 - 8, w + 16, h + 16);
+          c.shadowColor = 'transparent';
+          mPhoto(c, S, k, -w / 2, -h / 2, w, h, 1.06);
+          inWarm(c, -w / 2, -h / 2, w, h, 0.9);
+          c.restore();
+        });
+        // 반짝이 낙서 두 개
+        const spark = (x, y, r) => { c.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * 0.28 : r; c.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } c.closePath(); c.fill(); };
+        c.fillStyle = '#e8b04b';
+        spark(W - 70, 150, 16 + Math.sin(t * 4) * 2);
+        spark(70, 640, 11 + Math.cos(t * 4) * 2);
+        mCaption(c, caption, W / 2, 640, W - 70, 130, 38, 'pen', '#2d2621', e);
+        inSign(c, d, W - 30, H - 44, '#7a6658');
+        inGrain(c, W, H, t, 0.05);
+      } else if (M === 'in_cal') {
+        // 캘린더 카드: 위쪽 사진, 그 위로 겹친 흰 카드에 영어 요일·날짜, 아래 명조 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, Math.round(H * 0.6), 1.05 + lp * 0.04, 1);
+        const n2 = new Date();
+        const cy2 = Math.round(H * 0.5) + (1 - ent) * 24;
+        c.save();
+        c.shadowColor = 'rgba(60,40,20,0.18)'; c.shadowBlur = 18; c.shadowOffsetY = 6;
+        gRoundRect(c, 34, cy2, W - 68, H - cy2 - 70, 18);
+        c.fillStyle = '#fffdf9';
+        c.fill();
+        c.restore();
+        c.fillStyle = '#c2603f';
+        gRoundRect(c, 34, cy2, W - 68, 10, 5); c.fill();
+        c.textAlign = 'left';
+        c.textBaseline = 'middle';
+        c.fillStyle = '#2b2622';
+        c.font = gFont(600, 40, KIT_FONTS.maru.f);
+        c.fillText(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][n2.getDay()], 58, cy2 + 56);
+        c.fillStyle = '#c2603f';
+        c.textAlign = 'right';
+        c.font = gFont(500, 18, GENRE_FONTS.sans);
+        c.fillText(`${String(n2.getMonth() + 1).padStart(2, '0')}.${String(n2.getDate()).padStart(2, '0')}`, W - 58, cy2 + 58);
+        c.fillStyle = '#e6ddd0';
+        c.fillRect(58, cy2 + 92, W - 116, 1);
+        mCaption(c, caption, 58, cy2 + 108, W - 116, H - cy2 - 230, 28, 'maru', '#2b2622', e, 'left');
+        inSign(c, d, W - 58, H - 108, '#7a6d61');
         inGrain(c, W, H, t, 0.06);
       } else if (M === 'cinema') {
         // 시네마틱: 위아래 검은 띠 + 가장자리 비네트, 컷은 부드럽게 겹쳐 바뀜 (캡컷 "영화 화면"·"비네트")
