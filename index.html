@@ -7952,6 +7952,11 @@ function renderStoryArchetypesUI() {
       const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
       const targetCuts = getTargetCutCount();
       const cutDur = mainDur / targetCuts;
+      if (typeof window.__arPinnedCut === 'number' && window.__arPinnedCut >= targetCuts) {
+        window.__arPinnedCut = -1;
+        window.__arSelectedOverlayIdx = -1;
+      }
+      if (typeof renderPreviewCutPinBar === 'function') renderPreviewCutPinBar();
 
       if (window.__timelines && window.__timelines['main']) {
         window.__timelines['main'].duration = TOTAL_DURATION;
