@@ -236,12 +236,83 @@
       { id: 'contrast', label: '선명대비', swatch: '#27272a', tint: 'rgba(0,0,0,0.2)', mode: 'overlay' },
       { id: 'mood', label: '무드다크', swatch: '#09090b', tint: 'rgba(9,9,11,0.34)', mode: 'multiply' }
     ];
-    const CUT_OVERLAY_ANIMS = [
-      { id: 'static', label: '고정' },
-      { id: 'pop', label: '팝업' },
-      { id: 'slide', label: '슬라이드' },
-      { id: 'float', label: '둥실' }
+    const AR_ELEMENT_ANIMS = [
+      { id: 'default',    label: '스타일 기본',     group: 'base' },
+      { id: 'none',       label: '없음(고정)',      group: 'base' },
+      { id: 'fadeIn',     label: '페이드인',        group: 'in' },
+      { id: 'slideUp',    label: '위로 슬라이드',   group: 'in' },
+      { id: 'slideDown',  label: '아래로 슬라이드', group: 'in' },
+      { id: 'slideLeft',  label: '왼쪽 슬라이드',   group: 'in' },
+      { id: 'slideRight', label: '오른쪽 슬라이드', group: 'in' },
+      { id: 'pop',        label: '팝(탄성)',        group: 'in' },
+      { id: 'bounce',     label: '바운스',          group: 'in' },
+      { id: 'zoomIn',     label: '줌인',            group: 'in' },
+      { id: 'zoomOut',    label: '줌아웃',          group: 'in' },
+      { id: 'blurIn',     label: '블러 인',         group: 'in' },
+      { id: 'wipe',       label: '가로 와이프',     group: 'in' },
+      { id: 'typewriter', label: '타자기',          group: 'in' },
+      { id: 'flip',       label: '플립 회전',       group: 'in' },
+      { id: 'drop',       label: '드롭 낙하',       group: 'in' },
+      { id: 'float',      label: '둥실둥실',        group: 'loop' },
+      { id: 'pulse',      label: '두근두근',        group: 'loop' },
+      { id: 'wiggle',     label: '흔들흔들',        group: 'loop' },
+      { id: 'glow',       label: '글로우',          group: 'loop' }
     ];
+    window.AR_ELEMENT_ANIMS = AR_ELEMENT_ANIMS;
+
+    const CUT_OVERLAY_ANIMS = [
+      { id: 'static',     label: '고정' },
+      { id: 'pop',        label: '팝(탄성)' },
+      { id: 'bounce',     label: '바운스' },
+      { id: 'slideUp',    label: '위로 슬라이드' },
+      { id: 'slideDown',  label: '아래로 슬라이드' },
+      { id: 'slideLeft',  label: '왼쪽 슬라이드' },
+      { id: 'slideRight', label: '오른쪽 슬라이드' },
+      { id: 'fadeIn',     label: '페이드인' },
+      { id: 'zoomIn',     label: '줌인' },
+      { id: 'zoomOut',    label: '줌아웃' },
+      { id: 'blurIn',     label: '블러 인' },
+      { id: 'wipe',       label: '와이프' },
+      { id: 'typewriter', label: '타자기' },
+      { id: 'flip',       label: '플립' },
+      { id: 'drop',       label: '드롭' },
+      { id: 'float',      label: '둥실둥실' },
+      { id: 'pulse',      label: '두근두근' },
+      { id: 'wiggle',     label: '흔들흔들' },
+      { id: 'glow',       label: '글로우' }
+    ];
+
+    const AR_ELEMENT_BOX_STYLES = [
+      { id: 'default',    label: '스타일 기본' },
+      { id: 'darkGlass',  label: '다크 글래스' },
+      { id: 'solidBadge', label: '컬러 배지' },
+      { id: 'outlineBox', label: '테두리 박스' },
+      { id: 'softBox',    label: '반투명 박스' },
+      { id: 'neonGlow',   label: '네온 글로우' },
+      { id: 'plain',      label: '배경 없음' }
+    ];
+    window.AR_ELEMENT_BOX_STYLES = AR_ELEMENT_BOX_STYLES;
+
+    const AR_CUT_TRANSITIONS = [
+      { id: 'default',       label: '스타일 기본' },
+      { id: 'none',          label: '없음(컷)' },
+      { id: 'crossfade',     label: '크로스페이드' },
+      { id: 'pushLeft',      label: '왼쪽 밀기' },
+      { id: 'pushRight',     label: '오른쪽 밀기' },
+      { id: 'pushUp',        label: '위로 밀기' },
+      { id: 'pushDown',      label: '아래로 밀기' },
+      { id: 'zoomIn',        label: '줌인 전환' },
+      { id: 'zoomOut',       label: '줌아웃 전환' },
+      { id: 'circleWipe',    label: '서클 와이프' },
+      { id: 'diamondWipe',   label: '다이아몬드' },
+      { id: 'whiteFlash',    label: '화이트 플래시' },
+      { id: 'blackDissolve', label: '블랙 디졸브' },
+      { id: 'blinds',        label: '블라인드' },
+      { id: 'spin',          label: '스핀 회전' },
+      { id: 'glitch',        label: '글리치' }
+    ];
+    window.AR_CUT_TRANSITIONS = AR_CUT_TRANSITIONS;
+
     window.__arPinnedCut = -1;
     window.__arCutEditorTab = 'deco';
     window.__arCutTextFont = 'dohyeon';
@@ -252,6 +323,111 @@
     window.__arIgSheetMode = 'sticker';
     window.__arSelectedOverlayIdx = -1;
     window.__arOverlayUndo = [];
+    window.__arCutEditorOpen = false;
+    window.__arInlineEditActive = false;
+    window.__arActiveCutElKey = 'caption';
+    window.__arDirectCanvasMode = true;
+    window.__arActiveRenderCutIdx = -1;
+    window.__arAnimPreviewTimer = null;
+
+    // 컷별 요소(자막·상단배지·혜택문구·배경사진 구도) 오버라이드 상태 (새로고침 시 항상 초기화 — localStorage 미저장)
+    let cutElementOverrides = [];
+    window.cutElementOverrides = cutElementOverrides;
+
+    function createDefaultCutElementOverride() {
+      return {
+        caption: { x: 0.5, y: 0.72, scale: 1, color: '', bgColor: '', font: '', boxStyle: 'default', anim: 'default', hidden: false, customPos: false },
+        badge:   { text: '', x: 0.5, y: 0.08, scale: 1, color: '', bgColor: '', font: '', boxStyle: 'default', anim: 'default', hidden: false, customPos: false },
+        price:   { text: '', x: 0.5, y: 0.56, scale: 1, color: '', bgColor: '', font: '', boxStyle: 'default', anim: 'default', hidden: false, customPos: false },
+        photo:   { scale: 1, panX: 0, panY: 0 }
+      };
+    }
+
+    function getCutElementOverride(cutIdx) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return createDefaultCutElementOverride();
+      if (!Array.isArray(cutElementOverrides)) cutElementOverrides = [];
+      window.cutElementOverrides = cutElementOverrides;
+      if (typeof campaign !== 'undefined') campaign.cutElementOverrides = cutElementOverrides;
+      if (!cutElementOverrides[cutIdx] || typeof cutElementOverrides[cutIdx] !== 'object') {
+        cutElementOverrides[cutIdx] = createDefaultCutElementOverride();
+      } else {
+        const def = createDefaultCutElementOverride();
+        if (!cutElementOverrides[cutIdx].caption) cutElementOverrides[cutIdx].caption = def.caption;
+        else cutElementOverrides[cutIdx].caption = Object.assign({}, def.caption, cutElementOverrides[cutIdx].caption);
+        if (!cutElementOverrides[cutIdx].badge) cutElementOverrides[cutIdx].badge = def.badge;
+        else cutElementOverrides[cutIdx].badge = Object.assign({}, def.badge, cutElementOverrides[cutIdx].badge);
+        if (!cutElementOverrides[cutIdx].price) cutElementOverrides[cutIdx].price = def.price;
+        else cutElementOverrides[cutIdx].price = Object.assign({}, def.price, cutElementOverrides[cutIdx].price);
+        if (!cutElementOverrides[cutIdx].photo) cutElementOverrides[cutIdx].photo = def.photo;
+        else cutElementOverrides[cutIdx].photo = Object.assign({}, def.photo, cutElementOverrides[cutIdx].photo);
+      }
+      return cutElementOverrides[cutIdx];
+    }
+
+    function isCutElementPropCustomized(obj) {
+      if (!obj) return false;
+      return !!(
+        obj.hidden ||
+        obj.customPos ||
+        (obj.scale && Math.abs(obj.scale - 1) > 0.01) ||
+        obj.color ||
+        obj.bgColor ||
+        obj.font ||
+        (obj.boxStyle && obj.boxStyle !== 'default') ||
+        (obj.anim && obj.anim !== 'default')
+      );
+    }
+
+    function isCutElementModified(cutIdx, elKey) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return false;
+      const ov = cutElementOverrides && cutElementOverrides[cutIdx];
+      if (elKey === 'transition') {
+        const tr = (campaign && campaign.cutTransitions && campaign.cutTransitions[cutIdx]) || 'default';
+        return !!(tr && tr !== 'default');
+      }
+      if (!ov) {
+        if (elKey === 'photo') {
+          const flt = (campaign && campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+          return !!(flt && flt !== 'none');
+        }
+        if (elKey === 'deco') {
+          const d = (campaign && campaign.cutDecos && campaign.cutDecos[cutIdx]) || 'none';
+          const fr = (campaign && campaign.cutFrames && campaign.cutFrames[cutIdx]) || '';
+          return !!((d && d !== 'none') || fr);
+        }
+        return false;
+      }
+      if (elKey === 'caption') {
+        return isCutElementPropCustomized(ov.caption);
+      }
+      if (elKey === 'badge') {
+        const b = ov.badge || {};
+        return !!(b.text || isCutElementPropCustomized(b));
+      }
+      if (elKey === 'price') {
+        const p = ov.price || {};
+        return !!(p.text || isCutElementPropCustomized(p));
+      }
+      if (elKey === 'photo') {
+        const ph = ov.photo || {};
+        const flt = (campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+        return !!((ph.scale && Math.abs(ph.scale - 1) > 0.01) || (ph.panX && Math.abs(ph.panX) > 0.005) || (ph.panY && Math.abs(ph.panY) > 0.005) || (flt && flt !== 'none'));
+      }
+      if (elKey === 'deco') {
+        const d = (campaign.cutDecos && campaign.cutDecos[cutIdx]) || 'none';
+        const fr = (campaign.cutFrames && campaign.cutFrames[cutIdx]) || '';
+        return !!((d && d !== 'none') || fr);
+      }
+      return false;
+    }
+
+    function hasAnyCutElementOverride(cutIdx) {
+      return isCutElementModified(cutIdx, 'caption') ||
+             isCutElementModified(cutIdx, 'badge') ||
+             isCutElementModified(cutIdx, 'price') ||
+             isCutElementModified(cutIdx, 'photo') ||
+             isCutElementModified(cutIdx, 'transition');
+    }
 
     function loadCutDecos() {
       try {
@@ -260,12 +436,18 @@
         localStorage.removeItem('autoreels_cut_filters');
         localStorage.removeItem('autoreels_cut_frames');
         localStorage.removeItem('autoreels_cut_strokes');
+        localStorage.removeItem('autoreels_cut_element_overrides');
+        localStorage.removeItem('autoreels_cut_transitions');
       } catch (e) {}
       campaign.cutDecos = [];
       campaign.cutOverlays = [];
       campaign.cutFilters = [];
       campaign.cutFrames = [];
       campaign.cutStrokes = [];
+      campaign.cutTransitions = [];
+      cutElementOverrides = [];
+      window.cutElementOverrides = cutElementOverrides;
+      campaign.cutElementOverrides = cutElementOverrides;
     }
     function saveCutDecos() {}
     function saveCutOverlays() {}
@@ -278,16 +460,24 @@
       campaign.cutFilters = [];
       campaign.cutFrames = [];
       campaign.cutStrokes = [];
+      campaign.cutTransitions = [];
+      cutElementOverrides = [];
+      window.cutElementOverrides = cutElementOverrides;
+      campaign.cutElementOverrides = cutElementOverrides;
       window.__arPinnedCut = -1;
       window.__arPinnedCutIdx = -1;
       window.__arSelectedOverlayIdx = -1;
       window.__arOverlayUndo = [];
+      window.__arCutEditorOpen = false;
+      window.__arInlineEditActive = false;
       closeIgSheet();
       if (typeof closeIgDrawMode === 'function') closeIgDrawMode(true);
       if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       renderPreviewCutPinBar();
       if (typeof renderCutOverlayEditorLayer === 'function') renderCutOverlayEditorLayer();
       if (typeof renderIgEditorHud === 'function') renderIgEditorHud();
+      if (typeof renderCutEditorPanel === 'function') renderCutEditorPanel();
+      if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
     }
 
     window.__arPhotoStickerCache = window.__arPhotoStickerCache || {};
@@ -846,31 +1036,138 @@
       c.restore();
     }
 
+    function computeArElementAnimState(animId, localT) {
+      const a = animId || 'default';
+      const lt = typeof localT === 'number' ? Math.max(0, localT) : 0.6;
+      const st = {
+        alpha: 1,
+        dx: 0,
+        dy: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rot: 0,
+        blur: 0,
+        wipeRatio: 1,
+        charRatio: 1,
+        glowBoost: 0
+      };
+      if (a === 'none' || a === 'static') return st;
+      if (a === 'default') {
+        const p = Math.min(1, Math.max(0.2, lt / 0.42));
+        st.alpha = p;
+        st.dy = (1 - p) * 14;
+        return st;
+      }
+      if (a === 'fadeIn') {
+        const p = Math.min(1, lt / 0.48);
+        st.alpha = p * p * (3 - 2 * p);
+      } else if (a === 'slideUp' || a === 'slide') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        st.dy = (1 - p) * 68;
+        st.alpha = Math.min(1, p * 1.35);
+      } else if (a === 'slideDown') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        st.dy = -(1 - p) * 68;
+        st.alpha = Math.min(1, p * 1.35);
+      } else if (a === 'slideLeft') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        st.dx = (1 - p) * 96;
+        st.alpha = Math.min(1, p * 1.35);
+      } else if (a === 'slideRight') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        st.dx = -(1 - p) * 96;
+        st.alpha = Math.min(1, p * 1.35);
+      } else if (a === 'pop') {
+        if (lt < 0.42) {
+          const p = lt / 0.42;
+          const s = 0.35 + 0.65 * (1 + Math.sin(p * Math.PI * 1.15) * 0.22) * Math.min(1, p * 1.25);
+          st.scaleX = s;
+          st.scaleY = s;
+          st.alpha = Math.min(1, p * 2.2);
+        }
+      } else if (a === 'bounce') {
+        if (lt < 0.58) {
+          const p = lt / 0.58;
+          const decay = Math.pow(1 - p, 1.8);
+          st.dy = -Math.abs(Math.cos(p * Math.PI * 2.5)) * 64 * decay;
+          st.alpha = Math.min(1, p * 2.5);
+        }
+      } else if (a === 'zoomIn') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        const s = 0.25 + 0.75 * p;
+        st.scaleX = s;
+        st.scaleY = s;
+        st.alpha = p;
+      } else if (a === 'zoomOut') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.45), 3);
+        const s = 1.65 - 0.65 * p;
+        st.scaleX = s;
+        st.scaleY = s;
+        st.alpha = p;
+      } else if (a === 'blurIn') {
+        const p = Math.min(1, lt / 0.48);
+        st.alpha = p;
+        st.blur = (1 - p) * 10;
+        const s = 1.08 - 0.08 * p;
+        st.scaleX = s;
+        st.scaleY = s;
+      } else if (a === 'wipe') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.52), 2.6);
+        st.wipeRatio = Math.max(0.02, p);
+      } else if (a === 'typewriter') {
+        const p = Math.min(1, lt / 0.68);
+        st.charRatio = Math.max(0.05, p);
+      } else if (a === 'flip') {
+        const p = 1 - Math.pow(1 - Math.min(1, lt / 0.48), 3);
+        st.scaleY = Math.max(0.08, p);
+        st.rot = (1 - p) * -0.18;
+        st.alpha = Math.min(1, p * 1.6);
+      } else if (a === 'drop') {
+        if (lt < 0.46) {
+          const p = lt / 0.46;
+          const ease = p < 0.7 ? (p / 0.7) * (p / 0.7) : 1 - Math.sin(((p - 0.7) / 0.3) * Math.PI) * 0.12;
+          st.dy = -(1 - ease) * 140;
+          st.alpha = Math.min(1, p * 2.4);
+        }
+      } else if (a === 'float') {
+        st.dy = Math.sin(lt * 4.2) * 8;
+      } else if (a === 'pulse') {
+        const s = 1 + Math.sin(lt * 6.2) * 0.065;
+        st.scaleX = s;
+        st.scaleY = s;
+      } else if (a === 'wiggle') {
+        st.rot = Math.sin(lt * 9.5) * 0.065;
+      } else if (a === 'glow') {
+        st.glowBoost = 0.5 + 0.5 * Math.sin(lt * 5.6);
+      }
+      return st;
+    }
+
     function drawSingleCutOverlayItem(c, W, H, item, localT) {
       if (!item) return;
       const anim = item.anim || 'static';
-      const lt = typeof localT === 'number' ? Math.max(0, localT) : 1;
-      let animScale = 1, animY = 0, animAlpha = 1;
-      if (anim === 'pop' && lt < 0.35) {
-        const p = lt / 0.35;
-        animScale = 0.4 + 0.6 * (1 + Math.sin(p * Math.PI * 1.1) * 0.14) * Math.min(1, p * 1.2);
-        animAlpha = Math.min(1, p * 2.2);
-      } else if (anim === 'slide' && lt < 0.4) {
-        const p = 1 - Math.pow(1 - lt / 0.4, 3);
-        animY = (1 - p) * 48;
-        animAlpha = p;
-      } else if (anim === 'float') {
-        animY = Math.sin(lt * 3.8) * 7;
-      }
-      const px = (typeof item.x === 'number' ? item.x : 0.5) * W;
-      const py = (typeof item.y === 'number' ? item.y : 0.5) * H + animY;
-      const sc = Math.max(0.4, Math.min(3.0, Number(item.scale) || 1)) * animScale;
-      const rot = ((Number(item.rot) || 0) * Math.PI) / 180;
-      const itemAlpha = (typeof item.alpha === 'number' ? item.alpha : 1) * animAlpha;
+      const ast = computeArElementAnimState(anim, localT);
+      const px = (typeof item.x === 'number' ? item.x : 0.5) * W + ast.dx;
+      const py = (typeof item.y === 'number' ? item.y : 0.5) * H + ast.dy;
+      const baseSc = Math.max(0.4, Math.min(3.0, Number(item.scale) || 1));
+      const sc = baseSc * ast.scaleX;
+      const rot = ((Number(item.rot) || 0) * Math.PI) / 180 + ast.rot;
+      const itemAlpha = (typeof item.alpha === 'number' ? item.alpha : 1) * ast.alpha;
       c.save();
       c.globalAlpha *= Math.max(0, Math.min(1, itemAlpha));
+      if (ast.blur > 0.3 && typeof c.filter === 'string') {
+        c.filter = `blur(${ast.blur.toFixed(1)}px)`;
+      }
       c.translate(px, py);
       c.rotate(rot);
+      if (Math.abs(ast.scaleY - ast.scaleX) > 0.01) {
+        c.scale(1, ast.scaleY / Math.max(0.05, ast.scaleX));
+      }
+      if (ast.wipeRatio < 0.999) {
+        c.beginPath();
+        c.rect(-W, -H, W * 2 * ast.wipeRatio, H * 2);
+        c.clip();
+      }
       c.textAlign = 'center';
       c.textBaseline = 'middle';
 
@@ -939,13 +1236,14 @@
         } else if (item.variant === 'badge') {
           const fs = Math.round(30 * sc);
           c.font = `800 ${fs}px 'Pretendard', 'Noto Sans KR', sans-serif`;
-          const txt = String(item.text || 'NEW');
-          const tw = c.measureText(txt).width;
+          const rawTxt = String(item.text || 'NEW');
+          const txt = ast.charRatio < 0.999 ? rawTxt.slice(0, Math.max(1, Math.ceil(rawTxt.length * ast.charRatio))) : rawTxt;
+          const tw = c.measureText(rawTxt).width;
           const padX = Math.round(22 * sc);
           const bh = Math.round(52 * sc);
           const bw = tw + padX * 2;
-          c.shadowColor = 'rgba(0,0,0,0.45)';
-          c.shadowBlur = 14;
+          c.shadowColor = ast.glowBoost > 0 ? (item.bg || '#ef4444') : 'rgba(0,0,0,0.45)';
+          c.shadowBlur = ast.glowBoost > 0 ? 16 + ast.glowBoost * 18 : 14;
           c.shadowOffsetY = 4;
           gRoundRect(c, -bw / 2, -bh / 2, bw, bh, bh / 2);
           c.fillStyle = item.bg || '#ef4444';
@@ -958,11 +1256,12 @@
           const fs = Math.round(84 * sc);
           c.font = `${fs}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
           c.shadowColor = 'rgba(0,0,0,0.35)';
-          c.shadowBlur = 12;
+          c.shadowBlur = 12 + ast.glowBoost * 16;
           c.fillText(String(item.text || '✨'), 0, 0);
         }
       } else if (item.type === 'text') {
-        const txt = String(item.text || '').trim();
+        const rawTxt = String(item.text || '').trim();
+        const txt = ast.charRatio < 0.999 ? rawTxt.slice(0, Math.max(1, Math.ceil(rawTxt.length * ast.charRatio))) : rawTxt;
         if (txt) {
           const st = item.style || 'box';
           const col = item.color || '#ffffff';
@@ -971,64 +1270,58 @@
           const fs = Math.round(44 * sc * (fontObj.id === 'pen' || fontObj.id === 'brush' || fontObj.id === 'script' ? 1.2 : 1));
           c.font = `${fontObj.weight} ${fs}px ${fontObj.css}`;
           c.textAlign = align;
+          const fullLines = rawTxt.split('\n');
           const lines = txt.split('\n');
           const lineH = Math.round(fs * 1.28);
-          const maxW = Math.max(...lines.map((l) => c.measureText(l).width));
-          const totalH = lines.length * lineH;
+          const maxW = Math.max(...fullLines.map((l) => c.measureText(l).width), 40);
+          const totalH = fullLines.length * lineH;
           const xOff = align === 'left' ? -maxW / 2 : align === 'right' ? maxW / 2 : 0;
           const isLightBg = col === '#ffffff' || col === '#facc15' || col === '#38bdf8' || col === '#34d399' || col === '#a3e635';
 
-          if (st === 'box' || st === 'softbox') {
+          if (st === 'box' || st === 'softbox' || st === 'darkGlass' || st === 'solidBadge' || st === 'outlineBox' || st === 'softBox') {
             const padX = Math.round(22 * sc);
             const padY = Math.round(12 * sc);
             const bw = maxW + padX * 2;
             const bh = totalH + padY * 2;
             c.save();
-            if (st === 'softbox') c.globalAlpha = 0.72;
-            c.shadowColor = 'rgba(0,0,0,0.35)';
-            c.shadowBlur = 14;
+            if (st === 'softbox' || st === 'softBox') c.globalAlpha *= 0.72;
+            c.shadowColor = ast.glowBoost > 0 ? col : 'rgba(0,0,0,0.35)';
+            c.shadowBlur = 14 + ast.glowBoost * 18;
             gRoundRect(c, -bw / 2, -bh / 2, bw, bh, Math.round(16 * sc));
-            c.fillStyle = col;
+            c.fillStyle = st === 'darkGlass' ? 'rgba(10,10,14,0.84)' : st === 'outlineBox' ? 'rgba(10,10,14,0.68)' : col;
             c.fill();
+            if (st === 'outlineBox' || st === 'darkGlass') {
+              c.strokeStyle = col;
+              c.lineWidth = st === 'outlineBox' ? 2.5 : 1.5;
+              c.stroke();
+            }
             c.restore();
-            c.fillStyle = isLightBg ? '#09090b' : '#ffffff';
+            c.fillStyle = (st === 'darkGlass' || st === 'outlineBox') ? col : (isLightBg ? '#09090b' : '#ffffff');
           } else if (st === 'highlight') {
             lines.forEach((line, li) => {
-              const ly = (li - (lines.length - 1) / 2) * lineH;
+              const ly = (li - (fullLines.length - 1) / 2) * lineH;
               const lw = c.measureText(line).width + 20 * sc;
               const bx = align === 'left' ? -maxW / 2 - 10 * sc : align === 'right' ? maxW / 2 - lw + 10 * sc : -lw / 2;
               c.save();
-              c.globalAlpha = 0.85;
+              c.globalAlpha *= 0.85;
               c.fillStyle = col;
               gRoundRect(c, bx, ly - lineH * 0.42, lw, lineH * 0.86, 8 * sc);
               c.fill();
               c.restore();
             });
             c.fillStyle = isLightBg ? '#09090b' : '#ffffff';
-          } else if (st === 'neon') {
+          } else if (st === 'neon' || st === 'neonGlow') {
             c.shadowColor = col;
-            c.shadowBlur = 26;
+            c.shadowBlur = 26 + ast.glowBoost * 18;
             c.fillStyle = '#ffffff';
-            c.strokeStyle = col;
-            c.lineWidth = Math.max(2, Math.round(4 * sc));
-          } else if (st === 'outline') {
-            c.shadowColor = 'rgba(0,0,0,0.6)';
-            c.shadowBlur = 8;
-            c.fillStyle = col;
-            c.strokeStyle = col === '#09090b' ? '#ffffff' : '#09090b';
-            c.lineWidth = Math.max(4, Math.round(8 * sc));
-            c.lineJoin = 'round';
           } else {
-            c.shadowColor = 'rgba(0,0,0,0.75)';
-            c.shadowBlur = 12;
+            c.shadowColor = 'rgba(0,0,0,0.82)';
+            c.shadowBlur = 14 + ast.glowBoost * 16;
             c.shadowOffsetY = 3;
             c.fillStyle = col;
-            c.strokeStyle = col === '#09090b' ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.5)';
-            c.lineWidth = Math.max(1.5, Math.round(3 * sc));
           }
           lines.forEach((line, li) => {
-            const ly = (li - (lines.length - 1) / 2) * lineH;
-            if (st !== 'box' && st !== 'softbox' && st !== 'highlight') c.strokeText(line, xOff, ly);
+            const ly = (li - (fullLines.length - 1) / 2) * lineH;
             c.fillText(line, xOff, ly);
           });
         }
@@ -1156,6 +1449,415 @@
       c.restore();
     }
 
+    function resolveArFontSpec(fontId, defaultWeight, baseSize, sc) {
+      if (!fontId) {
+        return {
+          css: "'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif",
+          weight: defaultWeight || 800,
+          fs: Math.round(baseSize * sc)
+        };
+      }
+      const fObj = CUT_TEXT_FONTS.find((f) => f.id === fontId);
+      if (!fObj) {
+        return {
+          css: "'Pretendard Variable', 'Pretendard', 'Noto Sans KR', sans-serif",
+          weight: defaultWeight || 800,
+          fs: Math.round(baseSize * sc)
+        };
+      }
+      const boost = (fObj.id === 'pen' || fObj.id === 'brush' || fObj.id === 'script') ? 1.18 : 1;
+      return {
+        css: fObj.css,
+        weight: fObj.weight || defaultWeight || 800,
+        fs: Math.round(baseSize * sc * boost)
+      };
+    }
+
+    function drawStyledArBoxAndText(c, W, H, opts) {
+      const {
+        lines,
+        rawText,
+        cx,
+        cy,
+        sc,
+        fontSpec,
+        boxStyle,
+        textColor,
+        bgColor,
+        defaultBoxStyle,
+        pillRadius,
+        padXBase,
+        padYBase,
+        ast
+      } = opts;
+      if (!lines || !lines.length) return;
+      const st = (!boxStyle || boxStyle === 'default') ? (defaultBoxStyle || 'darkGlass') : boxStyle;
+      c.save();
+      c.globalAlpha *= Math.max(0, Math.min(1, ast.alpha));
+      if (ast.blur > 0.3 && typeof c.filter === 'string') {
+        c.filter = `blur(${ast.blur.toFixed(1)}px)`;
+      }
+      c.translate(cx + ast.dx, cy + ast.dy);
+      if (ast.rot) c.rotate(ast.rot);
+      if (Math.abs(ast.scaleX - 1) > 0.005 || Math.abs(ast.scaleY - 1) > 0.005) {
+        c.scale(ast.scaleX, ast.scaleY);
+      }
+
+      c.font = `${fontSpec.weight} ${fontSpec.fs}px ${fontSpec.css}`;
+      const lh = Math.round(fontSpec.fs * 1.3);
+      const maxW = Math.max(...lines.map((l) => c.measureText(l).width), 48);
+      const bw = Math.min(W - 28, maxW + Math.round((padXBase || 36) * sc));
+      const bh = lines.length * lh + Math.round((padYBase || 22) * sc);
+      const rad = pillRadius ? bh / 2 : Math.round(16 * sc);
+
+      if (ast.wipeRatio < 0.999) {
+        c.beginPath();
+        c.rect(-bw / 2 - 20, -bh / 2 - 20, (bw + 40) * ast.wipeRatio, bh + 40);
+        c.clip();
+      }
+
+      const mainCol = textColor || '#ffffff';
+      const fillBg = bgColor || mainCol;
+      const isLightFill = fillBg === '#ffffff' || fillBg === '#facc15' || fillBg === '#38bdf8' || fillBg === '#34d399' || fillBg === '#a3e635';
+
+      let fg = mainCol;
+      if (st === 'solidBadge') {
+        c.shadowColor = ast.glowBoost > 0 ? fillBg : 'rgba(0,0,0,0.45)';
+        c.shadowBlur = 14 + ast.glowBoost * 18;
+        c.shadowOffsetY = 4;
+        gRoundRect(c, -bw / 2, -bh / 2, bw, bh, rad);
+        c.fillStyle = fillBg;
+        c.fill();
+        c.shadowBlur = 0;
+        c.shadowOffsetY = 0;
+        fg = bgColor ? mainCol : (isLightFill ? '#09090b' : '#ffffff');
+      } else if (st === 'darkGlass') {
+        c.shadowColor = ast.glowBoost > 0 ? mainCol : 'rgba(0,0,0,0.52)';
+        c.shadowBlur = 16 + ast.glowBoost * 18;
+        c.shadowOffsetY = 4;
+        gRoundRect(c, -bw / 2, -bh / 2, bw, bh, rad);
+        c.fillStyle = bgColor || 'rgba(10, 10, 14, 0.84)';
+        c.fill();
+        c.strokeStyle = mainCol === '#ffffff' ? 'rgba(255,255,255,0.28)' : mainCol;
+        c.lineWidth = 1.6;
+        c.stroke();
+        c.shadowBlur = 0;
+        c.shadowOffsetY = 0;
+        fg = mainCol;
+      } else if (st === 'outlineBox') {
+        c.shadowColor = ast.glowBoost > 0 ? mainCol : 'rgba(0,0,0,0.5)';
+        c.shadowBlur = 14 + ast.glowBoost * 18;
+        c.shadowOffsetY = 3;
+        gRoundRect(c, -bw / 2, -bh / 2, bw, bh, rad);
+        c.fillStyle = bgColor || 'rgba(10, 10, 14, 0.55)';
+        c.fill();
+        c.strokeStyle = mainCol;
+        c.lineWidth = 2.6;
+        c.stroke();
+        c.shadowBlur = 0;
+        c.shadowOffsetY = 0;
+        fg = mainCol;
+      } else if (st === 'softBox') {
+        c.save();
+        c.globalAlpha *= 0.72;
+        c.shadowColor = 'rgba(0,0,0,0.35)';
+        c.shadowBlur = 12;
+        gRoundRect(c, -bw / 2, -bh / 2, bw, bh, rad);
+        c.fillStyle = fillBg;
+        c.fill();
+        c.restore();
+        fg = bgColor ? mainCol : (isLightFill ? '#09090b' : '#ffffff');
+      } else if (st === 'neonGlow') {
+        c.shadowColor = bgColor || mainCol;
+        c.shadowBlur = 24 + ast.glowBoost * 20;
+        c.shadowOffsetY = 0;
+        fg = '#ffffff';
+      } else {
+        // 'plain' (배경 없음)
+        c.shadowColor = 'rgba(0,0,0,0.85)';
+        c.shadowBlur = 14 + ast.glowBoost * 16;
+        c.shadowOffsetY = 3;
+        fg = mainCol;
+      }
+
+      c.fillStyle = fg;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+
+      let totalChars = rawText ? rawText.length : lines.join(' ').length;
+      let budget = ast.charRatio < 0.999 ? Math.max(1, Math.ceil(totalChars * ast.charRatio)) : 99999;
+      lines.forEach((ln, li) => {
+        if (budget <= 0) return;
+        const drawLn = budget >= ln.length ? ln : ln.slice(0, budget);
+        budget -= ln.length + 1;
+        const ly = (li - (lines.length - 1) / 2) * lh;
+        c.fillText(drawLn, 0, ly + 1, bw - 20);
+      });
+      c.restore();
+    }
+
+    function drawCutElementOverridesOverlay(c, W, H, cutIdx, localT, design, V) {
+      const ov = cutElementOverrides && cutElementOverrides[cutIdx];
+      if (!ov) return;
+      const accent = (V && V.accent) || '#facc15';
+
+      // 1) 상단 라벨/배지 커스텀 렌더
+      const b = ov.badge;
+      if (b && !b.hidden) {
+        const hasCustomBadgeStyle = isCutElementPropCustomized(b) || (!!b.text && design && design.head === 'none');
+        if (hasCustomBadgeStyle) {
+          const bText = String(b.text || (design && design.label) || (V && V.label) || `${cutIdx + 1} CUT`).trim();
+          if (bText) {
+            const sc = Math.max(0.5, Math.min(2.2, Number(b.scale) || 1));
+            const bx = (typeof b.x === 'number' ? b.x : 0.5) * W;
+            const by = (typeof b.y === 'number' ? b.y : 0.08) * H;
+            const fontSpec = resolveArFontSpec(b.font, 800, 18, sc);
+            const ast = computeArElementAnimState(b.anim || 'default', localT);
+            drawStyledArBoxAndText(c, W, H, {
+              lines: [bText],
+              rawText: bText,
+              cx: bx,
+              cy: by,
+              sc,
+              fontSpec,
+              boxStyle: b.boxStyle || 'default',
+              textColor: b.color || accent,
+              bgColor: b.bgColor || '',
+              defaultBoxStyle: 'solidBadge',
+              pillRadius: true,
+              padXBase: 32,
+              padYBase: 14,
+              ast
+            });
+          }
+        }
+      }
+
+      // 2) 혜택/서브 문구 커스텀 렌더
+      const p = ov.price;
+      if (p && !p.hidden) {
+        const hasCustomPrice = isCutElementPropCustomized(p) || !!p.text;
+        if (hasCustomPrice) {
+          const pText = String(p.text || (typeof arPriceTag === 'function' ? arPriceTag() : '') || (campaign && campaign.discount) || '').trim();
+          if (pText) {
+            const sc = Math.max(0.5, Math.min(2.2, Number(p.scale) || 1));
+            const px = (typeof p.x === 'number' ? p.x : 0.5) * W;
+            const py = (typeof p.y === 'number' ? p.y : 0.56) * H;
+            const fontSpec = resolveArFontSpec(p.font, 900, 26, sc);
+            const ast = computeArElementAnimState(p.anim || 'default', localT);
+            drawStyledArBoxAndText(c, W, H, {
+              lines: [pText],
+              rawText: pText,
+              cx: px,
+              cy: py,
+              sc,
+              fontSpec,
+              boxStyle: p.boxStyle || 'default',
+              textColor: p.color || accent,
+              bgColor: p.bgColor || '',
+              defaultBoxStyle: 'outlineBox',
+              pillRadius: false,
+              padXBase: 40,
+              padYBase: 18,
+              ast
+            });
+          }
+        }
+      }
+
+      // 3) 메인 컷 자막 커스텀 렌더
+      const cap = ov.caption;
+      if (cap && !cap.hidden) {
+        const hasCustomCap = isCutElementPropCustomized(cap);
+        if (hasCustomCap) {
+          const raw = (campaign && campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || (campaign && campaign.hook) || '';
+          const clean = typeof gCleanCaption === 'function' ? gCleanCaption(raw) : String(raw || '').trim();
+          if (clean) {
+            const sc = Math.max(0.5, Math.min(2.2, Number(cap.scale) || 1));
+            const cx = (typeof cap.x === 'number' ? cap.x : 0.5) * W;
+            const cy = (typeof cap.y === 'number' ? cap.y : 0.72) * H;
+            const fontSpec = resolveArFontSpec(cap.font, 800, 34, sc);
+            const ast = computeArElementAnimState(cap.anim || 'default', localT);
+            c.save();
+            c.font = `${fontSpec.weight} ${fontSpec.fs}px ${fontSpec.css}`;
+            const maxLineW = W - 84;
+            const words = clean.split(' ');
+            const lines = [];
+            let curLine = '';
+            words.forEach((w) => {
+              const test = curLine ? `${curLine} ${w}` : w;
+              if (c.measureText(test).width > maxLineW && curLine) {
+                lines.push(curLine);
+                curLine = w;
+              } else {
+                curLine = test;
+              }
+            });
+            if (curLine) lines.push(curLine);
+            c.restore();
+            const finalLines = lines.slice(0, 3);
+            drawStyledArBoxAndText(c, W, H, {
+              lines: finalLines,
+              rawText: finalLines.join(' '),
+              cx,
+              cy,
+              sc,
+              fontSpec,
+              boxStyle: cap.boxStyle || 'default',
+              textColor: cap.color || '#ffffff',
+              bgColor: cap.bgColor || '',
+              defaultBoxStyle: 'darkGlass',
+              pillRadius: false,
+              padXBase: 44,
+              padYBase: 28,
+              ast
+            });
+          }
+        }
+      }
+    }
+
+    function getCutElementHitBox(cutIdx, elKey, W, H) {
+      const ov = getCutElementOverride(cutIdx);
+      if (elKey && elKey.startsWith('overlay:')) {
+        const ii = Number(elKey.split(':')[1]);
+        const list = getCutOverlayList(cutIdx);
+        const it = list[ii];
+        if (!it) return null;
+        const sc = Math.max(0.5, Math.min(2.4, Number(it.scale) || 1));
+        const bw = (it.type === 'sticker' && it.variant !== 'badge' ? 110 : 250) * sc;
+        const bh = (it.type === 'sticker' && it.variant !== 'badge' ? 110 : 84) * sc;
+        return {
+          key: elKey,
+          label: it.type === 'text' ? `텍스트: ${String(it.text || '').slice(0, 10)}` : `스티커 #${ii + 1}`,
+          cx: (typeof it.x === 'number' ? it.x : 0.5) * W,
+          cy: (typeof it.y === 'number' ? it.y : 0.5) * H,
+          w: bw,
+          h: bh,
+          rot: ((Number(it.rot) || 0) * Math.PI) / 180,
+          color: '#60a5fa'
+        };
+      }
+      if (elKey === 'caption') {
+        const c = ov.caption || {};
+        const sc = Math.max(0.6, Math.min(2.0, Number(c.scale) || 1));
+        return {
+          key: 'caption',
+          label: c.hidden ? '컷 자막 (숨김)' : '💬 컷 자막',
+          cx: (typeof c.x === 'number' ? c.x : 0.5) * W,
+          cy: (typeof c.y === 'number' ? c.y : 0.72) * H,
+          w: Math.min(W - 36, 440 * sc),
+          h: 112 * sc,
+          rot: 0,
+          color: '#4cc38a'
+        };
+      }
+      if (elKey === 'badge') {
+        const b = ov.badge || {};
+        const sc = Math.max(0.6, Math.min(2.0, Number(b.scale) || 1));
+        return {
+          key: 'badge',
+          label: b.hidden ? '상단 배지 (숨김)' : '🏷️ 상단 라벨/배지',
+          cx: (typeof b.x === 'number' ? b.x : 0.5) * W,
+          cy: (typeof b.y === 'number' ? b.y : 0.08) * H,
+          w: Math.min(W - 60, 220 * sc),
+          h: 52 * sc,
+          rot: 0,
+          color: '#4cc38a'
+        };
+      }
+      if (elKey === 'price') {
+        const p = ov.price || {};
+        const sc = Math.max(0.6, Math.min(2.0, Number(p.scale) || 1));
+        return {
+          key: 'price',
+          label: p.hidden ? '혜택 문구 (숨김)' : '💰 혜택/서브 문구',
+          cx: (typeof p.x === 'number' ? p.x : 0.5) * W,
+          cy: (typeof p.y === 'number' ? p.y : 0.56) * H,
+          w: Math.min(W - 48, 340 * sc),
+          h: 64 * sc,
+          rot: 0,
+          color: '#4cc38a'
+        };
+      }
+      if (elKey === 'photo') {
+        const ph = ov.photo || {};
+        return {
+          key: 'photo',
+          label: `🖼️ 배경 구도 (${Math.round((ph.scale || 1) * 100)}%)`,
+          cx: W / 2,
+          cy: H / 2,
+          w: W - 28,
+          h: H - 28,
+          rot: 0,
+          color: '#60a5fa'
+        };
+      }
+      return null;
+    }
+
+    function drawCutElementSelectionBox(c, W, H, cutIdx) {
+      if (window.__exportingVideo) return;
+      if (window.__arPinnedCut !== cutIdx) return;
+      if (!window.__arCutEditorOpen && !window.__arInlineEditActive && !window.__arDirectCanvasMode && window.__arSelectedOverlayIdx < 0) return;
+
+      let activeKey = window.__arActiveCutElKey || 'caption';
+      if (window.__arSelectedOverlayIdx >= 0) {
+        activeKey = `overlay:${window.__arSelectedOverlayIdx}`;
+      }
+      const box = getCutElementHitBox(cutIdx, activeKey, W, H);
+      if (!box) return;
+
+      c.save();
+      c.translate(box.cx, box.cy);
+      if (box.rot) c.rotate(box.rot);
+
+      const hw = box.w / 2;
+      const hh = box.h / 2;
+      const col = box.color || '#4cc38a';
+
+      // 선택 영역 테두리
+      c.strokeStyle = col;
+      c.lineWidth = 2;
+      c.setLineDash([7, 5]);
+      gRoundRect(c, -hw, -hh, box.w, box.h, 12);
+      c.stroke();
+      c.setLineDash([]);
+
+      // 모서리 핸들 4개
+      const corners = [
+        [-hw, -hh],
+        [hw, -hh],
+        [-hw, hh],
+        [hw, hh]
+      ];
+      corners.forEach(([kx, ky]) => {
+        c.fillStyle = '#ffffff';
+        c.strokeStyle = col;
+        c.lineWidth = 2;
+        c.beginPath();
+        c.rect(kx - 5, ky - 5, 10, 10);
+        c.fill();
+        c.stroke();
+      });
+
+      // 상단 라벨 필 (strokeText 사용 금지, fillRect + fillText만 사용)
+      c.font = `700 12px 'Pretendard Variable', 'Pretendard', sans-serif`;
+      const tagTxt = box.label;
+      const tagW = c.measureText(tagTxt).width + 18;
+      const tagH = 22;
+      const tagY = -hh - tagH - 6 > -H / 2 + 8 ? -hh - tagH - 6 : -hh + 8;
+      gRoundRect(c, -tagW / 2, tagY, tagW, tagH, 11);
+      c.fillStyle = col;
+      c.fill();
+      c.fillStyle = '#09090b';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(tagTxt, 0, tagY + tagH / 2 + 0.5);
+
+      c.restore();
+    }
+
     function drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V) {
       if (t >= mainDuration) return;
       const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
@@ -1193,11 +1895,13 @@
           c.restore();
         }
       }
+      drawCutElementOverridesOverlay(c, W, H, cutIdx, localT, design, V);
       const overlays = (campaign.cutOverlays && campaign.cutOverlays[cutIdx]) || [];
       if (Array.isArray(overlays) && overlays.length) {
         overlays.forEach((item) => drawSingleCutOverlayItem(c, W, H, item, localT));
       }
       if (typeof drawCutStrokesOverlay === 'function') drawCutStrokesOverlay(c, W, H, cutIdx);
+      drawCutElementSelectionBox(c, W, H, cutIdx);
     }
 
     // 좌우 스와이프 줄: 손가락은 기본 가로 스크롤, PC 는 마우스로 끌기 + 세로 휠을 가로로. 끄는 중에는 버튼 클릭 무시
@@ -1249,9 +1953,9 @@
       let anyEdited = false;
       bar.innerHTML = Array.from({ length: n }, (_, i) => {
         const pinned = window.__arPinnedCut === i;
-        const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || !!frms[i] || (Array.isArray(ovs[i]) && ovs[i].length > 0) || (Array.isArray(stks[i]) && stks[i].length > 0);
+        const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || !!frms[i] || (Array.isArray(ovs[i]) && ovs[i].length > 0) || (Array.isArray(stks[i]) && stks[i].length > 0) || hasAnyCutElementOverride(i);
         if (hasDeco) anyEdited = true;
-        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="h-7 min-w-[32px] px-2 shrink-0 rounded-[8px] text-[12px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
+        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="h-7 min-w-[32px] px-2 shrink-0 rounded-[8px] text-[12px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 요소별 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
       }).join('');
       const clearBtn = document.getElementById('clearAllCutEditsBtn');
       if (clearBtn) clearBtn.classList.toggle('hidden', !anyEdited);
@@ -1264,6 +1968,8 @@
       arUpdateSwipeFade(bar);
       renderIgEditorHud();
       renderCutOverlayEditorLayer();
+      if (typeof renderCutEditorPanel === 'function') renderCutEditorPanel();
+      if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
     }
 
     function renderIgEditorHud() {
@@ -1689,17 +2395,34 @@
 
     function renderCutOverlayEditorLayer() {
       const layer = document.getElementById('cutOverlayEditorLayer');
+      const vp = document.getElementById('previewViewport');
+      const rCanvas = document.getElementById('reelCanvas');
       if (!layer) return;
       const cutIdx = window.__arPinnedCut;
-      if (cutIdx === undefined || cutIdx < 0) {
+      const isEditing = typeof cutIdx === 'number' && cutIdx >= 0;
+      const directMode = isEditing && (window.__arDirectCanvasMode || window.__arCutEditorOpen || window.__arInlineEditActive);
+
+      if (vp) {
+        vp.classList.toggle('ar-el-canvas-mode', !!directMode);
+        vp.classList.toggle('ar-inline-edit-active', !!(isEditing && window.__arInlineEditActive));
+      }
+      if (rCanvas) rCanvas.classList.toggle('ar-el-canvas-interactive', !!directMode);
+
+      if (!isEditing) {
         layer.classList.add('hidden');
         layer.classList.remove('pointer-events-auto');
         layer.classList.add('pointer-events-none');
         layer.innerHTML = '';
         return;
       }
+
       const list = getCutOverlayList(cutIdx);
-      if (!list.length) {
+      const ov = getCutElementOverride(cutIdx);
+      const activeKey = window.__arSelectedOverlayIdx >= 0
+        ? `overlay:${window.__arSelectedOverlayIdx}`
+        : (window.__arActiveCutElKey || 'caption');
+
+      if (!list.length && !directMode) {
         layer.classList.add('hidden');
         layer.innerHTML = '';
         return;
@@ -1707,11 +2430,63 @@
       layer.classList.remove('hidden', 'pointer-events-none');
       layer.classList.add('pointer-events-auto');
 
+      // 기본 컷 요소(자막·배지·혜택문구) 직접 선택·드래그 히트박스
+      const baseBoxes = directMode ? [
+        {
+          key: 'badge',
+          x: typeof ov.badge.x === 'number' ? ov.badge.x : 0.5,
+          y: typeof ov.badge.y === 'number' ? ov.badge.y : 0.08,
+          w: Math.round(118 * Math.min(1.6, Math.max(0.7, Number(ov.badge.scale) || 1))),
+          h: Math.round(28 * Math.min(1.6, Math.max(0.7, Number(ov.badge.scale) || 1))),
+          title: '상단 라벨/배지 (드래그하여 이동)'
+        },
+        {
+          key: 'price',
+          x: typeof ov.price.x === 'number' ? ov.price.x : 0.5,
+          y: typeof ov.price.y === 'number' ? ov.price.y : 0.56,
+          w: Math.round(170 * Math.min(1.6, Math.max(0.7, Number(ov.price.scale) || 1))),
+          h: Math.round(34 * Math.min(1.6, Math.max(0.7, Number(ov.price.scale) || 1))),
+          title: '혜택/서브 문구 (드래그하여 이동)'
+        },
+        {
+          key: 'caption',
+          x: typeof ov.caption.x === 'number' ? ov.caption.x : 0.5,
+          y: typeof ov.caption.y === 'number' ? ov.caption.y : 0.72,
+          w: Math.round(210 * Math.min(1.6, Math.max(0.7, Number(ov.caption.scale) || 1))),
+          h: Math.round(58 * Math.min(1.6, Math.max(0.7, Number(ov.caption.scale) || 1))),
+          title: '컷 자막 (드래그하여 이동)'
+        }
+      ] : [];
+
+      const baseBoxesHtml = baseBoxes.map((b) => {
+        const isSel = activeKey === b.key;
+        const leftPct = (b.x * 100).toFixed(2);
+        const topPct = (b.y * 100).toFixed(2);
+        return `
+          <div data-el-key="${b.key}"
+               title="${b.title}"
+               style="left:${leftPct}%;top:${topPct}%;width:${b.w}px;height:${b.h}px;transform:translate(-50%,-50%);touch-action:none;"
+               class="absolute cursor-move rounded-[10px] ${isSel ? 'active ring-1 ring-[#4cc38a]/85 bg-[#4cc38a]/8' : 'hover:ring-1 hover:ring-white/35'}">
+          </div>
+        `;
+      }).join('');
+
+      const inlineBadgeHtml = window.__arInlineEditActive
+        ? `<div class="ar-inline-edit-badge pointer-events-none">⚡ ${cutIdx + 1}컷 인라인 빠른 편집 · 드래그하여 이동</div>`
+        : '';
+
+      const hintHtml = (!window.__arInlineEditActive && directMode)
+        ? `<div class="ar-el-canvas-hint pointer-events-none">${activeKey === 'photo' ? '드래그하여 사진 구도 이동' : '요소를 클릭·드래그해 위치 조절 (길게 눌러 빠른 편집)'}</div>`
+        : '';
+
       layer.innerHTML = `
         <div id="cutSnapV" class="hidden absolute top-0 bottom-0 left-1/2 w-[1px] bg-[#38bdf8]/80 pointer-events-none"></div>
         <div id="cutSnapH" class="hidden absolute left-0 right-0 top-1/2 h-[1px] bg-[#38bdf8]/80 pointer-events-none"></div>
+        ${inlineBadgeHtml}
+        ${hintHtml}
+        ${baseBoxesHtml}
       ` + list.map((it, ii) => {
-        const sel = window.__arSelectedOverlayIdx === ii;
+        const sel = window.__arSelectedOverlayIdx === ii || activeKey === `overlay:${ii}`;
         const leftPct = ((typeof it.x === 'number' ? it.x : 0.5) * 100).toFixed(2);
         const topPct = ((typeof it.y === 'number' ? it.y : 0.5) * 100).toFixed(2);
         const sc = Number(it.scale) || 1;
@@ -1721,43 +2496,134 @@
           <div data-ov-idx="${ii}"
                ondblclick="if(${it.type === 'text' ? 'true' : 'false'})openIgTextCompose(${ii})"
                style="left:${leftPct}%;top:${topPct}%;width:${boxW}px;height:${boxH}px;transform:translate(-50%,-50%) rotate(${it.rot || 0}deg);touch-action:none;"
-               class="absolute cursor-move rounded-[10px] ${sel ? 'ring-1 ring-white/85 bg-white/5' : ''}">
+               class="absolute cursor-move rounded-[10px] ${sel ? 'active ring-1 ring-white/85 bg-white/5' : ''}">
           </div>
         `;
       }).join('');
 
       if (!layer._boundDrag) {
         layer._boundDrag = true;
-        let dragIdx = -1, startX = 0, startY = 0, origX = 0.5, origY = 0.5, moved = false, overTrash = false;
+        let dragIdx = -1, dragElKey = '', startX = 0, startY = 0, origX = 0.5, origY = 0.5, moved = false, overTrash = false;
         const onStart = (ev) => {
           const card = ev.target.closest('[data-ov-idx]');
-          if (!card) {
-            if (window.__arSelectedOverlayIdx >= 0) { window.__arSelectedOverlayIdx = -1; renderIgEditorHud(); renderCutOverlayEditorLayer(); }
-            return;
-          }
-          ev.preventDefault();
-          dragIdx = Number(card.getAttribute('data-ov-idx'));
-          moved = false;
-          overTrash = false;
-          if (window.__arSelectedOverlayIdx !== dragIdx) {
-            window.__arSelectedOverlayIdx = dragIdx;
-            renderIgEditorHud();
-          }
+          const elCard = ev.target.closest('[data-el-key]');
           const pt = ev.touches ? ev.touches[0] : ev;
           startX = pt.clientX;
           startY = pt.clientY;
-          const it = getCutOverlayList(window.__arPinnedCut)[dragIdx];
-          origX = it ? (it.x ?? 0.5) : 0.5;
-          origY = it ? (it.y ?? 0.5) : 0.5;
+          moved = false;
+          overTrash = false;
+
+          if (card) {
+            ev.preventDefault();
+            dragIdx = Number(card.getAttribute('data-ov-idx'));
+            dragElKey = '';
+            window.__arSelectedOverlayIdx = dragIdx;
+            window.__arActiveCutElKey = `overlay:${dragIdx}`;
+            const it = getCutOverlayList(window.__arPinnedCut)[dragIdx];
+            origX = it ? (it.x ?? 0.5) : 0.5;
+            origY = it ? (it.y ?? 0.5) : 0.5;
+            if (rCanvas) rCanvas.classList.add('ar-el-canvas-dragging');
+            renderIgEditorHud();
+            renderCutEditorPanel();
+            if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+            if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            return;
+          }
+
+          if (elCard && (window.__arDirectCanvasMode || window.__arCutEditorOpen || window.__arInlineEditActive)) {
+            ev.preventDefault();
+            dragIdx = -1;
+            dragElKey = elCard.getAttribute('data-el-key') || 'caption';
+            window.__arSelectedOverlayIdx = -1;
+            window.__arActiveCutElKey = dragElKey;
+            const curOv = getCutElementOverride(window.__arPinnedCut);
+            const targetObj = curOv[dragElKey] || { x: 0.5, y: 0.5 };
+            origX = typeof targetObj.x === 'number' ? targetObj.x : 0.5;
+            origY = typeof targetObj.y === 'number' ? targetObj.y : 0.5;
+            if (rCanvas) rCanvas.classList.add('ar-el-canvas-dragging');
+            renderIgEditorHud();
+            renderCutEditorPanel();
+            if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+            if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            return;
+          }
+
+          // 배경 사진 구도 모드이거나 빈 캔버스 영역을 드래그할 때
+          if (window.__arPinnedCut >= 0 && (window.__arDirectCanvasMode || window.__arCutEditorOpen || window.__arInlineEditActive)) {
+            ev.preventDefault();
+            dragIdx = -1;
+            window.__arSelectedOverlayIdx = -1;
+            const curKey = window.__arActiveCutElKey || 'caption';
+            if (curKey === 'photo' || (!curKey.startsWith('overlay:') && curKey !== 'transition')) {
+              dragElKey = curKey === 'deco' ? 'photo' : curKey;
+            } else {
+              dragElKey = 'photo';
+              window.__arActiveCutElKey = 'photo';
+            }
+            const curOv = getCutElementOverride(window.__arPinnedCut);
+            if (dragElKey === 'photo') {
+              origX = Number(curOv.photo.panX) || 0;
+              origY = Number(curOv.photo.panY) || 0;
+            } else {
+              const tObj = curOv[dragElKey] || { x: 0.5, y: 0.5 };
+              origX = typeof tObj.x === 'number' ? tObj.x : 0.5;
+              origY = typeof tObj.y === 'number' ? tObj.y : 0.5;
+            }
+            if (rCanvas) rCanvas.classList.add('ar-el-canvas-dragging');
+            renderIgEditorHud();
+            renderCutEditorPanel();
+            if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+            if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+          } else if (window.__arSelectedOverlayIdx >= 0) {
+            window.__arSelectedOverlayIdx = -1;
+            renderIgEditorHud();
+            renderCutOverlayEditorLayer();
+            renderCutEditorPanel();
+            if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+          }
         };
+
         const onMove = (ev) => {
-          if (dragIdx < 0 || window.__arPinnedCut < 0) return;
+          if ((dragIdx < 0 && !dragElKey) || window.__arPinnedCut < 0) return;
           const rect = layer.getBoundingClientRect();
           if (!rect.width || !rect.height) return;
           const pt = ev.touches ? ev.touches[0] : ev;
           if (Math.hypot(pt.clientX - startX, pt.clientY - startY) > 4) moved = true;
-          let nx = Math.max(0.06, Math.min(0.94, origX + (pt.clientX - startX) / rect.width));
-          let ny = Math.max(0.06, Math.min(0.94, origY + (pt.clientY - startY) / rect.height));
+          const dx = (pt.clientX - startX) / rect.width;
+          const dy = (pt.clientY - startY) / rect.height;
+
+          if (dragElKey) {
+            const curOv = getCutElementOverride(window.__arPinnedCut);
+            const snapV = document.getElementById('cutSnapV');
+            const snapH = document.getElementById('cutSnapH');
+            if (dragElKey === 'photo') {
+              curOv.photo.panX = Math.max(-0.5, Math.min(0.5, Number((origX + dx).toFixed(3))));
+              curOv.photo.panY = Math.max(-0.5, Math.min(0.5, Number((origY + dy).toFixed(3))));
+            } else if (curOv[dragElKey]) {
+              let nx = Math.max(0.06, Math.min(0.94, origX + dx));
+              let ny = Math.max(0.05, Math.min(0.94, origY + dy));
+              const nearV = Math.abs(nx - 0.5) < 0.025;
+              const nearH = Math.abs(ny - 0.5) < 0.025;
+              if (nearV) nx = 0.5;
+              if (nearH) ny = 0.5;
+              if (snapV) snapV.classList.toggle('hidden', !nearV);
+              if (snapH) snapH.classList.toggle('hidden', !nearH);
+              curOv[dragElKey].x = Number(nx.toFixed(3));
+              curOv[dragElKey].y = Number(ny.toFixed(3));
+              curOv[dragElKey].customPos = true;
+              const boxEl = layer.querySelector(`[data-el-key="${dragElKey}"]`);
+              if (boxEl) {
+                boxEl.style.left = `${(nx * 100).toFixed(2)}%`;
+                boxEl.style.top = `${(ny * 100).toFixed(2)}%`;
+              }
+            }
+            if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            syncCutInspectorLiveValues(window.__arPinnedCut, dragElKey);
+            return;
+          }
+
+          let nx = Math.max(0.06, Math.min(0.94, origX + dx));
+          let ny = Math.max(0.06, Math.min(0.94, origY + dy));
           const snapV = document.getElementById('cutSnapV');
           const snapH = document.getElementById('cutSnapH');
           const trash = document.getElementById('igTrashZone');
@@ -1782,14 +2648,26 @@
           if (snapH) snapH.classList.toggle('hidden', !nearH);
           const it = getCutOverlayList(window.__arPinnedCut)[dragIdx];
           if (it) {
-            it.x = nx;
-            it.y = ny;
+            it.x = Number(nx.toFixed(3));
+            it.y = Number(ny.toFixed(3));
             const card = layer.querySelector(`[data-ov-idx="${dragIdx}"]`);
             if (card) { card.style.left = `${(nx * 100).toFixed(2)}%`; card.style.top = `${(ny * 100).toFixed(2)}%`; }
             if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            syncCutInspectorLiveValues(window.__arPinnedCut, `overlay:${dragIdx}`);
           }
         };
+
         const onEnd = () => {
+          if (rCanvas) rCanvas.classList.remove('ar-el-canvas-dragging');
+          if (dragElKey) {
+            dragElKey = '';
+            const snapV = document.getElementById('cutSnapV');
+            const snapH = document.getElementById('cutSnapH');
+            if (snapV) snapV.classList.add('hidden');
+            if (snapH) snapH.classList.add('hidden');
+            renderPreviewCutPinBar();
+            return;
+          }
           if (dragIdx >= 0) {
             const wasTrash = overTrash;
             const finishedIdx = dragIdx;
@@ -1807,6 +2685,7 @@
               pushCutOverlayUndo();
               getCutOverlayList(window.__arPinnedCut).splice(finishedIdx, 1);
               window.__arSelectedOverlayIdx = -1;
+              window.__arActiveCutElKey = 'caption';
               if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
             }
             saveCutOverlays();
@@ -1823,10 +2702,20 @@
     }
 
     function togglePinPreviewCut(idx) {
-      if (typeof idx !== 'number' || idx < 0) { window.__arPinnedCut = -1; window.__arSelectedOverlayIdx = -1; renderPreviewCutPinBar(); return; }
+      if (typeof idx !== 'number' || idx < 0) {
+        window.__arPinnedCut = -1;
+        window.__arSelectedOverlayIdx = -1;
+        window.__arCutEditorOpen = false;
+        window.__arInlineEditActive = false;
+        renderPreviewCutPinBar();
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+        return;
+      }
       if (window.__arPinnedCut === idx) {
         window.__arPinnedCut = -1;
         window.__arSelectedOverlayIdx = -1;
+        window.__arCutEditorOpen = false;
+        window.__arInlineEditActive = false;
         isPlaying = true;
         const ppBtn = document.getElementById('playPauseBtn');
         if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
@@ -1834,6 +2723,10 @@
       } else {
         window.__arPinnedCut = idx;
         window.__arSelectedOverlayIdx = -1;
+        window.__arCutEditorOpen = true;
+        if (!window.__arActiveCutElKey || window.__arActiveCutElKey.startsWith('overlay:')) {
+          window.__arActiveCutElKey = 'caption';
+        }
         isPlaying = false;
         const ppBtn = document.getElementById('playPauseBtn');
         if (ppBtn) ppBtn.textContent = '▶️ 재생';
@@ -1846,6 +2739,1117 @@
       }
       renderPreviewCutPinBar();
     }
+
+    // ============================================================================
+    // ★ 애니메이션 & 컷 전환 라이브 미리보기 및 전환 설정
+    // ============================================================================
+    function previewCutElementAnimation(cutIdx) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      if (window.__arAnimPreviewTimer) {
+        cancelAnimationFrame(window.__arAnimPreviewTimer);
+        window.__arAnimPreviewTimer = null;
+      }
+      const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDur = mainDur / n;
+      const startT = cutIdx * cutDur;
+      const dur = Math.min(0.78, cutDur * 0.65);
+      const t0 = performance.now();
+      const step = (now) => {
+        const elapsed = (now - t0) / 1000;
+        const lt = Math.min(dur, elapsed);
+        if (window.__timelines && window.__timelines.main) {
+          window.__timelines.main.seek(startT + lt);
+        }
+        if (elapsed < dur) {
+          window.__arAnimPreviewTimer = requestAnimationFrame(step);
+        } else {
+          window.__arAnimPreviewTimer = null;
+        }
+      };
+      window.__arAnimPreviewTimer = requestAnimationFrame(step);
+    }
+
+    function setCutTransition(cutIdx, transId) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      if (!Array.isArray(campaign.cutTransitions)) campaign.cutTransitions = [];
+      campaign.cutTransitions[cutIdx] = transId || 'default';
+      renderPreviewCutPinBar();
+      if (transId && transId !== 'default' && transId !== 'none') {
+        previewCutElementAnimation(cutIdx);
+      } else if (window.__timelines && window.__timelines.main) {
+        window.__timelines.main.seek(window.__timelines.main.currentTime);
+      }
+    }
+
+    function applyCutTransitionToAll(transId) {
+      const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      const val = transId || ((campaign.cutTransitions && campaign.cutTransitions[window.__arPinnedCut]) || 'default');
+      campaign.cutTransitions = Array.from({ length: n }, () => val);
+      renderPreviewCutPinBar();
+      if (typeof arToast === 'function') arToast('🎞 선택한 전환 효과를 모든 컷에 적용했습니다');
+    }
+
+    // ============================================================================
+    // ★ 프리뷰 캔버스 길게 누르기 (~380ms, 이동 < 8px) → 인라인 빠른 편집 바 (#arInlineEditBar)
+    // ============================================================================
+    function hitTestCutCanvasElement(cutIdx, nx, ny) {
+      const list = getCutOverlayList(cutIdx);
+      for (let i = list.length - 1; i >= 0; i--) {
+        const it = list[i];
+        if (!it) continue;
+        const ix = typeof it.x === 'number' ? it.x : 0.5;
+        const iy = typeof it.y === 'number' ? it.y : 0.5;
+        const sc = Math.max(0.6, Math.min(2.2, Number(it.scale) || 1));
+        const hw = (it.type === 'sticker' && it.variant !== 'badge' ? 0.14 : 0.28) * sc;
+        const hh = (it.type === 'sticker' && it.variant !== 'badge' ? 0.08 : 0.07) * sc;
+        if (Math.abs(nx - ix) <= hw && Math.abs(ny - iy) <= hh) {
+          return `overlay:${i}`;
+        }
+      }
+      const ov = getCutElementOverride(cutIdx);
+      const bx = typeof ov.badge.x === 'number' ? ov.badge.x : 0.5;
+      const by = typeof ov.badge.y === 'number' ? ov.badge.y : 0.08;
+      if (Math.abs(nx - bx) <= 0.32 && Math.abs(ny - by) <= 0.08) return 'badge';
+
+      const px = typeof ov.price.x === 'number' ? ov.price.x : 0.5;
+      const py = typeof ov.price.y === 'number' ? ov.price.y : 0.56;
+      if (Math.abs(nx - px) <= 0.36 && Math.abs(ny - py) <= 0.07) return 'price';
+
+      const cx = typeof ov.caption.x === 'number' ? ov.caption.x : 0.5;
+      const cy = typeof ov.caption.y === 'number' ? ov.caption.y : 0.72;
+      if (Math.abs(nx - cx) <= 0.44 && Math.abs(ny - cy) <= 0.14) return 'caption';
+
+      if (ny < 0.16) return 'badge';
+      if (ny > 0.62) return 'caption';
+      if (ny >= 0.48 && ny <= 0.62) return 'price';
+      return 'caption';
+    }
+
+    function ensureInlineQuickEditBarDOM() {
+      let bar = document.getElementById('arInlineEditBar');
+      if (bar) return bar;
+      const vp = document.getElementById('previewViewport');
+      const monitorFrame = vp ? (vp.closest('.monitor-frame') || vp.parentElement) : document.getElementById('mainMonitorColumn');
+      if (!monitorFrame) return null;
+      bar = document.createElement('section');
+      bar.id = 'arInlineEditBar';
+      bar.className = 'ar-inline-edit-bar hidden';
+      bar.setAttribute('aria-label', '프리뷰 인라인 빠른 편집 바');
+      if (vp && vp.nextSibling) {
+        vp.parentElement.insertBefore(bar, vp.nextSibling);
+      } else {
+        monitorFrame.appendChild(bar);
+      }
+      return bar;
+    }
+
+    function openInlineQuickEdit(cutIdx, elKey) {
+      const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      let targetIdx = typeof cutIdx === 'number' && cutIdx >= 0 ? Math.min(n - 1, cutIdx) : window.__arPinnedCut;
+      if (typeof targetIdx !== 'number' || targetIdx < 0) {
+        const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+        const curT = (window.__timelines && window.__timelines.main) ? window.__timelines.main.currentTime : 0;
+        const cutDur = mainDur / n;
+        targetIdx = curT < mainDur ? Math.min(n - 1, Math.max(0, Math.floor(curT / cutDur))) : 0;
+      }
+      window.__arPinnedCut = targetIdx;
+      window.__arInlineEditActive = true;
+      window.__arDirectCanvasMode = true;
+      if (elKey) {
+        window.__arActiveCutElKey = elKey;
+        if (elKey.startsWith('overlay:')) {
+          window.__arSelectedOverlayIdx = Number(elKey.split(':')[1]);
+        } else {
+          window.__arSelectedOverlayIdx = -1;
+        }
+      } else if (!window.__arActiveCutElKey) {
+        window.__arActiveCutElKey = 'caption';
+      }
+
+      isPlaying = false;
+      const ppBtn = document.getElementById('playPauseBtn');
+      if (ppBtn) ppBtn.textContent = '▶️ 재생';
+      if (typeof updatePlayPauseUI === 'function') updatePlayPauseUI();
+
+      const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+      const cutDur = mainDur / n;
+      const curT = (window.__timelines && window.__timelines.main) ? window.__timelines.main.currentTime : 0;
+      if (curT < targetIdx * cutDur || curT >= (targetIdx + 1) * cutDur) {
+        const seekT = targetIdx * cutDur + Math.min(0.55, cutDur * 0.35);
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(seekT);
+      } else if (window.__timelines && window.__timelines.main) {
+        window.__timelines.main.seek(curT);
+      }
+      renderPreviewCutPinBar();
+      const inp = document.getElementById('arInlineQuickTextInput');
+      if (inp) setTimeout(() => inp.focus(), 20);
+    }
+
+    function closeInlineQuickEdit() {
+      window.__arInlineEditActive = false;
+      const vp = document.getElementById('previewViewport');
+      if (vp) vp.classList.remove('ar-inline-edit-active', 'ar-longpress-holding');
+      const bar = document.getElementById('arInlineEditBar');
+      if (bar) bar.classList.add('hidden');
+      renderCutOverlayEditorLayer();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+    }
+
+    function renderInlineQuickEditBar() {
+      const bar = ensureInlineQuickEditBarDOM();
+      const vp = document.getElementById('previewViewport');
+      if (!bar) return;
+      const cutIdx = window.__arPinnedCut;
+      if (!window.__arInlineEditActive || typeof cutIdx !== 'number' || cutIdx < 0) {
+        bar.classList.add('hidden');
+        bar.innerHTML = '';
+        if (vp) vp.classList.remove('ar-inline-edit-active');
+        return;
+      }
+      bar.classList.remove('hidden');
+      if (vp) vp.classList.add('ar-inline-edit-active');
+
+      const ov = getCutElementOverride(cutIdx);
+      const overlays = getCutOverlayList(cutIdx);
+      const design = typeof getActiveDesign === 'function' ? getActiveDesign() : {};
+      let activeKey = window.__arActiveCutElKey || 'caption';
+      if (window.__arSelectedOverlayIdx >= 0 && overlays[window.__arSelectedOverlayIdx]) {
+        activeKey = `overlay:${window.__arSelectedOverlayIdx}`;
+        window.__arActiveCutElKey = activeKey;
+      } else if (activeKey.startsWith('overlay:')) {
+        const chk = Number(activeKey.split(':')[1]);
+        if (!overlays[chk]) {
+          activeKey = 'caption';
+          window.__arActiveCutElKey = 'caption';
+        }
+      }
+
+      const pills = [
+        { key: 'caption',    label: '💬 자막' },
+        { key: 'badge',      label: '🏷️ 상단배지' },
+        { key: 'price',      label: '💰 혜택문구' },
+        { key: 'photo',      label: '🖼️ 배경구도' },
+        { key: 'transition', label: '🎞 컷 전환' }
+      ];
+      overlays.forEach((it, ii) => {
+        pills.push({
+          key: `overlay:${ii}`,
+          label: it.type === 'text' ? `🔤 ${String(it.text || '텍스트').slice(0, 6)}` : `⭐ #${ii + 1}`
+        });
+      });
+
+      const pillsHtml = pills.map((p) => {
+        const on = activeKey === p.key;
+        return `<button type="button" onclick="selectCutEditorElement('${p.key}')" class="ar-el-pill ${on ? 'active' : ''}">${escapeCutHtml(p.label)}</button>`;
+      }).join('');
+
+      let bodyHtml = '';
+      if (activeKey === 'caption' || activeKey === 'badge' || activeKey === 'price') {
+        const tObj = ov[activeKey] || {};
+        const curText = activeKey === 'caption'
+          ? ((campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || '')
+          : (tObj.text || '');
+        const placeholderTxt = activeKey === 'caption'
+          ? `${cutIdx + 1}컷 자막 입력`
+          : activeKey === 'badge'
+            ? `기본: ${(design && design.label) || '상단 배지'}`
+            : `기본: ${(typeof arPriceTag === 'function' ? arPriceTag() : '') || (campaign && campaign.discount) || '혜택 문구'}`;
+        const textHandler = activeKey === 'caption'
+          ? `updateCutCaptionDirect(${cutIdx}, this.value)`
+          : `updateCutElementOverride(${cutIdx}, '${activeKey}', 'text', this.value, false)`;
+
+        bodyHtml = `
+          <div class="ar-el-row">
+            <input id="arInlineQuickTextInput" type="text" value="${escapeCutHtml(curText)}" placeholder="${escapeCutHtml(placeholderTxt)}"
+                   oninput="${textHandler}"
+                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/45 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+            <span class="ar-el-label ml-1">크기</span>
+            <input type="range" min="0.6" max="1.9" step="0.05" value="${Number(tObj.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, '${activeKey}', 'scale', this.value, false)"
+                   class="w-20" />
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'hidden', ${!tObj.hidden}, true)"
+                    class="ar-el-badge ${tObj.hidden ? 'muted' : ''}">${tObj.hidden ? '🙈 숨김' : '👁 표시'}</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, '${activeKey}')" class="ar-el-badge muted">↺</button>
+          </div>
+          <div class="ar-inline-scroll-row ar-inline-font-bar">
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'font', '', true)"
+                    class="ar-inline-font-chip ${!tObj.font ? 'active' : ''}">기본 폰트</button>
+            ${CUT_TEXT_FONTS.map((f) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'font', '${f.id}', true)"
+                      style="font-family:${f.css};font-weight:${f.weight};"
+                      class="ar-inline-font-chip ${tObj.font === f.id ? 'active' : ''}">${f.label}</button>
+            `).join('')}
+          </div>
+          <div class="ar-inline-scroll-row ar-inline-style-bar">
+            ${AR_ELEMENT_BOX_STYLES.map((bs) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'boxStyle', '${bs.id}', true)"
+                      class="ar-inline-style-chip ${(tObj.boxStyle || 'default') === bs.id ? 'active' : ''}">${bs.label}</button>
+            `).join('')}
+          </div>
+          <div class="ar-inline-scroll-row ar-inline-anim-bar">
+            ${AR_ELEMENT_ANIMS.map((an) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'anim', '${an.id}', true);previewCutElementAnimation(${cutIdx})"
+                      class="ar-inline-anim-chip ${(tObj.anim || 'default') === an.id ? 'active' : ''}">${an.label}</button>
+            `).join('')}
+          </div>
+          <div class="ar-inline-scroll-row ar-inline-color-bar">
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'color', '', true)"
+                    class="ar-inline-style-chip ${!tObj.color ? 'active' : ''}">기본색</button>
+            ${CUT_TEXT_COLORS.map((col) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${activeKey}', 'color', '${col}', true)"
+                      class="ar-inline-color-swatch ${tObj.color === col ? 'active' : ''}"
+                      style="background:${col}"></button>
+            `).join('')}
+          </div>
+        `;
+      } else if (activeKey.startsWith('overlay:')) {
+        const ii = Number(activeKey.split(':')[1]);
+        const it = overlays[ii];
+        if (it) {
+          const isText = it.type === 'text';
+          const isWidget = it.type === 'sticker' && it.variant === 'widget';
+          const curTxt = isText ? (it.text || '') : (it.customText || it.text || '');
+          bodyHtml = `
+            <div class="ar-el-row">
+              ${(isText || isWidget) ? `
+                <input id="arInlineQuickTextInput" type="text" value="${escapeCutHtml(curTxt)}" placeholder="오버레이 문구"
+                       oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'text', this.value, false)"
+                       class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/45 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+              ` : `<span class="text-[12px] text-white/80 flex-1">${it.style === 'photo' ? '📷 사진 스티커' : escapeCutHtml(it.text || it.key || '스티커')}</span>`}
+              <span class="ar-el-label ml-1">크기</span>
+              <input type="range" min="0.45" max="2.4" step="0.05" value="${Number(it.scale) || 1}"
+                     oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'scale', this.value, false)"
+                     class="w-20" />
+              <button type="button" onclick="removeSelectedOverlay()" class="ar-el-badge" style="color:#f87171;">🗑</button>
+            </div>
+            ${isText ? `
+              <div class="ar-inline-scroll-row ar-inline-font-bar">
+                ${CUT_TEXT_FONTS.map((f) => `
+                  <button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'font', '${f.id}', true)"
+                          style="font-family:${f.css};font-weight:${f.weight};"
+                          class="ar-inline-font-chip ${(it.font || 'dohyeon') === f.id ? 'active' : ''}">${f.label}</button>
+                `).join('')}
+              </div>
+              <div class="ar-inline-scroll-row ar-inline-style-bar">
+                ${AR_ELEMENT_BOX_STYLES.filter((b) => b.id !== 'default').map((bs) => `
+                  <button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'style', '${bs.id}', true)"
+                          class="ar-inline-style-chip ${(it.style || 'box') === bs.id ? 'active' : ''}">${bs.label}</button>
+                `).join('')}
+              </div>
+            ` : ''}
+            <div class="ar-inline-scroll-row ar-inline-anim-bar">
+              ${AR_ELEMENT_ANIMS.filter((a) => a.id !== 'default').map((an) => {
+                const curA = it.anim || 'static';
+                const on = (an.id === 'none' && (curA === 'static' || curA === 'none')) || curA === an.id;
+                return `<button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'anim', '${an.id}', true);previewCutElementAnimation(${cutIdx})"
+                                class="ar-inline-anim-chip ${on ? 'active' : ''}">${an.label}</button>`;
+              }).join('')}
+            </div>
+            ${isText ? `
+              <div class="ar-inline-scroll-row ar-inline-color-bar">
+                ${CUT_TEXT_COLORS.map((col) => `
+                  <button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'color', '${col}', true)"
+                          class="ar-inline-color-swatch ${(it.color || '#ffffff') === col ? 'active' : ''}"
+                          style="background:${col}"></button>
+                `).join('')}
+              </div>
+            ` : ''}
+          `;
+        }
+      } else if (activeKey === 'transition') {
+        const curTr = (campaign.cutTransitions && campaign.cutTransitions[cutIdx]) || 'default';
+        bodyHtml = `
+          <div class="ar-inline-scroll-row ar-inline-anim-bar">
+            ${AR_CUT_TRANSITIONS.map((tr) => `
+              <button type="button" onclick="setCutTransition(${cutIdx}, '${tr.id}')"
+                      class="ar-inline-anim-chip ${curTr === tr.id ? 'active' : ''}">${tr.label}</button>
+            `).join('')}
+          </div>
+          <div class="ar-el-row">
+            <span class="text-[11px] text-white/65 flex-1">이 컷 시작 전환 효과 (16종)</span>
+            <button type="button" onclick="applyCutTransitionToAll('${curTr}')" class="ar-el-badge blue">전체 컷에 동일 적용</button>
+          </div>
+        `;
+      } else {
+        // photo
+        const ph = ov.photo;
+        const curFilter = (campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+        bodyHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">확대</span>
+            <input type="range" min="0.8" max="2.4" step="0.05" value="${Number(ph.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'photo', 'scale', this.value, false)" class="flex-1" />
+            <button type="button" onclick="triggerCutPhotoReplace(${cutIdx})" class="ar-el-badge blue">📷 사진 교체</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'photo')" class="ar-el-badge muted">↺</button>
+          </div>
+          <div class="ar-inline-scroll-row ar-inline-style-bar">
+            ${CUT_FILTER_OPTIONS.map((f) => `
+              <button type="button" onclick="setCutFilter(${cutIdx}, '${f.id}')"
+                      class="ar-inline-style-chip ${curFilter === f.id ? 'active' : ''}">${f.label}</button>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      bar.innerHTML = `
+        <div class="ar-inline-head">
+          <div class="ar-inline-title">
+            <span>⚡ ${cutIdx + 1}컷 빠른 편집</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="openCutEditor(${cutIdx}, '${activeKey}')" class="ar-el-badge muted">상세 패널</button>
+            <button type="button" onclick="closeInlineQuickEdit()" class="ar-el-badge blue">편집 완료 ✓</button>
+          </div>
+        </div>
+        <div class="ar-inline-scroll-row">
+          ${pillsHtml}
+        </div>
+        ${bodyHtml}
+      `;
+    }
+
+    (function bindPreviewLongPressQuickEdit() {
+      if (window.__arLongPressBound) return;
+      window.__arLongPressBound = true;
+      let timer = null;
+      let startX = 0;
+      let startY = 0;
+      let ringEl = null;
+
+      const clearPress = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        const vp = document.getElementById('previewViewport');
+        if (vp) vp.classList.remove('ar-longpress-holding');
+        if (ringEl && ringEl.parentNode) {
+          ringEl.parentNode.removeChild(ringEl);
+        }
+        ringEl = null;
+      };
+
+      const onPointerDown = (ev) => {
+        if (ev.button && ev.button !== 0) return;
+        const vp = document.getElementById('previewViewport');
+        if (!vp || !vp.contains(ev.target)) return;
+        // HUD 버튼, 인풋, 드로잉 캔버스 위는 제외
+        if (ev.target.closest('button, input, textarea, select, #igEditorHud, #igSheetBackdrop, #igTextComposeOverlay, #igDrawOverlay, #presetHandle')) {
+          return;
+        }
+        const pt = ev.touches ? ev.touches[0] : ev;
+        startX = pt.clientX;
+        startY = pt.clientY;
+        clearPress();
+
+        const rect = vp.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const relX = pt.clientX - rect.left;
+        const relY = pt.clientY - rect.top;
+
+        vp.classList.add('ar-longpress-holding');
+        ringEl = document.createElement('div');
+        ringEl.className = 'ar-longpress-ring pointer-events-none';
+        ringEl.style.left = `${relX}px`;
+        ringEl.style.top = `${relY}px`;
+        ringEl.innerHTML = `<div class="ar-longpress-ripple"></div>`;
+        vp.appendChild(ringEl);
+
+        timer = setTimeout(() => {
+          timer = null;
+          vp.classList.remove('ar-longpress-holding');
+          if (ringEl && ringEl.parentNode) ringEl.parentNode.removeChild(ringEl);
+          ringEl = null;
+
+          const nx = Math.max(0, Math.min(1, relX / rect.width));
+          const ny = Math.max(0, Math.min(1, relY / rect.height));
+          const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+          const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+          const curT = (window.__timelines && window.__timelines.main) ? window.__timelines.main.currentTime : 0;
+          const cutDur = mainDur / n;
+          const targetIdx = window.__arPinnedCut >= 0
+            ? window.__arPinnedCut
+            : (curT < mainDur ? Math.min(n - 1, Math.max(0, Math.floor(curT / cutDur))) : 0);
+          const hitKey = hitTestCutCanvasElement(targetIdx, nx, ny);
+          openInlineQuickEdit(targetIdx, hitKey);
+        }, 380);
+      };
+
+      const onPointerMove = (ev) => {
+        if (!timer) return;
+        const pt = ev.touches ? ev.touches[0] : ev;
+        if (Math.hypot(pt.clientX - startX, pt.clientY - startY) > 8) {
+          clearPress();
+        }
+      };
+
+      window.addEventListener('mousedown', onPointerDown, true);
+      window.addEventListener('mousemove', onPointerMove, true);
+      window.addEventListener('mouseup', clearPress, true);
+      window.addEventListener('touchstart', onPointerDown, { capture: true, passive: true });
+      window.addEventListener('touchmove', onPointerMove, { capture: true, passive: true });
+      window.addEventListener('touchend', clearPress, true);
+      window.addEventListener('touchcancel', clearPress, true);
+    })();
+
+    // ============================================================================
+    // ★ 컷 편집 — 요소별 편집 모드 (Element Inspector & Direct Canvas Mode)
+    // ============================================================================
+    function ensureCutEditorPanelDOM() {
+      let panel = document.getElementById('cutEditorPanel');
+      if (panel) return panel;
+      const pinBar = document.getElementById('previewCutPinBar');
+      const monitorFrame = pinBar ? (pinBar.closest('.monitor-frame') || pinBar.parentElement.parentElement) : document.getElementById('mainMonitorColumn');
+      if (!monitorFrame) return null;
+      panel = document.createElement('section');
+      panel.id = 'cutEditorPanel';
+      panel.className = 'hidden mt-2 w-full';
+      panel.setAttribute('aria-label', '컷 요소별 편집 모드');
+      const pinRow = pinBar ? pinBar.parentElement : null;
+      if (pinRow && pinRow.nextSibling) {
+        monitorFrame.insertBefore(panel, pinRow.nextSibling);
+      } else {
+        monitorFrame.appendChild(panel);
+      }
+      return panel;
+    }
+
+    function openCutEditor(cutIdx, elKey) {
+      const n = typeof getTargetCutCount === 'function' ? getTargetCutCount() : 4;
+      const targetIdx = typeof cutIdx === 'number' && cutIdx >= 0 ? Math.min(n - 1, cutIdx) : (window.__arPinnedCut >= 0 ? window.__arPinnedCut : 0);
+      window.__arCutEditorOpen = true;
+      if (elKey) {
+        window.__arActiveCutElKey = elKey;
+        if (elKey.startsWith('overlay:')) {
+          window.__arSelectedOverlayIdx = Number(elKey.split(':')[1]);
+        } else {
+          window.__arSelectedOverlayIdx = -1;
+        }
+      } else if (!window.__arActiveCutElKey) {
+        window.__arActiveCutElKey = 'caption';
+      }
+      if (window.__arPinnedCut !== targetIdx) {
+        window.__arPinnedCut = targetIdx;
+        isPlaying = false;
+        const ppBtn = document.getElementById('playPauseBtn');
+        if (ppBtn) ppBtn.textContent = '▶️ 재생';
+        if (typeof updatePlayPauseUI === 'function') updatePlayPauseUI();
+        const mainDur = Math.max(4.0, TOTAL_DURATION - OUTRO_DURATION);
+        const cutDur = mainDur / n;
+        const seekT = targetIdx * cutDur + Math.min(0.55, cutDur * 0.35);
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(seekT);
+      } else if (window.__timelines && window.__timelines.main) {
+        window.__timelines.main.seek(window.__timelines.main.currentTime);
+      }
+      renderPreviewCutPinBar();
+    }
+
+    function closeCutEditor() {
+      window.__arCutEditorOpen = false;
+      window.__arInlineEditActive = false;
+      const panel = document.getElementById('cutEditorPanel');
+      if (panel) panel.classList.add('hidden');
+      const bar = document.getElementById('arInlineEditBar');
+      if (bar) bar.classList.add('hidden');
+      if (window.__arPinnedCut >= 0) {
+        togglePinPreviewCut(-1);
+      }
+    }
+
+    function selectCutEditorElement(elKey) {
+      const cutIdx = window.__arPinnedCut;
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      window.__arActiveCutElKey = elKey || 'caption';
+      if (elKey && elKey.startsWith('overlay:')) {
+        window.__arSelectedOverlayIdx = Number(elKey.split(':')[1]);
+      } else {
+        window.__arSelectedOverlayIdx = -1;
+      }
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderIgEditorHud();
+      renderCutOverlayEditorLayer();
+      renderCutEditorPanel();
+      if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+    }
+
+    function toggleDirectCanvasSelectMode() {
+      window.__arDirectCanvasMode = !window.__arDirectCanvasMode;
+      renderCutOverlayEditorLayer();
+      renderCutEditorPanel();
+      if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+    }
+
+    function updateCutCaptionDirect(cutIdx, val) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      if (!Array.isArray(campaign.cutCaptions)) campaign.cutCaptions = [];
+      campaign.cutCaptions[cutIdx] = String(val ?? '');
+      const s2Input = document.getElementById(`s2CutCap_${cutIdx}`);
+      if (s2Input && s2Input.value !== campaign.cutCaptions[cutIdx]) {
+        s2Input.value = campaign.cutCaptions[cutIdx];
+      }
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+    }
+
+    function updateCutElementOverride(cutIdx, elKey, prop, val, rerenderPanel) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      const ov = getCutElementOverride(cutIdx);
+      const target = ov[elKey];
+      if (!target) return;
+      if (prop === 'x' || prop === 'y') {
+        target[prop] = Math.max(0.04, Math.min(0.96, Number(val) || 0.5));
+        target.customPos = true;
+      } else if (prop === 'scale') {
+        target.scale = Math.max(0.5, Math.min(2.4, Number(val) || 1));
+      } else if (prop === 'panX' || prop === 'panY') {
+        target[prop] = Math.max(-0.5, Math.min(0.5, Number(val) || 0));
+      } else if (prop === 'hidden') {
+        target.hidden = !!val;
+      } else {
+        target[prop] = val;
+      }
+      syncCutInspectorLiveValues(cutIdx, elKey);
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderCutOverlayEditorLayer();
+      if (rerenderPanel) renderPreviewCutPinBar();
+    }
+
+    function resetCutElementOverride(cutIdx, elKey) {
+      if (typeof cutIdx !== 'number' || cutIdx < 0) return;
+      const def = createDefaultCutElementOverride();
+      const ov = getCutElementOverride(cutIdx);
+      if (!elKey || elKey === 'all') {
+        cutElementOverrides[cutIdx] = def;
+        if (Array.isArray(campaign.cutFilters)) campaign.cutFilters[cutIdx] = 'none';
+        if (Array.isArray(campaign.cutDecos)) campaign.cutDecos[cutIdx] = 'none';
+        if (Array.isArray(campaign.cutFrames)) campaign.cutFrames[cutIdx] = '';
+        if (Array.isArray(campaign.cutTransitions)) campaign.cutTransitions[cutIdx] = 'default';
+      } else if (elKey === 'transition') {
+        if (Array.isArray(campaign.cutTransitions)) campaign.cutTransitions[cutIdx] = 'default';
+      } else if (def[elKey]) {
+        ov[elKey] = def[elKey];
+        if (elKey === 'photo' && Array.isArray(campaign.cutFilters)) {
+          campaign.cutFilters[cutIdx] = 'none';
+        }
+      }
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
+    }
+
+    function updateSelectedOverlayProp(cutIdx, ovIdx, prop, val, rerenderPanel) {
+      const list = getCutOverlayList(cutIdx);
+      const it = list[ovIdx];
+      if (!it) return;
+      if (prop === 'x' || prop === 'y') {
+        it[prop] = Math.max(0.06, Math.min(0.94, Number(val) || 0.5));
+      } else if (prop === 'scale') {
+        it.scale = Math.max(0.45, Math.min(2.5, Number(val) || 1));
+      } else if (prop === 'rot') {
+        it.rot = Math.max(-45, Math.min(45, Number(val) || 0));
+      } else if (prop === 'text') {
+        if (it.type === 'sticker' && it.variant === 'widget') it.customText = String(val ?? '');
+        else it.text = String(val ?? '');
+      } else {
+        it[prop] = val;
+      }
+      saveCutOverlays();
+      syncCutInspectorLiveValues(cutIdx, `overlay:${ovIdx}`);
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderCutOverlayEditorLayer();
+      renderIgEditorHud();
+      if (rerenderPanel) {
+        renderCutEditorPanel();
+        if (typeof renderInlineQuickEditBar === 'function') renderInlineQuickEditBar();
+      }
+    }
+
+    function syncCutInspectorLiveValues(cutIdx, elKey) {
+      const ov = getCutElementOverride(cutIdx);
+      const setVal = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+      };
+      const setInput = (id, val) => {
+        const el = document.getElementById(id);
+        if (el && document.activeElement !== el) el.value = val;
+      };
+      if (elKey === 'caption' || elKey === 'badge' || elKey === 'price') {
+        const t = ov[elKey] || {};
+        setVal('arElValX', `${Math.round((typeof t.x === 'number' ? t.x : 0.5) * 100)}%`);
+        setVal('arElValY', `${Math.round((typeof t.y === 'number' ? t.y : 0.5) * 100)}%`);
+        setVal('arElValScale', `${Math.round((Number(t.scale) || 1) * 100)}%`);
+        setInput('arElRangeX', typeof t.x === 'number' ? t.x : 0.5);
+        setInput('arElRangeY', typeof t.y === 'number' ? t.y : 0.5);
+        setInput('arElRangeScale', Number(t.scale) || 1);
+      } else if (elKey === 'photo') {
+        const ph = ov.photo || {};
+        setVal('arElValPhotoScale', `${Math.round((Number(ph.scale) || 1) * 100)}%`);
+        setVal('arElValPanX', `${Math.round((Number(ph.panX) || 0) * 100)}%`);
+        setVal('arElValPanY', `${Math.round((Number(ph.panY) || 0) * 100)}%`);
+        setInput('arElRangePhotoScale', Number(ph.scale) || 1);
+        setInput('arElRangePanX', Number(ph.panX) || 0);
+        setInput('arElRangePanY', Number(ph.panY) || 0);
+      } else if (elKey && elKey.startsWith('overlay:')) {
+        const ii = Number(elKey.split(':')[1]);
+        const it = getCutOverlayList(cutIdx)[ii];
+        if (it) {
+          setVal('arElValOvX', `${Math.round((typeof it.x === 'number' ? it.x : 0.5) * 100)}%`);
+          setVal('arElValOvY', `${Math.round((typeof it.y === 'number' ? it.y : 0.5) * 100)}%`);
+          setVal('arElValOvScale', `${Math.round((Number(it.scale) || 1) * 100)}%`);
+          setVal('arElValOvRot', `${Math.round(Number(it.rot) || 0)}°`);
+          setInput('arElRangeOvX', typeof it.x === 'number' ? it.x : 0.5);
+          setInput('arElRangeOvY', typeof it.y === 'number' ? it.y : 0.5);
+          setInput('arElRangeOvScale', Number(it.scale) || 1);
+          setInput('arElRangeOvRot', Number(it.rot) || 0);
+        }
+      }
+    }
+
+    function triggerCutPhotoReplace(cutIdx) {
+      if (typeof replaceCutMedia === 'function') {
+        replaceCutMedia(cutIdx);
+        return;
+      }
+      let inp = document.getElementById('arCutPhotoReplaceInput');
+      if (!inp) {
+        inp = document.createElement('input');
+        inp.type = 'file';
+        inp.id = 'arCutPhotoReplaceInput';
+        inp.accept = 'image/*,video/*';
+        inp.className = 'hidden';
+        document.body.appendChild(inp);
+      }
+      inp.onchange = (ev) => {
+        const f = ev.target && ev.target.files && ev.target.files[0];
+        inp.value = '';
+        if (!f) return;
+        if (typeof handleCutCardFileSelect === 'function') {
+          handleCutCardFileSelect(cutIdx, f);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+              if (!Array.isArray(campaign.uploadedPhotos)) campaign.uploadedPhotos = [];
+              campaign.uploadedPhotos[cutIdx] = img;
+              if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+            };
+            img.src = reader.result;
+          };
+          reader.readAsDataURL(f);
+        }
+      };
+      inp.click();
+    }
+
+    function escapeCutHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function buildElementStyleAndAnimRowsHtml(cutIdx, elKey, obj) {
+      const curFont = obj.font || '';
+      const curBox = obj.boxStyle || 'default';
+      const curAnim = obj.anim || 'default';
+      return `
+        <div class="ar-el-row">
+          <span class="ar-el-label">폰트·박스</span>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'font', '', true)"
+                    class="ar-el-chip ${!curFont ? 'active' : ''}">기본 폰트</button>
+            ${CUT_TEXT_FONTS.map((f) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'font', '${f.id}', true)"
+                      style="font-family:${f.css};font-weight:${f.weight};"
+                      class="ar-el-chip ${curFont === f.id ? 'active' : ''}">${f.label}</button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="ar-el-row">
+          <span class="ar-el-label">박스 디자인</span>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+            ${AR_ELEMENT_BOX_STYLES.map((bs) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'boxStyle', '${bs.id}', true)"
+                      class="ar-el-chip ${curBox === bs.id ? 'active' : ''}">${bs.label}</button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="ar-el-row">
+          <span class="ar-el-label">애니메이션</span>
+          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+            ${AR_ELEMENT_ANIMS.map((an) => `
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'anim', '${an.id}', true);previewCutElementAnimation(${cutIdx})"
+                      class="ar-el-chip ${curAnim === an.id ? 'active' : ''}">${an.label}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCutEditorPanel() {
+      const panel = ensureCutEditorPanelDOM();
+      if (!panel) return;
+      const cutIdx = window.__arPinnedCut;
+      if (typeof cutIdx !== 'number' || cutIdx < 0) {
+        panel.classList.add('hidden');
+        panel.innerHTML = '';
+        return;
+      }
+      window.__arCutEditorOpen = true;
+      panel.classList.remove('hidden');
+
+      const ov = getCutElementOverride(cutIdx);
+      const overlays = getCutOverlayList(cutIdx);
+      const curDeco = (campaign.cutDecos && campaign.cutDecos[cutIdx]) || 'none';
+      const curFilter = (campaign.cutFilters && campaign.cutFilters[cutIdx]) || 'none';
+      const curFrame = (campaign.cutFrames && campaign.cutFrames[cutIdx]) || '';
+      const curTrans = (campaign.cutTransitions && campaign.cutTransitions[cutIdx]) || 'default';
+      const design = typeof getActiveDesign === 'function' ? getActiveDesign() : {};
+
+      let activeKey = window.__arActiveCutElKey || 'caption';
+      if (window.__arSelectedOverlayIdx >= 0 && overlays[window.__arSelectedOverlayIdx]) {
+        activeKey = `overlay:${window.__arSelectedOverlayIdx}`;
+        window.__arActiveCutElKey = activeKey;
+      } else if (activeKey.startsWith('overlay:')) {
+        const idxCheck = Number(activeKey.split(':')[1]);
+        if (!overlays[idxCheck]) {
+          activeKey = 'caption';
+          window.__arActiveCutElKey = 'caption';
+        }
+      }
+
+      const baseChips = [
+        { key: 'caption',    label: '💬 컷 자막',         hidden: !!ov.caption.hidden, mod: isCutElementModified(cutIdx, 'caption') },
+        { key: 'badge',      label: '🏷️ 상단 라벨/배지',   hidden: !!ov.badge.hidden,   mod: isCutElementModified(cutIdx, 'badge') },
+        { key: 'price',      label: '💰 혜택/서브 문구',   hidden: !!ov.price.hidden,   mod: isCutElementModified(cutIdx, 'price') },
+        { key: 'photo',      label: '🖼️ 배경 사진 구도',   hidden: false,               mod: isCutElementModified(cutIdx, 'photo') },
+        { key: 'transition', label: '🎞 컷 전환 효과',     hidden: false,               mod: isCutElementModified(cutIdx, 'transition') },
+        { key: 'deco',       label: '✨ 꾸밈·오버레이',    hidden: false,               mod: isCutElementModified(cutIdx, 'deco') }
+      ];
+
+      const overlayChipsHtml = overlays.map((it, ii) => {
+        const key = `overlay:${ii}`;
+        const on = activeKey === key;
+        const shortTxt = it.type === 'text'
+          ? `🔤 ${escapeCutHtml(String(it.text || '텍스트').slice(0, 8))}`
+          : it.style === 'photo'
+            ? `📷 사진스티커 #${ii + 1}`
+            : `⭐ ${escapeCutHtml(String(it.text || it.key || `스티커 #${ii + 1}`).slice(0, 8))}`;
+        return `<button type="button" onclick="selectCutEditorElement('${key}')" aria-selected="${on ? 'true' : 'false'}" class="ar-el-chip modified ${on ? 'active' : ''}">${shortTxt}</button>`;
+      }).join('');
+
+      const chipsHtml = baseChips.map((ch) => {
+        const on = activeKey === ch.key;
+        const cls = [
+          'ar-el-chip',
+          on ? 'active' : '',
+          ch.mod ? 'modified' : '',
+          ch.hidden ? 'is-hidden' : ''
+        ].filter(Boolean).join(' ');
+        return `<button type="button" onclick="selectCutEditorElement('${ch.key}')" aria-selected="${on ? 'true' : 'false'}" class="${cls}">${ch.label}</button>`;
+      }).join('') + overlayChipsHtml;
+
+      let inspectorHtml = '';
+      if (activeKey === 'caption') {
+        const c = ov.caption;
+        const curCap = (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || '';
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">컷 자막</span>
+            <input type="text" value="${escapeCutHtml(curCap)}" placeholder="${cutIdx + 1}컷 자막을 입력하세요"
+                   oninput="updateCutCaptionDirect(${cutIdx}, this.value)"
+                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/40 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'caption', 'hidden', ${!c.hidden}, true)"
+                    class="ar-el-badge ${c.hidden ? 'muted' : ''}">${c.hidden ? '🙈 숨김중' : '👁 표시중'}</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'caption')" class="ar-el-badge muted" title="자막 위치·크기·색상 초기화">↺ 초기화</button>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">가로 X</span>
+            <input id="arElRangeX" type="range" min="0.08" max="0.92" step="0.01" value="${typeof c.x === 'number' ? c.x : 0.5}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'caption', 'x', this.value, false)" />
+            <span id="arElValX" class="ar-el-val">${Math.round((typeof c.x === 'number' ? c.x : 0.5) * 100)}%</span>
+            <span class="ar-el-label ml-1">세로 Y</span>
+            <input id="arElRangeY" type="range" min="0.08" max="0.92" step="0.01" value="${typeof c.y === 'number' ? c.y : 0.72}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'caption', 'y', this.value, false)" />
+            <span id="arElValY" class="ar-el-val">${Math.round((typeof c.y === 'number' ? c.y : 0.72) * 100)}%</span>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">크기</span>
+            <input id="arElRangeScale" type="range" min="0.6" max="1.8" step="0.05" value="${Number(c.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'caption', 'scale', this.value, false)" />
+            <span id="arElValScale" class="ar-el-val">${Math.round((Number(c.scale) || 1) * 100)}%</span>
+            <div class="flex items-center gap-1 ml-1 overflow-x-auto no-scrollbar">
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'caption', 'color', '', true)"
+                      class="px-1.5 py-0.5 rounded text-[10px] border ${!c.color ? 'border-white bg-white/15 text-white' : 'border-white/15 text-white/60'}">기본</button>
+              ${CUT_TEXT_COLORS.slice(0, 7).map((col) => `
+                <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'caption', 'color', '${col}', true)"
+                        class="w-4 h-4 rounded-full shrink-0 border ${c.color === col ? 'scale-125 border-white ring-1 ring-white' : 'border-white/30'}"
+                        style="background:${col}"></button>
+              `).join('')}
+            </div>
+          </div>
+          ${buildElementStyleAndAnimRowsHtml(cutIdx, 'caption', c)}
+        `;
+      } else if (activeKey === 'badge') {
+        const b = ov.badge;
+        const defLabel = (design && design.label) || '상단 라벨';
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">배지 문구</span>
+            <input type="text" value="${escapeCutHtml(b.text || '')}" placeholder="기본: ${escapeCutHtml(defLabel)}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'badge', 'text', this.value, false)"
+                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/40 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'badge', 'hidden', ${!b.hidden}, true)"
+                    class="ar-el-badge ${b.hidden ? 'muted' : ''}">${b.hidden ? '🙈 숨김중' : '👁 표시중'}</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'badge')" class="ar-el-badge muted">↺ 초기화</button>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">가로 X</span>
+            <input id="arElRangeX" type="range" min="0.08" max="0.92" step="0.01" value="${typeof b.x === 'number' ? b.x : 0.5}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'badge', 'x', this.value, false)" />
+            <span id="arElValX" class="ar-el-val">${Math.round((typeof b.x === 'number' ? b.x : 0.5) * 100)}%</span>
+            <span class="ar-el-label ml-1">세로 Y</span>
+            <input id="arElRangeY" type="range" min="0.04" max="0.90" step="0.01" value="${typeof b.y === 'number' ? b.y : 0.08}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'badge', 'y', this.value, false)" />
+            <span id="arElValY" class="ar-el-val">${Math.round((typeof b.y === 'number' ? b.y : 0.08) * 100)}%</span>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">크기</span>
+            <input id="arElRangeScale" type="range" min="0.6" max="1.8" step="0.05" value="${Number(b.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'badge', 'scale', this.value, false)" />
+            <span id="arElValScale" class="ar-el-val">${Math.round((Number(b.scale) || 1) * 100)}%</span>
+            <div class="flex items-center gap-1 ml-1 overflow-x-auto no-scrollbar">
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'badge', 'color', '', true)"
+                      class="px-1.5 py-0.5 rounded text-[10px] border ${!b.color ? 'border-white bg-white/15 text-white' : 'border-white/15 text-white/60'}">기본</button>
+              ${CUT_TEXT_COLORS.slice(0, 7).map((col) => `
+                <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'badge', 'color', '${col}', true)"
+                        class="w-4 h-4 rounded-full shrink-0 border ${b.color === col ? 'scale-125 border-white ring-1 ring-white' : 'border-white/30'}"
+                        style="background:${col}"></button>
+              `).join('')}
+            </div>
+          </div>
+          ${buildElementStyleAndAnimRowsHtml(cutIdx, 'badge', b)}
+        `;
+      } else if (activeKey === 'price') {
+        const p = ov.price;
+        const defPrice = (typeof arPriceTag === 'function' ? arPriceTag() : '') || (campaign && campaign.discount) || '혜택 강조 문구';
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">혜택 문구</span>
+            <input type="text" value="${escapeCutHtml(p.text || '')}" placeholder="기본: ${escapeCutHtml(defPrice)}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'price', 'text', this.value, false)"
+                   class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/40 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+            <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'price', 'hidden', ${!p.hidden}, true)"
+                    class="ar-el-badge ${p.hidden ? 'muted' : ''}">${p.hidden ? '🙈 숨김중' : '👁 표시중'}</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'price')" class="ar-el-badge muted">↺ 초기화</button>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">가로 X</span>
+            <input id="arElRangeX" type="range" min="0.08" max="0.92" step="0.01" value="${typeof p.x === 'number' ? p.x : 0.5}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'price', 'x', this.value, false)" />
+            <span id="arElValX" class="ar-el-val">${Math.round((typeof p.x === 'number' ? p.x : 0.5) * 100)}%</span>
+            <span class="ar-el-label ml-1">세로 Y</span>
+            <input id="arElRangeY" type="range" min="0.08" max="0.92" step="0.01" value="${typeof p.y === 'number' ? p.y : 0.56}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'price', 'y', this.value, false)" />
+            <span id="arElValY" class="ar-el-val">${Math.round((typeof p.y === 'number' ? p.y : 0.56) * 100)}%</span>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">크기</span>
+            <input id="arElRangeScale" type="range" min="0.6" max="1.8" step="0.05" value="${Number(p.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'price', 'scale', this.value, false)" />
+            <span id="arElValScale" class="ar-el-val">${Math.round((Number(p.scale) || 1) * 100)}%</span>
+            <div class="flex items-center gap-1 ml-1 overflow-x-auto no-scrollbar">
+              <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'price', 'color', '', true)"
+                      class="px-1.5 py-0.5 rounded text-[10px] border ${!p.color ? 'border-white bg-white/15 text-white' : 'border-white/15 text-white/60'}">기본</button>
+              ${CUT_TEXT_COLORS.slice(0, 7).map((col) => `
+                <button type="button" onclick="updateCutElementOverride(${cutIdx}, 'price', 'color', '${col}', true)"
+                        class="w-4 h-4 rounded-full shrink-0 border ${p.color === col ? 'scale-125 border-white ring-1 ring-white' : 'border-white/30'}"
+                        style="background:${col}"></button>
+              `).join('')}
+            </div>
+          </div>
+          ${buildElementStyleAndAnimRowsHtml(cutIdx, 'price', p)}
+        `;
+      } else if (activeKey === 'photo') {
+        const ph = ov.photo;
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">확대(Zoom)</span>
+            <input id="arElRangePhotoScale" type="range" min="0.8" max="2.4" step="0.05" value="${Number(ph.scale) || 1}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'photo', 'scale', this.value, false)" />
+            <span id="arElValPhotoScale" class="ar-el-val">${Math.round((Number(ph.scale) || 1) * 100)}%</span>
+            <button type="button" onclick="triggerCutPhotoReplace(${cutIdx})" class="ar-el-badge blue">📷 이 컷 사진 교체</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'photo')" class="ar-el-badge muted">↺ 구도 초기화</button>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">좌우 이동</span>
+            <input id="arElRangePanX" type="range" min="-0.5" max="0.5" step="0.02" value="${Number(ph.panX) || 0}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'photo', 'panX', this.value, false)" />
+            <span id="arElValPanX" class="ar-el-val">${Math.round((Number(ph.panX) || 0) * 100)}%</span>
+            <span class="ar-el-label ml-1">상하 이동</span>
+            <input id="arElRangePanY" type="range" min="-0.5" max="0.5" step="0.02" value="${Number(ph.panY) || 0}"
+                   oninput="updateCutElementOverride(${cutIdx}, 'photo', 'panY', this.value, false)" />
+            <span id="arElValPanY" class="ar-el-val">${Math.round((Number(ph.panY) || 0) * 100)}%</span>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">색감 필터</span>
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+              ${CUT_FILTER_OPTIONS.slice(0, 8).map((f) => {
+                const on = curFilter === f.id;
+                return `<button type="button" onclick="setCutFilter(${cutIdx}, '${f.id}')"
+                                class="ar-el-chip ${on ? 'active' : ''}">${f.label}</button>`;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      } else if (activeKey === 'transition') {
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">컷 전환(16종)</span>
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+              ${AR_CUT_TRANSITIONS.map((tr) => {
+                const on = curTrans === tr.id;
+                return `<button type="button" onclick="setCutTransition(${cutIdx}, '${tr.id}')"
+                                class="ar-el-chip ${on ? 'active' : ''}">${tr.label}</button>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">일괄 적용</span>
+            <span class="text-[11px] text-white/65 flex-1">이 컷이 시작될 때 화면 전환 모션을 지정합니다</span>
+            <button type="button" onclick="applyCutTransitionToAll('${curTrans}')" class="ar-el-badge blue">전체 컷에 동일 적용</button>
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'transition')" class="ar-el-badge muted">↺ 초기화</button>
+          </div>
+        `;
+      } else if (activeKey.startsWith('overlay:')) {
+        const ii = Number(activeKey.split(':')[1]);
+        const it = overlays[ii];
+        if (it) {
+          const isText = it.type === 'text';
+          const isWidget = it.type === 'sticker' && it.variant === 'widget';
+          const curTxt = isText ? (it.text || '') : (it.customText || it.text || '');
+          inspectorHtml = `
+            <div class="ar-el-row">
+              <span class="ar-el-label">${isText ? '텍스트' : '오버레이'}</span>
+              ${(isText || isWidget) ? `
+                <input type="text" value="${escapeCutHtml(curTxt)}" placeholder="문구 입력"
+                       oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'text', this.value, false)"
+                       class="flex-1 min-w-0 h-8 px-2.5 rounded-[8px] bg-black/40 border border-white/15 text-[12px] text-white focus:outline-none focus:border-[#4cc38a]" />
+              ` : `<span class="text-[12px] text-white/80 flex-1">${it.style === 'photo' ? '📷 사진 스티커' : escapeCutHtml(it.text || it.key || '스티커')}</span>`}
+              <button type="button" onclick="duplicateSelectedOverlay()" class="ar-el-badge muted">복제</button>
+              <button type="button" onclick="removeSelectedOverlay()" class="ar-el-badge" style="color:#f87171;border-color:rgba(248,113,113,0.4);">🗑 삭제</button>
+            </div>
+            ${isText ? `
+              <div class="ar-el-row">
+                <span class="ar-el-label">폰트·배경</span>
+                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1">
+                  ${CUT_TEXT_FONTS.map((f) => {
+                    const on = (it.font || 'dohyeon') === f.id;
+                    return `<button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'font', '${f.id}', true)"
+                                    class="ar-el-chip ${on ? 'active' : ''}">${f.label}</button>`;
+                  }).join('')}
+                </div>
+                <div class="flex items-center gap-1">
+                  ${CUT_TEXT_COLORS.slice(0, 6).map((col) => `
+                    <button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'color', '${col}', true)"
+                            class="w-4 h-4 rounded-full shrink-0 border ${(it.color || '#ffffff') === col ? 'scale-125 border-white ring-1 ring-white' : 'border-white/30'}"
+                            style="background:${col}"></button>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            <div class="ar-el-row">
+              <span class="ar-el-label">애니메이션</span>
+              <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+                ${AR_ELEMENT_ANIMS.filter((a) => a.id !== 'default').map((an) => {
+                  const curA = it.anim || 'static';
+                  const on = (an.id === 'none' && (curA === 'static' || curA === 'none')) || curA === an.id;
+                  return `<button type="button" onclick="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'anim', '${an.id}', true);previewCutElementAnimation(${cutIdx})"
+                                  class="ar-el-chip ${on ? 'active' : ''}">${an.label}</button>`;
+                }).join('')}
+              </div>
+            </div>
+            <div class="ar-el-row">
+              <span class="ar-el-label">가로 X</span>
+              <input id="arElRangeOvX" type="range" min="0.06" max="0.94" step="0.01" value="${typeof it.x === 'number' ? it.x : 0.5}"
+                     oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'x', this.value, false)" />
+              <span id="arElValOvX" class="ar-el-val">${Math.round((typeof it.x === 'number' ? it.x : 0.5) * 100)}%</span>
+              <span class="ar-el-label ml-1">세로 Y</span>
+              <input id="arElRangeOvY" type="range" min="0.06" max="0.94" step="0.01" value="${typeof it.y === 'number' ? it.y : 0.5}"
+                     oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'y', this.value, false)" />
+              <span id="arElValOvY" class="ar-el-val">${Math.round((typeof it.y === 'number' ? it.y : 0.5) * 100)}%</span>
+            </div>
+            <div class="ar-el-row">
+              <span class="ar-el-label">크기</span>
+              <input id="arElRangeOvScale" type="range" min="0.45" max="2.5" step="0.05" value="${Number(it.scale) || 1}"
+                     oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'scale', this.value, false)" />
+              <span id="arElValOvScale" class="ar-el-val">${Math.round((Number(it.scale) || 1) * 100)}%</span>
+              <span class="ar-el-label ml-1">회전</span>
+              <input id="arElRangeOvRot" type="range" min="-45" max="45" step="1" value="${Number(it.rot) || 0}"
+                     oninput="updateSelectedOverlayProp(${cutIdx}, ${ii}, 'rot', this.value, false)" />
+              <span id="arElValOvRot" class="ar-el-val">${Math.round(Number(it.rot) || 0)}°</span>
+            </div>
+          `;
+        }
+      } else {
+        // 'deco' 탭: 오버레이 추가 버튼 + 꾸밈효과·프레임 빠른 선택
+        inspectorHtml = `
+          <div class="ar-el-row">
+            <span class="ar-el-label">요소 추가</span>
+            <button type="button" onclick="openIgTextCompose(-1)" class="ar-el-chip active">＋ 🔤 텍스트 추가</button>
+            <button type="button" onclick="openIgSheet('sticker')" class="ar-el-chip">＋ ⭐ 스티커·위젯</button>
+            <button type="button" onclick="openIgDrawMode()" class="ar-el-chip">＋ ✏️ 그리기</button>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">꾸밈 효과</span>
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+              ${CUT_DECO_OPTIONS.slice(0, 8).map((o) => {
+                const on = curDeco === o.id;
+                return `<button type="button" onclick="setCutDeco(${cutIdx}, '${o.id}')" class="ar-el-chip ${on ? 'active' : ''}">${o.label}</button>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="ar-el-row">
+            <span class="ar-el-label">프레임</span>
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+              ${CUT_STICKER_FRAMES.map((fr) => {
+                const on = (curFrame || 'noneFrame') === fr.key;
+                return `<button type="button" onclick="setCutFrame(${cutIdx}, '${fr.key}')" class="ar-el-chip ${on ? 'active' : ''}">${fr.label}</button>`;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      panel.innerHTML = `
+        <div class="ar-el-mode-bar">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="ar-el-badge">${cutIdx + 1}컷 요소 선택·편집</span>
+            <button type="button" onclick="toggleDirectCanvasSelectMode()"
+                    class="ar-el-badge ${window.__arDirectCanvasMode ? 'blue' : 'muted'}"
+                    title="프리뷰 캔버스에서 직접 요소를 클릭·드래그해 위치를 조절합니다">
+              🎯 캔버스 직접 선택 ${window.__arDirectCanvasMode ? 'ON' : 'OFF'}
+            </button>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="resetCutElementOverride(${cutIdx}, 'all')"
+                    class="ar-el-badge muted" title="${cutIdx + 1}컷의 모든 요소 편집 초기화">이 컷 초기화</button>
+            <button type="button" onclick="closeCutEditor()"
+                    class="ar-el-badge muted" title="요소 편집 닫기">닫기 ✕</button>
+          </div>
+        </div>
+        <div class="ar-el-chip-list" role="tablist" aria-label="편집할 컷 요소 선택">
+          ${chipsHtml}
+        </div>
+        <div class="ar-el-inspector">
+          ${inspectorHtml}
+        </div>
+      `;
+    }
+
     function setCutDeco(idx, decoId) {
       if (!Array.isArray(campaign.cutDecos)) campaign.cutDecos = [];
       campaign.cutDecos[idx] = decoId;
@@ -1870,106 +3874,317 @@
       if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       renderPreviewCutPinBar();
     }
+
+    // 배경 사진 구도(Zoom / Pan X / Pan Y) 및 가격·혜택 오버라이드를 모든 엔진(kit / motion / genre)에 일관 적용하기 위한 래퍼
+    (function bindCutElementEngineHooks() {
+      if (window.__arCutElementHooksBound) return;
+      window.__arCutElementHooksBound = true;
+
+      if (typeof kitCover === 'function' && !kitCover._arWrapped) {
+        const origKitCover = kitCover;
+        kitCover = function (c, img, x, y, w, h, scale, panX, panY) {
+          let sc = scale || 1, px = panX || 0, py = panY || 0;
+          const rIdx = window.__arActiveRenderCutIdx;
+          if (typeof rIdx === 'number' && rIdx >= 0 && cutElementOverrides && cutElementOverrides[rIdx] && cutElementOverrides[rIdx].photo) {
+            const ph = cutElementOverrides[rIdx].photo;
+            sc *= (Number(ph.scale) || 1);
+            px += (Number(ph.panX) || 0) * w;
+            py += (Number(ph.panY) || 0) * h;
+          }
+          return origKitCover(c, img, x, y, w, h, sc, px, py);
+        };
+        kitCover._arWrapped = true;
+      }
+
+      if (typeof gDrawCover === 'function' && !gDrawCover._arWrapped) {
+        const origGDrawCover = gDrawCover;
+        gDrawCover = function (c, img, x, y, w, h, scale, panX, panY) {
+          let sc = scale || 1, px = panX || 0, py = panY || 0;
+          const rIdx = window.__arActiveRenderCutIdx;
+          if (typeof rIdx === 'number' && rIdx >= 0 && cutElementOverrides && cutElementOverrides[rIdx] && cutElementOverrides[rIdx].photo) {
+            const ph = cutElementOverrides[rIdx].photo;
+            sc *= (Number(ph.scale) || 1);
+            px += (Number(ph.panX) || 0) * w;
+            py += (Number(ph.panY) || 0) * h;
+          }
+          return origGDrawCover(c, img, x, y, w, h, sc, px, py);
+        };
+        gDrawCover._arWrapped = true;
+      }
+
+      if (typeof gIsPriceCut === 'function' && !gIsPriceCut._arWrapped) {
+        const origGIsPriceCut = gIsPriceCut;
+        gIsPriceCut = function (raw) {
+          const rIdx = window.__arActiveRenderCutIdx;
+          if (typeof rIdx === 'number' && rIdx >= 0 && cutElementOverrides && cutElementOverrides[rIdx] && cutElementOverrides[rIdx].price) {
+            const p = cutElementOverrides[rIdx].price;
+            if (isCutElementPropCustomized(p) || p.text) {
+              return false;
+            }
+          }
+          return origGIsPriceCut(raw);
+        };
+        gIsPriceCut._arWrapped = true;
+      }
+    })();
+
+    function applyCutTransitionPre(c, W, H, transId, localSec) {
+      if (!transId || transId === 'default' || transId === 'none') return false;
+      const dur = 0.45;
+      if (typeof localSec !== 'number' || localSec < 0 || localSec >= dur) return false;
+      const tp = Math.max(0, Math.min(1, localSec / dur));
+      const ep = 1 - Math.pow(1 - tp, 3);
+
+      c.fillStyle = '#09090b';
+      c.fillRect(0, 0, W, H);
+      c.save();
+
+      if (transId === 'pushLeft') {
+        c.translate((1 - ep) * W, 0);
+      } else if (transId === 'pushRight') {
+        c.translate(-(1 - ep) * W, 0);
+      } else if (transId === 'pushUp') {
+        c.translate(0, (1 - ep) * H);
+      } else if (transId === 'pushDown') {
+        c.translate(0, -(1 - ep) * H);
+      } else if (transId === 'zoomIn') {
+        const z = 0.52 + 0.48 * ep;
+        c.globalAlpha *= ep;
+        c.translate(W / 2, H / 2);
+        c.scale(z, z);
+        c.translate(-W / 2, -H / 2);
+      } else if (transId === 'zoomOut') {
+        const z = 1.48 - 0.48 * ep;
+        c.globalAlpha *= ep;
+        c.translate(W / 2, H / 2);
+        c.scale(z, z);
+        c.translate(-W / 2, -H / 2);
+      } else if (transId === 'circleWipe') {
+        const maxR = Math.hypot(W, H) * 0.58;
+        c.beginPath();
+        c.arc(W / 2, H / 2, Math.max(4, maxR * ep), 0, Math.PI * 2);
+        c.clip();
+      } else if (transId === 'diamondWipe') {
+        const r = (W + H) * 0.62 * ep;
+        c.beginPath();
+        c.moveTo(W / 2, H / 2 - r);
+        c.lineTo(W / 2 + r, H / 2);
+        c.lineTo(W / 2, H / 2 + r);
+        c.lineTo(W / 2 - r, H / 2);
+        c.closePath();
+        c.clip();
+      } else if (transId === 'blinds') {
+        const slats = 8;
+        const sh = H / slats;
+        c.beginPath();
+        for (let i = 0; i < slats; i++) {
+          c.rect(0, i * sh, W, sh * ep);
+        }
+        c.clip();
+      } else if (transId === 'spin') {
+        const z = 0.35 + 0.65 * ep;
+        const ang = (1 - ep) * 0.48;
+        c.globalAlpha *= ep;
+        c.translate(W / 2, H / 2);
+        c.rotate(ang);
+        c.scale(z, z);
+        c.translate(-W / 2, -H / 2);
+      } else if (transId === 'glitch') {
+        const jitter = (1 - ep) * 28 * Math.sin(localSec * 95);
+        c.translate(jitter, 0);
+      }
+      return true;
+    }
+
+    function applyCutTransitionPost(c, W, H, transId, localSec, hadPre) {
+      if (hadPre) c.restore();
+      if (!transId || transId === 'default' || transId === 'none') return;
+      const dur = 0.45;
+      if (typeof localSec !== 'number' || localSec < 0 || localSec >= dur) return;
+      const tp = Math.max(0, Math.min(1, localSec / dur));
+      const ep = 1 - Math.pow(1 - tp, 3);
+
+      c.save();
+      if (transId === 'whiteFlash') {
+        c.fillStyle = `rgba(255,255,255,${((1 - ep) * 0.92).toFixed(3)})`;
+        c.fillRect(0, 0, W, H);
+      } else if (transId === 'blackDissolve') {
+        c.fillStyle = `rgba(0,0,0,${((1 - ep) * 0.94).toFixed(3)})`;
+        c.fillRect(0, 0, W, H);
+      } else if (transId === 'crossfade') {
+        c.fillStyle = `rgba(12,12,16,${((1 - ep) * 0.78).toFixed(3)})`;
+        c.fillRect(0, 0, W, H);
+      } else if (transId === 'glitch') {
+        const a = (1 - ep) * 0.38;
+        c.fillStyle = `rgba(56,189,248,${a.toFixed(3)})`;
+        c.fillRect(0, (H * 0.28) | 0, W, 18);
+        c.fillStyle = `rgba(244,63,94,${a.toFixed(3)})`;
+        c.fillRect(0, (H * 0.64) | 0, W, 14);
+      }
+      c.restore();
+    }
+
     function renderGenreFrame(t, mainDuration, totalCuts, d) {
       const c = ctx;
       const W = canvas.width;
       const H = canvas.height;
-      const design = getActiveDesign();
-      const V = buildDesignVariant(design, getActivePalette());
+      const baseDesign = getActiveDesign();
       const cutDur = mainDuration / totalCuts;
+      const activeCutIdx = t < mainDuration ? Math.min(totalCuts - 1, Math.floor(t / cutDur)) : -1;
+      const localSec = activeCutIdx >= 0 ? (t - activeCutIdx * cutDur) : 0;
+      const transId = (activeCutIdx >= 0 && campaign.cutTransitions && campaign.cutTransitions[activeCutIdx]) || 'default';
+      window.__arActiveRenderCutIdx = activeCutIdx;
+
+      // 컷별 요소 오버라이드(자막 숨김/커스텀 위치, 상단 배지 숨김/문구 변경)를 기본 렌더에 반영
+      const ov = activeCutIdx >= 0 && cutElementOverrides ? cutElementOverrides[activeCutIdx] : null;
+      const hasCustomBadge = !!(ov && ov.badge && isCutElementPropCustomized(ov.badge));
+      const design = ov && ov.badge && (hasCustomBadge || ov.badge.text)
+        ? Object.assign({}, baseDesign, {
+            head: hasCustomBadge ? 'none' : baseDesign.head,
+            label: ov.badge.hidden ? '' : (ov.badge.text || baseDesign.label)
+          })
+        : baseDesign;
+      const V = buildDesignVariant(design, getActivePalette());
+      if (ov && ov.badge) {
+        if (hasCustomBadge) {
+          V.label = '';
+        } else if (ov.badge.text) {
+          V.label = ov.badge.text;
+        }
+      }
+
+      const suppressBaseCaption = !!(ov && ov.caption && isCutElementPropCustomized(ov.caption));
+      const savedCutCap = suppressBaseCaption && campaign.cutCaptions ? campaign.cutCaptions[activeCutIdx] : undefined;
+      const savedHook = suppressBaseCaption ? campaign.hook : undefined;
+      if (suppressBaseCaption) {
+        if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = ' ';
+        campaign.hook = ' ';
+      }
+
       c.save();
       c.textBaseline = 'alphabetic';
       c.globalAlpha = 1;
       c.setLineDash([]);
       c.shadowBlur = 0;
-      // 사진 탭에서 이 컷의 화면 구도를 [변경]했으면, 모션·장르 디자인이어도 그 컷은 고른 구도(레이아웃·자막 모양)로 그림
-      //   (예전에는 모션 디자인에서 작은 표시만 바뀌어 [변경]이 반영되지 않는 것처럼 보였음)
-      if (t < mainDuration && design.engine !== 'kit') {
-        const cIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
-        const cPlan = (campaign.scenePlan && campaign.scenePlan[cIdx]) || {};
-        if (cPlan._customWidget && cPlan.widget && cPlan.customLayout) {
-          const kd = arCutKitDesign(design);
-          if (kd) {
-            const KV = buildDesignVariant(kd, getActivePalette());
-            renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, kd, KV);
-            const frac = Math.min(1, Math.max(0, (t - cIdx * cutDur) / cutDur));
-            drawCustomCutWidget(c, W, H, t, cIdx, frac, cPlan.widget, d, KV);
-            drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, kd, KV);
-            c.restore();
-            return;
-          }
-        }
-      }
-      if (design.engine === 'motion') {
-        renderMotionFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
-        // 사진 탭에서 컷별 화면 구도를 바꿨으면 모션 디자인 위에도 덧그림 (예전에는 무시돼서 [변경]이 반영되지 않았음)
+      let hadTransPre = false;
+      try {
         if (t < mainDuration) {
-          const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
-          const plan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
-          if (plan._customWidget && plan.widget) {
-            const frac = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
-            drawCustomCutWidget(c, W, H, t, cutIdx, frac, plan.widget, d, V);
-          }
-          drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
+          hadTransPre = applyCutTransitionPre(c, W, H, transId, localSec);
         }
-        c.restore();
-        return;
-      }
-      if (design.engine === 'kit') {
-        renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
-        if (t < mainDuration) {
-          const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
-          const plan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
-          if (plan._customWidget && plan.widget) {
-            const frac = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
-            drawCustomCutWidget(c, W, H, t, cutIdx, frac, plan.widget, d, V);
+        // 사진 탭에서 이 컷의 화면 구도를 [변경]했으면, 모션·장르 디자인이어도 그 컷은 고른 구도(레이아웃·자막 모양)로 그림
+        if (t < mainDuration && design.engine !== 'kit') {
+          const cIdx = activeCutIdx;
+          const cPlan = (campaign.scenePlan && campaign.scenePlan[cIdx]) || {};
+          if (cPlan._customWidget && cPlan.widget && cPlan.customLayout) {
+            const kd = arCutKitDesign(design);
+            if (kd) {
+              const KV = buildDesignVariant(kd, getActivePalette());
+              renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, kd, KV);
+              if (suppressBaseCaption) {
+                if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = savedCutCap;
+                campaign.hook = savedHook;
+              }
+              const frac = Math.min(1, Math.max(0, (t - cIdx * cutDur) / cutDur));
+              drawCustomCutWidget(c, W, H, t, cIdx, frac, cPlan.widget, d, KV);
+              drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, kd, KV);
+              applyCutTransitionPost(c, W, H, transId, localSec, hadTransPre);
+              hadTransPre = false;
+              return;
+            }
           }
-          drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
         }
-        c.restore();
-        return;
-      }
+        if (design.engine === 'motion') {
+          renderMotionFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
+          if (suppressBaseCaption) {
+            if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = savedCutCap;
+            campaign.hook = savedHook;
+          }
+          if (t < mainDuration) {
+            const cutIdx = activeCutIdx;
+            const plan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
+            if (plan._customWidget && plan.widget) {
+              const frac = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
+              drawCustomCutWidget(c, W, H, t, cutIdx, frac, plan.widget, d, V);
+            }
+            drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
+            applyCutTransitionPost(c, W, H, transId, localSec, hadTransPre);
+            hadTransPre = false;
+          }
+          return;
+        }
+        if (design.engine === 'kit') {
+          renderKitFrame(c, W, H, t, mainDuration, totalCuts, d, design, V);
+          if (suppressBaseCaption) {
+            if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = savedCutCap;
+            campaign.hook = savedHook;
+          }
+          if (t < mainDuration) {
+            const cutIdx = activeCutIdx;
+            const plan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
+            if (plan._customWidget && plan.widget) {
+              const frac = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
+              drawCustomCutWidget(c, W, H, t, cutIdx, frac, plan.widget, d, V);
+            }
+            drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
+            applyCutTransitionPost(c, W, H, transId, localSec, hadTransPre);
+            hadTransPre = false;
+          }
+          return;
+        }
 
-      if (t < mainDuration) {
-        drawGenreBackground(c, W, H, t, mainDuration, V, false);
-        const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
-        const local = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
-        const localSec = t - cutIdx * cutDur;
-        const raw = (campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || campaign.hook || '';
-        const caption = gCleanCaption(raw);
-        const info = {
-          V,
-          d,
-          cutIdx,
-          local: Math.min(1, localSec / 1.2), // 컷 시작 후 1.2초에 걸친 등장 진행도
-          frac: local, // 컷 안에서의 진행 비율 (0~1)
-          caption,
-          isPrice: gIsPriceCut(raw),
-          cutDur,
-          totalCuts,
-          high: design.high,
-          alt: design.alt
-        };
-        if (V.genre === 'sale') drawSaleMain(c, W, H, t, info);
-        else if (V.genre === 'luxury') drawLuxuryMain(c, W, H, t, info);
-        else if (V.genre === 'ev') drawEvMain(c, W, H, t, info);
-        else if (V.genre === 'sports') drawSportsMain(c, W, H, t, info);
-        else if (V.genre === 'finance') drawFinanceMain(c, W, H, t, info);
-        else drawTrustMain(c, W, H, t, info);
-        if (V.genre !== 'finance') drawDealerChip(c, d, W, H, V, gEase(t / 0.6));
-        const activePlan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
-        if (activePlan._customWidget && activePlan.widget) {
-          drawCustomCutWidget(c, W, H, t, cutIdx, local, activePlan.widget, d, V);
+        if (t < mainDuration) {
+          drawGenreBackground(c, W, H, t, mainDuration, V, false);
+          const cutIdx = activeCutIdx;
+          const local = Math.min(1, Math.max(0, (t - cutIdx * cutDur) / cutDur));
+          const raw = suppressBaseCaption ? '' : ((campaign.cutCaptions && campaign.cutCaptions[cutIdx]) || campaign.hook || '');
+          const caption = gCleanCaption(raw);
+          const info = {
+            V,
+            d,
+            cutIdx,
+            local: Math.min(1, localSec / 1.2),
+            frac: local,
+            caption,
+            isPrice: gIsPriceCut(raw),
+            cutDur,
+            totalCuts,
+            high: design.high,
+            alt: design.alt
+          };
+          if (V.genre === 'sale') drawSaleMain(c, W, H, t, info);
+          else if (V.genre === 'luxury') drawLuxuryMain(c, W, H, t, info);
+          else if (V.genre === 'ev') drawEvMain(c, W, H, t, info);
+          else if (V.genre === 'sports') drawSportsMain(c, W, H, t, info);
+          else if (V.genre === 'finance') drawFinanceMain(c, W, H, t, info);
+          else drawTrustMain(c, W, H, t, info);
+          if (V.genre !== 'finance') drawDealerChip(c, d, W, H, V, gEase(t / 0.6));
+          if (suppressBaseCaption) {
+            if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = savedCutCap;
+            campaign.hook = savedHook;
+          }
+          const activePlan = (campaign.scenePlan && campaign.scenePlan[cutIdx]) || {};
+          if (activePlan._customWidget && activePlan.widget) {
+            drawCustomCutWidget(c, W, H, t, cutIdx, local, activePlan.widget, d, V);
+          }
+          drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
+          applyCutTransitionPost(c, W, H, transId, localSec, hadTransPre);
+          hadTransPre = false;
+        } else {
+          syncCutVideos(-1, 0);
+          drawGenreBackground(c, W, H, t, mainDuration, V, true);
+          const local = Math.min(1, (t - mainDuration) / 1.2);
+          if (design.cover) drawCoverOutro(c, W, H, t, local, V, d);
+          else drawGenreOutro(c, W, H, t, local, V, d);
         }
-        drawCustomCutDecoOverlay(c, W, H, t, mainDuration, totalCuts, cutDur, design, V);
-      } else {
-        syncCutVideos(-1, 0);
-        drawGenreBackground(c, W, H, t, mainDuration, V, true);
-        const local = Math.min(1, (t - mainDuration) / 1.2);
-        if (design.cover) drawCoverOutro(c, W, H, t, local, V, d);
-        else drawGenreOutro(c, W, H, t, local, V, d);
+      } finally {
+        if (hadTransPre) c.restore();
+        if (suppressBaseCaption) {
+          if (Array.isArray(campaign.cutCaptions)) campaign.cutCaptions[activeCutIdx] = savedCutCap;
+          campaign.hook = savedHook;
+        }
+        window.__arActiveRenderCutIdx = -1;
+        c.restore();
       }
-      c.restore();
     }
 
     loadDesignPrefs();

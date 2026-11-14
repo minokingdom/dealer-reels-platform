@@ -370,3 +370,372 @@
     .pd-handle:hover { opacity: 1; }
     .pd-handle span:first-child { writing-mode: vertical-rl; letter-spacing: 2px; }
     .pd-chev { font-size: 14px; line-height: 1; }
+
+    /* ===== 컷 편집기 요소별 편집 모드 (Element-by-Element Edit Mode) ===== */
+    #cutEditorPanel {
+      background-color: #141415;
+      border: 1px solid rgba(237, 237, 237, 0.12);
+      border-radius: 14px;
+      padding: 10px;
+      color: #ededed;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+    }
+    #cutEditorPanel:not(.hidden) {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #cutEditorPanel.hidden,
+    #arInlineEditBar.hidden,
+    .ar-inline-edit-bar.hidden {
+      display: none !important;
+    }
+    .no-scrollbar {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .ar-el-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 6px 8px;
+      background-color: #0f0f10;
+      border: 1px solid rgba(237, 237, 237, 0.08);
+      border-radius: 10px;
+    }
+    .ar-el-chip-list {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .ar-el-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 30px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background-color: #18181b;
+      border: 1px solid rgba(237, 237, 237, 0.08);
+      color: #a1a1a6;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.25;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 140ms var(--ease-out), border-color 140ms var(--ease-out), color 140ms var(--ease-out), transform 100ms var(--ease-out);
+    }
+    .ar-el-chip:hover {
+      background-color: #232325;
+      border-color: rgba(237, 237, 237, 0.18);
+      color: #ededed;
+    }
+    .ar-el-chip:active {
+      transform: scale(0.98);
+    }
+    .ar-el-chip.active,
+    .ar-el-chip.on,
+    .ar-el-chip[aria-selected="true"] {
+      background-color: #232325;
+      border-color: #3b82f6;
+      color: #ededed;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.35), 0 2px 10px rgba(59, 130, 246, 0.16);
+    }
+    .ar-el-chip.modified {
+      border-color: rgba(76, 195, 138, 0.45);
+    }
+    .ar-el-chip.is-hidden {
+      opacity: 0.55;
+      text-decoration: line-through;
+    }
+    .ar-el-inspector {
+      background-color: #18181b;
+      border: 1px solid rgba(237, 237, 237, 0.08);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #ededed;
+    }
+    .ar-el-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 6px 8px;
+      background-color: #141415;
+      border: 1px solid rgba(237, 237, 237, 0.06);
+      border-radius: 8px;
+    }
+    .ar-el-row label,
+    .ar-el-row .ar-el-label {
+      font-size: 11.5px;
+      color: #a1a1a6;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .ar-el-row input[type="range"] {
+      flex: 1;
+      min-width: 80px;
+      accent-color: #3b82f6;
+      cursor: pointer;
+    }
+    .ar-el-row .ar-el-val {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: #ededed;
+      min-width: 38px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .ar-el-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background-color: rgba(76, 195, 138, 0.14);
+      border: 1px solid rgba(76, 195, 138, 0.35);
+      color: #4cc38a;
+      font-size: 10.5px;
+      font-weight: 600;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .ar-el-badge.blue {
+      background-color: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: #60a5fa;
+    }
+    .ar-el-badge.muted {
+      background-color: #232325;
+      border-color: rgba(237, 237, 237, 0.1);
+      color: #a1a1a6;
+    }
+    /* 캔버스 직접 선택/이동 인터랙션 커서 및 힌트 */
+    #previewViewport.ar-el-canvas-mode #reelCanvas,
+    #reelCanvas.ar-el-canvas-interactive,
+    body:has(#cutEditorPanel:not(.hidden)) #reelCanvas {
+      cursor: grab;
+    }
+    #previewViewport.ar-el-canvas-dragging #reelCanvas,
+    #reelCanvas.ar-el-canvas-dragging {
+      cursor: grabbing !important;
+    }
+    .ar-el-canvas-hint {
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background-color: rgba(15, 15, 16, 0.82);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #ededed;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    }
+    #cutOverlayEditorLayer > .ar-el-canvas-hint,
+    #cutOverlayEditorLayer > .ar-inline-edit-badge {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      z-index: 15;
+      max-width: calc(100% - 20px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #cutOverlayEditorLayer [data-el-key],
+    #cutOverlayEditorLayer [data-ov-idx] {
+      transition: box-shadow 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    #cutOverlayEditorLayer [data-el-key].active,
+    #cutOverlayEditorLayer [data-ov-idx].active {
+      outline: 1.5px dashed #3b82f6;
+      outline-offset: 2px;
+      background-color: rgba(59, 130, 246, 0.08);
+    }
+
+    /* ===== 미리보기 롱프레스 인라인 퀵 편집 모드 (#arInlineEditBar & 롱프레스 피드백) ===== */
+    #previewViewport.ar-longpress-holding {
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.65);
+      transition: box-shadow 180ms var(--ease-out);
+    }
+    #previewViewport.ar-inline-edit-active,
+    #previewViewport:has(#arInlineEditBar:not(.hidden)) {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.32), 0 12px 32px rgba(0, 0, 0, 0.55);
+    }
+    .ar-longpress-ring {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      margin-left: -26px;
+      margin-top: -26px;
+      border-radius: 9999px;
+      border: 2.5px solid #3b82f6;
+      background: rgba(59, 130, 246, 0.16);
+      pointer-events: none;
+      z-index: 40;
+      animation: arLongPressPulse 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .ar-longpress-ripple {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(76, 195, 138, 0.85);
+      pointer-events: none;
+    }
+    @keyframes arLongPressPulse {
+      0% { transform: scale(0.45); opacity: 0.95; }
+      75% { transform: scale(1.08); opacity: 0.9; border-color: #4cc38a; background: rgba(76, 195, 138, 0.22); }
+      100% { transform: scale(1.22); opacity: 0; }
+    }
+    .ar-inline-edit-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      background: rgba(15, 15, 16, 0.88);
+      border: 1px solid rgba(76, 195, 138, 0.5);
+      color: #4cc38a;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    }
+    #arInlineEditBar,
+    .ar-inline-edit-bar {
+      width: 100%;
+      background: #141415;
+      border: 1px solid rgba(59, 130, 246, 0.42);
+      border-radius: 14px;
+      padding: 10px 11px;
+      color: #ededed;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 35;
+      animation: arInlineBarIn 160ms var(--ease-out);
+    }
+    @keyframes arInlineBarIn {
+      from { opacity: 0; transform: translateY(-4px) scale(0.99); }
+      to { opacity: 1; transform: none; }
+    }
+    .ar-inline-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(237, 237, 237, 0.08);
+    }
+    .ar-inline-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ededed;
+    }
+    .ar-inline-scroll-row,
+    .ar-inline-font-bar,
+    .ar-inline-style-bar,
+    .ar-inline-anim-bar,
+    .ar-inline-color-bar {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      padding: 2px 0;
+      scrollbar-width: none;
+    }
+    .ar-inline-scroll-row::-webkit-scrollbar,
+    .ar-inline-font-bar::-webkit-scrollbar,
+    .ar-inline-style-bar::-webkit-scrollbar,
+    .ar-inline-anim-bar::-webkit-scrollbar,
+    .ar-inline-color-bar::-webkit-scrollbar {
+      display: none;
+    }
+    .ar-inline-font-chip,
+    .ar-inline-style-chip,
+    .ar-inline-anim-chip,
+    .ar-el-pill {
+      flex: 0 0 auto;
+      min-height: 26px;
+      padding: 3px 9px;
+      border-radius: 7px;
+      background-color: #18181b;
+      border: 1px solid rgba(237, 237, 237, 0.09);
+      color: #a1a1a6;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 130ms var(--ease-out), border-color 130ms var(--ease-out), color 130ms var(--ease-out);
+    }
+    .ar-inline-font-chip:hover,
+    .ar-inline-style-chip:hover,
+    .ar-inline-anim-chip:hover,
+    .ar-el-pill:hover {
+      background-color: #232325;
+      color: #ededed;
+      border-color: rgba(237, 237, 237, 0.2);
+    }
+    .ar-inline-font-chip.active,
+    .ar-inline-font-chip.on,
+    .ar-inline-style-chip.active,
+    .ar-inline-style-chip.on,
+    .ar-inline-anim-chip.active,
+    .ar-inline-anim-chip.on,
+    .ar-el-pill.active,
+    .ar-el-pill.on {
+      background-color: #232325;
+      border-color: #3b82f6;
+      color: #ededed;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.35);
+    }
+    .ar-inline-anim-chip.active,
+    .ar-inline-anim-chip.on {
+      border-color: #4cc38a;
+      color: #4cc38a;
+      box-shadow: inset 0 0 0 1px rgba(76, 195, 138, 0.32);
+    }
+    .ar-inline-color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.28);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    .ar-inline-color-swatch:hover {
+      transform: scale(1.12);
+    }
+    .ar-inline-color-swatch.active,
+    .ar-inline-color-swatch.on {
+      transform: scale(1.18);
+      border-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.65);
+    }
