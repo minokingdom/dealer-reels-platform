@@ -15628,6 +15628,11 @@ function renderStoryArchetypesUI() {
       ['in_dump', '포토덤프 리캡', 'in_dump', 'pen', '#f4efe6', '#efe8dc', '#c2603f', '#2d2621', true],
       ['in_cal', '캘린더 카드', 'in_cal', 'maru', '#f3ece1', '#efe6d8', '#c2603f', '#2b2622', true],
       // 제미나이 제안 인스타 감성 6종 (2026-11-14)
+      ['in_h_plaque', '전시 캡션 카드', 'in_h_plaque', 'maru', '#f5efe6', '#ebe2d5', '#5c4d40', '#8c7a6b', true],
+      ['in_h_panes', '세 갈래 시선', 'in_h_panes', 'gowun', '#1f1a17', '#14110f', '#e8dccb', '#b8a692', false],
+      ['in_h_double', '이중노출 잔상', 'in_h_double', 'maruL', '#1c1815', '#120f0d', '#efe5d8', '#bca995', false],
+      ['in_h_vinyl', '오후의 레코드', 'in_h_vinyl', 'gowun', '#efe7dc', '#e2d6c5', '#3d322a', '#8c7765', true],
+      // 제미나이 제안 인스타 감성 6종 (2026-11-14)
   ['in_g_sub', '시네마 자막', 'in_g_sub', 'gowun', '#191512', '#120f0d', '#e6ccb2', '#ffffff', false],
   ['in_g_arch', '아치 무드', 'in_g_arch', 'maru', '#f6f1ea', '#eae1d5', '#8c735b', '#2b2520', true],
   ['in_g_strip', '필름 스트립', 'in_g_strip', 'pen', '#f3ede3', '#e6ddd0', '#7a634e', '#2d2621', true],
@@ -15641,6 +15646,10 @@ function renderStoryArchetypesUI() {
       ['in_x_tabs', '붙여둔 한마디', 'in_x_tabs', 'pen', '#29251e', '#1d1914', '#b9bc9e', '#f6edda', false],
       ['in_x_walk', '골목 산책 기록', 'in_x_walk', 'pretL', '#262a22', '#191c17', '#cbd0b8', '#f8f3e7', false],
       ['in_x_window', '창가의 느린 오후', 'in_x_window', 'maruL', '#e7dece', '#ded2be', '#9c8768', '#40372d', true],
+      // 인스타 일상 감성 2차 6종: 대화·세로분할·겹노출·찢은인화·사진음반·조각현상
+      ['in_y_chat', '사진으로 건넨 말', 'in_y_chat', 'pretM', '#29241e', '#1b1814', '#d5c7a5', '#fcf5e8', false],
+      ['in_y_torn', '손끝으로 찢은 풍경', 'in_y_torn', 'pen', '#f3ecdf', '#e8decc', '#b29374', '#fff8ea', true],
+      ['in_y_mosaic', '조각조각 스며들다', 'in_y_mosaic', 'pretL', '#eee5d6', '#e3d6c2', '#aa8b6f', '#fff9ee', true],
       // 에디토리얼 · 감각적 릴스 5종
       ['ed_vogue', '보그 에디토리얼', 'ed_vogue', 'maru', '#0c0b0a', '#161412', '#e8d5bc', '#ffffff', false],
       ['ed_glasspill', '글래스 플로우', 'ed_glasspill', 'pretM', '#0b1018', '#141c2b', '#7dd3fc', '#ffffff', false],
@@ -15663,9 +15672,12 @@ function renderStoryArchetypesUI() {
       mo_cinema: '고급', mo_credits: '뉴스·방송',
       in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
       in_g_sub: '브이로그', in_g_arch: '감성', in_g_strip: '브이로그', in_g_postcard: '감성', in_g_cam: '브이로그', in_g_bookmark: '감성',
+      in_h_plaque: '감성', in_h_panes: '감성', in_h_double: '감성', in_h_vinyl: '감성',
       in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성',
       in_x_contact: '브이로그', in_x_linen: '감성', in_x_cover: '감성',
       in_x_tabs: '브이로그', in_x_walk: '브이로그', in_x_window: '감성',
+      in_y_chat: '브이로그', 
+      in_y_torn: '감성', in_y_mosaic: '브이로그',
       ed_vogue: '신규', ed_glasspill: '신규', ed_kinetic: '신규', ed_arch: '신규', ed_duotone: '신규',
       ba_slider: '비포·애프터', ba_diagonal: '비포·애프터', ba_collage: '비포·애프터', ba_flash: '비포·애프터', ba_polaroid: '비포·애프터'
     };
@@ -16881,6 +16893,156 @@ function renderStoryArchetypesUI() {
         inSign(c, d, W / 2, by + bh - 36, '#6e5c4e', 'center', Math.round(W * 0.03));
         c.restore();
         inGrain(c, W, H, t, 0.08);
+      } else if (M === 'in_h_plaque') {
+        // 전시 캡션 카드: 화면 가득 찬 따뜻한 사진과 왼쪽 아래 미술관 캡션 명패
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.03 + lp * 0.03, 0.95);
+        const vg = c.createLinearGradient(0, H * 0.45, 0, H);
+        vg.addColorStop(0, 'rgba(24,18,14,0)');
+        vg.addColorStop(1, 'rgba(24,18,14,0.48)');
+        c.fillStyle = vg;
+        c.fillRect(0, H * 0.45, W, H * 0.55);
+        // 얇은 전시장 내부 여백 선
+        c.strokeStyle = 'rgba(255,248,238,0.38)';
+        c.lineWidth = Math.max(1, Math.round(W * 0.0018));
+        c.strokeRect(W * 0.045, H * 0.035, W * 0.91, H * 0.93);
+        // 크림색 전시 명패 카드
+        const slide = (1 - ent) * H * 0.018;
+        const cx = W * 0.08, cy = H * 0.64 + slide, cw = W * 0.78, ch = H * 0.245;
+        c.save();
+        c.shadowColor = 'rgba(20,14,10,0.22)';
+        c.shadowBlur = 10;
+        c.fillStyle = 'rgba(248,243,234,0.94)';
+        gRoundRect(c, cx, cy, cw, ch, Math.round(W * 0.008));
+        c.fill();
+        c.restore();
+        // 명패 내부 디테일
+        c.fillStyle = '#8c7a6b';
+        c.fillRect(cx + cw * 0.07, cy + ch * 0.23, cw * 0.12, Math.max(1, Math.round(W * 0.002)));
+        inLabel(c, `전시 기록 · 제 ${String(cutIdx + 1).padStart(2, '0')}장`, cx + cw * 0.07, cy + ch * 0.14, '#7a6a5c', 'left', Math.round(W * 0.025));
+        mCaption(c, caption, cx + cw * 0.07, cy + ch * 0.30, cw * 0.86, ch * 0.48, Math.round(W * 0.056), 'maru', '#2b241f', e, 'left');
+        inSign(c, d, cx + cw * 0.93, cy + ch * 0.86, '#6e5f52', 'right', Math.round(W * 0.029));
+        inGrain(c, W, H, t, 0.065);
+      } else if (M === 'in_h_panes') {
+        // 세 갈래 시선: 같은 사진을 세 개의 세로 창으로 나누어 미묘한 시차로 흐르게 연출
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.12 + lp * 0.03, 1.0);
+        c.fillStyle = 'rgba(24,19,15,0.42)';
+        c.fillRect(0, 0, W, H);
+        const gap = Math.round(W * 0.018);
+        const mx = Math.round(W * 0.055);
+        const pw = Math.round((W - mx * 2 - gap * 2) / 3);
+        const ph = Math.round(H * 0.78);
+        const pyBase = Math.round(H * 0.09);
+        for (let i = 0; i < 3; i++) {
+          const px = mx + i * (pw + gap);
+          const drift = Math.sin(t * 0.9 + i * 1.3) * H * 0.008 + (i - 1) * H * 0.014 * ent;
+          const py = pyBase + drift;
+          c.save();
+          gRoundRect(c, px, py, pw, ph, Math.round(W * 0.012));
+          c.clip();
+          inPhotoFade(c, S, cutIdx, local, 0, drift * 0.6, W, H, 1.04 + lp * 0.03, 0.9);
+          c.restore();
+          c.strokeStyle = 'rgba(245,236,224,0.45)';
+          c.lineWidth = Math.max(1, Math.round(W * 0.0016));
+          gRoundRect(c, px, py, pw, ph, Math.round(W * 0.012));
+          c.stroke();
+        }
+        const shade = c.createLinearGradient(0, H * 0.56, 0, H);
+        shade.addColorStop(0, 'rgba(18,14,11,0)');
+        shade.addColorStop(1, 'rgba(18,14,11,0.78)');
+        c.fillStyle = shade;
+        c.fillRect(0, H * 0.56, W, H * 0.44);
+        inLabel(c, `시선의 조각 · 0${cutIdx + 1}`, W / 2, H * 0.05, 'rgba(242,232,218,0.85)', 'center', Math.round(W * 0.026));
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.24)';
+        c.shadowBlur = 9;
+        mCaption(c, caption, W / 2, H * 0.69, W * 0.82, H * 0.19, Math.round(W * 0.06), 'gowun', '#faf3e8', e, 'center');
+        c.restore();
+        inSign(c, d, W / 2, H * 0.92, 'rgba(242,232,218,0.82)', 'center', Math.round(W * 0.03));
+        inGrain(c, W, H, t, 0.075);
+      } else if (M === 'in_h_double') {
+        // 이중노출 잔상: 배경 풀샷 위에 몽환적으로 겹쳐지는 필름 잔상과 에디토리얼 명조 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.06 + lp * 0.04, 1.05);
+        c.fillStyle = 'rgba(22,17,13,0.28)';
+        c.fillRect(0, 0, W, H);
+        // 안쪽 잔상 프레임 (이중노출 효과)
+        const gx = W * 0.11 + Math.sin(t * 0.7) * W * 0.012;
+        const gy = H * 0.11 + Math.cos(t * 0.6) * H * 0.008;
+        const gw = W * 0.78, gh = H * 0.52;
+        c.save();
+        c.globalAlpha = 0.68 * ent;
+        gRoundRect(c, gx, gy, gw, gh, Math.round(W * 0.01));
+        c.clip();
+        inPhotoFade(c, S, cutIdx, local, gx - W * 0.04, gy - H * 0.03, gw + W * 0.08, gh + H * 0.06, 1.02 + lp * 0.02, 1.15);
+        c.restore();
+        c.strokeStyle = 'rgba(255,246,234,0.42)';
+        c.lineWidth = Math.max(1, Math.round(W * 0.0015));
+        gRoundRect(c, gx, gy, gw, gh, Math.round(W * 0.01));
+        c.stroke();
+        // 하단 그라데이션과 서정적인 타이포
+        const vg = c.createLinearGradient(0, H * 0.52, 0, H);
+        vg.addColorStop(0, 'rgba(18,13,10,0)');
+        vg.addColorStop(1, 'rgba(18,13,10,0.76)');
+        c.fillStyle = vg;
+        c.fillRect(0, H * 0.52, W, H * 0.48);
+        inLabel(c, `기억의 온도 · ${String(cutIdx + 1).padStart(2, '0')} / ${String(totalCuts).padStart(2, '0')}`, W * 0.11, H * 0.065, 'rgba(247,238,226,0.86)', 'left', Math.round(W * 0.026));
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.24)';
+        c.shadowBlur = 10;
+        mCaption(c, caption, W * 0.11, H * 0.68, W * 0.78, H * 0.19, Math.round(W * 0.06), 'maruL', '#fff8ee', e, 'left');
+        c.restore();
+        inSign(c, d, W * 0.89, H * 0.91, 'rgba(247,238,226,0.82)', 'right', Math.round(W * 0.03));
+        inGrain(c, W, H, t, 0.08);
+      } else if (M === 'in_h_vinyl') {
+        // 오후의 레코드: 따뜻한 종이 배경 위 정사각 앨범 재킷과 살짝 나와 회전하는 바이닐 음반
+        c.fillStyle = '#efe7dc';
+        c.fillRect(0, 0, W, H);
+        const jSize = Math.round(W * 0.72);
+        const jx = Math.round(W * 0.08), jy = Math.round(H * 0.15);
+        // 재킷 오른쪽으로 살짝 나온 레코드판
+        const vx = jx + jSize * 0.68 + ent * jSize * 0.14;
+        const vy = jy + jSize * 0.5;
+        const vr = jSize * 0.46;
+        c.save();
+        c.shadowColor = 'rgba(30,22,16,0.20)';
+        c.shadowBlur = 10;
+        c.beginPath();
+        c.arc(vx, vy, vr, 0, Math.PI * 2);
+        c.fillStyle = '#241f1c';
+        c.fill();
+        c.restore();
+        // 레코드 소리골과 중앙 라벨
+        c.strokeStyle = 'rgba(255,245,232,0.12)';
+        c.lineWidth = Math.max(1, Math.round(W * 0.0015));
+        for (let r = 0.55; r <= 0.88; r += 0.11) {
+          c.beginPath();
+          c.arc(vx, vy, vr * r, 0, Math.PI * 2);
+          c.stroke();
+        }
+        c.beginPath();
+        c.arc(vx, vy, vr * 0.32, 0, Math.PI * 2);
+        c.fillStyle = '#d9c7b2';
+        c.fill();
+        c.beginPath();
+        c.arc(vx, vy, vr * 0.06, 0, Math.PI * 2);
+        c.fillStyle = '#efe7dc';
+        c.fill();
+        // 앨범 재킷 사진
+        c.save();
+        c.shadowColor = 'rgba(30,22,16,0.22)';
+        c.shadowBlur = 10;
+        gRoundRect(c, jx, jy, jSize, jSize, Math.round(W * 0.012));
+        c.fillStyle = '#e2d6c5';
+        c.fill();
+        c.clip();
+        inPhotoFade(c, S, cutIdx, local, jx, jy, jSize, jSize, 1.03 + lp * 0.03, 0.95);
+        c.restore();
+        // 상단 트랙 라벨 및 하단 가사형 자막
+        inLabel(c, `오후의 선곡 · 트랙 0${cutIdx + 1}`, jx, H * 0.105, '#7a6858', 'left', Math.round(W * 0.026));
+        c.fillStyle = 'rgba(122,104,88,0.35)';
+        c.fillRect(jx, H * 0.62, W * 0.84, Math.max(1, Math.round(W * 0.0015)));
+        mCaption(c, caption, jx, H * 0.655, W * 0.84, H * 0.20, Math.round(W * 0.06), 'gowun', '#2e251f', e, 'left');
+        inSign(c, d, W * 0.92, H * 0.91, '#6e5d4f', 'right', Math.round(W * 0.03));
+        inGrain(c, W, H, t, 0.07);
       } else if (M === 'in_film') {
         // 크림 필름: 크림 바탕 위 4:5 사진, 아래 얇은 명조 자막과 서명
         const px = 36, pw = W - 72, ph = Math.round(pw * 1.22), py = 74;
@@ -17331,6 +17493,70 @@ function renderStoryArchetypesUI() {
         c.fillStyle = '#b6a389'; c.fillRect(W * 0.47, H * 0.4, W * 0.06, H * 0.001);
         mCaption(c, caption, W / 2, H * 0.425, W * 0.78, H * 0.2, W * 0.058, 'maruL', '#40372d', e);
         inGrain(c, W, H, t, 0.045);
+      } else if (M === 'in_y_chat') {
+        // 사진 대화: 전체 사진 위 서로 마주 보는 말풍선, 답장이 천천히 올라옴
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.035 + lp * 0.025, 0.85);
+        c.fillStyle = 'rgba(32,25,18,0.18)'; c.fillRect(0, 0, W, H);
+        const bx = W * 0.07, by = H * 0.49, bw = W * 0.5, bh = H * 0.065;
+        c.save(); c.globalAlpha = mEase(local / 0.65);
+        c.fillStyle = '#fcf5e8';
+        gRoundRect(c, bx, by, bw, bh, W * 0.035); c.fill();
+        c.beginPath(); c.moveTo(bx + W * 0.025, by + bh * 0.55);
+        c.lineTo(bx - W * 0.018, by + bh * 0.8); c.lineTo(bx + W * 0.04, by + bh * 0.87); c.fill();
+        inLabel(c, '오늘은 어떤 장면이야?', bx + W * 0.04, by + bh / 2, '#76634f', 'left', Math.round(W * 0.026));
+        c.restore();
+        const reply = mEase((local - 0.22) / 0.65), rx = W * 0.18;
+        const ry = H * 0.59 + (1 - reply) * H * 0.014, rw = W * 0.74, rh = H * 0.245;
+        c.save(); c.globalAlpha = reply; c.fillStyle = '#e6dcc0';
+        gRoundRect(c, rx, ry, rw, rh, W * 0.035); c.fill();
+        c.beginPath(); c.moveTo(rx + rw - W * 0.03, ry + rh * 0.7);
+        c.lineTo(rx + rw + W * 0.018, ry + rh * 0.86); c.lineTo(rx + rw - W * 0.04, ry + rh * 0.86); c.fill();
+        c.restore();
+        mCaption(c, caption, rx + W * 0.045, ry + H * 0.02, rw - W * 0.09, rh - H * 0.04,
+          Math.round(W * 0.06), 'pretM', '#3d3529', mClamp((local - 0.32) / 1.1), 'left');
+        inGrain(c, W, H, t, 0.045);
+      } else if (M === 'in_y_torn') {
+        // 찢은 인화: 불규칙한 종이 가장자리 안에 큰 사진, 종이 전체가 살짝 떠오름
+        const lift = Math.sin(t * 0.24) * H * 0.003, left = W * 0.055, right = W * 0.945;
+        const top = H * 0.055 + lift, bottom = H * 0.88 + lift;
+        c.save(); c.beginPath(); c.moveTo(left, top);
+        for (let i = 1; i <= 24; i++) c.lineTo(left + (right - left) * i / 24, top + Math.sin(i * 2.7) * H * 0.003);
+        for (let i = 1; i <= 40; i++) c.lineTo(right + Math.sin(i * 2.3) * W * 0.006, top + (bottom - top) * i / 40);
+        for (let i = 1; i <= 24; i++) c.lineTo(right - (right - left) * i / 24, bottom + Math.sin(i * 3.1) * H * 0.003);
+        for (let i = 1; i <= 40; i++) c.lineTo(left + Math.sin(i * 2.9) * W * 0.006, bottom - (bottom - top) * i / 40);
+        c.closePath(); c.clip();
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.04 + lp * 0.02, 0.95);
+        const shade = c.createLinearGradient(0, H * 0.42, 0, bottom);
+        shade.addColorStop(0, 'rgba(41,28,18,0)'); shade.addColorStop(1, 'rgba(41,28,18,0.8)');
+        c.fillStyle = shade; c.fillRect(0, H * 0.42, W, H * 0.5);
+        inLabel(c, '손끝에 남긴 풍경', W * 0.12, H * 0.65, '#ecdbc3', 'left', Math.round(W * 0.026));
+        mCaption(c, caption, W * 0.12, H * 0.68, W * 0.75, H * 0.17, Math.round(W * 0.06), 'pen', '#fff8ea', e, 'left');
+        c.restore(); inGrain(c, W, H, t, 0.07);
+      } else if (M === 'in_y_mosaic') {
+        // 조각 현상: 여러 사진 격자가 아닌 한 사진의 열두 조각이 순서대로 스며들어 완성
+        const developing = local < 1.3;
+        mPhoto(c, S, developing && cutIdx > 0 ? -1 : 0, 0, 0, W, H, 1.035 + lp * 0.02);
+        if (developing) {
+          c.fillStyle = 'rgba(239,228,208,0.42)'; c.fillRect(0, 0, W, H);
+        }
+        const tw = W / 3, th = H / 4;
+        for (let row = 0; developing && row < 4; row++) for (let col = 0; col < 3; col++) {
+          const reveal = mEase((local - (row + col) * 0.09) / 0.85);
+          const x = col * tw, y = row * th;
+          c.save(); c.beginPath(); c.rect(x, y, tw, th); c.clip(); c.globalAlpha = reveal;
+          mPhoto(c, S, 0, 0, 0, W, H, 1.035 + lp * 0.02);
+          c.restore();
+          c.save(); c.globalAlpha = (1 - reveal) * 0.65; c.fillStyle = '#f3eadb';
+          c.fillRect(x, y, W * 0.003, th); c.fillRect(x, y, tw, H * 0.002); c.restore();
+        }
+        inWarm(c, 0, 0, W, H, 0.8);
+        const shade = c.createLinearGradient(0, H * 0.52, 0, H);
+        shade.addColorStop(0, 'rgba(30,24,18,0)'); shade.addColorStop(1, 'rgba(30,24,18,0.82)');
+        c.fillStyle = shade; c.fillRect(0, H * 0.52, W, H * 0.48);
+        inLabel(c, '조금씩 선명해지는 하루', W * 0.08, H * 0.67, '#ecdbc2', 'left', Math.round(W * 0.026));
+        mCaption(c, caption, W * 0.08, H * 0.7, W * 0.84, H * 0.17,
+          Math.round(W * 0.06), 'pretL', '#fff9ee', mClamp((local - 0.25) / 1.1), 'left');
+        inGrain(c, W, H, t, 0.055);
       } else if (M === 'ed_vogue') {
         // 보그 에디토리얼: 풀블리드 감성 톤 + 상단 이슈 헤더 + 하단 페이드 명조 타이포
         inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.03 + lp * 0.04, 1);
