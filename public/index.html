@@ -214,26 +214,187 @@
     </div>
 
     <!-- 하단 사업자·약관 고지 푸터 (랜딩) -->
-    <footer class="pt-6 border-t border-[var(--border)] text-[11.5px] text-[#71717a] space-y-2">
-      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[#a1a1a6]">
-        <button type="button" onclick="openLandingLegal('terms')" class="hover:text-[#ededed] cursor-pointer">이용약관</button>
-        <button type="button" onclick="openLandingLegal('privacy')" class="hover:text-[#ededed] font-semibold cursor-pointer">개인정보처리방침</button>
-        <button type="button" onclick="openLandingLegal('refund')" class="hover:text-[#ededed] cursor-pointer">환불·해지 규정</button>
-        <button type="button" onclick="openLandingLegal('support')" class="hover:text-[#ededed] cursor-pointer">고객센터</button>
+    <style>
+      .ar-site-footer {
+        margin-top: 56px;
+        padding: 28px 0 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: #71717a;
+        font-size: 12px;
+        line-height: 1.65;
+      }
+      .ar-footer-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .ar-footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #a1a1aa;
+        font-size: 12.5px;
+        font-weight: 500;
+      }
+      .ar-footer-brand-badge {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: #1c1c1f;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        color: #e4e4e7;
+      }
+      .ar-footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 18px;
+      }
+      .ar-footer-links button {
+        background: none;
+        border: 0;
+        padding: 2px 0;
+        color: #a1a1aa;
+        font-size: 12px;
+        cursor: pointer;
+        transition: color 0.15s ease;
+      }
+      .ar-footer-links button:hover {
+        color: #f4f4f5;
+      }
+      .ar-footer-links button.ar-footer-privacy {
+        color: #d4d4d8;
+        font-weight: 600;
+      }
+      .ar-footer-meta {
+        padding-top: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        color: #71717a;
+        font-size: 11.5px;
+      }
+      .ar-footer-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 0;
+      }
+      .ar-footer-item {
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ar-footer-item + .ar-footer-item::before {
+        content: "";
+        display: inline-block;
+        width: 1px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        margin: 0 10px;
+      }
+      .ar-footer-item b {
+        font-weight: 500;
+        color: #52525b;
+      }
+      .ar-footer-item span {
+        color: #8e8e96;
+      }
+      .ar-footer-copy {
+        margin-top: 6px;
+        font-size: 11px;
+        color: #52525b;
+      }
+      #arLandingLegalModal {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      #arLandingLegalModal:not(.hidden) {
+        display: flex;
+      }
+      .ar-legal-dialog {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 14px;
+        background: #161618;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 20px 22px;
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+      }
+      .ar-legal-dialog-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .ar-legal-dialog-body {
+        font-size: 12.5px;
+        color: #a1a1aa;
+        line-height: 1.7;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      .ar-legal-dialog-body p + p {
+        margin-top: 8px;
+      }
+    </style>
+    <footer class="ar-site-footer">
+      <div class="ar-footer-top">
+        <div class="ar-footer-brand">
+          <span class="ar-footer-brand-badge">AR</span>
+          <span style="color:#d4d4d8;font-weight:600;">AutoReels</span>
+          <span style="color:#52525b;">·</span>
+          <span>업종 맞춤 릴스·쇼츠 스튜디오</span>
+        </div>
+        <div class="ar-footer-links">
+          <button type="button" onclick="openLandingLegal('terms')">이용약관</button>
+          <button type="button" class="ar-footer-privacy" onclick="openLandingLegal('privacy')">개인정보처리방침</button>
+          <button type="button" onclick="openLandingLegal('refund')">환불·해지 규정</button>
+          <button type="button" onclick="openLandingLegal('support')">고객센터</button>
+        </div>
       </div>
-      <div class="leading-relaxed">
-        상호: 슬기로운건강생활 | 대표자: 이민호 | 사업자등록번호: 422-25-01352 | 통신판매업신고: 제 2021-인천연수구-2127호 | 주소: 인천 남동구 서창남순환로 190-15 | 고객센터: ektjtthsrk@gmail.com · 010-5872-7179
+      <div class="ar-footer-meta">
+        <div class="ar-footer-row">
+          <span class="ar-footer-item"><b>상호</b><span>슬기로운건강생활</span></span>
+          <span class="ar-footer-item"><b>대표자</b><span>이민호</span></span>
+          <span class="ar-footer-item"><b>사업자등록번호</b><span>422-25-01352</span></span>
+          <span class="ar-footer-item"><b>통신판매업신고</b><span>제 2021-인천연수구-2127호</span></span>
+        </div>
+        <div class="ar-footer-row">
+          <span class="ar-footer-item"><b>주소</b><span>인천 남동구 서창남순환로 190-15</span></span>
+          <span class="ar-footer-item"><b>고객센터</b><span>ektjtthsrk@gmail.com · 010-5872-7179</span></span>
+        </div>
+        <div class="ar-footer-copy">© 2026 AutoReels · 슬기로운건강생활. All rights reserved.</div>
       </div>
     </footer>
   </main>
 
-  <div id="arLandingLegalModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onclick="if(event.target===this)this.classList.add('hidden')">
-    <div class="studio-card w-full max-w-[520px] p-5 space-y-3">
-      <div class="flex items-center justify-between border-b border-[var(--border)] pb-2.5">
+  <div id="arLandingLegalModal" class="hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="ar-legal-dialog">
+      <div class="ar-legal-dialog-head">
         <h3 id="arLandingLegalTitle" class="text-[15px] font-semibold text-[#ededed]">이용약관</h3>
-        <button type="button" onclick="document.getElementById('arLandingLegalModal').classList.add('hidden')" class="text-[#85858b] hover:text-white text-[18px] leading-none cursor-pointer">×</button>
+        <button type="button" onclick="document.getElementById('arLandingLegalModal').classList.add('hidden')" style="background:none;border:0;color:#85858b;font-size:18px;line-height:1;cursor:pointer;">×</button>
       </div>
-      <div id="arLandingLegalBody" class="text-[12.5px] text-[#a1a1a6] leading-relaxed max-h-[60vh] overflow-y-auto space-y-2"></div>
+      <div id="arLandingLegalBody" class="ar-legal-dialog-body"></div>
     </div>
   </div>
   <script>

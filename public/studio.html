@@ -1765,15 +1765,131 @@
     </div>
   </div>
 
-  <footer class="max-w-[1440px] mx-auto mt-10 pt-5 border-t border-[var(--border)] text-[11.5px] text-[#71717a] space-y-2">
-    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[#a1a1a6]">
-      <button type="button" onclick="openArLegalModal('terms')" class="hover:text-[#ededed] cursor-pointer">이용약관</button>
-      <button type="button" onclick="openArLegalModal('privacy')" class="hover:text-[#ededed] font-semibold cursor-pointer">개인정보처리방침</button>
-      <button type="button" onclick="openArLegalModal('refund')" class="hover:text-[#ededed] cursor-pointer">환불·해지 규정</button>
-      <button type="button" onclick="openArLegalModal('support')" class="hover:text-[#ededed] cursor-pointer">고객센터</button>
+  <style>
+    .ar-site-footer {
+      max-width: 1440px;
+      margin: 40px auto 0;
+      padding: 22px 4px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      color: #71717a;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .ar-footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .ar-footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .ar-footer-brand-badge {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: #1c1c1f;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #e4e4e7;
+    }
+    .ar-footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 18px;
+    }
+    .ar-footer-links button {
+      background: none;
+      border: 0;
+      padding: 2px 0;
+      color: #a1a1aa;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .ar-footer-links button:hover {
+      color: #f4f4f5;
+    }
+    .ar-footer-links button.ar-footer-privacy {
+      color: #d4d4d8;
+      font-weight: 600;
+    }
+    .ar-footer-meta {
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #71717a;
+      font-size: 11.5px;
+    }
+    .ar-footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px 0;
+    }
+    .ar-footer-item {
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ar-footer-item + .ar-footer-item::before {
+      content: "";
+      display: inline-block;
+      width: 1px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0 10px;
+    }
+    .ar-footer-item b {
+      font-weight: 500;
+      color: #52525b;
+    }
+    .ar-footer-item span {
+      color: #8e8e96;
+    }
+  </style>
+  <footer class="ar-site-footer">
+    <div class="ar-footer-top">
+      <div class="ar-footer-brand">
+        <span class="ar-footer-brand-badge">AR</span>
+        <span style="color:#d4d4d8;font-weight:600;">AutoReels</span>
+        <span style="color:#52525b;">·</span>
+        <span>업종 맞춤 릴스·쇼츠 스튜디오</span>
+      </div>
+      <div class="ar-footer-links">
+        <button type="button" onclick="openArLegalModal('terms')">이용약관</button>
+        <button type="button" class="ar-footer-privacy" onclick="openArLegalModal('privacy')">개인정보처리방침</button>
+        <button type="button" onclick="openArLegalModal('refund')">환불·해지 규정</button>
+        <button type="button" onclick="openArLegalModal('support')">고객센터</button>
+      </div>
     </div>
-    <div class="leading-relaxed">
-      상호: 슬기로운건강생활 | 대표자: 이민호 | 사업자등록번호: 422-25-01352 | 통신판매업신고: 제 2021-인천연수구-2127호 | 주소: 인천 남동구 서창남순환로 190-15 | 고객센터: ektjtthsrk@gmail.com · 010-5872-7179
+    <div class="ar-footer-meta">
+      <div class="ar-footer-row">
+        <span class="ar-footer-item"><b>상호</b><span>슬기로운건강생활</span></span>
+        <span class="ar-footer-item"><b>대표자</b><span>이민호</span></span>
+        <span class="ar-footer-item"><b>사업자등록번호</b><span>422-25-01352</span></span>
+        <span class="ar-footer-item"><b>통신판매업신고</b><span>제 2021-인천연수구-2127호</span></span>
+      </div>
+      <div class="ar-footer-row">
+        <span class="ar-footer-item"><b>주소</b><span>인천 남동구 서창남순환로 190-15</span></span>
+        <span class="ar-footer-item"><b>고객센터</b><span>ektjtthsrk@gmail.com · 010-5872-7179</span></span>
+      </div>
     </div>
   </footer>
   <div id="arLegalModal" class="hidden fixed inset-0 z-50 flex ar-modal" onclick="if(event.target===this)closeArLegalModal()">
