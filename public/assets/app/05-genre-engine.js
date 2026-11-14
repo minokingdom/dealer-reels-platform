@@ -655,20 +655,24 @@
       } else {
       c.save();
       c.translate(W / 2, boxY);
-      c.rotate(-0.035);
-      c.scale(0.7 + 0.3 * enter, 0.7 + 0.3 * enter);
+      c.scale(0.92 + 0.08 * enter, 0.92 + 0.08 * enter);
       c.globalAlpha = Math.min(1, local / 0.15);
-      const wr = gWrap(c, caption, W - 90, 2, 46, 30, GENRE_FONTS.impact, 400);
-      const lh = wr.size * 1.22;
-      const boxH = wr.lines.length * lh + 34;
-      c.fillStyle = V.accent2;
-      c.fillRect(-W / 2 + 22, -boxH / 2, W - 44, boxH);
+      const wr = gWrap(c, caption, W - 104, 2, 38, 24, GENRE_FONTS.sans, 800);
+      const lh = wr.size * 1.28;
+      const boxH = wr.lines.length * lh + 38;
+      gRoundRect(c, -W / 2 + 24, -boxH / 2, W - 48, boxH, 18);
+      c.fillStyle = 'rgba(15, 15, 18, 0.84)';
+      c.fill();
+      c.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+      c.lineWidth = 1.2;
+      c.stroke();
+      gRoundRect(c, -W / 2 + 36, -boxH / 2 + 14, 5, boxH - 28, 2.5);
       c.fillStyle = V.accent;
-      c.fillRect(-W / 2 + 22, -boxH / 2, 10, boxH);
-      c.fillStyle = '#111111';
+      c.fill();
+      c.fillStyle = '#ffffff';
       c.textAlign = 'center';
-      c.font = gFont(400, wr.size, GENRE_FONTS.impact);
-      wr.lines.forEach((ln, i) => c.fillText(ln, 6, -boxH / 2 + 17 + lh * (i + 0.78)));
+      c.font = gFont(800, wr.size, GENRE_FONTS.sans);
+      wr.lines.forEach((ln, i) => c.fillText(ln, 4, -boxH / 2 + 19 + lh * (i + 0.78)));
       c.restore();
       }
 
@@ -1552,52 +1556,126 @@
       c.textAlign = 'center';
 
       if (V.genre === 'sale') {
-        c.fillStyle = 'rgba(15,0,0,0.78)';
+        const bgGrad = c.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, 'rgba(10, 10, 14, 0.68)');
+        bgGrad.addColorStop(0.45, 'rgba(10, 10, 14, 0.88)');
+        bgGrad.addColorStop(1, 'rgba(10, 10, 14, 0.96)');
+        c.fillStyle = bgGrad;
         c.fillRect(0, 0, W, H);
-        // 쿠폰 티켓
+
+        // 모던 다크 글래스 딜러 명함 카드
         c.save();
-        c.translate(W / 2, 470);
-        c.scale(e, e);
-        c.rotate(-0.03);
-        gRoundRect(c, -220, -300, 440, 560, 26);
-        c.fillStyle = V.accent2;
+        c.translate(W / 2, 455);
+        c.scale(0.92 + 0.08 * e, 0.92 + 0.08 * e);
+        c.globalAlpha = a;
+
+        const cw = 448;
+        const ch = 540;
+        const cx = -cw / 2;
+        const cy = -ch / 2;
+
+        // 카드 그림자 및 본체
+        c.shadowColor = 'rgba(0, 0, 0, 0.55)';
+        c.shadowBlur = 32;
+        c.shadowOffsetY = 12;
+        gRoundRect(c, cx, cy, cw, ch, 28);
+        c.fillStyle = 'rgba(20, 20, 24, 0.94)';
         c.fill();
+        c.shadowBlur = 0;
+        c.shadowOffsetY = 0;
+
+        // 카드 상단 은은한 포인트 하이라이트
+        c.save();
+        gRoundRect(c, cx, cy, cw, ch, 28);
+        c.clip();
+        const topGlow = c.createLinearGradient(0, cy, 0, cy + 150);
+        topGlow.addColorStop(0, V.accent + '38');
+        topGlow.addColorStop(1, 'rgba(20, 20, 24, 0)');
+        c.fillStyle = topGlow;
+        c.fillRect(cx, cy, cw, 150);
         c.fillStyle = V.accent;
-        c.fillRect(-220, -300, 440, 92);
-        c.fillStyle = '#ffffff';
-        c.font = gFont(400, 34, GENRE_FONTS.impact);
-        c.fillText(V.label, 0, -240);
-        drawGenreAvatar(c, d, 0, -120, 62, '#ffffff', 6);
-        c.fillStyle = '#111111';
-        gDrawLine(c, `${d.name} ${d.title}`, 0, -16, 380, 40, 24, GENRE_FONTS.impact, 400);
-        c.font = gFont(600, 17, GENRE_FONTS.sans);
-        c.fillStyle = '#44403c';
-        gDrawLine(c, d.branch || '', 0, 16, 380, 17, 12, GENRE_FONTS.sans, 600);
-        // 점선 절취선
-        c.strokeStyle = '#111111';
-        c.setLineDash([8, 7]);
-        c.lineWidth = 2;
-        c.beginPath();
-        c.moveTo(-190, 46);
-        c.lineTo(190, 46);
-        c.stroke();
-        c.setLineDash([]);
-        c.fillStyle = V.accent;
-        gDrawLine(c, arPriceLine(), 0, 118, 390, 60, 32, GENRE_FONTS.impact, 400);
-        c.fillStyle = '#111111';
-        gDrawLine(c, promo, 0, 160, 380, 16, 11, GENRE_FONTS.sans, 700);
+        c.fillRect(cx, cy, cw, 4);
         c.restore();
-        // CTA 버튼
+
+        // 얇은 유리 테두리
+        c.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        c.lineWidth = 1.5;
+        gRoundRect(c, cx, cy, cw, ch, 28);
+        c.stroke();
+
+        // 상단 캡슐 배지 (특가 진행중)
+        c.font = gFont(700, 14, GENRE_FONTS.sans);
+        const badgeText = V.label || '특가 진행중';
+        const badgeW = Math.max(116, c.measureText(badgeText).width + 42);
+        gRoundRect(c, -badgeW / 2, cy + 28, badgeW, 32, 16);
+        c.fillStyle = 'rgba(255, 255, 255, 0.07)';
+        c.fill();
+        c.strokeStyle = V.accent + '88';
+        c.lineWidth = 1;
+        c.stroke();
+        c.fillStyle = V.accent;
+        c.beginPath();
+        c.arc(-badgeW / 2 + 16, cy + 44, 4, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = '#f4f4f5';
+        c.textAlign = 'center';
+        c.fillText(badgeText, 7, cy + 49);
+
+        // 프로필 아바타
+        drawGenreAvatar(c, d, 0, cy + 142, 60, V.accent, 3);
+
+        // 이름 · 직함 · 전시장
+        c.fillStyle = '#ffffff';
+        gDrawLine(c, `${d.name} ${d.title}`, 0, cy + 244, cw - 64, 34, 22, GENRE_FONTS.sans, 800);
+        c.fillStyle = '#a1a1aa';
+        gDrawLine(c, d.branch || '', 0, cy + 278, cw - 64, 16, 12, GENRE_FONTS.sans, 500);
+
+        // 하단 혜택 인포 박스 (빈 공간 없이 밀도 있게 구성)
+        const bx = cx + 26;
+        const by = cy + 312;
+        const bw = cw - 52;
+        const bh = 194;
+        gRoundRect(c, bx, by, bw, bh, 20);
+        c.fillStyle = 'rgba(255, 255, 255, 0.045)';
+        c.fill();
+        c.strokeStyle = 'rgba(255, 255, 255, 0.09)';
+        c.lineWidth = 1;
+        c.stroke();
+
+        c.fillStyle = '#a1a1aa';
+        c.font = gFont(600, 13, GENRE_FONTS.sans);
+        c.fillText((typeof campaign !== 'undefined' && campaign.vehicle) ? campaign.vehicle : '이달의 특별 프로모션', 0, by + 36);
+
+        c.fillStyle = V.accent2 || '#fde047';
+        gDrawLine(c, arPriceLine(), 0, by + 94, bw - 36, 46, 26, GENRE_FONTS.sans, 900);
+
+        // 구분선 + 부가 혜택/상담 안내
+        c.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        c.beginPath();
+        c.moveTo(bx + 24, by + 128);
+        c.lineTo(bx + bw - 24, by + 128);
+        c.stroke();
+
+        const subBenefit = promo || (typeof gMonthlyText === 'function' && gMonthlyText()) || '1:1 맞춤 견적 · 즉시출고 상담';
+        c.fillStyle = '#e4e4e7';
+        gDrawLine(c, subBenefit, 0, by + 162, bw - 36, 16, 12, GENRE_FONTS.sans, 600);
+
+        c.restore();
+
+        // 하단 세련된 CTA 버튼
         c.save();
         c.globalAlpha = a;
-        const pulse = 1 + 0.04 * Math.sin(t * 8);
-        c.translate(W / 2, 830);
+        const pulse = 1 + 0.025 * Math.sin(t * 6);
+        c.translate(W / 2, 818);
         c.scale(pulse, pulse);
-        gRoundRect(c, -200, -38, 400, 76, 38);
+        gRoundRect(c, -210, -35, 420, 70, 35);
         c.fillStyle = V.accent;
+        c.shadowColor = V.accent + '55';
+        c.shadowBlur = 20;
         c.fill();
+        c.shadowBlur = 0;
         c.fillStyle = '#ffffff';
-        gDrawLine(c, cta, 0, 12, 360, 32, 20, GENRE_FONTS.impact, 400);
+        gDrawLine(c, cta, 0, 9, 370, 24, 16, GENRE_FONTS.sans, 800);
         c.restore();
         return;
       }

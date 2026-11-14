@@ -531,7 +531,7 @@ async function handler(req, res) {
   };
   // AI 모델 이름은 환경변수로 바꿀 수 있음 (예전 모델이 지원 종료되면 여기서 교체)
   const openaiModel = String(process.env.OPENAI_SCRIPT_MODEL || 'gpt-4o-mini').trim();
-  const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.0-flash').trim();
+  const geminiModel = String(process.env.GEMINI_SCRIPT_MODEL || 'gemini-2.5-flash').trim();
   const kieKey = String(process.env.KIE_API_KEY || '').trim();
   // 쉼표로 여러 개 지정 가능, 앞에서부터 차례로 시도
   // 2026-11-14 진단(?diag=kie): 3.8 Flash 무응답, 3.7 Flash 500 오류 → 응답이 확인된 두 모델을 기본으로

@@ -5,7 +5,7 @@
     //   대본 템플릿(STORY_ARCHETYPES)은 문구만 바꾸고 디자인은 바꾸지 않습니다.
     // ==========================================================================
     const DESIGN_STYLES = [
-      { id: 'sale_coupon', name: '특가 쿠폰', desc: '기울어진 노란 띠 · 할인 숫자 카운트업 · 절취선 쿠폰 명함', genre: 'sale', label: '특가 진행중', sig: 'countdown', high: false, alt: false, cover: false, accent: '#ef4444', accent2: '#facc15' },
+      { id: 'sale_coupon', name: '특가 프로모션', desc: '다크 글래스 자막 · 할인 숫자 카운트업 · 프리미엄 딜러 명함', genre: 'sale', label: '특가 진행중', sig: 'countdown', high: false, alt: false, cover: false, accent: '#e11d48', accent2: '#fde68a' },
       { id: 'sale_news', name: '뉴스 속보', desc: '상단 속보 띠와 흐르는 자막 · 검은 띠 자막 · 표지형 명함', genre: 'sale', label: 'LIVE 특가속보', sig: 'ticker', high: true, alt: true, cover: true, accent: '#dc2626', accent2: '#fde047' },
       { id: 'lux_editorial', name: '에디토리얼', desc: '흑백 화보 · 명조체 가운데 자막 · 금테 액자 명함', genre: 'luxury', label: 'THE EDITORIAL', sig: 'masthead', grade: 'mono', high: false, alt: false, cover: false, accent: '#e7d8b5', accent2: '#ffffff' },
       { id: 'lux_cinema', name: '시네마', desc: '영화 비율 검은 띠 · 필름 질감 · 왼쪽 정렬 자막 · 표지형 명함', genre: 'luxury', label: 'CINÉMA', sig: 'film', grade: 'film', high: true, alt: true, cover: true, accent: '#f2c46d', accent2: '#ffffff' },
