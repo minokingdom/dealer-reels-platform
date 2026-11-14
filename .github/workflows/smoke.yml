@@ -1,0 +1,30 @@
+name: smoke
+
+# main 에 올라오거나 PR 이 열릴 때마다: 문법 검사 + 실제 브라우저로 모든 디자인을 여러 업종·시점에서 그려 오류 확인
+on:
+  push:
+    branches: [main]
+    paths: ['public/**', 'tests/**', '.github/workflows/smoke.yml']
+  pull_request:
+    paths: ['public/**', 'tests/**', '.github/workflows/smoke.yml']
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax check (app scripts)
+        run: |
+          for f in public/assets/app/*.js; do node --check "$f" || exit 1; done
+          echo "syntax ok"
+      - name: Install Playwright
+        run: |
+          npm i --no-save playwright@1.48.2
+          npx playwright install --with-deps chromium
+      - name: Render every design
+        run: node tests/smoke-render.mjs

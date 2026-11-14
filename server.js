@@ -199,8 +199,16 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 정적 파일 서빙 (public/index.html)
-  const indexPath = path.join(__dirname, 'public', 'index.html');
+  // 정적 파일 서빙: public/ 아래 파일이 있으면 그대로(스크립트·CSS·사진), 없으면 index.html
+  const publicDir = path.join(__dirname, 'public');
+  const reqPath = decodeURIComponent(String(req.url || '/').split('?')[0]);
+  const filePath = path.normalize(path.join(publicDir, reqPath));
+  if (reqPath !== '/' && filePath.startsWith(publicDir + path.sep) && fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+    const TYPES = { '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.wasm': 'application/wasm', '.mp3': 'audio/mpeg', '.mp4': 'video/mp4' };
+    res.writeHead(200, { 'Content-Type': TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream' });
+    return fs.createReadStream(filePath).pipe(res);
+  }
+  const indexPath = path.join(publicDir, 'index.html');
   if (fs.existsSync(indexPath)) {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     return fs.createReadStream(indexPath).pipe(res);

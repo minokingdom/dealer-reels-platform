@@ -1,0 +1,44 @@
+
+    /* 1) 글자 크기: 최소 12px, 자주 쓰는 12·13px 은 한 단계씩 키움 */
+    body .text-\[8px\], body .text-\[9px\], body .text-\[10px\], body .text-\[11px\] { font-size: 12px !important; line-height: 1.45; }
+    body .text-\[12px\] { font-size: 13px !important; }
+    body .text-\[13px\] { font-size: 14px !important; }
+
+    /* 2) 회색 글씨 대비: 어두운 카드 배경(#232325)에서도 4.5:1 이상 */
+    body .text-\[\#85858b\] { color: #9b9ba1 !important; }
+    body .text-\[\#71717a\], body .text-\[\#6e6e73\], body .text-\[\#52525b\] { color: #8e8e94 !important; }
+    body input::placeholder, body textarea::placeholder { color: #8e8e94 !important; opacity: 1; }
+    /* 흰 글씨가 올라가는 진한 파랑·주황 버튼 */
+    body .bg-\[\#3b82f6\] { background-color: #2563eb !important; }
+    body .bg-\[\#ea580c\] { background-color: #c2410c !important; }
+
+    /* 3) 한글 라벨의 고정폭 폰트 제거 (숫자 자리 맞춤만 유지) */
+    body .font-mono { font-family: inherit !important; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+    body code, body kbd, body pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    /* 4) 누르기 쉬운 크기: 버튼·입력칸 최소 32px */
+    body button, body select, body [role="button"] { min-height: 32px; min-width: 32px; }
+    body button.h-6, body button.h-7, body input.h-6, body input.h-7, body select.h-7 { height: 32px !important; }
+    body button.w-6 { width: 32px !important; }
+    body .pd-close { min-width: 32px; }
+    /* 4-1) 디자인 사이드바: 카드는 최소 높이 규칙에서 제외
+       (min-height 32px 때문에 격자 줄이 32px로 눌려 미리보기 이미지가 서로 겹치던 문제) */
+    body .pd-card { min-height: auto; min-width: 0; }
+    .pd-grid { grid-auto-rows: max-content; }
+    /* 좁은 사이드바(약 280px)에서 버튼 글자 줄바꿈·잘림 방지 */
+    .preset-drawer button { white-space: nowrap; }
+    .preset-drawer .pd-head > div:first-child { min-width: 0; }
+    .preset-drawer .pd-head > div:first-child > div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* 가로 스크롤 칩 줄의 스크롤바 숨김 (클래스는 쓰였지만 정의가 없었음) */
+    .scrollbar-none { scrollbar-width: none; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+
+    /* 5) 쉬운 모드 (C단계) */
+    body.ar-easy [data-advanced] { display: none !important; }
+    body:not(.ar-easy) .ar-easy-only { display: none !important; }
+    .ui-mode-btn { color: #a1a1a6; background: transparent; }
+    .ui-mode-btn:hover { color: #ededed; }
+    .ui-mode-btn[aria-pressed="true"] { background: #ededed; color: #141415; font-weight: 600; }
+    /* 단계 이동 버튼을 크게 */
+    body.ar-easy .studio-panel button[onclick^="switchStudioTab"] { height: 44px !important; padding: 0 20px !important; font-size: 15px !important; }
+  

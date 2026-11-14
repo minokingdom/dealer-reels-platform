@@ -18,7 +18,7 @@
 | `shop` | 쇼핑몰·소매 | 스토어 | 매장 안내 |
 | `interior` | 인테리어·시공 | 실장님 | 매장 안내 |
 
-업종마다 입력 항목 이름, 기본 문구, 해시태그, AI 카피 역할, 장면 사진(`public/assets/scenes/<업종>/1~10.jpg`)이 따로 정의되어 있습니다. 업종 정의는 `public/index.html`, 서버 쪽 허용 목록은 `api/account.js`의 `INDUSTRY_KEYS`에 있습니다.
+업종마다 입력 항목 이름, 기본 문구, 해시태그, AI 카피 역할, 장면 사진(`public/assets/scenes/<업종>/1~10.jpg`)이 따로 정의되어 있습니다. 업종 정의는 `public/assets/app/01-industries.js`, 서버 쪽 허용 목록은 `api/account.js`의 `INDUSTRY_KEYS`에 있습니다.
 
 ## 주요 기능
 
@@ -50,7 +50,7 @@
 
 ## 프로젝트 구조
 
-- `public/index.html` — 올인원 스튜디오 (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행)
+- `public/index.html` + `public/assets/app/*.js` — 올인원 스튜디오 (업종 선택, 디자인 키트, 9:16 실시간 미리보기, 영상 추출, 발행). 파일 구성과 규칙은 `docs/code-structure.md`
 - `public/assets/scenes/` — 업종별 장면 사진
 - `api/` — Vercel 서버리스 함수 (계정·결제, AI 대본, TTS, 트렌드, SNS 발행, 크론)
 - `lib/server/` — DB, 세션, 요금제·사용량, 결제, SNS 공통 모듈
