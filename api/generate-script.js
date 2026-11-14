@@ -489,6 +489,10 @@ async function handler(req, res) {
   if (!isSameSiteRequest(req)) {
     return res.status(403).json({ ok: false, error: 'forbidden_origin' });
   }
+  // 브라우저는 같은 사이트 POST 에도 항상 Origin 을 보냄 → Origin 없는 POST 는 스크립트 호출이므로 막음 (AI 비용 보호)
+  if (req.method === 'POST' && !(req.headers && req.headers.origin)) {
+    return res.status(403).json({ ok: false, error: 'forbidden_origin' });
+  }
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
