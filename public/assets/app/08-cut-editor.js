@@ -1200,6 +1200,43 @@
       if (typeof drawCutStrokesOverlay === 'function') drawCutStrokesOverlay(c, W, H, cutIdx);
     }
 
+    // 좌우 스와이프 줄: 손가락은 기본 가로 스크롤, PC 는 마우스로 끌기 + 세로 휠을 가로로. 끄는 중에는 버튼 클릭 무시
+    function arUpdateSwipeFade(row) {
+      const max = row.scrollWidth - row.clientWidth;
+      row.classList.toggle('fade-l', max > 2 && row.scrollLeft > 2);
+      row.classList.toggle('fade-r', max > 2 && row.scrollLeft < max - 2);
+    }
+    function arInitSwipeRow(row) {
+      if (!row || row.dataset.swipeReady) return;
+      row.dataset.swipeReady = '1';
+      let startX = 0, startLeft = 0, down = false, moved = false;
+      row.addEventListener('scroll', () => arUpdateSwipeFade(row), { passive: true });
+      window.addEventListener('resize', () => arUpdateSwipeFade(row));
+      row.addEventListener('wheel', (e) => {
+        if (row.scrollWidth <= row.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        row.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }, { passive: false });
+      row.addEventListener('pointerdown', (e) => {
+        if (e.pointerType !== 'mouse' || e.button !== 0) return; // 손가락은 브라우저 기본 스크롤
+        down = true; moved = false; startX = e.clientX; startLeft = row.scrollLeft;
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (!down) return;
+        const dx = e.clientX - startX;
+        if (!moved && Math.abs(dx) > 6) { moved = true; row.classList.add('is-dragging'); }
+        if (moved) row.scrollLeft = startLeft - dx;
+      });
+      window.addEventListener('pointerup', () => {
+        if (!down) return;
+        down = false;
+        row.classList.remove('is-dragging');
+        if (moved) setTimeout(() => { moved = false; }, 0);
+      });
+      // 끌기로 끝난 경우 버튼이 눌리지 않게
+      row.addEventListener('click', (e) => { if (moved) { e.stopPropagation(); e.preventDefault(); } }, true);
+    }
+
     function renderPreviewCutPinBar() {
       const bar = document.getElementById('previewCutPinBar');
       if (!bar) return;
@@ -1214,10 +1251,17 @@
         const pinned = window.__arPinnedCut === i;
         const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || !!frms[i] || (Array.isArray(ovs[i]) && ovs[i].length > 0) || (Array.isArray(stks[i]) && stks[i].length > 0);
         if (hasDeco) anyEdited = true;
-        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="px-1.5 py-0.5 min-w-[20px] shrink-0 rounded-[6px] text-[10.5px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
+        return `<button type="button" onclick="togglePinPreviewCut(${i})" class="h-7 min-w-[32px] px-2 shrink-0 rounded-[8px] text-[12px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
       }).join('');
       const clearBtn = document.getElementById('clearAllCutEditsBtn');
       if (clearBtn) clearBtn.classList.toggle('hidden', !anyEdited);
+      arInitSwipeRow(bar);
+      if (typeof window.__arPinnedCut === 'number' && bar.children[window.__arPinnedCut]) {
+        const b = bar.children[window.__arPinnedCut];
+        const left = b.offsetLeft - bar.offsetLeft, right = left + b.offsetWidth;
+        if (left < bar.scrollLeft || right > bar.scrollLeft + bar.clientWidth) bar.scrollTo({ left: Math.max(0, left - 16), behavior: 'smooth' });
+      }
+      arUpdateSwipeFade(bar);
       renderIgEditorHud();
       renderCutOverlayEditorLayer();
     }

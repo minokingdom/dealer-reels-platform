@@ -273,7 +273,7 @@
               </div>
               <input id="igPhotoStickerInput" type="file" accept="image/*" class="hidden" onchange="handleIgPhotoStickerUpload(event)" />
             </div>
-            <!-- ★ 미리보기를 옆으로 밀면 나오는 디자인 스타일 사이드바 -->
+            <!-- ★ 디자인 스타일 사이드바: "디자인" 손잡이를 눌러야 열림 (옆으로 밀어 여는 기능은 컷 편집과 겹쳐 없앰) -->
             <button type="button" id="presetHandle" onclick="openPresetDrawer('right')" class="pd-handle" aria-label="디자인 스타일 열기">
               <span>디자인</span><span class="pd-chev">‹</span>
             </button>
@@ -317,7 +317,8 @@
               <span class="text-[11px] text-[#85858b] whitespace-nowrap">컷 편집</span>
               <button type="button" id="clearAllCutEditsBtn" onclick="clearAllCutEdits()" class="hidden px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] text-[#a1a1a6] hover:text-white whitespace-nowrap cursor-pointer" title="모든 컷의 꾸미기 초기화">초기화</button>
             </div>
-            <div id="previewCutPinBar" class="flex items-center gap-1 flex-nowrap overflow-x-auto scrollbar-none justify-end min-w-0"></div>
+            <!-- 컷 번호: 좌우로 밀어서 넘김 (PC 는 끌기·휠) -->
+            <div id="previewCutPinBar" class="ar-swipe flex-1 flex items-center gap-1.5 flex-nowrap overflow-x-auto scrollbar-none min-w-0 py-0.5"></div>
           </div>
 
           <!-- 핵심 액션 컨트롤 -->

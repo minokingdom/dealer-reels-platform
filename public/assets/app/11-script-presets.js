@@ -284,48 +284,38 @@
       renderPresetDrawer();
       setTimeout(closePresetDrawer, 260);
     }
+    // 2026-11-14: 미리보기를 옆으로 밀면 사이드바가 열리던 기능은 없앰.
+    //   컷 편집(스티커·글자 옮기기, 그리기)도 같은 미리보기 위에서 하므로, 옆으로 끌기만 해도 사이드바가 열리고 화면이 움직였음.
+    //   이제 여는 것은 "디자인" 손잡이·"디자인 바꾸기" 버튼뿐. 닫기는 사이드바 안에서 시작한 밀기(열린 쪽 바깥으로)만.
     (function setupPresetSwipe() {
-      const vp = document.getElementById('previewViewport');
-      if (!vp) return;
+      const dr = document.getElementById('presetDrawer');
+      if (!dr) return;
       let sx = 0;
       let sy = 0;
       let tracking = false;
-      const start = (x, y) => {
-        sx = x;
-        sy = y;
-        tracking = true;
-      };
       const end = (x, y) => {
         if (!tracking) return;
         tracking = false;
+        if (!dr.classList.contains('open')) return;
         const dx = x - sx;
         const dy = y - sy;
-        if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-        const dr = document.getElementById('presetDrawer');
-        const isOpen = dr && dr.classList.contains('open');
-        const fromLeft = dr && dr.classList.contains('from-left');
-        if (isOpen) {
-          // 열린 쪽으로 다시 밀어 넣으면 닫힘
-          if ((fromLeft && dx < 0) || (!fromLeft && dx > 0)) closePresetDrawer();
-          return;
-        }
-        openPresetDrawer(dx < 0 ? 'right' : 'left');
+        if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+        const fromLeft = dr.classList.contains('from-left');
+        if ((fromLeft && dx < 0) || (!fromLeft && dx > 0)) closePresetDrawer();
       };
-      vp.addEventListener('touchstart', (ev) => {
-        if (ev.target.closest && ev.target.closest('.pd-list')) return;
+      dr.addEventListener('touchstart', (ev) => {
+        if (ev.target.closest && ev.target.closest('.pd-cats')) return; // 분류 줄은 가로로 넘기는 곳
         const t = ev.touches[0];
-        start(t.clientX, t.clientY);
+        sx = lx = t.clientX; sy = ly = t.clientY; tracking = true;
       }, { passive: true });
-      vp.addEventListener('touchend', (ev) => {
+      // 목록이 스크롤되면 touchend 대신 touchcancel 이 올 수 있어 마지막 손가락 위치로 판단
+      let lx = 0, ly = 0;
+      dr.addEventListener('touchmove', (ev) => { const t = ev.touches[0]; lx = t.clientX; ly = t.clientY; }, { passive: true });
+      dr.addEventListener('touchend', (ev) => {
         const t = ev.changedTouches[0];
         end(t.clientX, t.clientY);
       }, { passive: true });
-      // 데스크톱: 마우스로 끌어도 동작
-      vp.addEventListener('mousedown', (ev) => {
-        if (ev.target.closest && (ev.target.closest('.preset-drawer') || ev.target.closest('.pd-handle'))) return;
-        start(ev.clientX, ev.clientY);
-      });
-      window.addEventListener('mouseup', (ev) => end(ev.clientX, ev.clientY));
+      dr.addEventListener('touchcancel', () => end(lx, ly), { passive: true });
     })();
 
     function applyPreset(key) {
