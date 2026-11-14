@@ -1044,3 +1044,108 @@
     setTimeout(() => { try { if (!window.__arTopics) arLoadTopics(false); } catch (e) {} }, 0);
     window.__timelines['main'].seek(0);
     requestAnimationFrame(tick);
+
+    // ============================================================================
+    // 랜딩 페이지(/) · 스튜디오(/studio) 전환 및 업종별 실시간 미리보기
+    // ============================================================================
+    window.__arLandingInd = 'auto';
+
+    function selectLandingIndustry(key) {
+      if (typeof AR_INDUSTRIES === 'undefined') return;
+      const ind = AR_INDUSTRIES[key] || AR_INDUSTRIES.auto;
+      window.__arLandingInd = ind.key;
+      const grid = document.getElementById('landingIndustryGrid');
+      if (grid) {
+        grid.innerHTML = Object.values(AR_INDUSTRIES).map((item) => {
+          const on = item.key === ind.key;
+          return `<button type="button" onclick="selectLandingIndustry('${item.key}')" class="px-3 py-2.5 rounded-[10px] border text-left cursor-pointer transition ${on ? 'bg-[#ededed] text-[#09090b] border-[#ededed] font-semibold' : 'bg-[#141415] hover:bg-[#1b1b1e] text-[#d4d4d8] border-[var(--border)]'}">
+            <div class="text-[13px] truncate">${item.icon} ${item.name}</div>
+            <div class="text-[11px] opacity-70 truncate mt-0.5">${item.role} · ${item.product}</div>
+          </button>`;
+        }).join('');
+      }
+      const badge = document.getElementById('landingPhoneBadge');
+      const hook = document.getElementById('landingPhoneHook');
+      const sub = document.getElementById('landingPhoneSub');
+      const tags = document.getElementById('landingPhoneTags');
+      const place = document.getElementById('landingPhonePlace');
+      const promo = document.getElementById('landingPhonePromo');
+      const btn = document.getElementById('landingStartIndustryBtn');
+      if (badge) badge.textContent = `${ind.icon} ${ind.name}`;
+      if (hook) hook.textContent = ind.vlogDone || `${ind.name} 프로모션`;
+      if (sub) sub.textContent = `${ind.branchPlaceholder || ind.place} · "${ind.chatAsk || ind.cta}" — ${ind.promise}`;
+      if (tags && Array.isArray(ind.hashtags)) {
+        tags.innerHTML = ind.hashtags.slice(0, 4).map((t) => `<span class="px-1.5 py-0.5 rounded bg-white/10 text-[10px] text-white/80">#${t}</span>`).join('');
+      }
+      if (place) place.textContent = `${ind.branchPlaceholder || ind.place} · ${ind.title}`;
+      if (promo) promo.textContent = ind.promoPlaceholder || '';
+      if (btn) btn.textContent = `${ind.icon} ${ind.name}으로 바로 만들기 →`;
+    }
+
+    function applyLandingRouteState(showLanding) {
+      const lv = document.getElementById('arLandingView');
+      const ss = document.getElementById('arStudioShell');
+      if (!lv || !ss) return;
+      if (showLanding) {
+        lv.classList.remove('hidden');
+        ss.classList.add('hidden');
+        selectLandingIndustry(window.__arLandingInd || (typeof IND !== 'undefined' && IND.key) || 'auto');
+      } else {
+        lv.classList.add('hidden');
+        ss.classList.remove('hidden');
+      }
+    }
+
+    function shouldShowLandingOnBoot() {
+      const path = (window.location.pathname || '/').toLowerCase();
+      const sp = new URLSearchParams(window.location.search || '');
+      if (sp.get('landing') === '1') return true;
+      if (path.startsWith('/studio') || path.startsWith('/admin')) return false;
+      if (sp.has('sns') || sp.has('admin') || sp.has('role') || sp.has('billing') || sp.has('plan') || sp.has('code') || sp.has('state') || sp.has('paymentId')) return false;
+      if ((window.location.hash || '').toLowerCase() === '#publish') return false;
+      try {
+        if (localStorage.getItem('ar_visited_studio') === '1') return false;
+      } catch (e) {}
+      return path === '/' || path === '';
+    }
+
+    function enterStudioFromLanding(indKey, planKey) {
+      try { localStorage.setItem('ar_visited_studio', '1'); } catch (e) {}
+      applyLandingRouteState(false);
+      try {
+        if (window.location.pathname !== '/studio') {
+          history.pushState({ arView: 'studio' }, '', '/studio');
+        }
+      } catch (e) {}
+      if (indKey && typeof AR_INDUSTRIES !== 'undefined' && AR_INDUSTRIES[indKey] && typeof setIndustry === 'function') {
+        setIndustry(indKey);
+      }
+      if (typeof syncPreviewPanel === 'function') syncPreviewPanel();
+      if (window.__timelines && window.__timelines['main']) window.__timelines['main'].seek(0);
+      if (planKey && typeof BILLING_PLANS !== 'undefined' && BILLING_PLANS[planKey] && typeof openBillingCheckoutModal === 'function') {
+        selectedPlanKey = planKey;
+        openBillingCheckoutModal(false);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openLandingView() {
+      applyLandingRouteState(true);
+      try { history.pushState({ arView: 'landing' }, '', '/?landing=1'); } catch (e) {}
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.addEventListener('popstate', () => {
+      const p = (window.location.pathname || '/').toLowerCase();
+      const sp = new URLSearchParams(window.location.search || '');
+      const showLanding = sp.get('landing') === '1' || ((p === '/' || p === '') && localStorage.getItem('ar_visited_studio') !== '1');
+      applyLandingRouteState(showLanding);
+    });
+
+    (function initLandingOrStudioBoot() {
+      const showLanding = shouldShowLandingOnBoot();
+      if (!showLanding && (window.location.pathname === '/' || window.location.pathname === '') && !window.location.search && !window.location.hash) {
+        try { history.replaceState({ arView: 'studio' }, '', '/studio'); } catch (e) {}
+      }
+      applyLandingRouteState(showLanding);
+    })();

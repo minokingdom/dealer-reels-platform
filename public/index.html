@@ -33,7 +33,197 @@
   <link rel="stylesheet" href="/assets/app/app.css" />
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
-  <div class="max-w-[1440px] mx-auto space-y-6">
+  <!-- 첫 방문자용 랜딩 페이지 (/) : 한번 스튜디오를 연 사람은 / 에서 바로 /studio 로 이동 -->
+  <section id="arLandingView" class="hidden max-w-[1160px] mx-auto space-y-16 pb-16">
+    <!-- 랜딩 상단 네비게이션 -->
+    <nav class="flex items-center justify-between gap-4 py-2 border-b border-[var(--border)]">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-[8px] bg-[#232325] border border-[var(--border-strong)] flex items-center justify-center font-mono text-xs font-semibold text-[#ededed]">AR</div>
+        <span class="text-[16px] font-semibold text-[#ededed] tracking-tight">AutoReels</span>
+        <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-[#18181b] border border-[var(--border)] text-[11px] text-[#a1a1a6]">10개 업종 릴스·쇼츠 스튜디오</span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 text-[13px]">
+        <a href="#arLandingIndustries" class="hidden sm:inline-block px-2.5 py-1.5 text-[#a1a1a6] hover:text-[#ededed] transition-colors">업종별 예시</a>
+        <a href="#arLandingFeatures" class="hidden sm:inline-block px-2.5 py-1.5 text-[#a1a1a6] hover:text-[#ededed] transition-colors">주요 기능</a>
+        <a href="#arLandingPricing" class="px-2.5 py-1.5 text-[#a1a1a6] hover:text-[#ededed] transition-colors">요금제</a>
+        <button type="button" onclick="enterStudioFromLanding()" class="h-9 px-4 rounded-[8px] bg-[#ededed] hover:bg-white text-[#0f0f10] text-[13px] font-semibold cursor-pointer transition-colors">스튜디오 열기</button>
+      </div>
+    </nav>
+
+    <!-- 히어로 영역: 좌측 카피+CTA / 우측 업종별 실시간 미리보기 폰 -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#18181b] border border-[var(--border-strong)] text-[12px] text-[#d4d4d8]">
+          <span class="w-2 h-2 rounded-full bg-[#4cc38a]"></span>
+          <span>디자인 136종+ · AI 성우 · 컷 편집 · SNS 예약 발행</span>
+        </div>
+        <h1 class="text-[32px] sm:text-[42px] font-bold text-[#f4f4f5] leading-[1.2] tracking-tight">
+          사진만 올리면<br />업종 맞춤 릴스가 완성됩니다
+        </h1>
+        <p class="text-[15px] sm:text-[16px] text-[#a1a1a6] leading-relaxed max-w-[540px]">
+          오늘의 인기 주제 추천부터 구어체 AI 대본, 감성 모션 디자인, 자연스러운 AI 성우, 매장·담당자 명함 엔딩까지 한 화면에서 바로 만들고 9:16 MP4로 저장하세요.
+        </p>
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <button type="button" onclick="enterStudioFromLanding()" class="h-11 px-6 rounded-[10px] bg-[#ededed] hover:bg-white text-[#0f0f10] text-[14px] font-semibold cursor-pointer transition-colors">
+            무료로 릴스 만들기 →
+          </button>
+          <a href="#arLandingPricing" class="h-11 px-5 rounded-[10px] bg-[#18181b] hover:bg-[#232325] border border-[var(--border-strong)] text-[#ededed] text-[14px] font-medium flex items-center transition-colors">
+            요금제 보기
+          </a>
+        </div>
+        <div class="grid grid-cols-3 gap-3 pt-2 max-w-[460px] text-[12px]">
+          <div class="rounded-[10px] bg-[#141415] border border-[var(--border)] px-3 py-2.5">
+            <div class="text-[16px] font-bold text-[#ededed]">10개 업종</div>
+            <div class="text-[#85858b] mt-0.5">전용 대본·명함</div>
+          </div>
+          <div class="rounded-[10px] bg-[#141415] border border-[var(--border)] px-3 py-2.5">
+            <div class="text-[16px] font-bold text-[#ededed]">136+ 스타일</div>
+            <div class="text-[#85858b] mt-0.5">감성·브이로그·쇼룸</div>
+          </div>
+          <div class="rounded-[10px] bg-[#141415] border border-[var(--border)] px-3 py-2.5">
+            <div class="text-[16px] font-bold text-[#ededed]">원클릭 발행</div>
+            <div class="text-[#85858b] mt-0.5">인스타·유튜브·틱톡</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 우측 업종별 실시간 화면 프리뷰 -->
+      <div class="lg:col-span-5 flex flex-col items-center space-y-3">
+        <div class="w-full max-w-[290px] rounded-[24px] bg-[#141415] border border-[var(--border-strong)] p-2.5 shadow-2xl">
+          <div id="landingPhoneStage" class="relative w-full aspect-[9/16] rounded-[18px] overflow-hidden bg-[#18181b] border border-white/10 flex flex-col justify-between p-4">
+            <div id="landingPhoneBg" class="absolute inset-0 bg-gradient-to-b from-[#27272a] via-[#18181b] to-[#09090b] opacity-90"></div>
+            <div class="relative z-10 flex items-center justify-between text-[10px] text-white/75 font-mono">
+              <span id="landingPhoneBadge" class="px-2 py-0.5 rounded-full bg-white/10 border border-white/15">🚗 자동차 영업</span>
+              <span>9:16 REELS</span>
+            </div>
+            <div class="relative z-10 my-auto space-y-2.5">
+              <div id="landingPhoneHook" class="text-[19px] font-bold text-white leading-snug"></div>
+              <div id="landingPhoneSub" class="text-[12px] text-white/80 leading-relaxed bg-black/35 backdrop-blur-sm rounded-[10px] p-2.5 border border-white/10"></div>
+              <div id="landingPhoneTags" class="flex flex-wrap gap-1"></div>
+            </div>
+            <div class="relative z-10 rounded-[12px] bg-black/55 backdrop-blur-md border border-white/15 px-3 py-2 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <div id="landingPhonePlace" class="text-[11px] font-semibold text-white truncate"></div>
+                <div id="landingPhonePromo" class="text-[10px] text-[#4cc38a] truncate"></div>
+              </div>
+              <span class="px-2 py-1 rounded-[6px] bg-white text-[#09090b] text-[10px] font-bold shrink-0">엔딩 명함</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="landingStartIndustryBtn" onclick="enterStudioFromLanding(window.__arLandingInd || 'auto')" class="px-4 py-2 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer transition-colors">
+          이 업종으로 바로 만들기 →
+        </button>
+      </div>
+    </div>
+
+    <!-- 업종별 지원 섹션 (10개 업종 실제 데이터 연동) -->
+    <div id="arLandingIndustries" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div>
+          <h2 class="text-[20px] font-semibold text-[#ededed]">10개 업종 전용 문구 · 대본 · 명함</h2>
+          <p class="text-[13px] text-[#85858b] mt-1">업종을 눌러 위 미리보기 화면에서 실제 대본과 매장 명함 구성을 확인해 보세요.</p>
+        </div>
+      </div>
+      <div id="landingIndustryGrid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5"></div>
+    </div>
+
+    <!-- 실제 기능 6가지 -->
+    <div id="arLandingFeatures" class="space-y-4">
+      <div>
+        <h2 class="text-[20px] font-semibold text-[#ededed]">스튜디오에 실제로 들어있는 기능</h2>
+        <p class="text-[13px] text-[#85858b] mt-1">과장 없이 지금 바로 `/studio`에서 쓸 수 있는 제작 기능만 담았습니다.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">1. 오늘의 주제 · AI 구어체 대본</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">매일 새벽 자동 갱신되는 인기 키워드와 업종별 상황(계기→마음→상품→가게)에 맞는 릴스 대본을 바로 생성합니다.</p>
+        </div>
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">2. 디자인 136종+ · 인스타 컷 편집</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">감성·브이로그·쇼룸 등 12개 분류 스타일 위에 컷별로 글씨(14종 폰트), 스티커, 내 사진, 펜·네온 그리기, 색감 필터를 입힐 수 있습니다.</p>
+        </div>
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">3. AI 성우 내레이션 · BGM 믹싱</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">대본 전체를 한 흐름의 자연스러운 성우 목소리로 합성하고, 음성 길이에 맞춰 컷 전환과 배경음악을 자동으로 맞춥니다.</p>
+        </div>
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">4. 매장·담당자 명함 엔딩</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">이름·연락처·매장명·프로모션 문구를 넣으면 영상 마지막에 깔끔한 9:16 명함 카드가 자동으로 붙고, 비우면 본편만 깔끔하게 저장됩니다.</p>
+        </div>
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">5. 브라우저 9:16 MP4 바로 저장</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">별도 편집 프로그램 없이 브라우저에서 1080×1920 세로형 MP4 파일로 렌더링해 휴대폰·PC에 바로 저장할 수 있습니다.</p>
+        </div>
+        <div class="studio-card p-4 space-y-1.5">
+          <div class="text-[14px] font-semibold text-[#ededed]">6. 인스타·유튜브·틱톡 예약 발행</div>
+          <p class="text-[12.5px] text-[#a1a1a6] leading-relaxed">SNS 계정을 연결해 두면 만든 릴스를 스튜디오 안에서 바로 업로드하거나 원하는 시간에 예약 발행할 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 요금제 (실제 BILLING_PLANS 기준) -->
+    <div id="arLandingPricing" class="space-y-4">
+      <div>
+        <h2 class="text-[20px] font-semibold text-[#ededed]">요금제 안내</h2>
+        <p class="text-[13px] text-[#85858b] mt-1">먼저 무료로 모든 스타일과 편집 기능을 체험해 본 뒤, 필요할 때 워터마크 해제 패스를 선택하세요.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="text-[13px] font-medium text-[#a1a1a6]">무료 체험</div>
+            <div class="text-[22px] font-bold text-[#ededed]">0원</div>
+            <ul class="text-[12px] text-[#85858b] space-y-1">
+              <li>• 10개 업종 · 136종 디자인 미리보기</li>
+              <li>• AI 대본 생성 및 컷 편집 체험</li>
+              <li>• 워터마크 포함 MP4 테스트 저장</li>
+            </ul>
+          </div>
+          <button type="button" onclick="enterStudioFromLanding()" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">무료로 시작하기</button>
+        </div>
+        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="text-[13px] font-medium text-[#a1a1a6]">주간 스타터 패스 (7일)</div>
+            <div class="text-[22px] font-bold text-[#ededed]">50,000원</div>
+            <ul class="text-[12px] text-[#85858b] space-y-1">
+              <li>• 7일간 워터마크 즉시 해제</li>
+              <li>• 고화질 1080×1920 MP4 무제한</li>
+              <li>• AI 성우 · 컷 편집 전체 기능</li>
+            </ul>
+          </div>
+          <button type="button" onclick="enterStudioFromLanding(null, 'weekly_50k')" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">주간 패스 선택</button>
+        </div>
+        <div class="studio-card p-4 flex flex-col justify-between space-y-4 border-[#ededed]/40 bg-[#18181b]">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[13px] font-semibold text-[#ededed]">월간 PRO 무제한 (30일)</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#4cc38a]/20 text-[#4cc38a] text-[10px] font-semibold">인기</span>
+            </div>
+            <div class="text-[22px] font-bold text-[#ededed]">150,000원</div>
+            <ul class="text-[12px] text-[#a1a1a6] space-y-1">
+              <li>• 30일간 워터마크 해제 무제한</li>
+              <li>• 인스타·유튜브·틱톡 예약 발행</li>
+              <li>• 카카오페이 · 토스페이 · 카드 결제</li>
+            </ul>
+          </div>
+          <button type="button" onclick="enterStudioFromLanding(null, 'monthly_150k')" class="w-full h-9 rounded-[8px] bg-[#ededed] hover:bg-white text-[#0f0f10] text-[12px] font-semibold cursor-pointer">월간 PRO 시작하기</button>
+        </div>
+        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
+          <div class="space-y-2">
+            <div class="text-[13px] font-medium text-[#a1a1a6]">연간 VIP 마스터 (365일)</div>
+            <div class="text-[22px] font-bold text-[#ededed]">1,200,000원</div>
+            <ul class="text-[12px] text-[#85858b] space-y-1">
+              <li>• 365일 전 기능 무제한 이용</li>
+              <li>• 월간 대비 33% 할인 (월 10만원)</li>
+              <li>• SNS 다중 계정 운영 지원</li>
+            </ul>
+          </div>
+          <button type="button" onclick="enterStudioFromLanding(null, 'annual_1200k')" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">연간 패스 선택</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="arStudioShell" class="max-w-[1440px] mx-auto space-y-6">
 
     <!-- 본사 관리자 모드 활성화 시 최상단 고정 알림 배너 -->
     <div id="adminTopBanner" class="hidden rounded-[10px] bg-gradient-to-r from-[#d97706]/20 via-[#b45309]/15 to-transparent border border-[#d97706]/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs flex-wrap">
@@ -63,6 +253,7 @@
             <span id="roleModeBadge" class="tag-chip px-2 py-0.5 text-[11px] font-mono text-[#4cc38a]">
               카마스터 전용 스튜디오
             </span>
+            <button type="button" onclick="openLandingView()" class="text-[11px] text-[#85858b] hover:text-[#ededed] underline underline-offset-2 cursor-pointer">소개</button>
           </div>
         </div>
 
