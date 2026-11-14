@@ -1594,9 +1594,31 @@
         c.fillText(drawLn, 0, ly + 1, bw - 20);
       });
       c.restore();
+      return { cx: cx + ast.dx, cy: cy + ast.dy, w: bw, h: bh };
+    }
+
+    function getDefaultCutElPos(elKey) {
+      const ds = typeof getActiveDesign === 'function' ? getActiveDesign() : null;
+      if (elKey === 'badge') {
+        if (ds && ds.engine === 'motion') return { x: 0.5, y: 0.065, w: 220, h: 48 };
+        if (ds && ds.genre === 'sale') return { x: 0.24, y: 0.055, w: 200, h: 48 };
+        return { x: 0.5, y: 0.08, w: 220, h: 50 };
+      }
+      if (elKey === 'price') {
+        if (ds && ds.genre === 'sale' && !ds.high) return { x: 0.5, y: 0.79, w: 340, h: 68 };
+        return { x: 0.5, y: 0.56, w: 340, h: 64 };
+      }
+      if (elKey === 'caption') {
+        if (ds && ds.engine === 'motion') return { x: 0.5, y: 0.74, w: 492, h: 112 };
+        if (ds && ds.genre === 'sale') return { x: 0.5, y: ds.high ? 0.312 : 0.583, w: 492, h: 108 };
+        return { x: 0.5, y: 0.72, w: 468, h: 108 };
+      }
+      return { x: 0.5, y: 0.5, w: 240, h: 80 };
     }
 
     function drawCutElementOverridesOverlay(c, W, H, cutIdx, localT, design, V) {
+      if (!window.__arLastRenderedBoxes) window.__arLastRenderedBoxes = {};
+      window.__arLastRenderedBoxes[cutIdx] = {};
       const ov = cutElementOverrides && cutElementOverrides[cutIdx];
       if (!ov) return;
       const accent = (V && V.accent) || '#facc15';
@@ -1609,11 +1631,12 @@
           const bText = String(b.text || (design && design.label) || (V && V.label) || `${cutIdx + 1} CUT`).trim();
           if (bText) {
             const sc = Math.max(0.5, Math.min(2.2, Number(b.scale) || 1));
-            const bx = (typeof b.x === 'number' ? b.x : 0.5) * W;
-            const by = (typeof b.y === 'number' ? b.y : 0.08) * H;
+            const defB = getDefaultCutElPos('badge');
+            const bx = (b.customPos && typeof b.x === 'number' ? b.x : defB.x) * W;
+            const by = (b.customPos && typeof b.y === 'number' ? b.y : defB.y) * H;
             const fontSpec = resolveArFontSpec(b.font, 800, 18, sc);
             const ast = computeArElementAnimState(b.anim || 'default', localT);
-            drawStyledArBoxAndText(c, W, H, {
+            const rBox = drawStyledArBoxAndText(c, W, H, {
               lines: [bText],
               rawText: bText,
               cx: bx,
@@ -1629,6 +1652,7 @@
               padYBase: 14,
               ast
             });
+            if (rBox) window.__arLastRenderedBoxes[cutIdx].badge = rBox;
           }
         }
       }
@@ -1641,11 +1665,12 @@
           const pText = String(p.text || (typeof arPriceTag === 'function' ? arPriceTag() : '') || (campaign && campaign.discount) || '').trim();
           if (pText) {
             const sc = Math.max(0.5, Math.min(2.2, Number(p.scale) || 1));
-            const px = (typeof p.x === 'number' ? p.x : 0.5) * W;
-            const py = (typeof p.y === 'number' ? p.y : 0.56) * H;
+            const defP = getDefaultCutElPos('price');
+            const px = (p.customPos && typeof p.x === 'number' ? p.x : defP.x) * W;
+            const py = (p.customPos && typeof p.y === 'number' ? p.y : defP.y) * H;
             const fontSpec = resolveArFontSpec(p.font, 900, 26, sc);
             const ast = computeArElementAnimState(p.anim || 'default', localT);
-            drawStyledArBoxAndText(c, W, H, {
+            const rBox = drawStyledArBoxAndText(c, W, H, {
               lines: [pText],
               rawText: pText,
               cx: px,
@@ -1661,6 +1686,7 @@
               padYBase: 18,
               ast
             });
+            if (rBox) window.__arLastRenderedBoxes[cutIdx].price = rBox;
           }
         }
       }
@@ -1674,8 +1700,9 @@
           const clean = typeof gCleanCaption === 'function' ? gCleanCaption(raw) : String(raw || '').trim();
           if (clean) {
             const sc = Math.max(0.5, Math.min(2.2, Number(cap.scale) || 1));
-            const cx = (typeof cap.x === 'number' ? cap.x : 0.5) * W;
-            const cy = (typeof cap.y === 'number' ? cap.y : 0.72) * H;
+            const defC = getDefaultCutElPos('caption');
+            const cx = (cap.customPos && typeof cap.x === 'number' ? cap.x : defC.x) * W;
+            const cy = (cap.customPos && typeof cap.y === 'number' ? cap.y : defC.y) * H;
             const fontSpec = resolveArFontSpec(cap.font, 800, 34, sc);
             const ast = computeArElementAnimState(cap.anim || 'default', localT);
             c.save();
@@ -1696,7 +1723,7 @@
             if (curLine) lines.push(curLine);
             c.restore();
             const finalLines = lines.slice(0, 3);
-            drawStyledArBoxAndText(c, W, H, {
+            const rBox = drawStyledArBoxAndText(c, W, H, {
               lines: finalLines,
               rawText: finalLines.join(' '),
               cx,
@@ -1712,6 +1739,7 @@
               padYBase: 28,
               ast
             });
+            if (rBox) window.__arLastRenderedBoxes[cutIdx].caption = rBox;
           }
         }
       }
@@ -1738,44 +1766,27 @@
           color: '#60a5fa'
         };
       }
-      if (elKey === 'caption') {
-        const c = ov.caption || {};
-        const sc = Math.max(0.6, Math.min(2.0, Number(c.scale) || 1));
-        return {
-          key: 'caption',
-          label: c.hidden ? '컷 자막 (숨김)' : '💬 컷 자막',
-          cx: (typeof c.x === 'number' ? c.x : 0.5) * W,
-          cy: (typeof c.y === 'number' ? c.y : 0.72) * H,
-          w: Math.min(W - 36, 440 * sc),
-          h: 112 * sc,
-          rot: 0,
-          color: '#4cc38a'
+      if (elKey === 'caption' || elKey === 'badge' || elKey === 'price') {
+        const elObj = ov[elKey] || {};
+        const sc = Math.max(0.6, Math.min(2.0, Number(elObj.scale) || 1));
+        const rendered = window.__arLastRenderedBoxes && window.__arLastRenderedBoxes[cutIdx] && window.__arLastRenderedBoxes[cutIdx][elKey];
+        const def = getDefaultCutElPos(elKey);
+        const labelMap = {
+          caption: elObj.hidden ? '컷 자막 (숨김)' : '💬 컷 자막',
+          badge: elObj.hidden ? '상단 배지 (숨김)' : '🏷️ 상단 라벨/배지',
+          price: elObj.hidden ? '혜택 문구 (숨김)' : '💰 혜택/서브 문구'
         };
-      }
-      if (elKey === 'badge') {
-        const b = ov.badge || {};
-        const sc = Math.max(0.6, Math.min(2.0, Number(b.scale) || 1));
+        const cx = rendered ? rendered.cx : ((elObj.customPos && typeof elObj.x === 'number' ? elObj.x : def.x) * W);
+        const cy = rendered ? rendered.cy : ((elObj.customPos && typeof elObj.y === 'number' ? elObj.y : def.y) * H);
+        const bw = rendered ? rendered.w : Math.min(W - 36, def.w * sc);
+        const bh = rendered ? rendered.h : (def.h * sc);
         return {
-          key: 'badge',
-          label: b.hidden ? '상단 배지 (숨김)' : '🏷️ 상단 라벨/배지',
-          cx: (typeof b.x === 'number' ? b.x : 0.5) * W,
-          cy: (typeof b.y === 'number' ? b.y : 0.08) * H,
-          w: Math.min(W - 60, 220 * sc),
-          h: 52 * sc,
-          rot: 0,
-          color: '#4cc38a'
-        };
-      }
-      if (elKey === 'price') {
-        const p = ov.price || {};
-        const sc = Math.max(0.6, Math.min(2.0, Number(p.scale) || 1));
-        return {
-          key: 'price',
-          label: p.hidden ? '혜택 문구 (숨김)' : '💰 혜택/서브 문구',
-          cx: (typeof p.x === 'number' ? p.x : 0.5) * W,
-          cy: (typeof p.y === 'number' ? p.y : 0.56) * H,
-          w: Math.min(W - 48, 340 * sc),
-          h: 64 * sc,
+          key: elKey,
+          label: labelMap[elKey],
+          cx,
+          cy,
+          w: bw,
+          h: bh,
           rot: 0,
           color: '#4cc38a'
         };
@@ -2430,43 +2441,35 @@
       layer.classList.remove('hidden', 'pointer-events-none');
       layer.classList.add('pointer-events-auto');
 
-      // 기본 컷 요소(자막·배지·혜택문구) 직접 선택·드래그 히트박스
-      const baseBoxes = directMode ? [
-        {
-          key: 'badge',
-          x: typeof ov.badge.x === 'number' ? ov.badge.x : 0.5,
-          y: typeof ov.badge.y === 'number' ? ov.badge.y : 0.08,
-          w: Math.round(118 * Math.min(1.6, Math.max(0.7, Number(ov.badge.scale) || 1))),
-          h: Math.round(28 * Math.min(1.6, Math.max(0.7, Number(ov.badge.scale) || 1))),
-          title: '상단 라벨/배지 (드래그하여 이동)'
-        },
-        {
-          key: 'price',
-          x: typeof ov.price.x === 'number' ? ov.price.x : 0.5,
-          y: typeof ov.price.y === 'number' ? ov.price.y : 0.56,
-          w: Math.round(170 * Math.min(1.6, Math.max(0.7, Number(ov.price.scale) || 1))),
-          h: Math.round(34 * Math.min(1.6, Math.max(0.7, Number(ov.price.scale) || 1))),
-          title: '혜택/서브 문구 (드래그하여 이동)'
-        },
-        {
-          key: 'caption',
-          x: typeof ov.caption.x === 'number' ? ov.caption.x : 0.5,
-          y: typeof ov.caption.y === 'number' ? ov.caption.y : 0.72,
-          w: Math.round(210 * Math.min(1.6, Math.max(0.7, Number(ov.caption.scale) || 1))),
-          h: Math.round(58 * Math.min(1.6, Math.max(0.7, Number(ov.caption.scale) || 1))),
-          title: '컷 자막 (드래그하여 이동)'
-        }
-      ] : [];
+      // 기본 컷 요소(자막·배지·혜택문구) 직접 선택·드래그 히트박스 (캔버스 실제 좌표와 % 단위로 정확히 일치)
+      const baseBoxes = directMode ? ['badge', 'price', 'caption'].map((key) => {
+        const hb = getCutElementHitBox(cutIdx, key, 540, 960);
+        const titleMap = {
+          badge: '상단 라벨/배지 (드래그하여 이동)',
+          price: '혜택/서브 문구 (드래그하여 이동)',
+          caption: '컷 자막 (드래그하여 이동)'
+        };
+        return {
+          key,
+          x: hb ? hb.cx / 540 : 0.5,
+          y: hb ? hb.cy / 960 : 0.5,
+          wPct: hb ? (hb.w / 540) * 100 : 40,
+          hPct: hb ? (hb.h / 960) * 100 : 10,
+          title: titleMap[key]
+        };
+      }) : [];
 
       const baseBoxesHtml = baseBoxes.map((b) => {
         const isSel = activeKey === b.key;
         const leftPct = (b.x * 100).toFixed(2);
         const topPct = (b.y * 100).toFixed(2);
+        const wPct = Math.max(12, Math.min(96, b.wPct)).toFixed(2);
+        const hPct = Math.max(4, Math.min(40, b.hPct)).toFixed(2);
         return `
           <div data-el-key="${b.key}"
                title="${b.title}"
-               style="left:${leftPct}%;top:${topPct}%;width:${b.w}px;height:${b.h}px;transform:translate(-50%,-50%);touch-action:none;"
-               class="absolute cursor-move rounded-[10px] ${isSel ? 'active ring-1 ring-[#4cc38a]/85 bg-[#4cc38a]/8' : 'hover:ring-1 hover:ring-white/35'}">
+               style="left:${leftPct}%;top:${topPct}%;width:${wPct}%;height:${hPct}%;transform:translate(-50%,-50%);touch-action:none;"
+               class="absolute cursor-move rounded-[10px] ${isSel ? 'active' : 'hover:bg-white/5'}">
           </div>
         `;
       }).join('');
@@ -2537,9 +2540,10 @@
             window.__arSelectedOverlayIdx = -1;
             window.__arActiveCutElKey = dragElKey;
             const curOv = getCutElementOverride(window.__arPinnedCut);
-            const targetObj = curOv[dragElKey] || { x: 0.5, y: 0.5 };
-            origX = typeof targetObj.x === 'number' ? targetObj.x : 0.5;
-            origY = typeof targetObj.y === 'number' ? targetObj.y : 0.5;
+            const targetObj = curOv[dragElKey] || {};
+            const hb = getCutElementHitBox(window.__arPinnedCut, dragElKey, 540, 960);
+            origX = (targetObj.customPos && typeof targetObj.x === 'number') ? targetObj.x : (hb ? hb.cx / 540 : 0.5);
+            origY = (targetObj.customPos && typeof targetObj.y === 'number') ? targetObj.y : (hb ? hb.cy / 960 : 0.72);
             if (rCanvas) rCanvas.classList.add('ar-el-canvas-dragging');
             renderIgEditorHud();
             renderCutEditorPanel();
@@ -2565,9 +2569,10 @@
               origX = Number(curOv.photo.panX) || 0;
               origY = Number(curOv.photo.panY) || 0;
             } else {
-              const tObj = curOv[dragElKey] || { x: 0.5, y: 0.5 };
-              origX = typeof tObj.x === 'number' ? tObj.x : 0.5;
-              origY = typeof tObj.y === 'number' ? tObj.y : 0.5;
+              const tObj = curOv[dragElKey] || {};
+              const hb2 = getCutElementHitBox(window.__arPinnedCut, dragElKey, 540, 960);
+              origX = (tObj.customPos && typeof tObj.x === 'number') ? tObj.x : (hb2 ? hb2.cx / 540 : 0.5);
+              origY = (tObj.customPos && typeof tObj.y === 'number') ? tObj.y : (hb2 ? hb2.cy / 960 : 0.72);
             }
             if (rCanvas) rCanvas.classList.add('ar-el-canvas-dragging');
             renderIgEditorHud();

@@ -565,9 +565,8 @@
     }
     #cutOverlayEditorLayer [data-el-key].active,
     #cutOverlayEditorLayer [data-ov-idx].active {
-      outline: 1.5px dashed #3b82f6;
-      outline-offset: 2px;
-      background-color: rgba(59, 130, 246, 0.08);
+      outline: none;
+      background-color: transparent;
     }
 
     /* ===== 미리보기 롱프레스 인라인 퀵 편집 모드 (#arInlineEditBar & 롱프레스 피드백) ===== */
