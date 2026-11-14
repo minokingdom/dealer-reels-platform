@@ -1,0 +1,26 @@
+# 매일 한국 시간 새벽 4시(UTC 19시)에 업종별 인기 키워드를 받아 public/trends-today.json 으로 저장·배포
+name: refresh-trends
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/refresh-trends.mjs
+      - name: 바뀌었으면 커밋
+        run: |
+          if git diff --quiet -- public/trends-today.json; then echo "no change"; exit 0; fi
+          git config user.name "autoreels-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/trends-today.json
+          git commit -m "chore: 오늘의 인기 키워드 갱신"
+          git push

@@ -20296,14 +20296,21 @@ function renderStoryArchetypesUI() {
       const myJob = ++arTopicsLoading;
       arRenderTopics(arFallbackTopics(dc), '오늘 요일·계절·인기 키워드로 주제를 고르는 중… (10초 정도)');
       if (!window.location.protocol.startsWith('http')) return;
+      // 인기 키워드: 매일 새벽 4시에 미리 받아 둔 파일(trends-today.json)을 먼저 읽고, 없으면 실시간 조회(최대 6초)
       let trends = [];
       try {
+        const pre = await fetch('/trends-today.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null));
+        const row = pre && pre.industries && pre.industries[IND.key];
+        const ageDays = pre && pre.date ? (Date.now() - Date.parse(pre.date)) / 86400000 : 99;
+        if (row && Array.isArray(row.keywords) && ageDays < 3) trends = row.keywords.slice(0, 8);
+      } catch (e) {}
+      if (!trends.length) try {
         const ctrl = new AbortController();
         const timer = setTimeout(() => ctrl.abort(), 6000);
         const tr = await fetch(`/api/trends?industry=${encodeURIComponent(IND.key)}`, { signal: ctrl.signal }).then((r) => r.json());
         clearTimeout(timer);
         trends = (tr && Array.isArray(tr.items) ? tr.items : [])
-          .map((it) => [it.hookCaption || it.label || '', (it.hashtags || []).join(' ')].join(' ').trim())
+          .map((it) => [String(it.title || (it.theme && it.theme.hookCaption) || '').replace(/#[^\s#]+/g, '').trim().slice(0, 50), (String(it.fullCaption || it.title || '').match(/#[가-힣a-zA-Z0-9_]+/g) || []).slice(0, 4).join(' ')].join(' ').trim())
           .filter(Boolean).slice(0, 8);
       } catch (e) {}
       if (myJob !== arTopicsLoading) return;
