@@ -15627,6 +15627,20 @@ function renderStoryArchetypesUI() {
       ['in_lock', '잠금화면 시계', 'in_lock', 'pretL', '#111111', '#0b0b0b', '#ffffff', '#ffffff', false],
       ['in_dump', '포토덤프 리캡', 'in_dump', 'pen', '#f4efe6', '#efe8dc', '#c2603f', '#2d2621', true],
       ['in_cal', '캘린더 카드', 'in_cal', 'maru', '#f3ece1', '#efe6d8', '#c2603f', '#2b2622', true],
+      // 제미나이 제안 인스타 감성 6종 (2026-11-14)
+  ['in_g_sub', '시네마 자막', 'in_g_sub', 'gowun', '#191512', '#120f0d', '#e6ccb2', '#ffffff', false],
+  ['in_g_arch', '아치 무드', 'in_g_arch', 'maru', '#f6f1ea', '#eae1d5', '#8c735b', '#2b2520', true],
+  ['in_g_strip', '필름 스트립', 'in_g_strip', 'pen', '#f3ede3', '#e6ddd0', '#7a634e', '#2d2621', true],
+  ['in_g_postcard', '엽서 기록', 'in_g_postcard', 'gowun', '#f7f3ec', '#ece4d8', '#9c7e63', '#2c2520', true],
+  ['in_g_cam', '뷰파인더', 'in_g_cam', 'pretL', '#1c1815', '#120f0d', '#d8c3a5', '#ffffff', false],
+  ['in_g_bookmark', '책갈피 노트', 'in_g_bookmark', 'maruL', '#241e1a', '#171310', '#c7ad92', '#2b2622', false],
+      // 인스타 일상 감성 6종: 밀착인화·리넨·잡지·책갈피·산책·창가
+      ['in_x_contact', '필름 밀착인화', 'in_x_contact', 'pretL', '#eee6d8', '#e8ddcd', '#987354', '#332b25', true],
+      ['in_x_linen', '리넨 위의 사진', 'in_x_linen', 'gowun', '#ece4d6', '#e5dbc9', '#92795f', '#3b342b', true],
+      ['in_x_cover', '우리의 작은 잡지', 'in_x_cover', 'maru', '#241e19', '#17130f', '#deceb7', '#fff7e9', false],
+      ['in_x_tabs', '붙여둔 한마디', 'in_x_tabs', 'pen', '#29251e', '#1d1914', '#b9bc9e', '#f6edda', false],
+      ['in_x_walk', '골목 산책 기록', 'in_x_walk', 'pretL', '#262a22', '#191c17', '#cbd0b8', '#f8f3e7', false],
+      ['in_x_window', '창가의 느린 오후', 'in_x_window', 'maruL', '#e7dece', '#ded2be', '#9c8768', '#40372d', true],
       // 에디토리얼 · 감각적 릴스 5종
       ['ed_vogue', '보그 에디토리얼', 'ed_vogue', 'maru', '#0c0b0a', '#161412', '#e8d5bc', '#ffffff', false],
       ['ed_glasspill', '글래스 플로우', 'ed_glasspill', 'pretM', '#0b1018', '#141c2b', '#7dd3fc', '#ffffff', false],
@@ -15648,7 +15662,10 @@ function renderStoryArchetypesUI() {
       mo_neon: '재미', mo_scrap: '감성', mo_punch: '스포츠', mo_cube: '테크', mo_glow: '감성', mo_bokeh: '고급',
       mo_cinema: '고급', mo_credits: '뉴스·방송',
       in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
+      in_g_sub: '브이로그', in_g_arch: '감성', in_g_strip: '브이로그', in_g_postcard: '감성', in_g_cam: '브이로그', in_g_bookmark: '감성',
       in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성',
+      in_x_contact: '브이로그', in_x_linen: '감성', in_x_cover: '감성',
+      in_x_tabs: '브이로그', in_x_walk: '브이로그', in_x_window: '감성',
       ed_vogue: '신규', ed_glasspill: '신규', ed_kinetic: '신규', ed_arch: '신규', ed_duotone: '신규',
       ba_slider: '비포·애프터', ba_diagonal: '비포·애프터', ba_collage: '비포·애프터', ba_flash: '비포·애프터', ba_polaroid: '비포·애프터'
     };
@@ -16657,6 +16674,213 @@ function renderStoryArchetypesUI() {
         c.fillRect(0, H * 0.48, W, H * 0.52);
         if (isPrice) mPrice(c, W, capY - 10, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 30 : 4), W - 80, capH - (isPrice ? 30 : 8), 38, sp.font, '#ffffff', e);
+      } else if (M === 'in_g_sub') {
+        // 시네마 자막: 꽉 찬 따뜻한 영상미 + 위아래 레터박스 + 하단 부드러운 영화 자막 감성
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.04 + lp * 0.04, 1.15);
+        const vg = c.createLinearGradient(0, H * 0.52, 0, H);
+        vg.addColorStop(0, 'rgba(18,14,11,0)');
+        vg.addColorStop(1, 'rgba(18,14,11,0.58)');
+        c.fillStyle = vg;
+        c.fillRect(0, H * 0.52, W, H * 0.48);
+        const bh = 68;
+        c.fillStyle = 'rgba(16,13,10,0.88)';
+        c.fillRect(0, 0, W, bh);
+        c.fillRect(0, H - bh, W, bh);
+        const n0 = new Date();
+        const ds = `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`;
+        inLabel(c, ds, 28, bh / 2, 'rgba(235,224,210,0.75)', 'left', 12);
+        inLabel(c, `0${cutIdx + 1} / 0${totalCuts}`, W - 28, bh / 2, 'rgba(235,224,210,0.75)', 'right', 12);
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.24)';
+        c.shadowBlur = 8;
+        mCaption(c, caption, W / 2, H - bh - 128, W - 84, 108, 28, 'gowun', '#f7f2eb', e);
+        c.restore();
+        inSign(c, d, W / 2, H - bh / 2, 'rgba(235,224,210,0.8)', 'center', 16);
+        inGrain(c, W, H, t, 0.09);
+      } else if (M === 'in_g_arch') {
+        // 아치 무드: 따뜻한 코튼지 바탕 + 아치형 창문 액자 + 하단 에디토리얼 명조 자막
+        const aw = W - 96, ah = Math.round(H * 0.64), ax = 48, ay = 86, r = aw / 2;
+        const archPath = (pad) => {
+          const rx = ax - pad, ry = ay - pad, rw = aw + pad * 2, rh = ah + pad * 2, rr = rw / 2;
+          c.beginPath();
+          c.arc( rx + rr, ry + rr, rr, Math.PI, 0, false);
+          c.lineTo(rx + rw, ry + rh);
+          c.lineTo(rx, ry + rh);
+          c.closePath();
+        };
+        c.save();
+        archPath(8);
+        c.strokeStyle = 'rgba(140,115,91,0.32)';
+        c.lineWidth = 1;
+        c.stroke();
+        archPath(0);
+        c.clip();
+        inPhotoFade(c, S, cutIdx, local, ax, ay, aw, ah, 1.03 + lp * 0.04, 1.0);
+        c.restore();
+        const n0 = new Date();
+        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')} · ${String(n0.getDate()).padStart(2, '0')}`, W / 2, 46, '#8c735b', 'center', 13);
+        c.save();
+        c.globalAlpha = ent;
+        gRoundRect(c, W / 2 - 150, ay + ah - 26, 300, 44, 22);
+        c.fillStyle = '#f9f5ef';
+        c.shadowColor = 'rgba(60,40,20,0.12)';
+        c.shadowBlur = 10;
+        c.fill();
+        c.restore();
+        inSign(c, d, W / 2, ay + ah - 4, '#5e4d3e', 'center', 17);
+        mCaption(c, caption, W / 2, ay + ah + 38, W - 88, 120, 29, 'maru', '#2b2520', e);
+        inGrain(c, W, H, t, 0.07);
+      } else if (M === 'in_g_strip') {
+        // 필름 스트립: 왼쪽에 살짝 기운 3컷 밀착 인화 스트립 + 오른쪽 손글씨 메모
+        const sw = 236, sh = H - 110, sx = 152, sy = H / 2;
+        const drop = (1 - ent) * 24;
+        c.save();
+        c.translate(sx, sy + drop);
+        c.rotate(-2.2 * Math.PI / 180);
+        c.shadowColor = 'rgba(50,34,20,0.2)';
+        c.shadowBlur = 16;
+        c.shadowOffsetY = 6;
+        c.fillStyle = '#26201b';
+        gRoundRect(c, -sw / 2, -sh / 2, sw, sh, 6);
+        c.fill();
+        c.shadowColor = 'transparent';
+        for (let y = -sh / 2 + 16; y < sh / 2 - 12; y += 26) {
+          c.fillStyle = '#f3ede3';
+          gRoundRect(c, -sw / 2 + 7, y, 8, 12, 2); c.fill();
+          gRoundRect(c, sw / 2 - 15, y, 8, 12, 2); c.fill();
+        }
+        const fh = Math.floor((sh - 56) / 3), fw = sw - 46;
+        [-1, 0, 1].forEach((k, i) => {
+          const fy = -sh / 2 + 18 + i * (fh + 10);
+          c.save();
+          c.beginPath();
+          c.rect(-fw / 2, fy, fw, fh);
+          c.clip();
+          mPhoto(c, S, k, -fw / 2, fy, fw, fh, i === 1 ? 1.03 + lp * 0.04 : 1.05);
+          inWarm(c, -fw / 2, fy, fw, fh, i === 1 ? 0.9 : 1.15);
+          if (i !== 1) {
+            c.fillStyle = 'rgba(30,22,16,0.22)';
+            c.fillRect(-fw / 2, fy, fw, fh);
+          }
+          c.restore();
+        });
+        c.restore();
+        const rx = 286, rw = W - rx - 28;
+        const n0 = new Date();
+        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, rx, 170, '#8c7765', 'left', 12);
+        c.strokeStyle = 'rgba(140,119,101,0.3)';
+        c.lineWidth = 1;
+        c.beginPath(); c.moveTo(rx, 192); c.lineTo(W - 32, 192); c.stroke();
+        mCaption(c, caption, rx, 224, rw, 260, 32, 'pen', '#2d2621', e, 'left');
+        inSign(c, d, rx, H - 120, '#6e5c4d', 'left', 17);
+        inGrain(c, W, H, t, 0.08);
+      } else if (M === 'in_g_postcard') {
+        // 엽서 기록: 크림 질감 바탕 위 두꺼운 엽서 카드 + 우표 미니 컷 + 고운 명조 편지글
+        const cw = W - 68, ch = H - 148, cx = 34, cy = 74;
+        const lift = (1 - ent) * 18;
+        c.save();
+        c.translate(0, lift);
+        c.shadowColor = 'rgba(65,45,28,0.16)';
+        c.shadowBlur = 20;
+        c.shadowOffsetY = 8;
+        c.fillStyle = '#fffcf7';
+        gRoundRect(c, cx, cy, cw, ch, 8);
+        c.fill();
+        c.shadowColor = 'transparent';
+        const px = cx + 22, py = cy + 22, pw = cw - 44, ph = Math.round(ch * 0.62);
+        inPhotoFade(c, S, cutIdx, local, px, py, pw, ph, 1.03 + lp * 0.03, 0.95);
+        // 우측 상단 우표 프레임과 소인 스탬프
+        const sw = 76, sh = 92, sx = px + pw - sw - 14, sy = py + 14;
+        c.save();
+        c.rotate(0.03);
+        c.shadowColor = 'rgba(40,28,18,0.18)';
+        c.shadowBlur = 8;
+        c.fillStyle = '#faf5ed';
+        c.fillRect(sx - 5, sy - 5, sw + 10, sh + 10);
+        c.shadowColor = 'transparent';
+        mPhoto(c, S, 1, sx, sy, sw, sh, 1.08);
+        inWarm(c, sx, sy, sw, sh, 1.1);
+        c.restore();
+        c.strokeStyle = 'rgba(140,112,88,0.38)';
+        c.lineWidth = 1.2;
+        c.beginPath(); c.arc(sx - 10, sy + sh - 8, 22, 0, Math.PI * 2); c.stroke();
+        c.beginPath(); c.arc(sx - 10, sy + sh - 8, 16, 0, Math.PI * 2); c.stroke();
+        const ty = py + ph + 26;
+        c.strokeStyle = 'rgba(160,140,120,0.22)';
+        c.beginPath(); c.moveTo(px, ty + 115); c.lineTo(px + pw, ty + 115); c.stroke();
+        mCaption(c, caption, px + 4, ty, pw - 8, 104, 27, 'gowun', '#2c2520', e, 'left');
+        const n0 = new Date();
+        inLabel(c, `${n0.getFullYear()}.${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, px + 4, ty + 142, '#9c8b7a', 'left', 12);
+        inSign(c, d, px + pw - 4, ty + 142, '#6e5d4f', 'right', 17);
+        c.restore();
+        inGrain(c, W, H, t, 0.07);
+      } else if (M === 'in_g_cam') {
+        // 뷰파인더: 전체 화면 일상 컷 + 얇은 카메라 가이드라인 + 하단 담백한 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.03 + lp * 0.04, 0.9);
+        const vg = c.createLinearGradient(0, H * 0.58, 0, H);
+        vg.addColorStop(0, 'rgba(15,12,10,0)');
+        vg.addColorStop(1, 'rgba(15,12,10,0.62)');
+        c.fillStyle = vg;
+        c.fillRect(0, H * 0.58, W, H * 0.42);
+        const m = 34, len = 22;
+        c.strokeStyle = 'rgba(255,250,244,0.72)';
+        c.lineWidth = 1.5;
+        [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]].forEach(([x, y, dx, dy]) => {
+          c.beginPath();
+          c.moveTo(x, y + dy * len); c.lineTo(x, y); c.lineTo(x + dx * len, y);
+          c.stroke();
+        });
+        c.strokeStyle = 'rgba(255,250,244,0.45)';
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(W / 2 - 12, H / 2); c.lineTo(W / 2 + 12, H / 2);
+        c.moveTo(W / 2, H / 2 - 12); c.lineTo(W / 2, H / 2 + 12);
+        c.stroke();
+        if (Math.floor(t * 2) % 2 === 0) {
+          c.fillStyle = '#d9534f';
+          c.beginPath(); c.arc(m + 18, m + 20, 4.5, 0, Math.PI * 2); c.fill();
+        }
+        const sec = String(Math.floor(t)).padStart(2, '0');
+        const frm = String(Math.floor((t % 1) * 24)).padStart(2, '0');
+        inLabel(c, `00:${sec}:${frm}`, m + 32, m + 20, 'rgba(255,250,244,0.88)', 'left', 13);
+        inLabel(c, `${cutIdx + 1} / ${totalCuts}`, W - m - 14, m + 20, 'rgba(255,250,244,0.88)', 'right', 13);
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.22)';
+        c.shadowBlur = 9;
+        mCaption(c, caption, W / 2, H - 210, W - 100, 118, 29, 'pretL', '#ffffff', e);
+        c.restore();
+        inSign(c, d, W / 2, H - 64, 'rgba(255,250,244,0.82)', 'center', 16);
+        inGrain(c, W, H, t, 0.06);
+      } else if (M === 'in_g_bookmark') {
+        // 책갈피 노트: 깊이감 있는 배경 사진 위에 반투명 트레싱지 책갈피 태그와 세로 감성 문구
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.05 + lp * 0.04, 1.1);
+        c.fillStyle = 'rgba(24,18,14,0.28)';
+        c.fillRect(0, 0, W, H);
+        const bw = W - 136, bh = Math.round(H * 0.44), bx = 68, by = Math.round(H * 0.42) + (1 - ent) * 22;
+        c.save();
+        c.globalAlpha = 0.92 * ent;
+        c.shadowColor = 'rgba(20,12,6,0.22)';
+        c.shadowBlur = 18;
+        c.shadowOffsetY = 6;
+        c.fillStyle = 'rgba(250,246,239,0.92)';
+        gRoundRect(c, bx, by, bw, bh, 6);
+        c.fill();
+        c.shadowColor = 'transparent';
+        c.strokeStyle = 'rgba(150,128,106,0.35)';
+        c.lineWidth = 1;
+        gRoundRect(c, bx + 10, by + 10, bw - 20, bh - 20, 4);
+        c.stroke();
+        c.fillStyle = 'rgba(120,98,78,0.45)';
+        c.beginPath(); c.arc(W / 2, by + 28, 5, 0, Math.PI * 2); c.fill();
+        c.strokeStyle = 'rgba(180,155,130,0.75)';
+        c.lineWidth = 2;
+        c.beginPath(); c.moveTo(W / 2, by - 46); c.lineTo(W / 2, by + 24); c.stroke();
+        const n0 = new Date();
+        inLabel(c, `${String(n0.getMonth() + 1).padStart(2, '0')}.${String(n0.getDate()).padStart(2, '0')}`, W / 2, by + 58, '#8c7662', 'center', 12);
+        mCaption(c, caption, W / 2, by + 84, bw - 56, bh - 150, 27, 'maruL', '#2b2520', e);
+        inSign(c, d, W / 2, by + bh - 36, '#6e5c4e', 'center', 16);
+        c.restore();
+        inGrain(c, W, H, t, 0.08);
       } else if (M === 'in_film') {
         // 크림 필름: 크림 바탕 위 4:5 사진, 아래 얇은 명조 자막과 서명
         const px = 36, pw = W - 72, ph = Math.round(pw * 1.22), py = 74;
@@ -16947,6 +17171,166 @@ function renderStoryArchetypesUI() {
         mCaption(c, caption, 58, cy2 + 108, W - 116, H - cy2 - 230, 28, 'maru', '#2b2622', e, 'left');
         inSign(c, d, W - 58, H - 108, '#7a6d61');
         inGrain(c, W, H, t, 0.06);
+      } else if (M === 'in_x_contact') {
+        // 밀착인화: 질감 있는 인화지 위 정돈된 여섯 장, 선택 컷의 작은 황토색 표식
+        const pad = W * 0.07, gap = W * 0.025, active = S.idx % 6;
+        const sheet = Math.floor(S.idx / 6), sheetFade = S.idx > 0 && active === 0 ? mEase(S.into / 0.5) : 1;
+        inLabel(c, '오늘 모은 장면', pad, H * 0.035, '#786653', 'left', W * 0.024);
+        inLabel(c, `${cutIdx + 1} / ${totalCuts}`, W - pad, H * 0.035, '#786653', 'right', W * 0.024);
+        mCaption(c, caption, pad, H * 0.06, W - pad * 2, H * 0.13, W * 0.052, 'pretL', '#332b25', e, 'left');
+        const fw = (W - pad * 2 - gap) / 2, fh = H * 0.208;
+        for (let i = 0; i < 6; i++) {
+          const x = pad + (i % 2) * (fw + gap), y = H * 0.22 + Math.floor(i / 2) * (fh + gap);
+          const edge = W * 0.009, footer = H * 0.021;
+          c.fillStyle = '#faf5eb';
+          c.fillRect(x, y, fw, fh);
+          const frameScene = Object.assign({}, S, { idx: sheet * 6 + i });
+          // 같은 인화지는 유지하고 여섯 장을 넘길 때만 이전 인화지와 겹쳐 전환
+          if (sheetFade < 1) mPhoto(c, Object.assign({}, S, { idx: (sheet - 1) * 6 + i }), 0, x + edge, y + edge, fw - edge * 2, fh - edge - footer, 1.025);
+          c.save(); c.globalAlpha = sheetFade;
+          mPhoto(c, frameScene, 0, x + edge, y + edge, fw - edge * 2, fh - edge - footer, 1.025 + S.p * 0.018);
+          c.restore();
+          inWarm(c, x + edge, y + edge, fw - edge * 2, fh - edge - footer, 0.85);
+          inLabel(c, String((sheet * 6 + i) % Math.max(1, S.n) + 1).padStart(2, '0'), x + edge * 2, y + fh - footer * 0.48, '#786653', 'left', W * 0.019);
+          if (i === active) {
+            c.save();
+            c.globalAlpha = 0.3 + ent * 0.7;
+            c.fillStyle = '#987354';
+            c.fillRect(x + fw - W * 0.07, y + fh - footer * 0.65, W * 0.045, H * 0.004);
+            c.restore();
+          }
+        }
+        inGrain(c, W, H, t, 0.065);
+      } else if (M === 'in_x_linen') {
+        // 리넨: 성긴 직물 바탕의 세로 인화물과 옆에서 겹친 접지, 천천히 떠오르는 사진
+        c.fillStyle = 'rgba(112,91,65,0.07)';
+        for (let x = 0; x < W; x += W / 55) c.fillRect(x, 0, W * 0.0015, H);
+        c.fillStyle = 'rgba(255,251,239,0.25)';
+        for (let y = 0; y < H; y += H / 85) c.fillRect(0, y, W, H * 0.001);
+        const px = W * 0.27, py = H * 0.12 + Math.sin(t * 0.35) * H * 0.004;
+        const pw = W * 0.65, ph = H * 0.69, edge = W * 0.016;
+        c.fillStyle = '#faf5e9';
+        c.fillRect(px - edge, py - edge, pw + edge * 2, ph + edge * 2);
+        inPhotoFade(c, S, cutIdx, local, px, py, pw, ph, 1.035 + lp * 0.022, 0.8);
+        c.fillStyle = '#978269';
+        c.font = gFont(400, W * 0.04, KIT_FONTS.gowun.f);
+        c.textAlign = 'center'; c.textBaseline = 'middle';
+        Array.from('일상의결').forEach((ch, i) => c.fillText(ch, W * 0.13, H * 0.15 + i * W * 0.055));
+        const nx = W * 0.06, ny = H * 0.45 + (1 - ent) * H * 0.008;
+        c.fillStyle = '#f5efdf';
+        c.fillRect(nx, ny, W * 0.58, H * 0.265);
+        c.fillStyle = '#e8decb';
+        c.fillRect(nx + W * 0.025, ny, W * 0.007, H * 0.265);
+        inLabel(c, '간직하고 싶은 순간', nx + W * 0.06, ny + H * 0.032, '#88725b', 'left', W * 0.023);
+        mCaption(c, caption, nx + W * 0.06, ny + H * 0.055, W * 0.46, H * 0.185, W * 0.05, 'gowun', '#3b342b', e, 'left');
+        inLabel(c, inDateLabel().split(' ')[0], W * 0.91, H * 0.85, '#88725b', 'right', W * 0.023);
+        inGrain(c, W, H, t, 0.055);
+      } else if (M === 'in_x_cover') {
+        // 작은 잡지: 사진 전체를 표지로, 큰 한글 제호와 오른쪽 정렬 기사 제목
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.025 + lp * 0.025, 0.85);
+        const shade = c.createLinearGradient(0, 0, 0, H);
+        shade.addColorStop(0, 'rgba(28,22,16,0.66)');
+        shade.addColorStop(0.35, 'rgba(28,22,16,0.06)');
+        shade.addColorStop(0.55, 'rgba(28,22,16,0.12)');
+        shade.addColorStop(1, 'rgba(28,22,16,0.75)');
+        c.fillStyle = shade; c.fillRect(0, 0, W, H);
+        inLabel(c, '일상을 담은 작은 잡지', W * 0.08, H * 0.055, '#e7dac4', 'left', W * 0.023);
+        c.save();
+        c.globalAlpha = mEase(local / 0.85);
+        c.fillStyle = '#fff7e9';
+        c.font = gFont(600, W * 0.135, KIT_FONTS.maru.f);
+        c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillText('우리의 하루', W / 2, H * 0.125 + (1 - ent) * H * 0.006);
+        c.fillStyle = 'rgba(255,247,233,0.6)';
+        c.fillRect(W * 0.08, H * 0.182, W * 0.84, H * 0.001);
+        c.restore();
+        inLabel(c, `${String(cutIdx + 1).padStart(2, '0')}호`, W * 0.92, H * 0.21, '#e7dac4', 'right', W * 0.027);
+        inLabel(c, '이번 장면', W * 0.9, H * 0.645, '#e7dac4', 'right', W * 0.024);
+        mCaption(c, caption, W * 0.9, H * 0.675, W * 0.74, H * 0.19, W * 0.064, 'maru', '#fff7e9', e, 'right');
+        inGrain(c, W, H, t, 0.065);
+      } else if (M === 'in_x_tabs') {
+        // 붙여둔 한마디: 꽉 찬 사진 가장자리의 색인과 가로로 살짝 들어오는 손글씨 종이 탭
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.04 + lp * 0.02, 0.9);
+        c.fillStyle = 'rgba(37,30,21,0.12)'; c.fillRect(0, 0, W, H);
+        const labels = ['눈길', '머문 곳', '기억'], colors = ['#d9d4b9', '#e8cfb9', '#eee5ce'];
+        labels.forEach((label, i) => {
+          const selected = i === cutIdx % 3, tw = W * (selected ? 0.27 : 0.22);
+          const tx = W - tw, ty = H * (0.13 + i * 0.058);
+          c.fillStyle = colors[i];
+          gRoundRect(c, tx, ty, tw + W * 0.02, H * 0.045, W * 0.008); c.fill();
+          inLabel(c, label, tx + W * 0.035, ty + H * 0.0225, '#574b3e', 'left', W * 0.025);
+        });
+        const nx = W * 0.07 + (1 - ent) * W * 0.025, ny = H * 0.57;
+        c.fillStyle = '#f6edda';
+        gRoundRect(c, nx, ny, W * 0.81, H * 0.255, W * 0.008); c.fill();
+        c.fillStyle = '#c7c7aa'; c.fillRect(nx, ny, W * 0.025, H * 0.255);
+        c.fillStyle = '#e3d6bd';
+        c.beginPath(); c.moveTo(nx + W * 0.81, ny + H * 0.22);
+        c.lineTo(nx + W * 0.75, ny + H * 0.255); c.lineTo(nx + W * 0.81, ny + H * 0.255); c.closePath(); c.fill();
+        inLabel(c, '여기에 남겨둘 말', nx + W * 0.065, ny + H * 0.035, '#8a775d', 'left', W * 0.024);
+        mCaption(c, caption, nx + W * 0.065, ny + H * 0.06, W * 0.67, H * 0.17, W * 0.058, 'pen', '#46392d', e, 'left');
+        inGrain(c, W, H, t, 0.05);
+      } else if (M === 'in_x_walk') {
+        // 산책 기록: 사진 위 점선 동선과 방문 순서 핀, 현재 지점 옆에 나타나는 담백한 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.035 + lp * 0.025, 0.7);
+        const shade = c.createLinearGradient(0, 0, W, H * 0.65);
+        shade.addColorStop(0, 'rgba(23,29,20,0.66)');
+        shade.addColorStop(0.55, 'rgba(23,29,20,0.5)');
+        shade.addColorStop(1, 'rgba(23,29,20,0.25)');
+        c.fillStyle = shade; c.fillRect(0, 0, W, H);
+        inLabel(c, '천천히 걷는 하루', W * 0.08, H * 0.065, '#f8f3e7', 'left', W * 0.03);
+        inLabel(c, inDateLabel().split(' ')[0], W * 0.08, H * 0.1, '#cbd0b8', 'left', W * 0.023);
+        const points = [[W * 0.15, H * 0.25], [W * 0.3, H * 0.41], [W * 0.18, H * 0.61]];
+        c.fillStyle = 'rgba(238,235,213,0.55)';
+        for (let segment = 0; segment < 2; segment++) {
+          const a = points[segment], b = points[segment + 1];
+          for (let j = 1; j < 15; j++) {
+            const p = j / 15;
+            c.beginPath(); c.arc(a[0] + (b[0] - a[0]) * p, a[1] + (b[1] - a[1]) * p, W * 0.0025, 0, Math.PI * 2); c.fill();
+          }
+        }
+        points.forEach(([x, y], i) => {
+          c.fillStyle = '#d8dbc8';
+          c.beginPath(); c.arc(x, y, W * 0.013, 0, Math.PI * 2); c.fill();
+          if (i < 2) inLabel(c, i === 0 ? '발길 따라' : '잠시 머물러', x + W * 0.04, y, '#f8f3e7', 'left', W * 0.025);
+        });
+        const [pinX, pinY] = points[2];
+        c.save(); c.globalAlpha = ent;
+        c.fillStyle = '#f8f3e7';
+        c.beginPath(); c.arc(pinX, pinY - W * 0.035, W * 0.033, 0, Math.PI * 2); c.fill();
+        c.beginPath(); c.moveTo(pinX - W * 0.024, pinY - W * 0.015);
+        c.lineTo(pinX, pinY + W * 0.025); c.lineTo(pinX + W * 0.024, pinY - W * 0.015); c.closePath(); c.fill();
+        c.fillStyle = '#687456'; c.beginPath(); c.arc(pinX, pinY - W * 0.035, W * 0.011, 0, Math.PI * 2); c.fill();
+        c.restore();
+        inLabel(c, `${cutIdx + 1}번째 기록`, W * 0.28, H * 0.61, '#cbd0b8', 'left', W * 0.024);
+        mCaption(c, caption, W * 0.28, H * 0.645, W * 0.63, H * 0.21, W * 0.053, 'pretL', '#f8f3e7', e, 'left');
+        inGrain(c, W, H, t, 0.06);
+      } else if (M === 'in_x_window') {
+        // 창가의 오후: 사진 위 반투명 창빛이 느리게 이동하고 가운데 얇은 명조가 스며듦
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.02 + lp * 0.018, 0.6);
+        c.fillStyle = 'rgba(246,235,214,0.22)'; c.fillRect(0, 0, W, H);
+        c.save();
+        c.translate(Math.sin(t * 0.18) * W * 0.035, 0);
+        c.transform(1, 0, -0.26, 1, W * 0.18, 0);
+        for (let i = 0; i < 3; i++) {
+          const x = W * (-0.2 + i * 0.46), beam = c.createLinearGradient(x, 0, x + W * 0.3, 0);
+          beam.addColorStop(0, 'rgba(255,247,225,0)');
+          beam.addColorStop(0.25, 'rgba(255,247,225,0.28)');
+          beam.addColorStop(0.75, 'rgba(255,247,225,0.28)');
+          beam.addColorStop(1, 'rgba(255,247,225,0)');
+          c.fillStyle = beam; c.fillRect(x, 0, W * 0.3, H);
+        }
+        c.restore();
+        const veil = c.createLinearGradient(0, H * 0.24, 0, H * 0.78);
+        veil.addColorStop(0, 'rgba(248,240,224,0)');
+        veil.addColorStop(0.3, 'rgba(248,240,224,0.88)');
+        veil.addColorStop(0.7, 'rgba(248,240,224,0.88)');
+        veil.addColorStop(1, 'rgba(248,240,224,0)');
+        c.fillStyle = veil; c.fillRect(0, H * 0.24, W, H * 0.54);
+        inLabel(c, '잠시, 이대로', W / 2, H * 0.37, '#79674f', 'center', W * 0.026);
+        c.fillStyle = '#b6a389'; c.fillRect(W * 0.47, H * 0.4, W * 0.06, H * 0.001);
+        mCaption(c, caption, W / 2, H * 0.425, W * 0.78, H * 0.2, W * 0.058, 'maruL', '#40372d', e);
+        inGrain(c, W, H, t, 0.045);
       } else if (M === 'ed_vogue') {
         // 보그 에디토리얼: 풀블리드 감성 톤 + 상단 이슈 헤더 + 하단 페이드 명조 타이포
         inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.03 + lp * 0.04, 1);
