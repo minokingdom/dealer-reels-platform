@@ -18,6 +18,22 @@
  * 응답: { ok, provider, data, variants: [{ angle, angleLabel, ...대본 }] }
  */
 
+// 사람 말투 규칙 — AI 티 없애기
+//  im-not-ai(humanize-korean) 스킬의 AI 티 패턴 중 짧은 광고 대본에 해당하는 것
+//  (C-5 이모지, C-8 대구, C-11 연결어미 쉼표, D-6 결말 공식, D-7 변환 공식, D-8 분열문, D-14 감각 은유,
+//   A-15 추상 동사, A-21 "단순한 X를 넘어", E-2 종결어미 반복) + 2026-11 대본 점검에서 나온 광고 상투구
+const HUMAN_TONE_RULES = `
+
+[사람 말투 — AI 티 금지]
+사장님이 손님에게 직접 말하듯 짧고 구체적으로 쓰세요. 무엇을, 어떻게, 언제가 보이게.
+- 이런 상투구는 쓰지 마세요: 설레는 순간, 새로운 시작/출발, 특별한 경험, 완벽한, 최고의, 놓치지 마세요, 지금 바로 확인하세요, ~의 모든 것, 든든하게 지켜요
+- 대구·변환 공식 금지: "A가 아니라 B", "단순한 X를 넘어 Y", "X에서 Y로", "~은 줄이고 ~은 높여요" 같은 대칭 짝 문장
+- 결말 공식·분열문 금지: "~할 때입니다", "~시점입니다", "~하는 이유", "필요한 것은 ~", "핵심은 ~"
+- "제공합니다·선사합니다·보여줍니다" 같은 추상 동사 대신 실제 동작을 쓰세요 (끓여요, 봐 드려요, 맞춰 드려요)
+- 같은 종결어미를 3컷 넘게 이어 쓰지 마세요. "~하고," "~며," 처럼 연결어미 뒤에 쉼표를 찍지 마세요
+- 이모지는 넣지 마세요 (자막·성우 문장 모두)
+- 3안끼리 같은 꾸밈말(정성껏·든든하게·꼼꼼하게·세심하게)을 돌려 쓰지 마세요`;
+
 // 대본 3안의 방향 (순서 = 화면에 보이는 순서)
 const SCRIPT_ANGLES = [
   { id: 'benefit', label: '혜택 강조형', guide: '첫 컷에서 혜택·조건을 바로 던지는 직진형. 숫자는 입력에 있는 것만 쓴다.' },
@@ -346,6 +362,7 @@ async function handleTopics(body, res) {
 - prompt: 이 주제로 대본을 만들 때 AI에 넣을 상황 한 줄, 50자 이내. "계기 → 손님의 마음·필요 → 우리 ${product}이(가) 채워 줌"이 한 줄에 이어지게 쓰세요.
   예: "수능 끝나고 지친 몸과 마음을 따뜻한 국물 한 그릇으로", "수능 끝, 예쁜 대학 생활을 위한 자연스러운 변화". ${product} 이름을 모르면 일반적으로 쓰고 지어내지 마세요.
 - 가게 이름·주소·가격·후기·통계는 지어내지 마세요. 인기 키워드는 업종과 어울릴 때만 쓰세요.
+- 상투구(설레는 순간, 새로운 시작, 특별한 경험, 완벽한)와 이모지는 쓰지 말고, 손님이 실제로 쓰는 말로 쓰세요.
 JSON으로만 출력: {"topics":[{"title":"","why":"","prompt":""}]}`;
   const user = `[업종]: ${indName} / 화자: ${role}
 [오늘]: ${clip(dc.dateStr, 30)} ${clip(dc.weekday, 10)} · 계절 ${clip(dc.season, 10)}${dc.timeOfDay ? ` · ${clip(dc.timeOfDay, 10)}` : ''}
@@ -588,7 +605,7 @@ JSON 스키마:
 ④ 마지막 컷에서 ${storeLabel ? `"${storeLabel}"(으)로` : `${placeWord}로`} 오시라고 자연스럽게 마무리하세요.
 예시 흐름: "수능 끝나고 몸도 마음도 지쳤죠" → "따뜻한 국물이 필요할 때" → "푹 고아낸 국물 한 그릇" → "${storeLabel || placeWord}에서 기다릴게요".
 계기와 상품이 따로 놀지 않게, 모든 컷이 주제와 연결되게 쓰세요. 3안 모두 이 흐름을 지키되 말투와 강조점만 다르게 하세요.${storeLabel ? '' : ` 가게 이름은 지어내지 말고 "${placeWord}"(으)로 쓰세요.`}` : '';
-    const systemWithAngles = `${systemInstruction}${anglesRule}${storyRule}`;
+    const systemWithAngles = `${systemInstruction}${anglesRule}${storyRule}${HUMAN_TONE_RULES}`;
 
     const speaker = [dealerBranch, dealerName, dealerTitle].filter(Boolean).join(' ');
     const speakerLine = speaker
