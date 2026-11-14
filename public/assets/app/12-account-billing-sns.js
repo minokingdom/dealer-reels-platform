@@ -1132,7 +1132,7 @@
       sp.classList.add('ar-play');
       __arSplashTimer = setTimeout(() => {
         dismissAutoReelsSplash();
-      }, 2200);
+      }, 2800);
     }
 
     function enterStudioFromLanding(indKey, planKey) {
@@ -1179,7 +1179,7 @@
       // 스플래시는 페이지를 열 때부터 보이고 있음: 제작 화면이면 조금 더 보여 준 뒤 닫고, 랜딩·SNS 복귀면 바로 닫음
       if (!showLanding && !sp.has('sns') && !sp.has('code')) {
         const shown = Date.now() - (window.__arSplashT0 || Date.now());
-        __arSplashTimer = setTimeout(() => dismissAutoReelsSplash(), Math.max(400, 2200 - shown));
+        __arSplashTimer = setTimeout(() => dismissAutoReelsSplash(), Math.max(400, 2800 - shown));
       } else {
         dismissAutoReelsSplash();
       }

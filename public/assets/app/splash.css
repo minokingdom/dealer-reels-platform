@@ -1,52 +1,58 @@
-/* 시작 스플래시 (코덱스 C 시안: 9:16 틀이 그려지고 사진·글줄·성우 파형이 차례로 채워짐)
-   - 페이지를 열자마자 보여서 앱 스크립트 로딩 시간을 가림, 준비되면 12-account-billing-sns.js 가 닫음(최소 2.2초)
+/* 시작 스플래시 (코덱스 H 시안: 도형 조각이 모여 로고 마크가 되고 글자가 떠오름) — 색은 앱 톤(그라파이트·크림)에 맞춤
+   - 페이지를 열자마자 보여서 앱 스크립트 로딩 시간을 가림, 준비되면 12-account-billing-sns.js 가 닫음(최소 2.8초)
+   - 움직임은 CSS 애니메이션: 앱 스크립트를 읽는 동안에도 끊기지 않음
    - .ar-play 를 다시 붙이면 처음부터 다시 재생 */
-#arSplashIntro { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 36px 24px; transition: opacity .45s ease; background: #151518; color: #ededed; font-family: 'Pretendard Variable', Pretendard, sans-serif; }
-#arSplashIntro.hidden { display: none; }
-#arSplashIntro .sp-box { display: flex; flex-direction: column; align-items: center; gap: 36px; text-align: center; }
-#arSplashIntro .sp-comp { position: relative; width: 120px; height: 213px; flex: none; }
-#arSplashIntro svg { display: block; width: 100%; height: 100%; overflow: visible; }
-#arSplashIntro .sp-outline { fill: none; stroke: #efe4d2; stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 0; }
-#arSplashIntro .sp-panel { transform-box: fill-box; transform-origin: left center; }
-#arSplashIntro .sp-guide { stroke: #efe4d2; stroke-width: 1; opacity: .25; }
-#arSplashIntro .sp-word { margin: 0; color: #efe4d2; font-size: 46px; line-height: 1.2; font-weight: 450; letter-spacing: -.065em; }
-#arSplashIntro .sp-line { margin: 14px 0 0; font-family: 'MaruBuri', Georgia, serif; font-size: 14px; color: #a39e95; line-height: 1.8; letter-spacing: -.025em; }
-#arSplashIntro .sp-time { position: relative; display: flex; gap: 4px; margin: 28px auto 0; height: 12px; width: 140px; align-items: center; }
-#arSplashIntro .sp-clip { height: 4px; background: #383635; border-radius: 1px; }
-#arSplashIntro .sp-clip:nth-child(1) { width: 36%; }
-#arSplashIntro .sp-clip:nth-child(2) { width: 22%; }
-#arSplashIntro .sp-clip:nth-child(3) { flex: 1; }
-#arSplashIntro .sp-head { position: absolute; left: calc(100% - 1px); top: 0; width: 1px; height: 12px; background: #efe4d2; }
-#arSplashIntro .sp-head::before { content: ''; position: absolute; width: 3px; height: 3px; top: -2px; left: -1px; background: #efe4d2; }
-
-/* 한 번만 재생 (원래 시안 4초 반복 중 앞 1.9초 구간) */
-#arSplashIntro.ar-play .sp-box { animation: arSpIn .35s ease-out both; }
-#arSplashIntro.ar-play .sp-outline { animation: arSpDraw 1.9s cubic-bezier(.4, 0, .2, 1) both; }
-#arSplashIntro.ar-play .sp-panel.one { animation: arSpP1 1.9s cubic-bezier(.22, 1, .36, 1) both; }
-#arSplashIntro.ar-play .sp-panel.two { animation: arSpP2 1.9s cubic-bezier(.22, 1, .36, 1) both; }
-#arSplashIntro.ar-play .sp-panel.three { animation: arSpP3 1.9s cubic-bezier(.22, 1, .36, 1) both; }
-#arSplashIntro.ar-play .sp-head { animation: arSpScrub 1.9s cubic-bezier(.4, 0, .2, 1) both; }
-@keyframes arSpIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes arSpDraw { 0% { stroke-dashoffset: 1; } 72%, 100% { stroke-dashoffset: 0; } }
-@keyframes arSpP1 { 0%, 15% { opacity: 0; transform: scaleX(.65); } 46%, 100% { opacity: 1; transform: scaleX(1); } }
-@keyframes arSpP2 { 0%, 32% { opacity: 0; transform: scaleX(.65); } 65%, 100% { opacity: 1; transform: scaleX(1); } }
-@keyframes arSpP3 { 0%, 48% { opacity: 0; transform: scaleX(.65); } 86%, 100% { opacity: 1; transform: scaleX(1); } }
-@keyframes arSpScrub { 0%, 13% { left: 0; } 97%, 100% { left: calc(100% - 1px); } }
-
-/* PC: 옆으로 나란히, 크게 */
-@media (min-width: 900px) {
-  #arSplashIntro .sp-box { flex-direction: row; gap: 80px; text-align: left; }
-  #arSplashIntro .sp-comp { width: 170px; height: 302px; }
-  #arSplashIntro .sp-copy { min-width: 360px; }
-  #arSplashIntro .sp-word { font-size: 76px; }
-  #arSplashIntro .sp-line { font-size: 19px; margin-top: 18px; }
-  #arSplashIntro .sp-time { width: 220px; height: 14px; margin: 40px 0 0; }
-  #arSplashIntro .sp-clip { height: 5px; }
-  #arSplashIntro .sp-head { height: 14px; }
+#arSplashIntro {
+  --sp-bg: #151518; --sp-cream: #efe4d2; --sp-caramel: #c9a27a; --sp-muted: #a39e95;
+  position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  transition: opacity .45s ease; background: var(--sp-bg); color: var(--sp-cream); font-family: 'Pretendard Variable', Pretendard, sans-serif;
 }
-@media (max-height: 560px) {
-  #arSplashIntro .sp-comp { width: 90px; height: 160px; }
-  #arSplashIntro .sp-box { gap: 24px; }
+#arSplashIntro.hidden { display: none; }
+#arSplashIntro .sp-lockup { position: relative; width: 88vw; display: flex; align-items: center; justify-content: center; gap: 4.5vw; }
+#arSplashIntro .sp-symbol { position: relative; flex: 0 0 auto; width: 17vw; max-width: 240px; aspect-ratio: 9 / 16; max-height: 48vh; }
+#arSplashIntro .sp-piece { position: absolute; will-change: transform; }
+#arSplashIntro .sp-body { background: var(--sp-cream); inset: 0; border-radius: 20% / 11.25%; }
+#arSplashIntro .sp-cap { background: var(--sp-caramel); left: 0; top: 0; width: 100%; height: 28%; border-radius: 20% 20% 0 0 / 40% 40% 0 0; transform-origin: left bottom; }
+#arSplashIntro .sp-wedge { width: 47%; height: 31%; left: 34%; top: 42%; background: var(--sp-bg); clip-path: polygon(0 0, 100% 50%, 0 100%); }
+#arSplashIntro .sp-notch { position: absolute; left: 0; top: 24%; height: 5%; width: 100%; background: var(--sp-bg); transform: rotate(-9deg) scaleX(1.1); transform-origin: center; }
+#arSplashIntro .sp-type { position: relative; padding-top: 1.5vw; text-align: left; }
+#arSplashIntro .sp-word { font-size: 12.1vw; font-weight: 800; letter-spacing: -.9vw; line-height: 1; margin: 0; color: var(--sp-cream); }
+#arSplashIntro .sp-line { font-size: clamp(17px, 1.9vw, 27px); margin: 24px 0 0 .45vw; letter-spacing: -.045em; color: var(--sp-muted); }
+#arSplashIntro .sp-corner { position: absolute; background: #1c1c20; width: 22vw; aspect-ratio: 1; border-radius: 50%; left: -12vw; bottom: -13vw; }
+#arSplashIntro .sp-corner.second { left: auto; bottom: auto; right: -13vw; top: -14vw; width: 33vw; background: #1a1a1e; }
+#arSplashIntro .sp-reg { position: absolute; left: 4vw; top: 5vh; display: flex; gap: 9px; }
+#arSplashIntro .sp-reg i { width: 10px; height: 10px; background: var(--sp-cream); }
+#arSplashIntro .sp-reg i:nth-child(2) { background: var(--sp-caramel); }
+#arSplashIntro .sp-reg i:nth-child(3) { background: #3a3836; }
+
+/* 한 번만 재생 (원래 시안의 0~1.8초 구간을 CSS 로) */
+#arSplashIntro.ar-play .sp-body { animation: arSpBody 1.05s cubic-bezier(.33, 1, .68, 1) .08s both; }
+#arSplashIntro.ar-play .sp-cap { animation: arSpCap .95s cubic-bezier(.33, 1, .68, 1) .32s both; }
+#arSplashIntro.ar-play .sp-notch { animation: arSpFade .95s cubic-bezier(.33, 1, .68, 1) .32s both; }
+#arSplashIntro.ar-play .sp-wedge { animation: arSpWedge .8s cubic-bezier(.33, 1, .68, 1) .65s both; }
+#arSplashIntro.ar-play .sp-symbol { animation: arSpSettle .65s cubic-bezier(.33, 1, .68, 1) 1.08s both; }
+#arSplashIntro.ar-play .sp-type { animation: arSpType .7s cubic-bezier(.33, 1, .68, 1) .95s both; }
+#arSplashIntro.ar-play .sp-corner { animation: arSpCornerA .65s cubic-bezier(.33, 1, .68, 1) 1.08s both; }
+#arSplashIntro.ar-play .sp-corner.second { animation-name: arSpCornerB; }
+@keyframes arSpBody { from { transform: translate(-140%, 75%) rotate(-32deg) scale(1.5); } to { transform: none; } }
+@keyframes arSpCap { from { transform: translate(110%, -170%) rotate(65deg); } to { transform: none; } }
+@keyframes arSpWedge { from { transform: translateX(240%) rotate(90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes arSpFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes arSpSettle { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes arSpType { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: none; } }
+@keyframes arSpCornerA { from { transform: translate(-15%, 15%); } to { transform: none; } }
+@keyframes arSpCornerB { from { transform: translate(15%, -15%); } to { transform: none; } }
+
+/* 휴대폰: 세로로 */
+@media (max-width: 600px) {
+  #arSplashIntro .sp-lockup { width: 100%; flex-direction: column; gap: 38px; margin-top: -12px; }
+  #arSplashIntro .sp-symbol { width: 126px; max-height: 34vh; }
+  #arSplashIntro .sp-type { text-align: center; padding: 0; }
+  #arSplashIntro .sp-word { font-size: 16.4vw; letter-spacing: -1.2vw; }
+  #arSplashIntro .sp-line { font-size: 17px; margin-top: 20px; }
+  #arSplashIntro .sp-reg { left: 28px; top: max(40px, env(safe-area-inset-top)); }
+  #arSplashIntro .sp-corner { width: 54vw; left: -36vw; bottom: -19vw; }
+  #arSplashIntro .sp-corner.second { width: 72vw; right: -48vw; top: -20vw; left: auto; bottom: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   #arSplashIntro *, #arSplashIntro { animation: none !important; }

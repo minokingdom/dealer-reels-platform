@@ -34,38 +34,26 @@
   <link rel="stylesheet" href="/assets/app/splash.css" />
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
-  <!-- 시작 스플래시 (코덱스 C 시안): 페이지를 열자마자 보여 앱 로딩 시간을 가림. 준비되면 12-account-billing-sns.js 가 닫음. 누르면 바로 닫힘 -->
+  <!-- 시작 스플래시 (코덱스 H 시안, 앱 색 톤): 페이지를 열자마자 보여 앱 로딩 시간을 가림. 준비되면 12-account-billing-sns.js 가 닫음. 누르면 바로 닫힘 -->
   <div id="arSplashIntro" onclick="if (window.dismissAutoReelsSplash) dismissAutoReelsSplash()" class="ar-play fixed inset-0 z-[100] flex items-center justify-center px-5 select-none transition-opacity duration-500 cursor-pointer" style="opacity:1;" role="status" aria-label="AutoReels 시작 화면">
-    <div class="sp-box">
-      <div class="sp-comp" aria-hidden="true">
-        <svg viewBox="0 0 108 192" xmlns="http://www.w3.org/2000/svg">
-          <path class="sp-guide" d="M-8 0H-3 M0-8V-3 M111 0H116 M108-8V-3 M-8 192H-3 M0 195V200 M111 192H116 M108 195V200"/>
-          <rect class="sp-outline" x=".5" y=".5" width="107" height="191" rx="2" pathLength="1"/>
-          <g class="sp-panel one">
-            <rect x="9" y="9" width="90" height="68" rx="1" fill="#efe4d2"/>
-            <circle cx="75" cy="31" r="10" fill="#c4b6a0"/>
-            <path d="M9 68L34 39L66 77H9Z" fill="#c4b6a0"/>
-            <path d="M45 77L72 51L99 77Z" fill="#d9ccb7"/>
-          </g>
-          <g class="sp-panel two" fill="#b6aa97">
-            <rect x="9" y="86" width="61" height="3" rx="1"/>
-            <rect x="9" y="96" width="42" height="3" rx="1"/>
-          </g>
-          <g class="sp-panel three">
-            <rect x="9" y="113" width="90" height="70" rx="1" fill="#272729"/>
-            <path d="M19 147V151 M25 140V158 M31 144V154 M37 134V164 M43 139V159 M49 144V154 M55 131V167 M61 137V161 M67 142V156 M73 136V162 M79 143V155 M85 146V152 M91 148V150" stroke="#c4b6a0" stroke-width="2" stroke-linecap="round"/>
-          </g>
-        </svg>
+    <div class="sp-corner" aria-hidden="true"></div>
+    <div class="sp-corner second" aria-hidden="true"></div>
+    <div class="sp-reg" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="sp-lockup">
+      <div class="sp-symbol" aria-hidden="true">
+        <div class="sp-piece sp-body"></div>
+        <div class="sp-piece sp-cap"></div>
+        <div class="sp-notch"></div>
+        <div class="sp-piece sp-wedge"></div>
       </div>
-      <div class="sp-copy">
+      <div class="sp-type">
         <div class="sp-word">AutoReels</div>
-        <p class="sp-line">당신의 하루를 한 편으로</p>
-        <div class="sp-time" aria-hidden="true"><i class="sp-clip"></i><i class="sp-clip"></i><i class="sp-clip"></i><i class="sp-head"></i></div>
+        <p class="sp-line">가게의 이야기를, 앞으로.</p>
       </div>
     </div>
   </div>
   <script>
-    window.__arSplashT0 = Date.now(); // 스플래시가 처음 보인 시각 (최소 2.2초는 보여 주기 위해)
+    window.__arSplashT0 = Date.now(); // 스플래시가 처음 보인 시각 (최소 2.8초는 보여 주기 위해)
     // 안전장치: 앱 스크립트가 실패해도 스플래시가 화면을 계속 가리지 않게 8초 뒤에는 닫음
     setTimeout(function () { var s = document.getElementById('arSplashIntro'); if (s && !s.classList.contains('hidden')) { s.style.opacity = '0'; s.style.pointerEvents = 'none'; setTimeout(function () { s.classList.add('hidden'); }, 450); } }, 8000);
   </script>
