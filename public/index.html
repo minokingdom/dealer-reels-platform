@@ -509,8 +509,11 @@
         <button type="button" onclick="togglePlayPause()" class="w-10 h-10 rounded-[10px] bg-[#232325] text-[#ededed] text-[15px] flex items-center justify-center shrink-0 active:scale-95" id="mobileDockPlayBtn" aria-label="재생/일시정지">⏸</button>
         <button type="button" onclick="toggleAudioMaster()" class="w-10 h-10 rounded-[10px] bg-[#232325] text-[#ededed] text-[15px] flex items-center justify-center shrink-0 active:scale-95" id="mobileDockSoundBtn" aria-label="소리 켜기/끄기">🔇</button>
       </div>
-      <!-- 예전 색상 칩 자리 (스크립트가 찾는 요소라 남겨 두고 숨김) -->
-      <div class="hidden"><span id="mobileActiveThemeName"></span><div id="mobileThemeSwatches"></div></div>
+      <!-- 모바일 8종 색상 칩 -->
+      <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+        <span id="mobileActiveThemeName" class="text-[11px] text-[#a1a1a6] truncate shrink-0"></span>
+        <div id="mobileThemeSwatches" class="flex items-center gap-1.5 overflow-x-auto"></div>
+      </div>
     </div>
 
     <!-- ========================================================================= -->
@@ -621,10 +624,11 @@
               <div class="w-full max-w-[380px] rounded-[16px] bg-[#14161d] border border-white/15 p-4 space-y-3 shadow-2xl">
                 <div class="flex items-center justify-between gap-2 text-[12px]">
                   <span class="text-[#ededed] font-semibold">⚙️ 스타일 섞기 설정</span>
-                  <div class="flex items-center gap-1.5">
-                    <button type="button" onclick="setShuffleIncludeCats([])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer">전체</button>
-                    <button type="button" onclick="setShuffleIncludeCats(['신규'])" class="px-2 py-0.5 rounded bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] text-[11px] cursor-pointer">신규만</button>
-                    <button type="button" onclick="toggleShuffleFilterPanel(false)" class="px-2 py-0.5 text-[#85858b] hover:text-white cursor-pointer">✕</button>
+                  <div class="flex items-center gap-1">
+                    <button type="button" id="shufflePresetAllBtn" onclick="setShuffleIncludeCats([])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer">전체</button>
+                    <button type="button" id="shufflePresetNewBtn" onclick="setShuffleIncludeCats(['신규'])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer">신규만</button>
+                    <button type="button" id="shufflePresetKeepBtn" onclick="setShuffleIncludeCats(['__keep__'])" class="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer" title="현재 테마만 유지하고 스타일 변경 없음">변경없음</button>
+                    <button type="button" onclick="toggleShuffleFilterPanel(false)" class="px-1.5 py-0.5 text-[#85858b] hover:text-white cursor-pointer">✕</button>
                   </div>
                 </div>
                 <div class="space-y-1.5">
@@ -15153,7 +15157,8 @@ function renderStoryArchetypesUI() {
       const badge = document.getElementById('shuffleFilterBadge');
       if (!badge) return;
       const sel = getShuffleIncludeCats();
-      if (!sel.length) badge.textContent = '전체';
+      if (sel.includes('__keep__')) badge.textContent = '변경없음';
+      else if (!sel.length) badge.textContent = '전체';
       else if (sel.length === 1) badge.textContent = sel[0];
       else badge.textContent = `${sel.length}종`;
     }
@@ -15185,10 +15190,24 @@ function renderStoryArchetypesUI() {
       const box = document.getElementById('shuffleFilterChips');
       if (!box) return;
       const cats = (typeof arDesignCats === 'function' ? arDesignCats() : DESIGN_CATS).filter((c) => c !== '전체');
-      const sel = new Set(getShuffleIncludeCats());
+      const rawSel = getShuffleIncludeCats();
+      const keepMode = rawSel.includes('__keep__');
+      const sel = new Set(keepMode ? [] : rawSel);
+      const btnAll = document.getElementById('shufflePresetAllBtn');
+      const btnNew = document.getElementById('shufflePresetNewBtn');
+      const btnKeep = document.getElementById('shufflePresetKeepBtn');
+      const setPresetBtn = (el, on) => {
+        if (!el) return;
+        el.className = on
+          ? 'px-2 py-0.5 rounded bg-[#38bdf8]/20 hover:bg-[#38bdf8]/30 text-[#38bdf8] font-semibold text-[11px] cursor-pointer'
+          : 'px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[#ededed] text-[11px] cursor-pointer';
+      };
+      setPresetBtn(btnAll, !keepMode && sel.size === 0);
+      setPresetBtn(btnNew, !keepMode && sel.size === 1 && sel.has('신규'));
+      setPresetBtn(btnKeep, keepMode);
       box.innerHTML = cats.map((c) => {
-        const active = sel.size === 0 || sel.has(c);
-        const picked = sel.has(c);
+        const active = !keepMode && (sel.size === 0 || sel.has(c));
+        const picked = !keepMode && sel.has(c);
         return `<button type="button" onclick="toggleShuffleCat('${c.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded-[6px] text-[11px] border cursor-pointer transition ${picked ? 'bg-[#38bdf8]/20 border-[#38bdf8] text-[#38bdf8] font-semibold' : active ? 'bg-white/5 border-white/10 text-[#d4d4d8]' : 'bg-transparent border-white/5 text-[#6b7280] opacity-60'}">${c}</button>`;
       }).join('');
       const exBox = document.getElementById('shuffleExcludedChips');
@@ -15214,7 +15233,7 @@ function renderStoryArchetypesUI() {
       renderShuffleFilterPanel();
     }
     function toggleShuffleCat(cat) {
-      const cur = getShuffleIncludeCats();
+      const cur = getShuffleIncludeCats().filter((x) => x !== '__keep__');
       const idx = cur.indexOf(cat);
       if (idx >= 0) cur.splice(idx, 1);
       else cur.push(cat);
@@ -15233,6 +15252,22 @@ function renderStoryArchetypesUI() {
       // 대본·업종·사진은 유지하고, 설정한 카테고리 및 제외 목록을 반영해 랜덤 전환
       const allDesigns = typeof arVisibleDesigns === 'function' ? arVisibleDesigns() : (typeof DESIGN_STYLES !== 'undefined' ? DESIGN_STYLES : []);
       const includeCats = getShuffleIncludeCats();
+      if (includeCats.includes('__keep__')) {
+        if (typeof arToast === 'function') {
+          const shuffleBtn = [document.getElementById('previewRandomDesignBtnMain'), document.getElementById('previewRandomDesignBtn')].find((b) => b && b.offsetParent !== null);
+          arToast('🔒 현재 테마 유지 중 (스타일 변경 없음)', false, shuffleBtn || null);
+        }
+        if (window.__timelines?.main) {
+          if (typeof AudioEngine !== 'undefined') AudioEngine.stopTts();
+          window.__timelines.main.seek(0);
+          if (!isPlaying) {
+            isPlaying = true;
+            const ppBtn = document.getElementById('playPauseBtn');
+            if (ppBtn) ppBtn.textContent = '⏸ 일시정지';
+          }
+        }
+        return;
+      }
       const catFiltered = includeCats.length
         ? allDesigns.filter((d) => includeCats.includes(d.industry ? '내 업종' : (d.cat || '')))
         : allDesigns;
