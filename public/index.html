@@ -14057,6 +14057,11 @@ function renderStoryArchetypesUI() {
     }
     function kitAutoCutLayout(spec, cutIdx) {
       if (cutIdx === 0) return spec.layout;
+      // 업종 디자인: 컷이 바뀌어도 사진을 꽉 채운 레이아웃끼리만 돌림 (위 사진·아래 글자 나눔형이 섞이지 않게, 2026-11)
+      if (spec.industry) {
+        if (!['full', 'dim', 'blinds'].includes(spec.layout)) return spec.layout;
+        return ['full', 'blinds', 'dim', 'full'][cutIdx % 4];
+      }
       const fixedLayouts = ['chalkboard', 'notebook', 'polaroid', 'film', 'handheld'];
       if (fixedLayouts.includes(spec.layout)) {
         return cutIdx === 2 ? 'duo' : spec.layout;
