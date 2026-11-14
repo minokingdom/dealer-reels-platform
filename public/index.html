@@ -23207,7 +23207,7 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       if (!el) {
         el = document.createElement('div');
         el.id = 'arToast';
-        el.className = 'fixed left-1/2 -translate-x-1/2 bottom-6 z-[80] px-4 py-2.5 rounded-[10px] text-[13px] shadow-2xl border';
+        el.className = 'fixed left-1/2 -translate-x-1/2 top-4 z-[80] pointer-events-none max-w-[90vw] text-center px-4 py-2.5 rounded-[10px] text-[13px] shadow-2xl border';
         document.body.appendChild(el);
       }
       el.textContent = msg;
