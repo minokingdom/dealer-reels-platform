@@ -416,6 +416,7 @@
     }
     .ar-el-chip {
       display: inline-flex;
+      flex: 0 0 auto;
       align-items: center;
       gap: 5px;
       min-height: 30px;
@@ -427,6 +428,7 @@
       font-size: 12px;
       font-weight: 500;
       line-height: 1.25;
+      white-space: nowrap;
       cursor: pointer;
       user-select: none;
       transition: background-color 140ms var(--ease-out), border-color 140ms var(--ease-out), color 140ms var(--ease-out), transform 100ms var(--ease-out);
@@ -663,8 +665,11 @@
     .ar-inline-color-bar {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      min-width: 0;
+      width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 2px 0;
       scrollbar-width: none;
     }

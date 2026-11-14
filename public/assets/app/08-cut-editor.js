@@ -3463,7 +3463,7 @@
       return `
         <div class="ar-el-row">
           <span class="ar-el-label">폰트·박스</span>
-          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0 py-0.5">
             <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'font', '', true)"
                     class="ar-el-chip ${!curFont ? 'active' : ''}">기본 폰트</button>
             ${CUT_TEXT_FONTS.map((f) => `
@@ -3475,7 +3475,7 @@
         </div>
         <div class="ar-el-row">
           <span class="ar-el-label">박스 디자인</span>
-          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0 py-0.5">
             ${AR_ELEMENT_BOX_STYLES.map((bs) => `
               <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'boxStyle', '${bs.id}', true)"
                       class="ar-el-chip ${curBox === bs.id ? 'active' : ''}">${bs.label}</button>
@@ -3484,7 +3484,7 @@
         </div>
         <div class="ar-el-row">
           <span class="ar-el-label">애니메이션</span>
-          <div class="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0 py-0.5">
             ${AR_ELEMENT_ANIMS.map((an) => `
               <button type="button" onclick="updateCutElementOverride(${cutIdx}, '${elKey}', 'anim', '${an.id}', true);previewCutElementAnimation(${cutIdx})"
                       class="ar-el-chip ${curAnim === an.id ? 'active' : ''}">${an.label}</button>
