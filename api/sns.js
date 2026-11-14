@@ -13,7 +13,7 @@ const db = require('../lib/server/db');
 const { readiness, siteUrl } = require('../lib/server/config');
 const { readSession, sameOrigin } = require('../lib/server/session');
 const { getSubscription } = require('../lib/server/billing');
-const { isActive } = require('../lib/server/usage');
+const { isActive, consume, refundUsage } = require('../lib/server/usage');
 const sns = require('../lib/server/sns');
 
 function send(res, status, body) {
@@ -105,7 +105,14 @@ module.exports = async function handler(req, res) {
       return send(res, 200, { ok: true, ...(await sns.uploadToken(user, b)) });
     }
     if (action === 'publish') {
-      return send(res, 200, { ok: true, jobs: await sns.startPublish(user, b) });
+      const q = await consume(req, 'export', 1);
+      if (!q.ok) return send(res, q.status, q.body);
+      try {
+        return send(res, 200, { ok: true, jobs: await sns.startPublish(user, b), usage: { used: q.used, cap: q.cap } });
+      } catch (pubErr) {
+        await refundUsage(req, 'export', 1);
+        throw pubErr;
+      }
     }
     if (action === 'jobs') {
       return send(res, 200, { ok: true, jobs: await sns.jobStatus(user, b.ids) });

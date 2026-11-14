@@ -467,6 +467,20 @@
         openBillingCheckoutModal(true);
         return;
       }
+      if (window.AR_SERVER && AR_SERVER.mode && typeof arApi === 'function') {
+        try {
+          const q = await arApi('consume-export', {});
+          if (!q.ok) {
+            if (typeof arToast === 'function') arToast((q.body && q.body.message) || '이번 달 다운로드·게시 횟수를 모두 사용했습니다.');
+            if (q.status === 429 || q.status === 402) openBillingCheckoutModal(true);
+            return;
+          }
+          if (AR_SERVER.me && AR_SERVER.me.usage) {
+            AR_SERVER.me.usage.exports = q.body.used;
+            AR_SERVER.me.usage.exportLimit = q.body.cap;
+          }
+        } catch (e) {}
+      }
       if (typeof MediaRecorder === 'undefined') {
         alert('현재 브라우저에서 MediaRecorder를 지원하지 않습니다.');
         return;

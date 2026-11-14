@@ -178,6 +178,11 @@ module.exports = async function handler(req, res) {
       return send(res, out.charged || out.cardUpdated ? 200 : 402, { ...me, ok: Boolean(out.charged || out.cardUpdated), billing: out });
     }
 
+    if (action === 'consume-export' && req.method === 'POST') {
+      const q = await usage.consume(req, 'export', 1);
+      if (!q.ok) return send(res, q.status, q.body);
+      return send(res, 200, { ok: true, used: q.used, cap: q.cap });
+    }
     if (action === 'cancel' && req.method === 'POST') return send(res, 200, { ok: true, subscription: await billing.setCancel(user.id, true) });
     if (action === 'resume' && req.method === 'POST') return send(res, 200, { ok: true, subscription: await billing.setCancel(user.id, false) });
     if (action === 'payments') return send(res, 200, { ok: true, payments: await billing.paymentHistory(user.id) });

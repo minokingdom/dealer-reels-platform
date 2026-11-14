@@ -81,7 +81,7 @@ module.exports = async function handler(req, res) {
     const payMethod = String(body.payMethod || 'kakaopay');
 
     const planMeta = {
-      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 30회)', amount: 29900, expiryYmd: 20261231 },
+      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 20회)', amount: 29900, expiryYmd: 20261231 },
       pro_59000:      { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 }
     }[plan] || { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 };
 

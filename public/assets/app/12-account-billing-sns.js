@@ -285,7 +285,7 @@
     // PRO 정기구독 결제 (카카오페이 / 토스페이 / 카드) → 정품 라이선스 즉시 개통
     // ============================================================================
     const BILLING_PLANS = {
-      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 30회)', amount: 29900, expiryYmd: 20261231 },
+      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 20회)', amount: 29900, expiryYmd: 20261231 },
       pro_59000:      { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 }
     };
     const PAY_METHOD_LABELS = { kakaopay: '카카오페이', tosspay: '토스페이', card: '신용·법인카드' };
@@ -625,6 +625,7 @@
             <div class="flex justify-between text-[11px] text-[#85858b]"><span>이번 달 AI 성우 사용량</span><span class="font-mono">${(u.ttsChars || 0).toLocaleString()} / ${(u.ttsLimit || 0).toLocaleString()}자</span></div>
             <div class="h-1.5 rounded bg-[#232325] mt-1 overflow-hidden"><div style="width:${pct}%" class="h-full bg-[#4cc38a]"></div></div>
             <div class="flex justify-between text-[11px] text-[#85858b] mt-1.5"><span>AI 대본 생성</span><span class="font-mono">${u.aiScripts || 0} / ${u.aiLimit || 0}회</span></div>
+            <div class="flex justify-between text-[11px] text-[#85858b] mt-1"><span>다운로드 · SNS 게시</span><span class="font-mono">${u.exports || 0} / ${u.exportLimit == null ? '무제한' : `${u.exportLimit}회`}</span></div>
           </div>`;
       }
       arServerPayButtonLabel();
