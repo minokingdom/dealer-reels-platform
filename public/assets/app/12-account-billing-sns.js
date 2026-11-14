@@ -1109,9 +1109,32 @@
       return path === '/' || path === '';
     }
 
+    let __arSplashTimer = null;
+    function dismissAutoReelsSplash() {
+      const sp = document.getElementById('arSplashIntro');
+      if (!sp) return;
+      if (__arSplashTimer) { clearTimeout(__arSplashTimer); __arSplashTimer = null; }
+      sp.style.opacity = '0';
+      sp.style.pointerEvents = 'none';
+      setTimeout(() => { sp.classList.add('hidden'); }, 450);
+    }
+
+    function runAutoReelsSplash() {
+      const sp = document.getElementById('arSplashIntro');
+      if (!sp) return;
+      if (__arSplashTimer) clearTimeout(__arSplashTimer);
+      sp.style.opacity = '1';
+      sp.style.pointerEvents = 'auto';
+      sp.classList.remove('hidden');
+      __arSplashTimer = setTimeout(() => {
+        dismissAutoReelsSplash();
+      }, 1050);
+    }
+
     function enterStudioFromLanding(indKey, planKey) {
       try { localStorage.setItem('ar_visited_studio', '1'); } catch (e) {}
       applyLandingRouteState(false);
+      runAutoReelsSplash();
       try {
         if (window.location.pathname !== '/studio') {
           history.pushState({ arView: 'studio' }, '', '/studio');
@@ -1148,4 +1171,8 @@
         try { history.replaceState({ arView: 'studio' }, '', '/studio'); } catch (e) {}
       }
       applyLandingRouteState(showLanding);
+      const sp = new URLSearchParams(window.location.search || '');
+      if (!showLanding && !sp.has('sns') && !sp.has('code')) {
+        runAutoReelsSplash();
+      }
     })();

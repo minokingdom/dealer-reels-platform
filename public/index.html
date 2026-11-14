@@ -33,6 +33,20 @@
   <link rel="stylesheet" href="/assets/app/app.css" />
 </head>
 <body class="antialiased px-4 py-6 md:px-8 md:py-8 pb-24 md:pb-12">
+  <!-- 웹앱 진입 로고 스플래시 (약 1.1초 후 오토릴스 스튜디오로 자연스럽게 전환) -->
+  <div id="arSplashIntro" onclick="dismissAutoReelsSplash()" class="hidden fixed inset-0 z-[100] bg-[#0f0f10] flex flex-col items-center justify-center gap-4 select-none transition-opacity duration-500 cursor-pointer" style="opacity:1;">
+    <div class="w-16 h-16 rounded-[18px] bg-[#18181b] border border-white/15 flex items-center justify-center shadow-2xl">
+      <span class="font-mono text-[22px] font-bold tracking-tight text-[#ededed]">AR</span>
+    </div>
+    <div class="text-center space-y-1.5">
+      <div class="text-[22px] font-bold tracking-tight text-[#ededed]">AutoReels</div>
+      <div class="flex items-center justify-center gap-1.5 text-[12px] text-[#85858b]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#4cc38a]"></span>
+        <span>프로모션 릴스 스튜디오</span>
+      </div>
+    </div>
+  </div>
+
   <!-- 첫 방문자용 랜딩 페이지 (/) : 한번 스튜디오를 연 사람은 / 에서 바로 /studio 로 이동 -->
   <section id="arLandingView" class="hidden max-w-[1160px] mx-auto space-y-16 pb-16">
     <!-- 랜딩 상단 네비게이션 -->
