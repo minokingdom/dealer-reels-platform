@@ -77,14 +77,13 @@ module.exports = async function handler(req, res) {
 
     // action === 'checkout' (정기구독 결제 승인 및 정품 라이선스 즉시 발급)
     const phone = String(body.phone || '010-4821-9032').trim();
-    const plan = String(body.plan || 'monthly_150k');
+    const plan = String(body.plan || 'pro_59000');
     const payMethod = String(body.payMethod || 'kakaopay');
 
     const planMeta = {
-      weekly_50k:   { name: '주간 스타터 패스 (7일)', amount: 50000, expiryYmd: 20261119 },
-      monthly_150k: { name: '월간 PRO 무제한 패스 (30일)', amount: 150000, expiryYmd: 20261231 },
-      annual_1200k: { name: '연간 VIP 마스터 패스 (365일)', amount: 1200000, expiryYmd: 20271112 }
-    }[plan] || { name: '월간 PRO 무제한 패스 (30일)', amount: 150000, expiryYmd: 20261231 };
+      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 30회)', amount: 29900, expiryYmd: 20261231 },
+      pro_59000:      { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 }
+    }[plan] || { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 };
 
     const p8 = extractPhoneLast8(phone);
     const sig = computeWasmLicenseSignature(p8, planMeta.expiryYmd);

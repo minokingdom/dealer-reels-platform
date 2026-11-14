@@ -285,12 +285,11 @@
     // PRO 정기구독 결제 (카카오페이 / 토스페이 / 카드) → 정품 라이선스 즉시 개통
     // ============================================================================
     const BILLING_PLANS = {
-      weekly_50k:   { name: '주간 스타터 패스 (7일)', amount: 50000, expiryYmd: 20261119 },
-      monthly_150k: { name: '월간 PRO 무제한 패스 (30일)', amount: 150000, expiryYmd: 20261231 },
-      annual_1200k: { name: '연간 VIP 마스터 패스 (365일)', amount: 1200000, expiryYmd: 20271112 }
+      standard_29900: { name: '스탠다드 (제작 무제한 · 다운/게시 30회)', amount: 29900, expiryYmd: 20261231 },
+      pro_59000:      { name: '프로 무제한 (제작·다운·게시 무제한)', amount: 59000, expiryYmd: 20261231 }
     };
     const PAY_METHOD_LABELS = { kakaopay: '카카오페이', tosspay: '토스페이', card: '신용·법인카드' };
-    let selectedPlanKey = 'monthly_150k';
+    let selectedPlanKey = 'pro_59000';
     let selectedPayMethodKey = 'kakaopay';
     let resumeExportAfterPay = false;
 
@@ -313,7 +312,7 @@
     }
 
     function selectBillingPlan(planKey) {
-      selectedPlanKey = BILLING_PLANS[planKey] ? planKey : 'monthly_150k';
+      selectedPlanKey = BILLING_PLANS[planKey] ? planKey : 'pro_59000';
       Object.keys(BILLING_PLANS).forEach((k) => {
         const el = document.getElementById(`planCard_${k}`);
         if (!el) return;
@@ -405,7 +404,7 @@
     //   서버 설정이 없으면 지금까지의 시연 화면이 그대로 동작합니다.
     // ============================================================================
     window.AR_SERVER = { mode: false, cfg: null, me: null };
-    const AR_PLAN_MAP = { weekly_50k: 'weekly', monthly_150k: 'monthly', annual_1200k: 'annual' };
+    const AR_PLAN_MAP = { standard_29900: 'standard', pro_59000: 'pro' };
 
     async function arApi(action, body, method) {
       const opt = { method: method || (body ? 'POST' : 'GET'), headers: {}, credentials: 'same-origin' };

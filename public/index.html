@@ -165,59 +165,47 @@
     <div id="arLandingPricing" class="space-y-4">
       <div>
         <h2 class="text-[20px] font-semibold text-[#ededed]">요금제 안내</h2>
-        <p class="text-[13px] text-[#85858b] mt-1">먼저 무료로 모든 스타일과 편집 기능을 체험해 본 뒤, 필요할 때 워터마크 해제 패스를 선택하세요.</p>
+        <p class="text-[13px] text-[#85858b] mt-1">제작은 누구나 마음껏, 내보내기(다운로드·SNS 게시) 횟수에 맞춰 요금제를 선택하세요.</p>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
-          <div class="space-y-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+        <div class="studio-card p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-2.5">
             <div class="text-[13px] font-medium text-[#a1a1a6]">무료 체험</div>
-            <div class="text-[22px] font-bold text-[#ededed]">0원</div>
-            <ul class="text-[12px] text-[#85858b] space-y-1">
+            <div class="text-[24px] font-bold text-[#ededed]">0원</div>
+            <ul class="text-[12.5px] text-[#85858b] space-y-1.5">
               <li>• 10개 업종 · 136종 디자인 미리보기</li>
-              <li>• AI 대본 생성 및 컷 편집 체험</li>
-              <li>• 워터마크 포함 MP4 테스트 저장</li>
+              <li>• AI 대본 · 컷 편집 체험</li>
+              <li>• 워터마크 포함 테스트 저장</li>
             </ul>
           </div>
           <button type="button" onclick="enterStudioFromLanding()" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">무료로 시작하기</button>
         </div>
-        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
-          <div class="space-y-2">
-            <div class="text-[13px] font-medium text-[#a1a1a6]">주간 스타터 패스 (7일)</div>
-            <div class="text-[22px] font-bold text-[#ededed]">50,000원</div>
-            <ul class="text-[12px] text-[#85858b] space-y-1">
-              <li>• 7일간 워터마크 즉시 해제</li>
-              <li>• 고화질 1080×1920 MP4 무제한</li>
-              <li>• AI 성우 · 컷 편집 전체 기능</li>
+        <div class="studio-card p-5 flex flex-col justify-between space-y-4">
+          <div class="space-y-2.5">
+            <div class="text-[13px] font-medium text-[#d4d4d8]">스탠다드 (월간)</div>
+            <div class="text-[24px] font-bold text-[#ededed]">29,900원<span class="text-[12px] font-normal text-[#85858b]"> / 월</span></div>
+            <ul class="text-[12.5px] text-[#a1a1a6] space-y-1.5">
+              <li>• <strong class="text-[#ededed]">영상 제작 · AI 생성 무제한</strong></li>
+              <li>• <strong class="text-[#ededed]">다운로드 &amp; SNS 게시 월 30회</strong></li>
+              <li>• 워터마크 제거 · 9:16 고화질 MP4</li>
             </ul>
           </div>
-          <button type="button" onclick="enterStudioFromLanding(null, 'weekly_50k')" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">주간 패스 선택</button>
+          <button type="button" onclick="enterStudioFromLanding(null, 'standard_29900')" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">스탠다드 시작하기</button>
         </div>
-        <div class="studio-card p-4 flex flex-col justify-between space-y-4 border-[#ededed]/40 bg-[#18181b]">
-          <div class="space-y-2">
+        <div class="studio-card p-5 flex flex-col justify-between space-y-4 border-[#ededed]/40 bg-[#18181b]">
+          <div class="space-y-2.5">
             <div class="flex items-center justify-between">
-              <span class="text-[13px] font-semibold text-[#ededed]">월간 PRO 무제한 (30일)</span>
-              <span class="px-2 py-0.5 rounded-full bg-[#4cc38a]/20 text-[#4cc38a] text-[10px] font-semibold">인기</span>
+              <span class="text-[13px] font-semibold text-[#ededed]">프로 무제한 (월간)</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#4cc38a]/20 text-[#4cc38a] text-[10px] font-semibold">추천</span>
             </div>
-            <div class="text-[22px] font-bold text-[#ededed]">150,000원</div>
-            <ul class="text-[12px] text-[#a1a1a6] space-y-1">
-              <li>• 30일간 워터마크 해제 무제한</li>
-              <li>• 인스타·유튜브·틱톡 예약 발행</li>
-              <li>• 카카오페이 · 토스페이 · 카드 결제</li>
+            <div class="text-[24px] font-bold text-[#ededed]">59,000원<span class="text-[12px] font-normal text-[#85858b]"> / 월</span></div>
+            <ul class="text-[12.5px] text-[#d4d4d8] space-y-1.5">
+              <li>• <strong class="text-white">영상 제작 · AI 생성 무제한</strong></li>
+              <li>• <strong class="text-white">다운로드 &amp; SNS 게시 무제한</strong></li>
+              <li>• 인스타 · 유튜브 · 틱톡 예약 발행 무제한</li>
             </ul>
           </div>
-          <button type="button" onclick="enterStudioFromLanding(null, 'monthly_150k')" class="w-full h-9 rounded-[8px] bg-[#ededed] hover:bg-white text-[#0f0f10] text-[12px] font-semibold cursor-pointer">월간 PRO 시작하기</button>
-        </div>
-        <div class="studio-card p-4 flex flex-col justify-between space-y-4">
-          <div class="space-y-2">
-            <div class="text-[13px] font-medium text-[#a1a1a6]">연간 VIP 마스터 (365일)</div>
-            <div class="text-[22px] font-bold text-[#ededed]">1,200,000원</div>
-            <ul class="text-[12px] text-[#85858b] space-y-1">
-              <li>• 365일 전 기능 무제한 이용</li>
-              <li>• 월간 대비 33% 할인 (월 10만원)</li>
-              <li>• SNS 다중 계정 운영 지원</li>
-            </ul>
-          </div>
-          <button type="button" onclick="enterStudioFromLanding(null, 'annual_1200k')" class="w-full h-9 rounded-[8px] bg-[#232325] hover:bg-[#2e2e32] border border-[var(--border-strong)] text-[12px] font-medium text-[#ededed] cursor-pointer">연간 패스 선택</button>
+          <button type="button" onclick="enterStudioFromLanding(null, 'pro_59000')" class="w-full h-9 rounded-[8px] bg-[#ededed] hover:bg-white text-[#0f0f10] text-[12px] font-semibold cursor-pointer">프로 무제한 시작하기</button>
         </div>
       </div>
     </div>
@@ -1642,42 +1630,28 @@
       <div class="space-y-2">
         <label class="block text-[12px] text-[#a1a1a6]">1. 구독 플랜 선택 (부가세 포함)</label>
         <div class="grid grid-cols-1 gap-2">
-          <button type="button" id="planCard_monthly_150k" onclick="selectBillingPlan('monthly_150k')" class="p-3.5 rounded-[10px] border border-[#ededed] bg-[#19191b] text-left flex items-center justify-between cursor-pointer">
+          <button type="button" id="planCard_pro_59000" onclick="selectBillingPlan('pro_59000')" class="p-3.5 rounded-[10px] border border-[#ededed] bg-[#19191b] text-left flex items-center justify-between cursor-pointer">
             <div>
               <div class="flex items-center gap-2">
-                <span class="text-[14px] font-medium text-[#ededed]">월간 PRO (매달 자동결제)</span>
-                <span class="px-2 py-0.5 rounded-[4px] bg-[#3b82f6] text-white text-[10px] font-mono">인기 · 추천</span>
+                <span class="text-[14px] font-medium text-[#ededed]">프로 무제한 (매달 자동결제)</span>
+                <span class="px-2 py-0.5 rounded-[4px] bg-[#3b82f6] text-white text-[10px] font-mono">추천</span>
               </div>
-              <div class="text-[12px] text-[#85858b] mt-0.5">워터마크 없는 영상 무제한 저장 · AI 성우 월 12만 자 · AI 대본 월 600회 · SNS 연동</div>
+              <div class="text-[12px] text-[#85858b] mt-0.5">영상 제작·AI 생성 무제한 · 다운로드 &amp; SNS 게시 무제한</div>
             </div>
             <div class="text-right shrink-0">
-              <div class="text-[15px] font-mono font-medium text-[#ededed]">150,000원</div>
-              <div class="text-[11px] font-mono text-[#85858b]">일 5,000원꼴</div>
+              <div class="text-[15px] font-mono font-medium text-[#ededed]">59,000원</div>
+              <div class="text-[11px] font-mono text-[#85858b]">월 무제한</div>
             </div>
           </button>
 
-          <button type="button" id="planCard_weekly_50k" onclick="selectBillingPlan('weekly_50k')" class="p-3.5 rounded-[10px] border border-[var(--border)] bg-[#141415] text-left flex items-center justify-between cursor-pointer">
+          <button type="button" id="planCard_standard_29900" onclick="selectBillingPlan('standard_29900')" class="p-3.5 rounded-[10px] border border-[var(--border)] bg-[#141415] text-left flex items-center justify-between cursor-pointer">
             <div>
-              <div class="text-[14px] font-medium text-[#ededed]">주간 스타터 (7일마다 자동결제)</div>
-              <div class="text-[12px] text-[#85858b] mt-0.5">단기 집중 홍보용 · 워터마크 없는 영상 저장 · AI 성우 3만 자 · AI 대본 150회</div>
+              <div class="text-[14px] font-medium text-[#ededed]">스탠다드 (매달 자동결제)</div>
+              <div class="text-[12px] text-[#85858b] mt-0.5">영상 제작·AI 생성 무제한 · 다운로드 &amp; SNS 게시 월 30회</div>
             </div>
             <div class="text-right shrink-0">
-              <div class="text-[15px] font-mono font-medium text-[#ededed]">50,000원</div>
-              <div class="text-[11px] font-mono text-[#85858b]">7일 권</div>
-            </div>
-          </button>
-
-          <button type="button" id="planCard_annual_1200k" onclick="selectBillingPlan('annual_1200k')" class="p-3.5 rounded-[10px] border border-[var(--border)] bg-[#141415] text-left flex items-center justify-between cursor-pointer">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="text-[14px] font-medium text-[#ededed]">연간 VIP (매년 자동결제)</span>
-                <span class="tag-chip px-1.5 py-0.5 text-[10px] font-mono text-[#4cc38a]">33% 할인</span>
-              </div>
-              <div class="text-[12px] text-[#85858b] mt-0.5">월간 PRO와 같은 혜택(매달 사용량 다시 채워짐) · 법인카드 결제 가능</div>
-            </div>
-            <div class="text-right shrink-0">
-              <div class="text-[15px] font-mono font-medium text-[#ededed]">1,200,000원</div>
-              <div class="text-[11px] font-mono text-[#85858b]">월 10만원꼴</div>
+              <div class="text-[15px] font-mono font-medium text-[#ededed]">29,900원</div>
+              <div class="text-[11px] font-mono text-[#85858b]">월 30회</div>
             </div>
           </button>
         </div>
