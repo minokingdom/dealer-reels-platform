@@ -16,8 +16,8 @@
 #arSplashIntro .sp-wedge { width: 47%; height: 31%; left: 34%; top: 42%; background: var(--sp-bg); clip-path: polygon(0 0, 100% 50%, 0 100%); }
 #arSplashIntro .sp-notch { position: absolute; left: 0; top: 24%; height: 5%; width: 100%; background: var(--sp-bg); transform: rotate(-9deg) scaleX(1.1); transform-origin: center; }
 #arSplashIntro .sp-type { position: relative; padding-top: 1.5vw; text-align: left; }
-#arSplashIntro .sp-word { font-size: 12.1vw; font-weight: 800; letter-spacing: -.9vw; line-height: 1; margin: 0; color: var(--sp-cream); }
-#arSplashIntro .sp-line { font-size: clamp(17px, 1.9vw, 27px); margin: 24px 0 0 .45vw; letter-spacing: -.045em; color: var(--sp-muted); }
+#arSplashIntro .sp-word { font-size: 10.5vw; font-weight: 800; letter-spacing: -.035em; line-height: 1; margin: 0; color: var(--sp-cream); }
+#arSplashIntro .sp-line { font-size: clamp(17px, 1.9vw, 27px); margin: 24px 0 0 .45vw; letter-spacing: -.02em; color: var(--sp-muted); }
 #arSplashIntro .sp-corner { position: absolute; background: #1c1c20; width: 22vw; aspect-ratio: 1; border-radius: 50%; left: -12vw; bottom: -13vw; }
 #arSplashIntro .sp-corner.second { left: auto; bottom: auto; right: -13vw; top: -14vw; width: 33vw; background: #1a1a1e; }
 #arSplashIntro .sp-reg { position: absolute; left: 4vw; top: 5vh; display: flex; gap: 9px; }
@@ -48,7 +48,7 @@
   #arSplashIntro .sp-lockup { width: 100%; flex-direction: column; gap: 38px; margin-top: -12px; }
   #arSplashIntro .sp-symbol { width: 126px; max-height: 34vh; }
   #arSplashIntro .sp-type { text-align: center; padding: 0; }
-  #arSplashIntro .sp-word { font-size: 16.4vw; letter-spacing: -1.2vw; }
+  #arSplashIntro .sp-word { font-size: 15vw; letter-spacing: -.035em; }
   #arSplashIntro .sp-line { font-size: 17px; margin-top: 20px; }
   #arSplashIntro .sp-reg { left: 28px; top: max(40px, env(safe-area-inset-top)); }
   #arSplashIntro .sp-corner { width: 54vw; left: -36vw; bottom: -19vw; }
