@@ -343,7 +343,8 @@ async function handleTopics(body, res) {
 - 주제마다 방향이 서로 달라야 합니다 (예: 오늘의 추천, 시즌·기념일, 혜택·이벤트, 만드는 과정 보여주기, 정보·팁, 인기 키워드 활용).
 - title: 화면 카드에 쓸 주제 이름, 공백 포함 14자 이내.
 - why: 왜 오늘 이 주제인지 한 줄, 25자 이내 (예: "금요일 저녁 외식 수요", "수능 D-5").
-- prompt: 이 주제로 대본을 만들 때 AI에 넣을 상황 한 줄, 40자 이내. ${product} 이름을 모르면 일반적으로 쓰고 지어내지 마세요.
+- prompt: 이 주제로 대본을 만들 때 AI에 넣을 상황 한 줄, 50자 이내. "계기 → 손님의 마음·필요 → 우리 ${product}이(가) 채워 줌"이 한 줄에 이어지게 쓰세요.
+  예: "수능 끝나고 지친 몸과 마음을 따뜻한 국물 한 그릇으로", "수능 끝, 예쁜 대학 생활을 위한 자연스러운 변화". ${product} 이름을 모르면 일반적으로 쓰고 지어내지 마세요.
 - 가게 이름·주소·가격·후기·통계는 지어내지 마세요. 인기 키워드는 업종과 어울릴 때만 쓰세요.
 JSON으로만 출력: {"topics":[{"title":"","why":"","prompt":""}]}`;
   const user = `[업종]: ${indName} / 화자: ${role}
@@ -570,16 +571,32 @@ JSON 스키마:
   "ctaKeyword": "견적",
   "ctaBanner": "하단 댓글 유도 문구"
 }`;
-    const systemWithAngles = `${systemInstruction}${anglesRule}`;
+    // 오늘의 주제로 만든 대본: 계기(수능 등) → 손님의 마음·필요 → 우리 가게·상품이 채워 줌 → 오세요, 한 이야기로 잇기
+    const topic = body.topic && typeof body.topic === 'object' ? body.topic : null;
+    const topicTitle = topic ? String(topic.title || '').slice(0, 30) : '';
+    const topicWhy = topic ? String(topic.why || '').slice(0, 50) : '';
+    const storeLabel = isOther ? (dealerName || '') : [dealerName, dealerTitle].filter(Boolean).join(' ');
+    const storyRule = topic ? `
+
+[오늘의 주제로 이야기 잇기 — 가장 중요]
+오늘의 주제는 "${topicTitle}"(${topicWhy})입니다. 대본은 하나의 이야기로 이어져야 합니다:
+① 첫 컷(hook)에서 그 계기·시기를 직접 꺼내고(예: "수능 끝나고", "수능 앞둔 요즘"),
+② 그때 손님이 느끼는 마음이나 필요를 말하고(예: "몸도 마음도 지쳤을 때", "예쁜 대학 생활을 시작하고 싶을 때"),
+③ 그 필요를 우리 ${isOther ? I.product : '차'}이(가) 어떻게 채워 주는지 보여 주고(예: "따뜻한 국물 한 그릇", "자연스러운 변화"),
+④ 마지막 컷에서 ${storeLabel ? `"${storeLabel}"(으)로` : '저희 가게로'} 오시라고 자연스럽게 마무리하세요.
+예시 흐름: "수능 끝나고 몸도 마음도 지쳤죠" → "따뜻한 국물이 필요할 때" → "푹 고아낸 국물 한 그릇" → "${storeLabel || '저희 가게'}에서 기다릴게요".
+계기와 상품이 따로 놀지 않게, 모든 컷이 주제와 연결되게 쓰세요. 3안 모두 이 흐름을 지키되 말투와 강조점만 다르게 하세요.${storeLabel ? '' : ' 가게 이름은 지어내지 말고 "저희 가게"로 쓰세요.'}` : '';
+    const systemWithAngles = `${systemInstruction}${anglesRule}${storyRule}`;
 
     const speaker = [dealerBranch, dealerName, dealerTitle].filter(Boolean).join(' ');
     const speakerLine = speaker
       ? `[화자]: ${speaker}${dealerPromo ? ` (고객 혜택: ${dealerPromo})` : ''}`
       : `[화자]: ${I.role} (가게 이름·주소는 아직 입력하지 않음 — 지어내지 말 것)${dealerPromo ? ` (고객 혜택: ${dealerPromo})` : ''}`;
     // 사장님이 상황을 직접 적었으면 화면의 예시 상품(업종 프리셋)은 넘기지 않음 — 짬뽕집 입력에 갈비탕이 섞이지 않게
-    const userMessage = isOther ? `[입력 상황]: "${prompt || `${currentVehicle} 소개`}"
+    const userMessageBase = isOther ? `[입력 상황]: "${prompt || `${currentVehicle} 소개`}"
 ${speakerLine}${prompt ? '' : `\n[지금 ${I.product}]: ${currentVehicle} / ${body.discount || ''}`}` : `[카마스터 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
 [담당 카마스터]: ${dealerBranch} ${dealerName} ${dealerTitle}${dealerPromo ? ` (사은품: ${dealerPromo})` : ' (사은품·혜택은 입력하지 않음 — 지어내지 말 것)'}`;
+    const userMessage = topic ? `${userMessageBase}\n[오늘의 주제]: ${topicTitle} — ${topicWhy}` : userMessageBase;
 
     let aiResult = null;
     let providerUsed = '';
