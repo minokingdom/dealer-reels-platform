@@ -556,7 +556,10 @@
                 <div class="pointer-events-auto flex items-center gap-1">
                   <button type="button" id="igUndoBtn" onclick="undoCutOverlay()" class="hidden w-7 h-7 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white text-[13px] flex items-center justify-center cursor-pointer active:scale-90 transition" title="되돌리기">↩</button>
                   <button type="button" onclick="openIgTextCompose(-1)" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white text-[13px] font-bold flex items-center justify-center cursor-pointer active:scale-90 transition" title="글씨 넣기">Aa</button>
-                  <button type="button" onclick="openIgSheet('sticker')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="스티커 넣기">
+                  <button type="button" onclick="openIgDrawMode()" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="그리기 (펜·형광펜)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  </button>
+                  <button type="button" onclick="openIgSheet('sticker')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="스티커·사진·프레임">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/><path d="M8 13h.01"/><path d="M16 13h.01"/><path d="M9.5 16.5a3.5 3.5 0 0 0 5 0"/></svg>
                   </button>
                   <button type="button" onclick="openIgSheet('filter')" class="w-8 h-8 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-white/15 text-white flex items-center justify-center cursor-pointer active:scale-90 transition" title="컷 색감 필터">
@@ -625,6 +628,21 @@
                   <div id="igComposeColorBar" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none"></div>
                 </div>
               </div>
+              <!-- 인스타 스타일 그리기(펜·형광펜·네온) 모드 -->
+              <div id="igDrawOverlay" class="hidden pointer-events-auto absolute inset-0 flex flex-col justify-between p-2.5" style="touch-action:none;">
+                <div class="flex items-center justify-between gap-1 z-10">
+                  <div class="flex items-center gap-1">
+                    <button type="button" id="igDrawBrushBtn" onclick="cycleIgDrawBrush()" class="h-7 px-2.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold cursor-pointer">펜</button>
+                    <button type="button" id="igDrawSizeBtn" onclick="cycleIgDrawSize()" class="h-7 px-2 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] cursor-pointer">보통</button>
+                    <button type="button" onclick="undoIgDrawStroke()" class="h-7 px-2 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white text-[11px] cursor-pointer" title="한 획 취소">↩</button>
+                    <button type="button" onclick="clearIgDrawStrokes()" class="h-7 px-2 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-[#fca5a5] text-[11px] cursor-pointer">지움</button>
+                  </div>
+                  <button type="button" onclick="closeIgDrawMode()" class="h-7 px-3 rounded-full bg-white text-[#09090b] text-[11px] font-bold cursor-pointer">완료</button>
+                </div>
+                <div id="igDrawPad" class="flex-1 w-full cursor-crosshair"></div>
+                <div id="igDrawColorBar" class="flex items-center gap-1.5 overflow-x-auto pb-0.5 z-10 scrollbar-none"></div>
+              </div>
+              <input id="igPhotoStickerInput" type="file" accept="image/*" class="hidden" onchange="handleIgPhotoStickerUpload(event)" />
             </div>
             <!-- ★ 미리보기를 옆으로 밀면 나오는 디자인 스타일 사이드바 -->
             <button type="button" id="presetHandle" onclick="openPresetDrawer('right')" class="pd-handle" aria-label="디자인 스타일 열기">
@@ -666,7 +684,10 @@
 
           <!-- 컷 번호 고정 (누르면 미리보기 화면 위에서 인스타 편집기 열림) -->
           <div class="flex items-center justify-between gap-2 pt-0.5">
-            <span class="text-[11px] text-[#85858b]">컷 편집</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] text-[#85858b]">컷 편집</span>
+              <button type="button" id="clearAllCutEditsBtn" onclick="clearAllCutEdits()" class="hidden px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/15 border border-white/10 text-[10px] text-[#a1a1a6] hover:text-white cursor-pointer" title="모든 컷의 꾸미기 초기화">초기화</button>
+            </div>
             <div id="previewCutPinBar" class="flex items-center gap-1 flex-wrap justify-end"></div>
           </div>
 
@@ -17454,6 +17475,10 @@ function renderStoryArchetypesUI() {
       { id: 'blackhan', label: '임팩트', css: "'Black Han Sans', sans-serif", weight: 400 },
       { id: 'bagel', label: '통통', css: "'Bagel Fat One', sans-serif", weight: 400 },
       { id: 'jua', label: '동글', css: "'Jua', sans-serif", weight: 400 },
+      { id: 'gugi', label: '레트로', css: "'Gugi', sans-serif", weight: 400 },
+      { id: 'singleday', label: '다이어리', css: "'Single Day', cursive", weight: 400 },
+      { id: 'himelody', label: '멜로디', css: "'Hi Melody', cursive", weight: 400 },
+      { id: 'dokdo', label: '캘리', css: "'East Sea Dokdo', cursive", weight: 400 },
       { id: 'serif', label: '명조', css: "'Noto Serif KR', serif", weight: 900 },
       { id: 'batang', label: '감성', css: "'Gowun Batang', serif", weight: 700 },
       { id: 'pen', label: '손글씨', css: "'Nanum Pen Script', cursive", weight: 400 },
@@ -17593,37 +17618,269 @@ function renderStoryArchetypesUI() {
 
     function loadCutDecos() {
       try {
-        const raw = localStorage.getItem('autoreels_cut_decos');
-        const arr = raw ? JSON.parse(raw) : [];
-        campaign.cutDecos = Array.isArray(arr) ? arr : [];
-      } catch (e) { campaign.cutDecos = []; }
-      try {
-        const rawO = localStorage.getItem('autoreels_cut_overlays');
-        const arrO = rawO ? JSON.parse(rawO) : [];
-        campaign.cutOverlays = Array.isArray(arrO) ? arrO : [];
-      } catch (e) { campaign.cutOverlays = []; }
-      try {
-        const rawF = localStorage.getItem('autoreels_cut_filters');
-        const arrF = rawF ? JSON.parse(rawF) : [];
-        campaign.cutFilters = Array.isArray(arrF) ? arrF : [];
-      } catch (e) { campaign.cutFilters = []; }
-      try {
-        const rawFr = localStorage.getItem('autoreels_cut_frames');
-        const arrFr = rawFr ? JSON.parse(rawFr) : [];
-        campaign.cutFrames = Array.isArray(arrFr) ? arrFr : [];
-      } catch (e) { campaign.cutFrames = []; }
+        localStorage.removeItem('autoreels_cut_decos');
+        localStorage.removeItem('autoreels_cut_overlays');
+        localStorage.removeItem('autoreels_cut_filters');
+        localStorage.removeItem('autoreels_cut_frames');
+        localStorage.removeItem('autoreels_cut_strokes');
+      } catch (e) {}
+      campaign.cutDecos = [];
+      campaign.cutOverlays = [];
+      campaign.cutFilters = [];
+      campaign.cutFrames = [];
+      campaign.cutStrokes = [];
     }
-    function saveCutDecos() {
-      try { localStorage.setItem('autoreels_cut_decos', JSON.stringify(campaign.cutDecos || [])); } catch (e) {}
+    function saveCutDecos() {}
+    function saveCutOverlays() {}
+    function saveCutFilters() {}
+    function saveCutFrames() {}
+    function saveCutStrokes() {}
+    function clearAllCutEdits() {
+      campaign.cutDecos = [];
+      campaign.cutOverlays = [];
+      campaign.cutFilters = [];
+      campaign.cutFrames = [];
+      campaign.cutStrokes = [];
+      window.__arPinnedCut = -1;
+      window.__arPinnedCutIdx = -1;
+      window.__arSelectedOverlayIdx = -1;
+      window.__arOverlayUndo = [];
+      closeIgSheet();
+      if (typeof closeIgDrawMode === 'function') closeIgDrawMode(true);
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
+      if (typeof renderCutOverlayEditorLayer === 'function') renderCutOverlayEditorLayer();
+      if (typeof renderIgEditorHud === 'function') renderIgEditorHud();
     }
-    function saveCutOverlays() {
-      try { localStorage.setItem('autoreels_cut_overlays', JSON.stringify(campaign.cutOverlays || [])); } catch (e) {}
+
+    window.__arPhotoStickerCache = window.__arPhotoStickerCache || {};
+    function getPhotoStickerImg(src) {
+      if (!src) return null;
+      let img = window.__arPhotoStickerCache[src];
+      if (!img) {
+        img = new Image();
+        img.onload = () => {
+          if (window.__timelines && window.__timelines.main) {
+            window.__timelines.main.seek(window.__timelines.main.currentTime);
+          }
+        };
+        img.src = src;
+        window.__arPhotoStickerCache[src] = img;
+      }
+      return img && img.complete && img.naturalWidth > 0 ? img : null;
     }
-    function saveCutFilters() {
-      try { localStorage.setItem('autoreels_cut_filters', JSON.stringify(campaign.cutFilters || [])); } catch (e) {}
+
+    function handleIgPhotoStickerUpload(event) {
+      const file = event && event.target && event.target.files && event.target.files[0];
+      if (event && event.target) event.target.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const rawUrl = reader.result;
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 480;
+          let w = img.naturalWidth || 400;
+          let h = img.naturalHeight || 400;
+          if (w > maxDim || h > maxDim) {
+            const r = Math.min(maxDim / w, maxDim / h);
+            w = Math.round(w * r);
+            h = Math.round(h * r);
+          }
+          const c = document.createElement('canvas');
+          c.width = w;
+          c.height = h;
+          const cx = c.getContext('2d');
+          cx.drawImage(img, 0, 0, w, h);
+          const dataUrl = c.toDataURL('image/webp', 0.88);
+          getPhotoStickerImg(dataUrl);
+          const cutIdx = ensureActivePinCut();
+          if (cutIdx < 0) return;
+          pushCutOverlayUndo();
+          if (!Array.isArray(campaign.cutOverlays)) campaign.cutOverlays = [];
+          if (!Array.isArray(campaign.cutOverlays[cutIdx])) campaign.cutOverlays[cutIdx] = [];
+          const list = campaign.cutOverlays[cutIdx];
+          list.push({
+            id: 'ov_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+            type: 'sticker',
+            style: 'photo',
+            photoSrc: dataUrl,
+            photoShape: 'round',
+            aspect: w / Math.max(1, h),
+            x: 0.5,
+            y: 0.5,
+            scale: 1,
+            rotation: 0
+          });
+          window.__arSelectedOverlayIdx = list.length - 1;
+          closeIgSheet();
+          if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+          renderPreviewCutPinBar();
+          renderCutOverlayEditorLayer();
+          renderIgEditorHud();
+        };
+        img.src = rawUrl;
+      };
+      reader.readAsDataURL(file);
     }
-    function saveCutFrames() {
-      try { localStorage.setItem('autoreels_cut_frames', JSON.stringify(campaign.cutFrames || [])); } catch (e) {}
+
+    const IG_DRAW_BRUSHES = [
+      { id: 'pen', label: '펜' },
+      { id: 'highlighter', label: '형광' },
+      { id: 'neon', label: '네온' }
+    ];
+    const IG_DRAW_SIZES = [8, 16, 28, 42];
+    window.__arDrawBrushIdx = 0;
+    window.__arDrawSizeIdx = 1;
+    window.__arDrawColor = '#ffffff';
+    window.__arDrawActive = null;
+
+    function openIgDrawMode() {
+      const cutIdx = ensureActivePinCut();
+      if (cutIdx < 0) return;
+      closeIgSheet();
+      const overlay = document.getElementById('igDrawOverlay');
+      const pad = document.getElementById('igDrawPad');
+      const colorBar = document.getElementById('igDrawColorBar');
+      if (!overlay || !pad || !colorBar) return;
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      const brushBtn = document.getElementById('igDrawBrushBtn');
+      const sizeBtn = document.getElementById('igDrawSizeBtn');
+      if (brushBtn) brushBtn.textContent = IG_DRAW_BRUSHES[window.__arDrawBrushIdx].label;
+      if (sizeBtn) sizeBtn.textContent = '두께 ' + IG_DRAW_SIZES[window.__arDrawSizeIdx];
+      colorBar.innerHTML = CUT_TEXT_COLORS.map(c =>
+        `<button type="button" onclick="window.__arDrawColor='${c}';document.querySelectorAll('#igDrawColorBar button').forEach(b=>b.classList.remove('ring-2','ring-white'));this.classList.add('ring-2','ring-white');" class="w-6 h-6 rounded-full shrink-0 border border-white/40 ${window.__arDrawColor === c ? 'ring-2 ring-white' : ''}" style="background:${c};"></button>`
+      ).join('');
+      pad.onpointerdown = (ev) => {
+        ev.preventDefault();
+        const rect = pad.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const cIdx = ensureActivePinCut();
+        if (cIdx < 0) return;
+        if (!Array.isArray(campaign.cutStrokes)) campaign.cutStrokes = [];
+        if (!Array.isArray(campaign.cutStrokes[cIdx])) campaign.cutStrokes[cIdx] = [];
+        const pt = {
+          x: Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width)),
+          y: Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height))
+        };
+        const stroke = {
+          brush: IG_DRAW_BRUSHES[window.__arDrawBrushIdx].id,
+          color: window.__arDrawColor,
+          size: IG_DRAW_SIZES[window.__arDrawSizeIdx],
+          points: [pt]
+        };
+        campaign.cutStrokes[cIdx].push(stroke);
+        window.__arDrawActive = { cutIdx: cIdx, stroke, rect };
+        try { pad.setPointerCapture(ev.pointerId); } catch (e) {}
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      };
+      pad.onpointermove = (ev) => {
+        if (!window.__arDrawActive) return;
+        const { stroke, rect } = window.__arDrawActive;
+        const pt = {
+          x: Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width)),
+          y: Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height))
+        };
+        const last = stroke.points[stroke.points.length - 1];
+        if (!last || Math.hypot(pt.x - last.x, pt.y - last.y) > 0.003) {
+          stroke.points.push(pt);
+          if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+        }
+      };
+      pad.onpointerup = pad.onpointercancel = () => {
+        if (!window.__arDrawActive) return;
+        window.__arDrawActive = null;
+        renderPreviewCutPinBar();
+        renderIgEditorHud();
+      };
+    }
+
+    function closeIgDrawMode(silent) {
+      window.__arDrawActive = null;
+      const overlay = document.getElementById('igDrawOverlay');
+      if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+      }
+      if (!silent) {
+        renderPreviewCutPinBar();
+        renderIgEditorHud();
+      }
+    }
+
+    function cycleIgDrawBrush() {
+      window.__arDrawBrushIdx = (window.__arDrawBrushIdx + 1) % IG_DRAW_BRUSHES.length;
+      const btn = document.getElementById('igDrawBrushBtn');
+      if (btn) btn.textContent = IG_DRAW_BRUSHES[window.__arDrawBrushIdx].label;
+    }
+
+    function cycleIgDrawSize() {
+      window.__arDrawSizeIdx = (window.__arDrawSizeIdx + 1) % IG_DRAW_SIZES.length;
+      const btn = document.getElementById('igDrawSizeBtn');
+      if (btn) btn.textContent = '두께 ' + IG_DRAW_SIZES[window.__arDrawSizeIdx];
+    }
+
+    function undoIgDrawStroke() {
+      const cutIdx = ensureActivePinCut();
+      if (cutIdx < 0 || !Array.isArray(campaign.cutStrokes) || !Array.isArray(campaign.cutStrokes[cutIdx])) return;
+      campaign.cutStrokes[cutIdx].pop();
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
+    }
+
+    function clearIgDrawStrokes() {
+      const cutIdx = ensureActivePinCut();
+      if (cutIdx < 0 || !Array.isArray(campaign.cutStrokes)) return;
+      campaign.cutStrokes[cutIdx] = [];
+      if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
+      renderPreviewCutPinBar();
+    }
+
+    function drawCutStrokesOverlay(ctx, w, h, cutIdx) {
+      const strokes = Array.isArray(campaign.cutStrokes) && Array.isArray(campaign.cutStrokes[cutIdx]) ? campaign.cutStrokes[cutIdx] : [];
+      if (!strokes.length) return;
+      const scale = w / 1080;
+      strokes.forEach(s => {
+        if (!s || !Array.isArray(s.points) || !s.points.length) return;
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        const lw = (s.size || 16) * scale;
+        ctx.lineWidth = lw;
+        ctx.strokeStyle = s.color || '#ffffff';
+        if (s.brush === 'highlighter') {
+          ctx.globalAlpha = 0.45;
+          ctx.lineCap = 'butt';
+          ctx.lineWidth = lw * 1.45;
+        } else if (s.brush === 'neon') {
+          ctx.shadowColor = s.color || '#ffffff';
+          ctx.shadowBlur = lw * 1.6;
+          ctx.strokeStyle = '#ffffff';
+        }
+        ctx.beginPath();
+        const pts = s.points;
+        ctx.moveTo(pts[0].x * w, pts[0].y * h);
+        if (pts.length === 1) {
+          ctx.lineTo(pts[0].x * w + 0.1, pts[0].y * h + 0.1);
+        } else {
+          for (let i = 1; i < pts.length - 1; i++) {
+            const mx = ((pts[i].x + pts[i + 1].x) / 2) * w;
+            const my = ((pts[i].y + pts[i + 1].y) / 2) * h;
+            ctx.quadraticCurveTo(pts[i].x * w, pts[i].y * h, mx, my);
+          }
+          const last = pts[pts.length - 1];
+          ctx.lineTo(last.x * w, last.y * h);
+        }
+        ctx.stroke();
+        if (s.brush === 'neon') {
+          ctx.shadowBlur = lw * 0.5;
+          ctx.strokeStyle = s.color || '#ffffff';
+          ctx.lineWidth = lw * 0.45;
+          ctx.stroke();
+        }
+        ctx.restore();
+      });
     }
     function setCutFrame(idx, frameKey) {
       if (!Array.isArray(campaign.cutFrames)) campaign.cutFrames = [];
@@ -17976,7 +18233,66 @@ function renderStoryArchetypesUI() {
       c.textBaseline = 'middle';
 
       if (item.type === 'sticker') {
-        if (item.variant === 'widget' || item.variant === 'doodle') {
+        if (item.style === 'photo' && item.photoSrc) {
+          const img = getPhotoStickerImg(item.photoSrc);
+          const shape = item.photoShape || 'round';
+          const base = 280 * sc;
+          const asp = Number(item.aspect) || 1;
+          const pw = asp >= 1 ? base : base * asp;
+          const ph = asp >= 1 ? base / asp : base;
+          if (img) {
+            c.save();
+            c.shadowColor = 'rgba(0,0,0,0.42)';
+            c.shadowBlur = 18 * sc;
+            c.shadowOffsetY = 6 * sc;
+            if (shape === 'polaroid') {
+              const pad = 14 * sc;
+              const bot = 42 * sc;
+              gRoundRect(c, -pw / 2 - pad, -ph / 2 - pad, pw + pad * 2, ph + pad + bot, 8 * sc);
+              c.fillStyle = '#ffffff';
+              c.fill();
+              c.shadowBlur = 0;
+              c.shadowOffsetY = 0;
+              c.drawImage(img, -pw / 2, -ph / 2, pw, ph);
+            } else if (shape === 'circle') {
+              const d = Math.min(pw, ph);
+              c.beginPath();
+              c.arc(0, 0, d / 2, 0, Math.PI * 2);
+              c.fillStyle = '#ffffff';
+              c.fill();
+              c.shadowBlur = 0;
+              c.shadowOffsetY = 0;
+              c.save();
+              c.beginPath();
+              c.arc(0, 0, d / 2, 0, Math.PI * 2);
+              c.clip();
+              c.drawImage(img, -pw / 2, -ph / 2, pw, ph);
+              c.restore();
+              c.beginPath();
+              c.arc(0, 0, d / 2, 0, Math.PI * 2);
+              c.lineWidth = 4 * sc;
+              c.strokeStyle = 'rgba(255,255,255,0.9)';
+              c.stroke();
+            } else {
+              const rad = shape === 'round' ? 24 * sc : 4 * sc;
+              gRoundRect(c, -pw / 2, -ph / 2, pw, ph, rad);
+              c.fillStyle = 'rgba(255,255,255,0.12)';
+              c.fill();
+              c.shadowBlur = 0;
+              c.shadowOffsetY = 0;
+              c.save();
+              gRoundRect(c, -pw / 2, -ph / 2, pw, ph, rad);
+              c.clip();
+              c.drawImage(img, -pw / 2, -ph / 2, pw, ph);
+              c.restore();
+              gRoundRect(c, -pw / 2, -ph / 2, pw, ph, rad);
+              c.lineWidth = 3 * sc;
+              c.strokeStyle = 'rgba(255,255,255,0.85)';
+              c.stroke();
+            }
+            c.restore();
+          }
+        } else if (item.variant === 'widget' || item.variant === 'doodle') {
           drawIgWidgetSticker(c, item, sc);
         } else if (item.variant === 'badge') {
           const fs = Math.round(30 * sc);
@@ -18239,6 +18555,7 @@ function renderStoryArchetypesUI() {
       if (Array.isArray(overlays) && overlays.length) {
         overlays.forEach((item) => drawSingleCutOverlayItem(c, W, H, item, localT));
       }
+      if (typeof drawCutStrokesOverlay === 'function') drawCutStrokesOverlay(c, W, H, cutIdx);
     }
 
     function renderPreviewCutPinBar() {
@@ -18248,11 +18565,17 @@ function renderStoryArchetypesUI() {
       const decos = Array.isArray(campaign.cutDecos) ? campaign.cutDecos : [];
       const ovs = Array.isArray(campaign.cutOverlays) ? campaign.cutOverlays : [];
       const flts = Array.isArray(campaign.cutFilters) ? campaign.cutFilters : [];
+      const frms = Array.isArray(campaign.cutFrames) ? campaign.cutFrames : [];
+      const stks = Array.isArray(campaign.cutStrokes) ? campaign.cutStrokes : [];
+      let anyEdited = false;
       bar.innerHTML = Array.from({ length: n }, (_, i) => {
         const pinned = window.__arPinnedCut === i;
-        const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || (Array.isArray(ovs[i]) && ovs[i].length > 0);
+        const hasDeco = (decos[i] && decos[i] !== 'none') || (flts[i] && flts[i] !== 'none') || !!frms[i] || (Array.isArray(ovs[i]) && ovs[i].length > 0) || (Array.isArray(stks[i]) && stks[i].length > 0);
+        if (hasDeco) anyEdited = true;
         return `<button type="button" onclick="togglePinPreviewCut(${i})" class="px-2 py-0.5 rounded-[6px] text-[11px] font-semibold border cursor-pointer transition ${pinned ? 'bg-white border-white text-[#09090b]' : hasDeco ? 'bg-[#facc15]/15 border-[#facc15]/60 text-[#fde047]' : 'bg-white/5 border-white/10 text-[#a1a1a6] hover:text-white'}" title="${i + 1}번 컷 편집">${i + 1}${hasDeco ? '✦' : ''}</button>`;
       }).join('');
+      const clearBtn = document.getElementById('clearAllCutEditsBtn');
+      if (clearBtn) clearBtn.classList.toggle('hidden', !anyEdited);
       renderIgEditorHud();
       renderCutOverlayEditorLayer();
     }
@@ -18290,7 +18613,7 @@ function renderStoryArchetypesUI() {
           const aObj = CUT_OVERLAY_ANIMS.find((a) => a.id === (selItem.anim || 'static')) || CUT_OVERLAY_ANIMS[0];
           animBtn.textContent = aObj.label;
         }
-        const canEdit = selItem.type === 'text' || (selItem.type === 'sticker' && selItem.variant === 'widget' && ['loc', 'poll', 'tag', 'dm'].includes(selItem.key));
+        const canEdit = selItem.type === 'text' || selItem.style === 'photo' || (selItem.type === 'sticker' && selItem.variant === 'widget' && ['loc', 'poll', 'tag', 'dm'].includes(selItem.key));
         if (editBtn) editBtn.classList.toggle('hidden', !canEdit);
       }
     }
@@ -18311,7 +18634,7 @@ function renderStoryArchetypesUI() {
       </div>`;
       let inner = '';
       if (stTab === 'widget') {
-        inner = `<div class="grid grid-cols-2 gap-1.5">${CUT_STICKER_WIDGETS.map((w) =>
+        inner = `<button type="button" onclick="document.getElementById('igPhotoStickerInput').click()" class="w-full mb-2 py-2 px-3 rounded-[12px] bg-white/12 hover:bg-white/20 border border-dashed border-white/30 text-[12px] font-bold text-white flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">📷 내 사진 스티커 올리기 <span class="text-[10px] font-normal text-white/65">(갤러리 사진)</span></button><div class="grid grid-cols-2 gap-1.5">${CUT_STICKER_WIDGETS.map((w) =>
           `<button type="button" onclick="addCutStickerOverlay('widget','${w.key}');closeIgSheet()" class="p-2 rounded-[12px] border border-white/15 text-left cursor-pointer active:scale-95 transition shadow" style="background:${w.bg || 'rgba(255,255,255,0.08)'}">
             <div class="text-[12px] font-bold text-white">${w.label}</div>
             <div class="text-[10px] text-white/75 truncate">${w.sub}</div>
@@ -18649,6 +18972,13 @@ function renderStoryArchetypesUI() {
       if (!it) return;
       if (it.type === 'text') {
         openIgTextCompose(ii);
+      } else if (it.type === 'sticker' && it.style === 'photo') {
+        const shapes = ['round', 'circle', 'polaroid', 'rect'];
+        const nextShape = shapes[(shapes.indexOf(it.photoShape || 'round') + 1) % shapes.length];
+        pushCutOverlayUndo();
+        it.photoShape = nextShape;
+        saveCutOverlays();
+        if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
       } else if (it.type === 'sticker' && it.variant === 'widget') {
         const next = prompt('위젯 문구 수정', it.customText || '');
         if (next !== null) {
