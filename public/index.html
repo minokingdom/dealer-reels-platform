@@ -25,6 +25,8 @@
   <meta name="twitter:description" content="사진만 올리면 릴스·쇼츠 완성! 디자인 136종" />
   <meta name="twitter:image" content="https://dealer-reels-platform.vercel.app/og-cover-136.jpg" />
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <link rel="stylesheet" href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Black+Han+Sans&family=Noto+Serif+KR:wght@700;900&family=Do+Hyeon&family=Jua&family=Nanum+Pen+Script&family=Gugi&family=Gaegu:wght@700&family=Hi+Melody&family=East+Sea+Dokdo&family=Single+Day&family=Yeon+Sung&family=Poor+Story&family=Gamja+Flower&family=Nanum+Brush+Script&family=Gasoek+One&family=Bagel+Fat+One&family=Song+Myung&family=Black+And+White+Picture&family=Dongle:wght@700&family=Great+Vibes&family=Pinyon+Script&display=swap" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.css"></script>
@@ -9272,7 +9274,7 @@ function renderStoryArchetypesUI() {
 
     const GENRE_FONTS = {
       impact: '"Black Han Sans", "Pretendard Variable", sans-serif',
-      serif: '"Noto Serif KR", "Pretendard Variable", serif',
+      serif: '"MaruBuri", "Gowun Batang", "Noto Serif KR", serif', // 인스타 감성: 굵은 Noto Serif 대신 마루부리
       sans: '"Pretendard Variable", Pretendard, sans-serif',
       mono: '"JetBrains Mono", ui-monospace, monospace'
     };
@@ -11073,7 +11075,7 @@ function renderStoryArchetypesUI() {
     // ==========================================================================
     const KIT_FONTS = {
       impact: { f: GENRE_FONTS.impact, w: 400, k: 1 },
-      serif: { f: GENRE_FONTS.serif, w: 900, k: 1 },
+      serif: { f: GENRE_FONTS.serif, w: 700, k: 1 },
       sans: { f: GENRE_FONTS.sans, w: 800, k: 1 },
       mono: { f: GENRE_FONTS.mono, w: 700, k: 0.9 },
       dohyeon: { f: '"Do Hyeon", "Pretendard Variable", sans-serif', w: 400, k: 1.05 },
@@ -11095,7 +11097,13 @@ function renderStoryArchetypesUI() {
       dongle: { f: '"Dongle", "Pretendard Variable", sans-serif', w: 700, k: 1.6 },
       serif7: { f: GENRE_FONTS.serif, w: 700, k: 1 },
       greatvibes: { f: '"Great Vibes", "Nanum Brush Script", cursive', w: 400, k: 1.15 },
-      pinyon: { f: '"Pinyon Script", "Nanum Brush Script", cursive', w: 400, k: 1.0 }
+      pinyon: { f: '"Pinyon Script", "Nanum Brush Script", cursive', w: 400, k: 1.0 },
+      // 인스타 감성 스타일용: 얇은 명조·얇은 고딕
+      maru: { f: '"MaruBuri", "Gowun Batang", serif', w: 600, k: 1 },
+      maruL: { f: '"MaruBuri", "Gowun Batang", serif', w: 400, k: 1 },
+      gowun: { f: '"Gowun Batang", "MaruBuri", serif', w: 400, k: 1.02 },
+      pretL: { f: '"Pretendard Variable", Pretendard, sans-serif', w: 500, k: 1 },
+      pretM: { f: '"Pretendard Variable", Pretendard, sans-serif', w: 600, k: 1 }
     };
     // 디자인에 쓰인 글꼴만 그때그때 내려받음 (처음 화면을 무겁게 하지 않도록)
     const kitFontLoads = {};
@@ -15044,8 +15052,8 @@ function renderStoryArchetypesUI() {
       if (typeof recordDesignUse === 'function') recordDesignUse(id);
       const dsel = DESIGN_STYLES.find((d) => d.id === id);
       applyDesignBgm(dsel, true);
-      if (dsel && dsel.engine === 'kit') {
-        Promise.all([dsel.font, dsel.sfont, 'brush'].filter(Boolean).map(kitEnsureFont)).then(() => {
+      if (dsel && (dsel.engine === 'kit' || dsel.engine === 'motion')) {
+        Promise.all([dsel.font, dsel.sfont, dsel.engine === 'kit' ? 'brush' : null, dsel.insta ? 'maruL' : null, dsel.insta ? 'pretL' : null].filter(Boolean).map(kitEnsureFont)).then(() => {
           if (window.__timelines && window.__timelines.main) window.__timelines.main.seek(window.__timelines.main.currentTime);
         });
       }
@@ -15199,7 +15207,14 @@ function renderStoryArchetypesUI() {
       ['mo_glow', '카메라 글로우', 'glow', 'serif', '#1a0f08', '#2b1709', '#fb923c', '#fde68a', false],
       ['mo_bokeh', '보케 스포트라이트', 'bokeh', 'sans', '#120a1c', '#1e1030', '#f0abfc', '#fde68a', false],
       ['mo_cinema', '시네마 레터박스', 'cinema', 'serif', '#000000', '#0c0a09', '#d4af37', '#f5f5f4', false],
-      ['mo_credits', '엔딩 크레딧 롤', 'credits', 'sans', '#0a0a0c', '#111114', '#facc15', '#ffffff', false]
+      ['mo_credits', '엔딩 크레딧 롤', 'credits', 'sans', '#0a0a0c', '#111114', '#facc15', '#ffffff', false],
+      // 2026-11 인스타 감성(카페·브이로그): 크림톤·필름 그레인·얇은 명조·작은 자막·여백·"— 가게명" 서명
+      ['in_film', '크림 필름', 'in_film', 'maru', '#f3ece1', '#efe6d8', '#8a6a4f', '#2b2622', true],
+      ['in_mood', '무드 풀샷', 'in_mood', 'maru', '#1a1512', '#120e0c', '#e8d5bc', '#ffffff', false],
+      ['in_diary', '다이어리 노트', 'in_diary', 'pen', '#fbf8f1', '#f6f1e6', '#b07a5a', '#3b2f28', true],
+      ['in_letter', '미니멀 레터', 'in_letter', 'pretL', '#f7f5f0', '#f2efe8', '#9a8f80', '#2a2724', true],
+      ['in_vlog', '브이로그 타임스탬프', 'in_vlog', 'pretM', '#111111', '#0b0b0b', '#f5e6c8', '#ffffff', false],
+      ['in_collage', '크림 콜라주', 'in_collage', 'maru', '#efe7da', '#e9dfcf', '#a0785a', '#2d2621', true]
     ];
     // 모션 디자인도 별도 분류를 만들지 않고 기존 분류에 넣음
     const MOTION_CAT = {
@@ -15207,11 +15222,13 @@ function renderStoryArchetypesUI() {
       mo_aurora: '감성', mo_dots: '재미', mo_number: '특가', mo_strips: '브이로그', mo_circle: '고급', mo_ribbon: '뉴스·방송',
       mo_doors: '고급', mo_bounce: '타이포', ig_story: '브이로그', ig_feed: '브이로그', ig_poll: '재미', mo_vhs: '브이로그',
       mo_neon: '재미', mo_scrap: '감성', mo_punch: '스포츠', mo_cube: '테크', mo_glow: '감성', mo_bokeh: '고급',
-      mo_cinema: '고급', mo_credits: '뉴스·방송'
+      mo_cinema: '고급', mo_credits: '뉴스·방송',
+      in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그'
     };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
       bg1: r[4], bg2: r[5], accent: r[6], accent2: r[7], light: r[8], seed: 900 + i, genre: 'motion', grade: 'none', label: r[1],
+      insta: String(r[0]).startsWith('in_'), // 인스타 감성: 배경색을 업종 색으로 바꾸지 않고, 엔딩도 크림 카드로
       desc: `모션그래픽 · ${r[1]}`
     }));
     DESIGN_STYLES.push(...MOTION_DESIGNS);
@@ -15264,6 +15281,75 @@ function renderStoryArchetypesUI() {
       c.clip();
       kitCover(c, img, x, y, w, h, scale, px, py);
       c.restore();
+    }
+    // ---------- 인스타 감성 도우미 ----------
+    let arGrainTile = null;
+    function inGrain(c, W, H, t, alpha) {
+      if (!arGrainTile) {
+        arGrainTile = document.createElement('canvas');
+        arGrainTile.width = 160; arGrainTile.height = 160;
+        const g = arGrainTile.getContext('2d');
+        const im = g.createImageData(160, 160);
+        for (let i = 0; i < im.data.length; i += 4) {
+          const v = Math.random() * 255;
+          im.data[i] = im.data[i + 1] = im.data[i + 2] = v;
+          im.data[i + 3] = 255;
+        }
+        g.putImageData(im, 0, 0);
+      }
+      c.save();
+      c.globalAlpha = alpha;
+      c.globalCompositeOperation = 'overlay';
+      const ox = Math.floor((Math.sin(t * 37.1) * 0.5 + 0.5) * 160), oy = Math.floor((Math.cos(t * 23.7) * 0.5 + 0.5) * 160);
+      for (let y = -oy; y < H; y += 160) for (let x = -ox; x < W; x += 160) c.drawImage(arGrainTile, x, y);
+      c.restore();
+    }
+    // 따뜻한 필름 색감: 노란빛을 살짝 얹고 검은색을 들어 올림
+    function inWarm(c, x, y, w, h, k = 1) {
+      c.save();
+      c.globalCompositeOperation = 'soft-light';
+      c.fillStyle = `rgba(255,196,140,${0.32 * k})`;
+      c.fillRect(x, y, w, h);
+      c.globalCompositeOperation = 'screen';
+      c.fillStyle = `rgba(60,44,30,${0.16 * k})`;
+      c.fillRect(x, y, w, h);
+      c.restore();
+    }
+    function inDateLabel() {
+      const n = new Date();
+      return `${String(n.getMonth() + 1).padStart(2, '0')}.${String(n.getDate()).padStart(2, '0')} ${['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][n.getDay()]}`;
+    }
+    // 서명: "— 가게 이름" (명함이 비었으면 그리지 않음)
+    function inSign(c, d, x, y, color, align = 'right', size = 18) {
+      const name = String((d && d.name) || '').trim();
+      if (!name) return;
+      c.save();
+      c.textAlign = align;
+      c.textBaseline = 'middle';
+      c.fillStyle = color;
+      gDrawLine(c, `— ${name}`, x, y, 300, size, 12, KIT_FONTS.maruL.f, 400);
+      c.restore();
+    }
+    // 작은 영문·숫자 라벨 (자간 넓게)
+    function inLabel(c, text, x, y, color, align = 'left', size = 13) {
+      c.save();
+      c.textAlign = align;
+      c.textBaseline = 'middle';
+      c.fillStyle = color;
+      c.font = gFont(500, size, GENRE_FONTS.sans);
+      if ('letterSpacing' in c) c.letterSpacing = '2px';
+      c.fillText(text, x, y);
+      c.restore();
+    }
+    // 컷이 바뀔 때 앞 사진에서 부드럽게 겹쳐 바뀜
+    function inPhotoFade(c, S, cutIdx, local, x, y, w, h, scale, warm = 1) {
+      const fade = cutIdx > 0 ? mEase(local / 0.5) : 1;
+      if (fade < 1) mPhoto(c, S, -1, x, y, w, h, scale);
+      c.save();
+      c.globalAlpha = fade;
+      mPhoto(c, S, 0, x, y, w, h, scale);
+      c.restore();
+      if (warm) inWarm(c, x, y, w, h, warm);
     }
     function mBg(c, W, H, spec, t) {
       const g = c.createLinearGradient(0, 0, W * 0.4, H);
@@ -15399,7 +15485,7 @@ function renderStoryArchetypesUI() {
       const userColor = campaign.colorKey && campaign.colorKey !== 'default';
       const pal = typeof IND !== 'undefined' && IND.key !== 'auto' ? AR_IND_PALETTE[IND.key] : null;
       const accent = userColor ? ((V && V.accent) || spec.accent) : pal ? pal[0] : spec.accent;
-      const sp = Object.assign({}, spec, { accent }, pal && !spec.light && !userColor ? { bg1: pal[1], bg2: pal[2] } : {});
+      const sp = Object.assign({}, spec, { accent }, pal && !spec.light && !spec.insta && !userColor ? { bg1: pal[1], bg2: pal[2] } : {});
       if (t >= mainDuration) return renderMotionOutro(c, W, H, t, mainDuration, d, sp);
       const cutDur = mainDuration / totalCuts;
       const cutIdx = Math.min(totalCuts - 1, Math.floor(t / cutDur));
@@ -16121,6 +16207,113 @@ function renderStoryArchetypesUI() {
         c.fill();
         if (isPrice) mPrice(c, W, capY - 10, sp, e);
         mCaption(c, caption, W / 2, capY + (isPrice ? 30 : 4), W - 80, capH - (isPrice ? 30 : 8), 38, sp.font, '#ffffff', e);
+      } else if (M === 'in_film') {
+        // 크림 필름: 크림 바탕 위 4:5 사진, 아래 얇은 명조 자막과 서명
+        const px = 36, pw = W - 72, ph = Math.round(pw * 1.22), py = 74;
+        inLabel(c, inDateLabel(), px, 44, '#8a7d70');
+        inLabel(c, 'today\x27s pick', W - px, 44, '#8a7d70', 'right');
+        inPhotoFade(c, S, cutIdx, local, px, py, pw, ph, 1.02 + lp * 0.03);
+        mCaption(c, caption, px, py + ph + 26, pw, 120, 30, 'maru', '#2b2622', e, 'left');
+        inSign(c, d, W - px, H - 46, '#6f6156');
+        inGrain(c, W, H, t, 0.07);
+      } else if (M === 'in_mood') {
+        // 무드 풀샷: 꽉 찬 사진 + 따뜻한 색감·비네트, 왼쪽 아래 작은 명조 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.04 + lp * 0.04, 1.1);
+        const vg = c.createLinearGradient(0, H * 0.5, 0, H);
+        vg.addColorStop(0, 'rgba(20,14,10,0)');
+        vg.addColorStop(1, 'rgba(20,14,10,0.62)');
+        c.fillStyle = vg;
+        c.fillRect(0, H * 0.5, W, H * 0.5);
+        inLabel(c, `today · ${inDateLabel().toLowerCase()}`, 30, 42, 'rgba(255,255,255,0.86)');
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.35)';
+        c.shadowBlur = 12;
+        mCaption(c, caption, 30, H - 230, W - 90, 130, 30, 'maru', '#ffffff', e, 'left');
+        c.restore();
+        inSign(c, d, 30, H - 74, 'rgba(255,255,255,0.82)', 'left');
+        inGrain(c, W, H, t, 0.09);
+      } else if (M === 'in_diary') {
+        // 다이어리 노트: 줄 노트 바탕, 살짝 기운 폴라로이드 + 마스킹테이프, 손글씨 자막
+        c.strokeStyle = 'rgba(160,140,120,0.16)';
+        c.lineWidth = 1;
+        for (let y = 120; y < H; y += 34) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+        const fw = 360, fh = 430, ang = (cutIdx % 2 ? 2.2 : -2.6) * Math.PI / 180;
+        const drop = (1 - mEase(local / 0.5)) * (cutIdx > 0 ? 30 : 0);
+        c.save();
+        c.translate(W / 2, 90 + fh / 2 + drop);
+        c.rotate(ang);
+        c.shadowColor = 'rgba(60,40,20,0.22)';
+        c.shadowBlur = 18;
+        c.shadowOffsetY = 6;
+        c.fillStyle = '#ffffff';
+        c.fillRect(-fw / 2, -fh / 2, fw, fh);
+        c.shadowColor = 'transparent';
+        mPhoto(c, S, 0, -fw / 2 + 16, -fh / 2 + 16, fw - 32, fh - 92, 1.04 + lp * 0.03);
+        inWarm(c, -fw / 2 + 16, -fh / 2 + 16, fw - 32, fh - 92, 0.8);
+        c.fillStyle = 'rgba(214,190,150,0.72)';
+        c.save(); c.translate(0, -fh / 2); c.rotate(-0.06); c.fillRect(-60, -14, 120, 28); c.restore();
+        c.fillStyle = '#9a8676';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.font = gFont(400, 22, KIT_FONTS.pen.f);
+        c.fillText(inDateLabel().toLowerCase(), 0, fh / 2 - 38);
+        c.restore();
+        mCaption(c, caption, W / 2, 90 + fh + 40, W - 80, 150, 40, 'pen', '#3b2f28', e);
+        inSign(c, d, W - 40, H - 46, '#7a6658');
+        inGrain(c, W, H, t, 0.05);
+      } else if (M === 'in_letter') {
+        // 미니멀 레터: 여백 많은 흰 바탕, 가운데 작은 사진, 얇은 고딕 자막
+        inLabel(c, 'a little note', W / 2, 70, '#a39a8e', 'center', 13);
+        c.fillStyle = '#d9d3c9';
+        c.fillRect(W / 2 - 14, 92, 28, 1);
+        const pw = 300, ph = 375, px = (W - pw) / 2, py = 130;
+        inPhotoFade(c, S, cutIdx, local, px, py, pw, ph, 1.03 + lp * 0.03, 0.7);
+        mCaption(c, caption, W / 2, py + ph + 44, W - 120, 120, 25, 'pretL', '#2a2724', e);
+        inSign(c, d, W / 2, H - 70, '#8f867a', 'center', 16);
+        inGrain(c, W, H, t, 0.04);
+      } else if (M === 'in_vlog') {
+        // 브이로그 타임스탬프: 꽉 찬 사진, 왼쪽 위 시간·짧은 영문, 가운데 아래 담백한 자막
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.05 + lp * 0.05, 0.9);
+        const sec = Math.floor(t);
+        const n = new Date();
+        const hh = n.getHours();
+        inLabel(c, `${hh < 12 ? 'AM' : 'PM'} ${((hh + 11) % 12) + 1}:${String((n.getMinutes() + sec) % 60).padStart(2, '0')}`, 28, 40, '#ffffff', 'left', 15);
+        inLabel(c, `vlog · ${String(cutIdx + 1).padStart(2, '0')}`, 28, 64, 'rgba(255,255,255,0.75)', 'left', 12);
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.55)';
+        c.shadowBlur = 10;
+        mCaption(c, caption, W / 2, H - 250, W - 70, 120, 28, 'pretM', '#ffffff', e);
+        c.restore();
+        inSign(c, d, W / 2, H - 92, 'rgba(255,255,255,0.8)', 'center', 15);
+        inGrain(c, W, H, t, 0.06);
+      } else if (M === 'in_collage') {
+        // 크림 콜라주: 큰 사진과 작은 사진이 겹친 콜라주, 위쪽에 명조 자막
+        mCaption(c, caption, 36, 54, W - 72, 120, 30, 'maru', '#2d2621', e, 'left');
+        const ent2 = mEase(local / 0.6);
+        c.save();
+        c.translate(40 + 222, 200 + 260);
+        c.rotate(-1.5 * Math.PI / 180);
+        c.shadowColor = 'rgba(60,40,20,0.18)'; c.shadowBlur = 16; c.shadowOffsetY = 5;
+        c.fillStyle = '#fffdf9';
+        c.fillRect(-222, -260, 444, 520);
+        c.shadowColor = 'transparent';
+        mPhoto(c, S, 0, -210, -248, 420, 496, 1.03 + lp * 0.03);
+        inWarm(c, -210, -248, 420, 496, 0.9);
+        c.restore();
+        c.save();
+        c.globalAlpha = ent2;
+        c.translate(W - 150, H - 250 + (1 - ent2) * 24);
+        c.rotate(3 * Math.PI / 180);
+        c.shadowColor = 'rgba(60,40,20,0.2)'; c.shadowBlur = 14; c.shadowOffsetY = 5;
+        c.fillStyle = '#fffdf9';
+        c.fillRect(-105, -130, 210, 260);
+        c.shadowColor = 'transparent';
+        mPhoto(c, S, 1, -97, -122, 194, 220, 1.06);
+        inWarm(c, -97, -122, 194, 220, 0.9);
+        c.restore();
+        inLabel(c, inDateLabel(), 40, H - 120, '#8a7a6b');
+        inSign(c, d, 40, H - 92, '#6f6156', 'left', 17);
+        inGrain(c, W, H, t, 0.06);
       } else if (M === 'cinema') {
         // 시네마틱: 위아래 검은 띠 + 가장자리 비네트, 컷은 부드럽게 겹쳐 바뀜 (캡컷 "영화 화면"·"비네트")
         const fade = cutIdx > 0 ? mEase(local / 0.45) : 1;
@@ -16232,10 +16425,52 @@ function renderStoryArchetypesUI() {
         mCaption(c, caption, W / 2, capY + (isPrice ? 44 : 8), W - 60, capH - (isPrice ? 44 : 8), 40, sp.font, sp.accent2, e);
       }
       // 시네마는 위 띠에, 크레딧은 크레딧 안에 이름이 나오므로 아래 이름 칩을 그리지 않음
-      if (M !== 'story' && M !== 'feed' && M !== 'cinema' && M !== 'credits') mChip(c, d, W, H, sp, mEase(t / 0.6));
+      if (M !== 'story' && M !== 'feed' && M !== 'cinema' && M !== 'credits' && !sp.insta) mChip(c, d, W, H, sp, mEase(t / 0.6));
     }
 
+    // 인스타 감성 엔딩: 크림 카드에 작은 사진, 명조 가게 이름, 얇은 선, 주소·연락처, 담백한 댓글 안내
+    function renderInstaOutro(c, W, H, t, mainDuration, d, sp) {
+      const lt = t - mainDuration;
+      c.fillStyle = '#f3ece1';
+      c.fillRect(0, 0, W, H);
+      const S = kitScene(t, mainDuration, true);
+      const a = (k) => mEase((lt - k) / 0.6);
+      c.save();
+      c.globalAlpha = a(0);
+      const pw = 220, ph = 270, px = (W - pw) / 2, py = 110;
+      c.shadowColor = 'rgba(60,40,20,0.16)'; c.shadowBlur = 14; c.shadowOffsetY = 4;
+      c.fillStyle = '#fffdf9';
+      c.fillRect(px - 10, py - 10, pw + 20, ph + 20);
+      c.shadowColor = 'transparent';
+      mPhoto(c, S, 0, px, py, pw, ph, 1.04);
+      inWarm(c, px, py, pw, ph, 0.9);
+      c.restore();
+      const ny = py + ph + 76;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.globalAlpha = a(0.2);
+      c.fillStyle = '#2b2622';
+      gDrawLine(c, (d && d.name) || '', W / 2, ny, W - 80, 40, 24, KIT_FONTS.maru.f, 600);
+      c.fillStyle = '#cbbfae';
+      c.fillRect(W / 2 - 20, ny + 36, 40, 1);
+      c.globalAlpha = a(0.35);
+      c.fillStyle = '#7a6d61';
+      const sub = [(d && d.title) || '', (d && d.branch) || ''].filter(Boolean).join(' · ');
+      if (sub) gDrawLine(c, sub, W / 2, ny + 68, W - 90, 17, 12, KIT_FONTS.pretL.f, 500);
+      const phone = String((d && d.phone) || '').trim();
+      if (phone) gDrawLine(c, phone, W / 2, ny + 98, W - 90, 18, 12, KIT_FONTS.pretL.f, 500);
+      const promo = String((d && d.promoTag) || '').trim();
+      if (promo) { c.fillStyle = '#8a6a4f'; gDrawLine(c, promo, W / 2, ny + 132, W - 90, 17, 12, KIT_FONTS.maruL.f, 400); }
+      c.globalAlpha = a(0.55);
+      c.fillStyle = '#2b2622';
+      gDrawLine(c, arCta(), W / 2, H - 120, W - 100, 19, 13, KIT_FONTS.pretL.f, 600);
+      c.fillStyle = '#2b2622';
+      c.fillRect(W / 2 - 60, H - 104, 120, 1);
+      c.globalAlpha = 1;
+      inGrain(c, W, H, t, 0.07);
+    }
     function renderMotionOutro(c, W, H, t, mainDuration, d, sp) {
+      if (sp.insta) return renderInstaOutro(c, W, H, t, mainDuration, d, sp);
       const lt = t - mainDuration;
       const e = mClamp(lt / 1.2);
       mBg(c, W, H, sp, t);
