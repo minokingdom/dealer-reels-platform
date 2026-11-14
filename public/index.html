@@ -73,8 +73,9 @@
     setTimeout(function () { var s = document.getElementById('arSplashIntro'); if (s && !s.classList.contains('hidden')) { s.style.opacity = '0'; s.style.pointerEvents = 'none'; setTimeout(function () { s.classList.add('hidden'); }, 450); } }, 8000);
   </script>
 
-  <!-- 첫 방문자용 랜딩 페이지 (/) : 한번 스튜디오를 연 사람은 / 에서 바로 /studio 로 이동 -->
-  <section id="arLandingView" class="hidden max-w-[1160px] mx-auto space-y-16 pb-16">
+  <!-- 첫 방문자용 랜딩 페이지 (/) : 한번 스튜디오를 연 사람은 / 에서 바로 /studio 로 이동
+       data-noind: 업종 단어 바꾸기(자동차→지금 업종)를 하지 않음 — 업종별 미리보기가 각자 데이터를 직접 보여 주므로 -->
+  <section id="arLandingView" data-noind class="hidden max-w-[1160px] mx-auto space-y-16 pb-16">
     <!-- 랜딩 상단 네비게이션 -->
     <nav class="flex items-center justify-between gap-4 py-2 border-b border-[var(--border)]">
       <div class="flex items-center gap-2.5">
