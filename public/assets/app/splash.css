@@ -1,0 +1,44 @@
+/* 시작 스플래시 (코덱스 B 시안: 실제 릴스 화면 3장이 9:16 틀 안으로 모임)
+   - 페이지를 열자마자 보여서 앱 스크립트 로딩 시간을 가림, 준비되면 12-account-billing-sns.js 가 닫음
+   - .ar-play 를 다시 붙이면 처음부터 다시 재생 */
+#arSplashIntro { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity .45s ease; background: #0d0d0f; color: #ededed; font-family: 'Pretendard Variable', Pretendard, sans-serif; }
+#arSplashIntro .sp-box { text-align: center; }
+#arSplashIntro .sp-assembly { position: relative; width: 310px; height: 298px; margin: 0 auto 31px; }
+#arSplashIntro .sp-reel { position: absolute; left: 50%; top: 19px; width: 144px; aspect-ratio: 9 / 16; margin-left: -72px; border-radius: 5px; overflow: hidden; background: #151518; }
+#arSplashIntro .sp-reel img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#arSplashIntro .sp-reel::after { content: ''; position: absolute; inset: 0; border: 1px solid rgba(239, 228, 210, 0.15); border-radius: inherit; background: rgba(13, 13, 15, 0.2); }
+#arSplashIntro .sp-left { transform: translate(-68px, 8px) rotate(-10deg) scale(.85); opacity: .6; }
+#arSplashIntro .sp-right { transform: translate(68px, 8px) rotate(10deg) scale(.85); opacity: .6; }
+#arSplashIntro .sp-front::after { background: rgba(13, 13, 15, 0.04); }
+#arSplashIntro .sp-finder { position: absolute; inset: 12px 76px 16px; pointer-events: none; }
+#arSplashIntro .sp-finder i { position: absolute; width: 11px; height: 11px; border-color: #efe4d2; border-style: solid; opacity: .65; }
+#arSplashIntro .sp-finder i:nth-child(1) { top: 0; left: 0; border-width: 1px 0 0 1px; }
+#arSplashIntro .sp-finder i:nth-child(2) { top: 0; right: 0; border-width: 1px 1px 0 0; }
+#arSplashIntro .sp-finder i:nth-child(3) { bottom: 0; left: 0; border-width: 0 0 1px 1px; }
+#arSplashIntro .sp-finder i:nth-child(4) { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
+#arSplashIntro .sp-word { margin: 0; font-size: 41px; letter-spacing: -.065em; font-weight: 500; line-height: 1.2; color: #efe4d2; }
+#arSplashIntro .sp-line { margin: 14px 0 0; font-size: 13px; color: #8d8d94; line-height: 1.7; letter-spacing: -.02em; }
+#arSplashIntro .sp-load { display: flex; gap: 5px; width: 62px; margin: 27px auto 0; }
+#arSplashIntro .sp-load i { flex: 1; height: 2px; background: #efe4d2; }
+
+#arSplashIntro.ar-play .sp-box { animation: arSpIn .5s ease-out both; }
+#arSplashIntro.ar-play .sp-left { animation: arSpLeft 1.1s cubic-bezier(.22, 1, .36, 1) both; }
+#arSplashIntro.ar-play .sp-right { animation: arSpRight 1.2s cubic-bezier(.22, 1, .36, 1) both; }
+#arSplashIntro.ar-play .sp-front { animation: arSpFront 1.2s cubic-bezier(.22, 1, .36, 1) both; }
+#arSplashIntro.ar-play .sp-load i:nth-child(1) { animation: arSpCut .5s ease-in-out both; }
+#arSplashIntro.ar-play .sp-load i:nth-child(2) { animation: arSpCut .5s ease-in-out .5s both; }
+#arSplashIntro.ar-play .sp-load i:nth-child(3) { animation: arSpCut .5s ease-in-out 1s both; }
+@keyframes arSpIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes arSpLeft { from { transform: translate(-18px, 20px) rotate(-3deg) scale(.8); opacity: .1; } to { transform: translate(-68px, 8px) rotate(-10deg) scale(.85); opacity: .6; } }
+@keyframes arSpRight { from { transform: translate(18px, 25px) rotate(3deg) scale(.8); opacity: .1; } to { transform: translate(68px, 8px) rotate(10deg) scale(.85); opacity: .6; } }
+@keyframes arSpFront { from { transform: translateY(22px) scale(.94); } to { transform: translateY(0) scale(1); } }
+@keyframes arSpCut { from { opacity: .2; } to { opacity: 1; } }
+#arSplashIntro.hidden { display: none; }
+@media (max-height: 600px) {
+  #arSplashIntro .sp-assembly { height: 230px; width: 280px; }
+  #arSplashIntro .sp-reel { width: 108px; margin-left: -54px; }
+  #arSplashIntro .sp-finder { inset: 12px 79px 19px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #arSplashIntro *, #arSplashIntro { animation: none !important; }
+}

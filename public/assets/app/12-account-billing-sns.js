@@ -1126,6 +1126,10 @@
       sp.style.opacity = '1';
       sp.style.pointerEvents = 'auto';
       sp.classList.remove('hidden');
+      // 이미 한 번 재생됐으면 처음부터 다시
+      sp.classList.remove('ar-play');
+      void sp.offsetWidth;
+      sp.classList.add('ar-play');
       __arSplashTimer = setTimeout(() => {
         dismissAutoReelsSplash();
       }, 1050);
@@ -1172,7 +1176,10 @@
       }
       applyLandingRouteState(showLanding);
       const sp = new URLSearchParams(window.location.search || '');
+      // 스플래시는 페이지를 열 때부터 보이고 있음: 제작 화면이면 조금 더 보여 준 뒤 닫고, 랜딩·SNS 복귀면 바로 닫음
       if (!showLanding && !sp.has('sns') && !sp.has('code')) {
-        runAutoReelsSplash();
+        __arSplashTimer = setTimeout(() => dismissAutoReelsSplash(), 700);
+      } else {
+        dismissAutoReelsSplash();
       }
     })();
