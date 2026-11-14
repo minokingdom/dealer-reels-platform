@@ -14372,7 +14372,7 @@ function renderStoryArchetypesUI() {
     });
     DESIGN_STYLES.push(...KIT_DESIGNS);
     // 스타일 분류는 이 12개로 고정: 새 스타일을 추가할 때 분류를 새로 만들지 말고 아래 중 하나에 넣을 것
-    const DESIGN_CATS = ['전체', '신규', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
+    const DESIGN_CATS = ['전체', '신규', '비포·애프터', '브이로그', '손글씨', '타이포', '특가', '고급', '테크', '스포츠', '상담·정보', '신뢰', '감성', '재미', '뉴스·방송'];
     // ★ 업종 전용 테마: 그 업종을 고른 사람에게만 보이고, 업종을 바꾸면 첫 테마가 바로 적용됨
     // [id, 이름, (분류는 '내 업종'), layout, cap, font, deco, trans, outro, grade, head, bg, label, accent, accent2, script, sfont]
     // 2026-11: 업종 디자인은 사진을 꽉 채우고 자막을 사진 위에 올림 (위 사진·아래 글자로 나누는 구성은 촌스럽다는 의견)
@@ -15479,7 +15479,13 @@ function renderStoryArchetypesUI() {
       ['ed_glasspill', '글래스 플로우', 'ed_glasspill', 'pretM', '#0b1018', '#141c2b', '#7dd3fc', '#ffffff', false],
       ['ed_kinetic', '키네틱 포스터', 'ed_kinetic', 'impact', '#09090b', '#18181b', '#facc15', '#ffffff', false],
       ['ed_arch', '아치 갤러리', 'ed_arch', 'maru', '#f4efe8', '#ebe3d7', '#9f7a54', '#2b2622', true],
-      ['ed_duotone', '듀오톤 포스터', 'ed_duotone', 'dohyeon', '#111827', '#1f2937', '#fb7185', '#fef08a', false]
+      ['ed_duotone', '듀오톤 포스터', 'ed_duotone', 'dohyeon', '#111827', '#1f2937', '#fb7185', '#fef08a', false],
+      // 비포·애프터 5종
+      ['ba_slider', '슬라이더 와이프', 'ba_slider', 'pretM', '#0b0f19', '#111827', '#38bdf8', '#ffffff', false],
+      ['ba_diagonal', '대각선 체인지', 'ba_diagonal', 'impact', '#09090b', '#18181b', '#facc15', '#ffffff', false],
+      ['ba_collage', '나란히 비교', 'ba_collage', 'pretM', '#0f172a', '#1e293b', '#34d399', '#ffffff', false],
+      ['ba_flash', '비포→애프터 전환', 'ba_flash', 'dohyeon', '#111111', '#1c1917', '#fb923c', '#ffffff', false],
+      ['ba_polaroid', '스냅 비교 카드', 'ba_polaroid', 'maru', '#f4efe8', '#ebe3d7', '#c2603f', '#2b2622', true]
     ];
     // 모션 디자인도 별도 분류를 만들지 않고 기존 분류에 넣음
     const MOTION_CAT = {
@@ -15490,7 +15496,8 @@ function renderStoryArchetypesUI() {
       mo_cinema: '고급', mo_credits: '뉴스·방송',
       in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
       in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성',
-      ed_vogue: '신규', ed_glasspill: '신규', ed_kinetic: '신규', ed_arch: '신규', ed_duotone: '신규'
+      ed_vogue: '신규', ed_glasspill: '신규', ed_kinetic: '신규', ed_arch: '신규', ed_duotone: '신규',
+      ba_slider: '비포·애프터', ba_diagonal: '비포·애프터', ba_collage: '비포·애프터', ba_flash: '비포·애프터', ba_polaroid: '비포·애프터'
     };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
@@ -16924,6 +16931,135 @@ function renderStoryArchetypesUI() {
           kLongShadow(c, ln, 32, H - 220 + i * wr.lh + (1 - p) * 20, i === 0 ? '#ffffff' : sp.accent2, 'rgba(0,0,0,0.58)', 10, 0.85, 1);
         });
         c.restore();
+      } else if (M.startsWith('ba_')) {
+        // 비포·애프터 비교 5종 공통 배지 헬퍼
+        const baBadge = (bx, by, txt, bgCol, fgCol, align = 'left') => {
+          c.save();
+          c.font = gFont(800, 12, GENRE_FONTS.sans);
+          const bw = c.measureText(txt).width + 22, bh = 28;
+          const rx = align === 'right' ? bx - bw : align === 'center' ? bx - bw / 2 : bx;
+          gRoundRect(c, rx, by, bw, bh, 14);
+          c.fillStyle = bgCol; c.fill();
+          c.fillStyle = fgCol;
+          c.textAlign = 'center'; c.textBaseline = 'middle';
+          c.fillText(txt, rx + bw / 2, by + bh / 2 + 1);
+          c.restore();
+        };
+        const beforeIdx = cutIdx === 0 ? 1 : -1;
+        if (M === 'ba_slider') {
+          const sx = Math.round(W * (0.18 + 0.68 * mEase(local / 1.35)));
+          c.save();
+          c.filter = 'saturate(0.72) contrast(0.95)';
+          mPhoto(c, S, beforeIdx, 0, 0, W, H, 1.05 + lp * 0.03);
+          c.restore();
+          c.save();
+          c.beginPath(); c.rect(sx, 0, W - sx, H); c.clip();
+          mPhoto(c, S, 0, 0, 0, W, H, 1.05 + lp * 0.03);
+          c.restore();
+          c.save();
+          c.shadowColor = sp.accent; c.shadowBlur = 16;
+          c.fillStyle = '#ffffff';
+          c.fillRect(sx - 1.5, 0, 3, H);
+          c.beginPath(); c.arc(sx, H * 0.44, 18, 0, Math.PI * 2); c.fill();
+          c.shadowBlur = 0;
+          c.fillStyle = '#111111';
+          c.font = gFont(800, 11, GENRE_FONTS.sans);
+          c.textAlign = 'center'; c.textBaseline = 'middle';
+          c.fillText('◀▶', sx, H * 0.44 + 1);
+          c.restore();
+          baBadge(22, 42, 'BEFORE', 'rgba(15,23,42,0.72)', '#e2e8f0', 'left');
+          baBadge(W - 22, 42, 'AFTER', sp.accent, kTextOn(sp.accent), 'right');
+          const g = c.createLinearGradient(0, H * 0.55, 0, H);
+          g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.84)');
+          c.fillStyle = g; c.fillRect(0, H * 0.55, W, H * 0.45);
+          mCaption(c, caption, W / 2, H - 235, W - 64, 130, 36, sp.font, '#ffffff', e);
+        } else if (M === 'ba_diagonal') {
+          const p = mEase(local / 1.05);
+          c.save();
+          c.filter = 'saturate(0.7)';
+          mPhoto(c, S, beforeIdx, 0, 0, W, H, 1.05);
+          c.restore();
+          const cutY = H * (1.25 - p * 1.35);
+          c.save();
+          c.beginPath();
+          c.moveTo(0, cutY + 240); c.lineTo(W, cutY - 120);
+          c.lineTo(W, H + 200); c.lineTo(0, H + 200); c.closePath();
+          c.clip();
+          mPhoto(c, S, 0, 0, 0, W, H, 1.05 + lp * 0.04);
+          c.restore();
+          c.save();
+          c.strokeStyle = sp.accent; c.lineWidth = 5;
+          c.shadowColor = sp.accent; c.shadowBlur = 18;
+          c.beginPath(); c.moveTo(0, cutY + 240); c.lineTo(W, cutY - 120); c.stroke();
+          c.restore();
+          baBadge(22, 42, 'BEFORE', 'rgba(0,0,0,0.68)', '#cbd5e1', 'left');
+          baBadge(W - 22, 42, 'AFTER', sp.accent, kTextOn(sp.accent), 'right');
+          const g = c.createLinearGradient(0, H * 0.55, 0, H);
+          g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.85)');
+          c.fillStyle = g; c.fillRect(0, H * 0.55, W, H * 0.45);
+          mCaption(c, caption, 30, H - 235, W - 60, 135, 38, sp.font, '#ffffff', e, 'left');
+        } else if (M === 'ba_collage') {
+          const cw = (W - 60) / 2, ch = 480, py = 100;
+          const slide = mEase(local / 0.55);
+          [[22, beforeIdx, 'BEFORE', 'rgba(15,23,42,0.82)', '#e2e8f0', (1 - slide) * -28], [22 + cw + 16, 0, 'AFTER', sp.accent, kTextOn(sp.accent), (1 - slide) * 28]].forEach(([cx, idx, lbl, bgc, fgc, dx]) => {
+            c.save();
+            c.shadowColor = 'rgba(0,0,0,0.35)'; c.shadowBlur = 20; c.shadowOffsetY = 8;
+            gRoundRect(c, cx + dx, py, cw, ch, 20);
+            c.fillStyle = '#18181b'; c.fill();
+            c.restore();
+            c.save();
+            gRoundRect(c, cx + dx, py, cw, ch, 20); c.clip();
+            mPhoto(c, S, idx, cx + dx, py, cw, ch, 1.04 + lp * 0.04);
+            c.restore();
+            baBadge(cx + dx + 12, py + 14, lbl, bgc, fgc, 'left');
+          });
+          c.save();
+          c.fillStyle = sp.accent;
+          c.beginPath(); c.arc(W / 2, py + ch / 2, 18, 0, Math.PI * 2); c.fill();
+          c.fillStyle = kTextOn(sp.accent);
+          c.font = gFont(800, 16, GENRE_FONTS.sans);
+          c.textAlign = 'center'; c.textBaseline = 'middle';
+          c.fillText('→', W / 2, py + ch / 2 + 1);
+          c.restore();
+          mCaption(c, caption, W / 2, py + ch + 28, W - 60, 160, 34, sp.font, '#ffffff', e);
+        } else if (M === 'ba_flash') {
+          const afterOn = local >= 0.72;
+          if (!afterOn) {
+            c.save(); c.filter = 'saturate(0.75)';
+            mPhoto(c, S, beforeIdx, 0, 0, W, H, 1.04);
+            c.restore();
+            baBadge(W / 2, 56, 'BEFORE', 'rgba(15,23,42,0.78)', '#ffffff', 'center');
+          } else {
+            mPhoto(c, S, 0, 0, 0, W, H, 1.05 + lp * 0.05);
+            if (local < 0.92) {
+              c.fillStyle = `rgba(255,255,255,${0.7 * (1 - (local - 0.72) / 0.2)})`;
+              c.fillRect(0, 0, W, H);
+            }
+            baBadge(W / 2, 56, 'AFTER ✨', sp.accent, kTextOn(sp.accent), 'center');
+          }
+          const g = c.createLinearGradient(0, H * 0.55, 0, H);
+          g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.84)');
+          c.fillStyle = g; c.fillRect(0, H * 0.55, W, H * 0.45);
+          mCaption(c, caption, W / 2, H - 235, W - 64, 135, 38, sp.font, '#ffffff', e);
+        } else if (M === 'ba_polaroid') {
+          const snap = (cx, cy, rot, idx, lbl, bgc, fgc, sc) => {
+            c.save();
+            c.translate(cx, cy); c.rotate(rot); c.scale(sc, sc);
+            c.shadowColor = 'rgba(0,0,0,0.22)'; c.shadowBlur = 20; c.shadowOffsetY = 8;
+            c.fillStyle = '#fffdf9';
+            gRoundRect(c, -135, -165, 270, 330, 12); c.fill();
+            c.shadowBlur = 0;
+            c.save();
+            gRoundRect(c, -121, -151, 242, 242, 8); c.clip();
+            mPhoto(c, S, idx, -121, -151, 242, 242, 1.04 + lp * 0.03);
+            c.restore();
+            baBadge(0, 114, lbl, bgc, fgc, 'center');
+            c.restore();
+          };
+          snap(W * 0.34, 290, -0.07, beforeIdx, 'BEFORE', '#e5e7eb', '#374151', 0.94);
+          snap(W * 0.66, 360, 0.05, 0, 'AFTER', sp.accent, kTextOn(sp.accent), 0.94 + 0.08 * ent);
+          mCaption(c, caption, W / 2, 585, W - 70, 170, 32, sp.font, '#2b2622', e);
+        }
       } else if (M === 'cinema') {
         // 시네마틱: 위아래 검은 띠 + 가장자리 비네트, 컷은 부드럽게 겹쳐 바뀜 (캡컷 "영화 화면"·"비네트")
         const fade = cutIdx > 0 ? mEase(local / 0.45) : 1;
