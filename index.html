@@ -7383,8 +7383,9 @@ function renderStoryArchetypesUI() {
         sub: (c) => `초기비용 0원 무보증 · 전 금융사 최저금리 1:1 비교`,
         tts: (c) => `할부, 렌트, 리스 최저 금리로 맞춰드려요.` },
       { label: '9. 프리미엄 신차패키지 무상', widget: 'STOCK_COUNTDOWN', pos: 'bottom', cam: 1, cropMode: 'package',
-        sub: (c, d) => `🎁 ${d.promoTag}`,
-        tts: (c, d) => `계약 고객 전원, 출고 패키지 무상 지원.` },
+        // 명함 혜택이 견본 그대로면 대본에 넣지 않음
+        sub: (c, d) => { const dd = arDealerForCopy(d); return dd.promoTag ? `🎁 ${dd.promoTag}` : '계약 고객 혜택은 상담 때 안내해 드려요'; },
+        tts: (c, d) => (arDealerForCopy(d).promoTag ? `계약 고객께 드리는 혜택도 준비했어요.` : `계약 고객 혜택은 상담 때 안내해 드려요.`) },
       { label: '10. 전시장 VIP 즉시출고 인도', widget: 'SMARTKEY_DELIVERY', pos: 'bottom', cam: 2, cropMode: 'vip',
         sub: (c, d) => `${d.name} ${d.title} 전국 무료 캐리어 탁송 · 댓글 [견적]`,
         tts: (c, d) => `검수부터 탁송까지 끝까지 책임집니다.` }
@@ -7393,8 +7394,16 @@ function renderStoryArchetypesUI() {
     // 5번째 컷부터 쓸 문구: 자동차가 아닌 업종은 그 업종 프리셋 내용으로
     // 업종을 바꾸면 명함(4단계)에 예시 매장 정보(예: 음식점 "한옥 갈비 본점")가 들어가 있음.
     // 사장님이 아직 바꾸지 않은 예시 값은 대본·자막에 쓰지 않도록 빈 값으로 돌려줌 (자동차는 그대로)
+    // 견본 딜러 3명의 혜택 문구 (처음 불러올 때 값, 업종 전환 전에도 견본으로 알아보기 위해 고정)
+    const AR_DEMO_PROMO_TAGS = [
+      '출고고객 전원 루마버텍스 썬팅 + 빌트인캠 무상지원',
+      '11월 한정 추가할인 + 전국 무료 캐리어 탁송 지원',
+      '1년/2만km 보증연장 + 엔진오일 쿠폰 무상 제공'
+    ];
     function arDealerForCopy(d) {
       const out = { name: (d && d.name) || '', title: (d && d.title) || '', branch: (d && d.branch) || '', promoTag: (d && d.promoTag) || '' };
+      // 혜택 문구가 견본(자동차 견본 딜러·업종 예시) 그대로면 대본에 쓰지 않음 — 사장님이 직접 적은 혜택만 씀
+      if (d && out.promoTag && AR_DEMO_PROMO_TAGS.includes(out.promoTag.trim())) out.promoTag = '';
       if (!d || IND.key === 'auto') return out;
       if ((IND.storeNames || []).includes(out.name)) { out.name = ''; if (out.title === (IND.storeSubtitle || `${IND.place} 공식 안내`)) out.title = ''; }
       if (out.branch && (out.branch === IND.storeLocation || out.branch === IND.branchPlaceholder)) out.branch = '';

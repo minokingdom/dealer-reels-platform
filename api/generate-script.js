@@ -137,7 +137,7 @@ function parsePromptAndBuildSmartScene(prompt, fallbackVehicle, fallbackDiscount
   const bullets = [
     `✔ ${persona} 맞춤 ${shortCarName} 선점 재고 ${stockCount}대 즉시출고`,
     `✔ 최대 -${discountNum.toLocaleString()}만원 할인 + 최저금리 비교 설계`,
-    `✔ 프리미엄 썬팅·블랙박스·유리막코팅 풀패키지 무상 지원`
+    `✔ 견적부터 출고·사후 관리까지 한 사람이 책임 상담` // 지어낸 사은품(썬팅 등)은 넣지 않음
   ];
 
   return {
@@ -453,7 +453,8 @@ async function handler(req, res) {
   const dealerName = body.dealerName || (isAutoReq ? '김민준' : '');
   const dealerTitle = body.dealerTitle || (isAutoReq ? '수석 카마스터' : '');
   const dealerBranch = body.dealerBranch || (isAutoReq ? '현대·기아 공식전시장' : '');
-  const dealerPromo = body.dealerPromo || (isAutoReq ? '신차패키지 8종 무상지원' : '');
+  // 혜택은 사장님이 직접 적은 것만 씀 (견본 혜택을 채우면 대본에 남의 혜택이 들어감)
+  const dealerPromo = body.dealerPromo || '';
   // 영상 컷 수만큼 대본을 씀 (예전에는 4컷만 쓰고 5~10컷은 화면이 템플릿으로 채웠음)
   const cutCount = Math.max(4, Math.min(10, Math.round(Number(body.cutCount) || 4)));
   const blankArr = (n, f) => JSON.stringify(Array.from({ length: n }, (_, i) => f(i)));
@@ -577,7 +578,7 @@ JSON 스키마:
     // 사장님이 상황을 직접 적었으면 화면의 예시 상품(업종 프리셋)은 넘기지 않음 — 짬뽕집 입력에 갈비탕이 섞이지 않게
     const userMessage = isOther ? `[입력 상황]: "${prompt || `${currentVehicle} 소개`}"
 ${speakerLine}${prompt ? '' : `\n[지금 ${I.product}]: ${currentVehicle} / ${body.discount || ''}`}` : `[카마스터 입력 상황]: "${prompt || `${currentVehicle} 당월 특별 프로모션`}"
-[담당 카마스터]: ${dealerBranch} ${dealerName} ${dealerTitle} (사은품: ${dealerPromo})`;
+[담당 카마스터]: ${dealerBranch} ${dealerName} ${dealerTitle}${dealerPromo ? ` (사은품: ${dealerPromo})` : ' (사은품·혜택은 입력하지 않음 — 지어내지 말 것)'}`;
 
     let aiResult = null;
     let providerUsed = '';
