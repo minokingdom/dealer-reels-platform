@@ -15253,7 +15253,13 @@ function renderStoryArchetypesUI() {
       ['in_memo', '아이폰 메모', 'in_memo', 'pretM', '#fbfaf7', '#f7f5f0', '#e0a400', '#1c1c1e', true],
       ['in_lock', '잠금화면 시계', 'in_lock', 'pretL', '#111111', '#0b0b0b', '#ffffff', '#ffffff', false],
       ['in_dump', '포토덤프 리캡', 'in_dump', 'pen', '#f4efe6', '#efe8dc', '#c2603f', '#2d2621', true],
-      ['in_cal', '캘린더 카드', 'in_cal', 'maru', '#f3ece1', '#efe6d8', '#c2603f', '#2b2622', true]
+      ['in_cal', '캘린더 카드', 'in_cal', 'maru', '#f3ece1', '#efe6d8', '#c2603f', '#2b2622', true],
+      // 에디토리얼 · 감각적 릴스 5종
+      ['ed_vogue', '보그 에디토리얼', 'ed_vogue', 'maru', '#0c0b0a', '#161412', '#e8d5bc', '#ffffff', false],
+      ['ed_glasspill', '글래스 플로우', 'ed_glasspill', 'pretM', '#0b1018', '#141c2b', '#7dd3fc', '#ffffff', false],
+      ['ed_kinetic', '키네틱 포스터', 'ed_kinetic', 'impact', '#09090b', '#18181b', '#facc15', '#ffffff', false],
+      ['ed_arch', '아치 갤러리', 'ed_arch', 'maru', '#f4efe8', '#ebe3d7', '#9f7a54', '#2b2622', true],
+      ['ed_duotone', '듀오톤 포스터', 'ed_duotone', 'dohyeon', '#111827', '#1f2937', '#fb7185', '#fef08a', false]
     ];
     // 모션 디자인도 별도 분류를 만들지 않고 기존 분류에 넣음
     const MOTION_CAT = {
@@ -15263,7 +15269,8 @@ function renderStoryArchetypesUI() {
       mo_neon: '재미', mo_scrap: '감성', mo_punch: '스포츠', mo_cube: '테크', mo_glow: '감성', mo_bokeh: '고급',
       mo_cinema: '고급', mo_credits: '뉴스·방송',
       in_film: '감성', in_mood: '감성', in_diary: '감성', in_letter: '감성', in_vlog: '브이로그', in_collage: '브이로그',
-      in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성'
+      in_music: '감성', in_memo: '브이로그', in_lock: '감성', in_dump: '브이로그', in_cal: '감성',
+      ed_vogue: '고급', ed_glasspill: '감성', ed_kinetic: '타이포', ed_arch: '감성', ed_duotone: '타이포'
     };
     const MOTION_DESIGNS = MOTION_ROWS.map((r, i) => ({
       id: r[0], name: r[1], cat: MOTION_CAT[r[0]] || '재미', engine: 'motion', mstyle: r[2], font: r[3],
@@ -16536,6 +16543,143 @@ function renderStoryArchetypesUI() {
         mCaption(c, caption, 58, cy2 + 108, W - 116, H - cy2 - 230, 28, 'maru', '#2b2622', e, 'left');
         inSign(c, d, W - 58, H - 108, '#7a6d61');
         inGrain(c, W, H, t, 0.06);
+      } else if (M === 'ed_vogue') {
+        // 보그 에디토리얼: 풀블리드 감성 톤 + 상단 이슈 헤더 + 하단 페이드 명조 타이포
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.03 + lp * 0.04, 1);
+        const topG = c.createLinearGradient(0, 0, 0, 150);
+        topG.addColorStop(0, 'rgba(0,0,0,0.48)');
+        topG.addColorStop(1, 'rgba(0,0,0,0)');
+        c.fillStyle = topG; c.fillRect(0, 0, W, 150);
+        const botG = c.createLinearGradient(0, H * 0.5, 0, H);
+        botG.addColorStop(0, 'rgba(0,0,0,0)');
+        botG.addColorStop(1, 'rgba(0,0,0,0.82)');
+        c.fillStyle = botG; c.fillRect(0, H * 0.5, W, H * 0.5);
+        inLabel(c, `ISSUE NO. 0${cutIdx + 1} · ${inDateLabel()}`, 32, 44, 'rgba(232,213,188,0.88)');
+        c.fillStyle = 'rgba(232,213,188,0.35)';
+        c.fillRect(32, 62, W - 64, 1);
+        c.save();
+        c.globalAlpha = 0.14 * ent;
+        c.fillStyle = '#ffffff';
+        c.font = gFont(400, 74, KIT_FONTS.maru.f);
+        c.textAlign = 'left';
+        c.fillText('EDITORIAL', 24 + (1 - ent) * -30, H * 0.58);
+        c.restore();
+        if (isPrice) mPrice(c, W, H - 290, sp, e);
+        mCaption(c, caption, 32, H - 245, W - 64, 145, 34, 'maru', '#ffffff', e, 'left');
+        inSign(c, d, W - 32, H - 46, 'rgba(232,213,188,0.85)');
+      } else if (M === 'ed_glasspill') {
+        // 글래스 플로우: 풀블리드 + 글자 폭에 딱 맞는 컴팩트 프로스트 글래스 알약
+        inPhotoFade(c, S, cutIdx, local, 0, 0, W, H, 1.05 + lp * 0.05, 1);
+        const lg = c.createRadialGradient(W * 0.85, H * 0.12, 10, W * 0.85, H * 0.12, 340);
+        lg.addColorStop(0, sp.accent + '44');
+        lg.addColorStop(1, 'rgba(0,0,0,0)');
+        c.fillStyle = lg; c.fillRect(0, 0, W, H);
+        const F = KIT_FONTS.pretM || KIT_FONTS.sans;
+        const wr = mFit(c, caption, W - 120, 2, 30, 20, 'pretM');
+        c.font = gFont(F.w, wr.size, F.f);
+        const maxW = Math.max(...wr.lines.map((l) => c.measureText(l).width), 120);
+        const pw = Math.min(W - 56, maxW + 64);
+        const ph = wr.lines.length * wr.lh + 34;
+        const px = (W - pw) / 2, py = H - 230 + (1 - ent) * 28;
+        c.save();
+        c.globalAlpha = ent;
+        gRoundRect(c, px, py, pw, ph, ph / 2);
+        c.fillStyle = 'rgba(14,18,28,0.58)';
+        c.fill();
+        c.strokeStyle = 'rgba(255,255,255,0.28)';
+        c.lineWidth = 1.2;
+        c.stroke();
+        c.fillStyle = sp.accent;
+        c.beginPath(); c.arc(px + 26, py + ph / 2, 5, 0, Math.PI * 2); c.fill();
+        c.fillStyle = '#ffffff';
+        c.textAlign = 'left';
+        c.textBaseline = 'middle';
+        wr.lines.forEach((ln, i) => {
+          c.fillText(ln, px + 44, py + 17 + wr.lh * (i + 0.5));
+        });
+        c.restore();
+      } else if (M === 'ed_kinetic') {
+        // 키네틱 포스터: 풀블리드 + 사선 빛 스윕 + 굵은 긴그림자(Long Shadow) 타이포
+        mPhoto(c, S, 0, 0, 0, W, H, 1.06 + lp * 0.05);
+        const g = c.createLinearGradient(0, H * 0.42, 0, H);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.84)');
+        c.fillStyle = g; c.fillRect(0, H * 0.42, W, H * 0.58);
+        if (local < 0.55) {
+          c.save();
+          c.translate(-W + mEase(local / 0.55) * W * 2.4, 0);
+          c.transform(1, 0, -0.35, 1, 0, 0);
+          c.fillStyle = sp.accent + '44';
+          c.fillRect(0, 0, 140, H);
+          c.restore();
+        }
+        const wr = kWrap(c, caption, W - 64, 2, 54, 30, 'impact');
+        const F = KIT_FONTS.impact;
+        c.save();
+        c.font = gFont(F.w, wr.size, F.f);
+        c.textAlign = 'left';
+        wr.lines.forEach((ln, i) => {
+          const p = mEase((e - i * 0.12) / 0.42);
+          const x = 32 + (1 - p) * -48;
+          const y = H - 220 + i * wr.lh;
+          c.globalAlpha = p;
+          kLongShadow(c, ln, x, y, i === 0 ? '#ffffff' : sp.accent, 'rgba(0,0,0,0.62)', 12, 0.85, 1);
+        });
+        c.restore();
+      } else if (M === 'ed_arch') {
+        // 아치 갤러리: 따뜻한 스톤 배경 위 아치형 창 + 얇은 골드 라인 + 명조 서명
+        const ax = 40, ay = 74, aw = W - 80, ah = 590, r = aw / 2;
+        c.save();
+        c.beginPath();
+        c.moveTo(ax, ay + ah);
+        c.lineTo(ax, ay + r);
+        c.arc(ax + r, ay + r, r, Math.PI, 0, false);
+        c.lineTo(ax + aw, ay + ah);
+        c.closePath();
+        c.save();
+        c.clip();
+        inPhotoFade(c, S, cutIdx, local, ax, ay, aw, ah, 1.04 + lp * 0.04, 1);
+        c.restore();
+        c.strokeStyle = sp.accent;
+        c.lineWidth = 1.5;
+        c.stroke();
+        c.restore();
+        inLabel(c, 'GALLERY EDITION', W / 2, 44, '#8a7968', 'center');
+        mCaption(c, caption, W / 2, ay + ah + 26, W - 80, 140, 28, 'maru', '#2b2622', e, 'center');
+        inSign(c, d, W - 40, H - 44, '#8a7968');
+        inGrain(c, W, H, t, 0.04);
+      } else if (M === 'ed_duotone') {
+        // 듀오톤 포스터: 모던 모노크롬/컬러 틴트 + 코너 크롭마크 + 긴그림자 타이포
+        c.save();
+        c.filter = 'grayscale(1) contrast(1.18)';
+        mPhoto(c, S, 0, 0, 0, W, H, 1.05 + lp * 0.04);
+        c.restore();
+        c.save();
+        c.globalCompositeOperation = 'multiply';
+        c.fillStyle = sp.accent;
+        c.globalAlpha = 0.38;
+        c.fillRect(0, 0, W, H);
+        c.restore();
+        const g = c.createLinearGradient(0, H * 0.45, 0, H);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.82)');
+        c.fillStyle = g; c.fillRect(0, H * 0.45, W, H * 0.55);
+        c.strokeStyle = 'rgba(255,255,255,0.5)';
+        c.lineWidth = 1.5;
+        [[28, 36], [W - 28, 36], [28, H - 90], [W - 28, H - 90]].forEach(([mx, my]) => {
+          c.beginPath(); c.moveTo(mx - 8, my); c.lineTo(mx + 8, my); c.moveTo(mx, my - 8); c.lineTo(mx, my + 8); c.stroke();
+        });
+        const wr = kWrap(c, caption, W - 72, 2, 46, 26, 'dohyeon');
+        const F = KIT_FONTS.dohyeon;
+        c.save();
+        c.font = gFont(F.w, wr.size, F.f);
+        c.textAlign = 'left';
+        wr.lines.forEach((ln, i) => {
+          const p = mEase((e - i * 0.1) / 0.4);
+          c.globalAlpha = p;
+          kLongShadow(c, ln, 32, H - 220 + i * wr.lh + (1 - p) * 20, i === 0 ? '#ffffff' : sp.accent2, 'rgba(0,0,0,0.58)', 10, 0.85, 1);
+        });
+        c.restore();
       } else if (M === 'cinema') {
         // 시네마틱: 위아래 검은 띠 + 가장자리 비네트, 컷은 부드럽게 겹쳐 바뀜 (캡컷 "영화 화면"·"비네트")
         const fade = cutIdx > 0 ? mEase(local / 0.45) : 1;
