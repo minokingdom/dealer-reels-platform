@@ -11171,7 +11171,7 @@ function renderStoryArchetypesUI() {
     }
 
     // 화면 위쪽이 사진인 배치 (머리표·장식을 흰색으로)
-    const KIT_PHOTO_TOP = ['full', 'blinds', 'duo', 'split', 'diag', 'dim', 'handheld'];
+    const KIT_PHOTO_TOP = ['full', 'blinds', 'diag', 'dim', 'handheld'];
 
     // ---------- 장면(사진·영상) 계산 ----------
     function kitScene(t, mainDuration, isOutro) {
@@ -11438,24 +11438,36 @@ function renderStoryArchetypesUI() {
         return { x: 30, y: 590, w: W - 60, h: 260, onPhoto: true };
       }
       if (L === 'duo') {
-        kitPhoto(c, { x: 0, y: 0, w: W, h: 470 }, S, spec);
-        kitPhoto(c, { x: 0, y: 490, w: W, h: 470 }, S, spec, { offset: 1, still: true });
-        c.fillStyle = 'rgba(0,0,0,0.3)';
-        c.fillRect(0, 490, W, 470);
-        c.fillStyle = V.accent;
-        c.fillRect(0, 470, W * gEase(t / 0.7), 20);
-        const g = c.createLinearGradient(0, 300, 0, 680);
-        g.addColorStop(0, 'rgba(0,0,0,0)');
-        g.addColorStop(0.5, 'rgba(0,0,0,0.55)');
-        g.addColorStop(1, 'rgba(0,0,0,0)');
-        c.fillStyle = g;
-        c.fillRect(0, 300, W, 380);
-        const g2 = c.createLinearGradient(0, 760, 0, H);
-        g2.addColorStop(0, 'rgba(0,0,0,0)');
-        g2.addColorStop(1, 'rgba(0,0,0,0.6)');
-        c.fillStyle = g2;
-        c.fillRect(0, 760, W, 200);
-        return { x: 30, y: 540, w: W - 60, h: 290, onPhoto: true };
+        fillBg();
+        const ent = S.idx === 0 ? Math.min(1, t / 0.55) : 1;
+        const drawCard = (bx, by, bw, bh, rad, off, still, borderCol) => {
+          c.save();
+          c.shadowColor = 'rgba(0,0,0,0.34)';
+          c.shadowBlur = 24;
+          c.shadowOffsetY = 10;
+          gRoundRect(c, bx, by, bw, bh, rad);
+          c.fillStyle = K.light ? '#ffffff' : '#18181b';
+          c.fill();
+          c.restore();
+          c.save();
+          gRoundRect(c, bx, by, bw, bh, rad);
+          c.clip();
+          kitPhoto(c, { x: bx, y: by, w: bw, h: bh }, S, spec, still ? { offset: off, still: true } : { offset: off });
+          c.restore();
+          if (borderCol) {
+            c.save();
+            gRoundRect(c, bx, by, bw, bh, rad);
+            c.strokeStyle = borderCol;
+            c.lineWidth = 2.5;
+            c.stroke();
+            c.restore();
+          }
+        };
+        const dx1 = (1 - gEase(ent)) * -24;
+        const dx2 = (1 - gEase(ent)) * 28;
+        drawCard(24 + dx1, 76, 336, 400, 22, 0, false, K.light ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.14)');
+        drawCard(196 + dx2, 248, 320, 316, 22, 1, true, K.light ? '#ffffff' : 'rgba(255,255,255,0.22)');
+        return { x: 30, y: 598, w: W - 60, h: 252, onPhoto: false };
       }
       if (L === 'handheld') {
         // 손에 들고 찍은 듯한 흔들림 + 살짝 확대
@@ -11483,10 +11495,27 @@ function renderStoryArchetypesUI() {
       }
       fillBg();
       if (L === 'split') {
-        kitPhoto(c, { x: 0, y: 0, w: W, h: 540 }, S, spec);
-        c.fillStyle = K.bgAccent ? K.hl : V.accent;
-        c.fillRect(0, 540, W * gEase(t / 0.8), 6);
-        return { x: 30, y: 588, w: W - 60, h: 262, onPhoto: false };
+        const px = 20, py = 74, pw = W - 40, ph = 492, pr = 26;
+        c.save();
+        c.shadowColor = 'rgba(0,0,0,0.34)';
+        c.shadowBlur = 28;
+        c.shadowOffsetY = 12;
+        gRoundRect(c, px, py, pw, ph, pr);
+        c.fillStyle = K.light ? '#ffffff' : '#18181b';
+        c.fill();
+        c.restore();
+        c.save();
+        gRoundRect(c, px, py, pw, ph, pr);
+        c.clip();
+        kitPhoto(c, { x: px, y: py, w: pw, h: ph }, S, spec);
+        c.restore();
+        c.save();
+        gRoundRect(c, px, py, pw, ph, pr);
+        c.strokeStyle = K.light ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.14)';
+        c.lineWidth = 1.5;
+        c.stroke();
+        c.restore();
+        return { x: 30, y: 594, w: W - 60, h: 256, onPhoto: false };
       }
       if (L === 'diag') {
         kitPhoto(c, { x: 0, y: 0, w: W, h: 640, shape: 'diag' }, S, spec);
@@ -13199,7 +13228,7 @@ function renderStoryArchetypesUI() {
     // ---------- 본편 카마스터 칩 3가지 ----------
     function kitChip(c, d, W, H, spec, V, K, enter) {
       const variant = { pill: 'round', counter: 'round', box: 'square', kicker: 'line', none: 'line', profile: 'square' }[spec.head] || 'round';
-      const onPhoto = ['full', 'blinds', 'duo', 'dim', 'handheld'].includes(spec.layout);
+      const onPhoto = ['full', 'blinds', 'dim', 'handheld'].includes(spec.layout);
       const y = (spec.deco === 'bars' ? H - 124 : H - 82) + (1 - enter) * 30;
       const col = K.bgAccent ? K.hl : V.accent;
       c.save();
@@ -14057,14 +14086,8 @@ function renderStoryArchetypesUI() {
         }
       }
 
-      // 2) 분할/사선 레이아웃일 때만 겹치지 않는 경계선 그래픽 액센트
-      if (spec.layout === 'duo') {
-        c.save();
-        c.fillStyle = col;
-        c.globalAlpha = 0.88 * pop;
-        c.fillRect(W / 2 - (W * 0.44 * pop), 478, W * 0.88 * pop, 4);
-        c.restore();
-      } else if (spec.layout === 'diag') {
+      // 2) 사선 레이아웃일 때만 경계선 그래픽 액센트
+      if (spec.layout === 'diag') {
         c.save();
         c.strokeStyle = col;
         c.lineWidth = 4;
@@ -14076,9 +14099,9 @@ function renderStoryArchetypesUI() {
         c.restore();
       }
 
-      // 3) 모션 도형 / 트렌드 테마 전용: 위아래 분할(duo) 사이 틈에만 마키 띠 표시 (자막과 절대 겹치지 않음)
+      // 3) 모션 도형 / 트렌드 테마 전용: 사선/콜라주 위 상단 여백에만 깔끔한 미니 태그 표시
       const isMotionTheme = spec.deco === 'shapes' || spec.isTrend;
-      if (isMotionTheme && spec.layout === 'duo' && cutIdx % 2 === 1) {
+      if (false && isMotionTheme && spec.layout === 'duo' && cutIdx % 2 === 1) {
         c.save();
         c.translate(W / 2, 480);
         c.fillStyle = 'rgba(12,12,16,0.9)';
@@ -14206,7 +14229,7 @@ function renderStoryArchetypesUI() {
       ['v_camera', '카메라 앱', '브이로그', 'full', 'timestamp', 'sans', 'camera', 'slide', 'polaroid', 'none', 'none', 'dark', 'VLOG', '#facc15', '#ffffff']
     ];
     const KIT_PART_NAMES = {
-      layout: { full: '전체 화면', split: '위 사진·아래 패널', polaroid: '겹친 폴라로이드', film: '흐르는 필름', circle: '원형 렌즈', mat: '액자', diag: '사선 분할', cards: '겹친 카드', grid: '4분할 그리드', arch: '아치 창', blinds: '블라인드 전환', duo: '위아래 두 장', notebook: '공책', chalkboard: '칠판', dim: '어두운 사진 위 큰 글씨', poster: '타이포 포스터', handheld: '손에 든 카메라' },
+      layout: { full: '전체 화면', split: '라운딩 카드', polaroid: '겹친 폴라로이드', film: '흐르는 필름', circle: '원형 렌즈', mat: '액자', diag: '사선 분할', cards: '겹친 카드', grid: '4분할 그리드', arch: '아치 창', blinds: '블라인드 전환', duo: '레이어드 콜라주', notebook: '공책', chalkboard: '칠판', dim: '어두운 사진 위 큰 글씨', poster: '타이포 포스터', handheld: '손에 든 카메라' },
       cap: { band: '기울어진 띠', glass: '유리 카드', typer: '타자기', outline: '외곽선 글씨', marker: '형광펜', bubble: '말풍선', sticky: '포스트잇', cinema: '영화 자막', neon: '네온사인', stamp: '도장', words: '단어 팝', vertical: '세로쓰기', ticket: '영수증 쪽지', pill: '알약 칩', headline: '신문 헤드라인', lower3: '방송 하단 자막', write: '써지는 손글씨', letter: '편지지 손글씨', chalk: '분필 글씨', scribble: '동그라미 손글씨', brush: '붓글씨', doodle: '낙서 손글씨', stack: '꽉 찬 단어 쌓기', scroll: '흐르는 타이포', slam: '한 단어씩 쾅', knockout: '글자 속 사진', marquee: '무한 띠 타이포', longshadow: '입체 글씨', vsub: '브이로그 자막', chapter: '챕터 카드', loctag: '위치 태그', checkl: '출고 체크리스트', timestamp: '날짜·시각 기록', scriptkick: '필기체 포인트', signline: '서명 밑줄', quotecard: '서명 인용', notecard: '고급 카드지' },
       outro: { bigname: '큰 이름', card: '흰 명함 카드', ticket: '탑승권', badge: '사원증', receipt: '견적 영수증', chat: '메신저 대화', split: '컬러 블록', ring: '회전 글씨 원', polaroid: '폴라로이드', news: '신문 1면', neon: '네온 간판', minimal: '미니멀', vlogend: '유튜브 끝 화면', signature: '서명 명함' }
     };
