@@ -24,7 +24,7 @@
 5. 배포 확인: `gh api repos/minokingdom/dealer-reels-platform/commits/<sha>/status` 가 `success`, GitHub Actions `smoke`가 통과. 운영 주소 https://dealer-reels-platform.vercel.app 에서 직접 확인한 뒤에 완료라고 보고합니다.
 6. 확인 못 한 것은 못 했다고 말합니다. "될 것 같다"를 완료처럼 보고하지 않습니다.
 
-## 3. 디자인 규칙 (사장님이 직접 지적한 것들)
+## 3. 디자인 규칙 (사장님이 직접 지적한 것들 · 상세: `docs/design-system.md`)
 - **분류를 새로 만들지 않습니다.** `DESIGN_CATS`의 기존 12개 분류에만 넣습니다. 인스타 감성 스타일은 '감성' 또는 '브이로그'.
 - **글자 테두리 금지:** `strokeText`, 글자 둘레 굵은 선, 겹겹이 쌓은 긴 그림자 금지. 사진 위 밝은 글자에만 옅은 그림자(blur ≤ 10, 투명도 ≤ 0.25).
 - **위 사진·아래 단색 글자로 나누는 구성 금지**(자동차 외 업종). 사진은 화면을 꽉 채우거나, 종이 위 인화지·폴라로이드처럼 '물건'으로 놓습니다.
