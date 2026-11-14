@@ -15034,8 +15034,11 @@ function renderStoryArchetypesUI() {
         const pickId = window.__arStyleBag.shift();
         const pick = designs.find((x) => x.id === pickId) || designs[0];
         selectDesignStyle(pick.id);
-        // 어떤 디자인으로 바뀌었는지 이름과 남은 개수를 잠깐 보여 줌
-        if (typeof arToast === 'function') arToast(`🎲 ${pick.name}${pick.cat ? ' · ' + pick.cat : ''} (${(window.__arStyleBagTotal || designs.length) - window.__arStyleBag.length}/${window.__arStyleBagTotal || designs.length})`);
+        // 어떤 디자인으로 바뀌었는지 이름과 남은 개수를 잠깐 보여 줌 (버튼 바로 위)
+        if (typeof arToast === 'function') {
+          const shuffleBtn = [document.getElementById('previewRandomDesignBtnMain'), document.getElementById('previewRandomDesignBtn')].find((b) => b && b.offsetParent !== null);
+          arToast(`🎲 ${pick.name}${pick.cat ? ' · ' + pick.cat : ''} (${(window.__arStyleBagTotal || designs.length) - window.__arStyleBag.length}/${window.__arStyleBagTotal || designs.length})`, true, shuffleBtn || null);
+        }
       }
       if (typeof selectColorPalette === 'function') {
         // 대부분 디자인 고유의 조화로운 기본색을 유지하고, 가끔만 다른 팔레트 적용
@@ -15593,30 +15596,30 @@ function renderStoryArchetypesUI() {
         if (isPrice) mPrice(c, W, capY - 10, sp, e);
         mCaption(c, caption, 34, capY + (isPrice ? 36 : 0), W - 68, capH - (isPrice ? 36 : 0), 38, sp.font, '#111111', e, 'left', sp.accent);
       } else if (M === 'tiles') {
-        const cols = 4, rows = 5, tw = W / cols, th = stageH / rows;
-        mPhoto(c, S, -1, 0, 0, W, stageH, 1.1);
+        const cols = 4, rows = 6, tw = W / cols, th = H / rows;
+        mPhoto(c, S, -1, 0, 0, W, H, 1.1);
         for (let r = 0; r < rows; r++) {
           for (let k = 0; k < cols; k++) {
-            const p = cutIdx === 0 && local < 0.05 ? 1 : mEase((local - (r + k) * 0.05) / 0.35);
+            const p = cutIdx === 0 && local < 0.05 ? 1 : mEase((local - (r + k) * 0.04) / 0.35);
             if (p <= 0) continue;
             c.save();
             const x = k * tw, y = r * th;
             c.translate(x + tw / 2, y + th / 2);
             c.scale(p, 1);
             c.beginPath();
-            c.rect(-tw / 2, -th / 2, tw, th);
+            c.rect(-tw / 2, -th / 2, tw + 0.5, th + 0.5);
             c.clip();
-            mPhoto(c, S, 0, -tw / 2 - x, -th / 2 - y, W, stageH, 1.04 + lp * 0.05);
+            mPhoto(c, S, 0, -tw / 2 - x, -th / 2 - y, W, H, 1.04 + lp * 0.05);
             c.restore();
           }
         }
-        c.fillStyle = sp.accent;
-        c.fillRect(0, stageH, W, 6);
-        gRoundRect(c, 24, capY - 6, W - 48, capH + 12, 18);
-        c.fillStyle = '#ffffff';
-        c.fill();
-        if (isPrice) mPrice(c, W, stageH + 6, sp, e);
-        mCaption(c, caption, W / 2, capY + (isPrice ? 26 : 4), W - 90, capH - (isPrice ? 26 : 8), 36, sp.font, '#0b1220', e);
+        const g = c.createLinearGradient(0, H * 0.48, 0, H);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.86)');
+        c.fillStyle = g;
+        c.fillRect(0, H * 0.48, W, H * 0.52);
+        if (isPrice) mPrice(c, W, capY - 6, sp, e);
+        mCaption(c, caption, W / 2, capY + (isPrice ? 36 : 8), W - 76, capH - (isPrice ? 36 : 8), 38, sp.font, '#ffffff', e);
       } else if (M === 'tunnel') {
         // 안쪽에서 바깥으로 계속 커지는 사각 테두리
         c.save();
@@ -23225,18 +23228,29 @@ POST https://graph.facebook.com/v19.0/${d.igUsername.replace('@', '')}/media
       return { status: r.status, ok: r.ok && j.ok !== false, body: j };
     }
 
-    function arToast(msg, ok = false) {
+    function arToast(msg, ok = false, anchorEl = null) {
       let el = document.getElementById('arToast');
       if (!el) {
         el = document.createElement('div');
         el.id = 'arToast';
-        el.className = 'fixed left-1/2 -translate-x-1/2 bottom-24 z-[80] pointer-events-none max-w-[90vw] text-center px-4 py-2.5 rounded-[10px] text-[13px] shadow-2xl border';
+        el.className = 'fixed z-[80] pointer-events-none max-w-[90vw] text-center px-4 py-2 rounded-[10px] text-[13px] shadow-2xl border whitespace-nowrap';
         document.body.appendChild(el);
       }
       el.textContent = msg;
       el.style.background = ok ? '#0f2a1d' : '#2a1414';
       el.style.borderColor = ok ? '#4cc38a' : '#e5484d';
       el.style.color = '#ededed';
+      const rect = anchorEl && anchorEl.getBoundingClientRect ? anchorEl.getBoundingClientRect() : null;
+      if (rect && rect.width > 0 && rect.height > 0) {
+        const cx = Math.max(120, Math.min(window.innerWidth - 120, rect.left + rect.width / 2));
+        el.style.left = `${Math.round(cx)}px`;
+        el.style.bottom = `${Math.max(16, Math.round(window.innerHeight - rect.top + 10))}px`;
+        el.style.transform = 'translateX(-50%)';
+      } else {
+        el.style.left = '50%';
+        el.style.bottom = '96px';
+        el.style.transform = 'translateX(-50%)';
+      }
       el.style.display = 'block';
       clearTimeout(el._t);
       el._t = setTimeout(() => { el.style.display = 'none'; }, 4200);
