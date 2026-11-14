@@ -16396,7 +16396,7 @@ function renderStoryArchetypesUI() {
           c.fillStyle = '#e0a400';
           c.fillRect(28 + c.measureText(last).width + 3, 130 + (r.lines.length - 1) * r.lh - r.size * 0.55, 2, r.size * 1.1);
         }
-        const py = 150 + Math.max(1, r.lines.length) * r.lh, ph = Math.min(H - py - 90, 470);
+        const py = 150 + Math.max(1, r.lines.length) * r.lh, ph = H - py - 96;
         c.save();
         gRoundRect(c, 28, py, W - 56, ph, 14);
         c.clip();
