@@ -1070,7 +1070,12 @@
               <div data-advanced>
                 <label for="sfxModeSelect" class="block text-[12px] text-[#a1a1a6] mb-1">효과음</label>
                 <select id="sfxModeSelect" onchange="setSfxMode(this.value)" class="studio-input w-full h-9 px-2.5 text-[12px] cursor-pointer">
-                  <option value="scene">장면 맞춤 · 팝 / 물방울 / 반짝</option>
+                  <option value="scene">장면 맞춤 · 믹스 (우쉬 / 셔터 / 임팩트)</option>
+                  <option value="whoosh">바람 스윕 (Whoosh)</option>
+                  <option value="shutter">카메라 셔터 (Shutter)</option>
+                  <option value="impact">펀치 임팩트 (Impact)</option>
+                  <option value="tick">깔끔한 UI 틱 (Tick)</option>
+                  <option value="drop">물방울 (Drop)</option>
                   <option value="off">효과음 끄기</option>
                 </select>
               </div>
@@ -8856,7 +8861,7 @@ function renderStoryArchetypesUI() {
         }
       },
 
-      // ---------- 장면 효과음: 팝 · 물방울 · 반짝 (장면이 바뀔 때만, 작게) ----------
+      // ---------- 장면 효과음: 우쉬 · 셔터 · 임팩트 · 틱 · 스와이프 · 차임 (장면이 바뀔 때만, 작게) ----------
       sfxMode: (() => { try { return localStorage.getItem('autoreels_sfx') || 'scene'; } catch (e) { return 'scene'; } })(),
       lastSfxSlot: -2,
       sfxOut() {
@@ -8866,6 +8871,14 @@ function renderStoryArchetypesUI() {
           this.sfxGain.connect(this.masterGain);
         }
         return this.sfxGain;
+      },
+      sfxNoiseBuf(dur = 0.25) {
+        const ctx = this.ctx;
+        const len = Math.max(1, Math.floor(ctx.sampleRate * dur));
+        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const ch = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+        return buf;
       },
       sfxTone(when, f0, f1, dur, gain, type = 'sine', glide = 0.04) {
         const ctx = this.ctx;
@@ -8879,20 +8892,79 @@ function renderStoryArchetypesUI() {
         o.connect(g); g.connect(this.sfxOut());
         o.start(when); o.stop(when + dur + 0.02);
       },
+      // 바람 스윕 (Whoosh)
+      sfxWhoosh(when, gain = 0.2) {
+        const ctx = this.ctx;
+        const src = ctx.createBufferSource();
+        src.buffer = this.sfxNoiseBuf(0.24);
+        const flt = ctx.createBiquadFilter();
+        flt.type = 'bandpass';
+        flt.Q.value = 1.6;
+        flt.frequency.setValueAtTime(320, when);
+        flt.frequency.exponentialRampToValueAtTime(2400, when + 0.09);
+        flt.frequency.exponentialRampToValueAtTime(480, when + 0.22);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.linearRampToValueAtTime(gain, when + 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + 0.22);
+        src.connect(flt); flt.connect(g); g.connect(this.sfxOut());
+        src.start(when); src.stop(when + 0.24);
+      },
+      // 카메라 셔터 (Shutter)
+      sfxShutter(when, gain = 0.18) {
+        const ctx = this.ctx;
+        [0, 0.045].forEach((off, idx) => {
+          const t0 = when + off;
+          const src = ctx.createBufferSource();
+          src.buffer = this.sfxNoiseBuf(0.035);
+          const flt = ctx.createBiquadFilter();
+          flt.type = 'highpass';
+          flt.frequency.setValueAtTime(idx === 0 ? 1800 : 1200, t0);
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, t0);
+          g.gain.linearRampToValueAtTime(gain * (idx === 0 ? 1 : 0.75), t0 + 0.003);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.03);
+          src.connect(flt); flt.connect(g); g.connect(this.sfxOut());
+          src.start(t0); src.stop(t0 + 0.035);
+        });
+      },
+      // 펀치 임팩트 (Impact)
+      sfxImpact(when, gain = 0.26) {
+        this.sfxTone(when, 150, 38, 0.18, gain, 'sine', 0.14);
+        this.sfxTone(when, 420, 95, 0.045, gain * 0.45, 'triangle', 0.03);
+      },
+      // 깔끔한 UI 틱 (Tick)
+      sfxTick(when, gain = 0.16) {
+        this.sfxTone(when, 1900, 620, 0.032, gain, 'triangle', 0.022);
+      },
+      // 부드러운 카드 스와이프 (Swipe)
+      sfxSwipe(when, gain = 0.14) {
+        const ctx = this.ctx;
+        const src = ctx.createBufferSource();
+        src.buffer = this.sfxNoiseBuf(0.14);
+        const flt = ctx.createBiquadFilter();
+        flt.type = 'lowpass';
+        flt.frequency.setValueAtTime(900, when);
+        flt.frequency.exponentialRampToValueAtTime(2800, when + 0.12);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, when);
+        g.gain.linearRampToValueAtTime(gain, when + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, when + 0.13);
+        src.connect(flt); flt.connect(g); g.connect(this.sfxOut());
+        src.start(when); src.stop(when + 0.15);
+      },
       // 톡 튀는 팝
-      sfxPop(when, gain = 0.2) {
-        this.sfxTone(when, 380, 980, 0.09, gain, 'sine', 0.03);
-        this.sfxTone(when, 760, 1960, 0.05, gain * 0.25, 'triangle', 0.025);
+      sfxPop(when, gain = 0.18) {
+        this.sfxTone(when, 320, 880, 0.07, gain, 'triangle', 0.025);
       },
       // 똑 떨어지는 물방울
-      sfxDrop(when, gain = 0.22) {
-        this.sfxTone(when, 620, 1650, 0.16, gain, 'sine', 0.07);
-        this.sfxTone(when + 0.11, 900, 2100, 0.1, gain * 0.35, 'sine', 0.05);
+      sfxDrop(when, gain = 0.18) {
+        this.sfxTone(when, 620, 1650, 0.14, gain, 'sine', 0.06);
       },
       // 가격·혜택 장면: 맑은 두 음
-      sfxChime(when, gain = 0.13) {
-        this.sfxTone(when, 1318.5, 1318.5, 0.55, gain, 'sine', 0.01);
-        this.sfxTone(when + 0.08, 1975.5, 1975.5, 0.6, gain * 0.8, 'sine', 0.01);
+      sfxChime(when, gain = 0.12) {
+        this.sfxTone(when, 1318.5, 1318.5, 0.5, gain, 'sine', 0.01);
+        this.sfxTone(when + 0.08, 1975.5, 1975.5, 0.55, gain * 0.8, 'sine', 0.01);
       },
       // 마지막 명함 장면: 올라가는 반짝임
       sfxSparkle(when, gain = 0.08) {
@@ -8901,14 +8973,25 @@ function renderStoryArchetypesUI() {
       playSceneSfx(t, slot, totalCuts) {
         const when = this.ctx.currentTime + 0.01;
         if (slot >= totalCuts) return this.sfxSparkle(when);
+        if (this.sfxMode === 'whoosh') return this.sfxWhoosh(when);
+        if (this.sfxMode === 'shutter') return this.sfxShutter(when);
+        if (this.sfxMode === 'impact') return this.sfxImpact(when);
+        if (this.sfxMode === 'tick') return this.sfxTick(when);
+        if (this.sfxMode === 'drop') return this.sfxDrop(when);
         const ds = typeof getActiveDesign === 'function' ? getActiveDesign() : null;
-        const soft = ds && ['감성', '브이로그', '손글씨', '고급', '신뢰', '상담·정보'].includes(ds.cat);
+        const cat = ds ? (ds.cat || '') : '';
         const cap = String((campaign.cutCaptions || [])[slot] || '');
         if (/만\s?원|\d+\s?%|할인|특가|혜택|\d+원|1\+1/.test(cap)) {
-          (soft ? this.sfxDrop(when, 0.16) : this.sfxPop(when, 0.16));
-          return this.sfxChime(when + 0.12);
+          this.sfxImpact(when, 0.18);
+          return this.sfxChime(when + 0.1);
         }
-        return soft ? this.sfxDrop(when) : this.sfxPop(when);
+        if (['타이포', '스포츠', '특가', '테크'].includes(cat)) {
+          return [() => this.sfxImpact(when), () => this.sfxWhoosh(when), () => this.sfxTick(when)][slot % 3]();
+        }
+        if (['브이로그', '감성', '신규', '손글씨', '고급'].includes(cat)) {
+          return [() => this.sfxShutter(when), () => this.sfxWhoosh(when), () => this.sfxSwipe(when)][slot % 3]();
+        }
+        return [() => this.sfxWhoosh(when), () => this.sfxTick(when), () => this.sfxShutter(when), () => this.sfxPop(when)][slot % 4]();
       },
       handleSceneSfx(t) {
         if (this.sfxMode === 'off' || !this.ctx) return;
@@ -14805,7 +14888,8 @@ function renderStoryArchetypesUI() {
     // 2026-11-14 정리: 핀터레스트 인스타 감성 기준으로 서로 비슷하거나(도형 전환 6종·어두운 사진+굵은 자막 상자 4종)
     // 유행이 지난 모션(블롭·터널·이퀄라이저·큐브·하프톤·터미널)은 목록에서 뺌
     const AR_RETIRED_DESIGNS = new Set(['g_diamond', 'g_hex', 'g_blocks', 'g_ringpop', 'g_diagshape', 'g_cardhex',
-      's_shoplive', 'b_sale', 'u_compare', 'k2_stack', 'ev_terminal', 'mo_blob', 'mo_tunnel', 'mo_eq', 'mo_cube', 'mo_dots', 'in_cal']);
+      's_shoplive', 'b_sale', 'u_compare', 'k2_stack', 'ev_terminal', 'mo_blob', 'mo_tunnel', 'mo_eq', 'mo_cube', 'mo_dots', 'in_cal',
+      'r1', 'c2', 'a1', 'tr_acad_camp']);
     // 사진을 위 58%에만 두고 자막은 아래 단색 바탕에 두는 모션 스타일 — 자동차 외 업종에서는 숨김 (촌스럽다는 의견, 2026-11)
     const AR_SPLIT_MOTION_IDS = new Set(['mo_tiles', 'mo_cards', 'mo_aurora', 'mo_number', 'mo_bounce', 'mo_neon']);
     function arDesignVisible(ds) {
