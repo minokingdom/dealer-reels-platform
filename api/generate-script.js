@@ -576,6 +576,8 @@ JSON 스키마:
     const topicTitle = topic ? String(topic.title || '').slice(0, 30) : '';
     const topicWhy = topic ? String(topic.why || '').slice(0, 50) : '';
     const storeLabel = isOther ? (dealerName || '') : [dealerName, dealerTitle].filter(Boolean).join(' ');
+    // 가게 이름이 없을 때 부를 말: 업종 장소(병원·매장·학원 등)
+    const placeWord = `저희 ${String((body.industryInfo && body.industryInfo.place) || '가게').slice(0, 10)}`;
     const storyRule = topic ? `
 
 [오늘의 주제로 이야기 잇기 — 가장 중요]
@@ -583,9 +585,9 @@ JSON 스키마:
 ① 첫 컷(hook)에서 그 계기·시기를 직접 꺼내고(예: "수능 끝나고", "수능 앞둔 요즘"),
 ② 그때 손님이 느끼는 마음이나 필요를 말하고(예: "몸도 마음도 지쳤을 때", "예쁜 대학 생활을 시작하고 싶을 때"),
 ③ 그 필요를 우리 ${isOther ? I.product : '차'}이(가) 어떻게 채워 주는지 보여 주고(예: "따뜻한 국물 한 그릇", "자연스러운 변화"),
-④ 마지막 컷에서 ${storeLabel ? `"${storeLabel}"(으)로` : '저희 가게로'} 오시라고 자연스럽게 마무리하세요.
-예시 흐름: "수능 끝나고 몸도 마음도 지쳤죠" → "따뜻한 국물이 필요할 때" → "푹 고아낸 국물 한 그릇" → "${storeLabel || '저희 가게'}에서 기다릴게요".
-계기와 상품이 따로 놀지 않게, 모든 컷이 주제와 연결되게 쓰세요. 3안 모두 이 흐름을 지키되 말투와 강조점만 다르게 하세요.${storeLabel ? '' : ' 가게 이름은 지어내지 말고 "저희 가게"로 쓰세요.'}` : '';
+④ 마지막 컷에서 ${storeLabel ? `"${storeLabel}"(으)로` : `${placeWord}로`} 오시라고 자연스럽게 마무리하세요.
+예시 흐름: "수능 끝나고 몸도 마음도 지쳤죠" → "따뜻한 국물이 필요할 때" → "푹 고아낸 국물 한 그릇" → "${storeLabel || placeWord}에서 기다릴게요".
+계기와 상품이 따로 놀지 않게, 모든 컷이 주제와 연결되게 쓰세요. 3안 모두 이 흐름을 지키되 말투와 강조점만 다르게 하세요.${storeLabel ? '' : ` 가게 이름은 지어내지 말고 "${placeWord}"(으)로 쓰세요.`}` : '';
     const systemWithAngles = `${systemInstruction}${anglesRule}${storyRule}`;
 
     const speaker = [dealerBranch, dealerName, dealerTitle].filter(Boolean).join(' ');
