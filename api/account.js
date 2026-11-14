@@ -96,6 +96,20 @@ module.exports = async function handler(req, res) {
     });
   }
 
+  if (action === 'admin-verify' && req.method === 'POST') {
+    if (!sameOrigin(req)) return send(res, 403, { ok: false, error: 'bad_origin' });
+    const adminTok = String(process.env.ADMIN_TOKEN || '').trim();
+    if (!adminTok) return send(res, 503, { ok: false, error: 'admin_not_configured', message: '서버에 관리자 키(ADMIN_TOKEN)가 설정되지 않았습니다.' });
+    const b = await readBody(req).catch(() => ({}));
+    const given = String(b.token || '').trim();
+    const a = Buffer.from(given, 'utf8');
+    const c = Buffer.from(adminTok, 'utf8');
+    if (a.length !== c.length || !require('node:crypto').timingSafeEqual(a, c)) {
+      return send(res, 401, { ok: false, error: 'invalid_admin_token', message: '관리자 키가 올바르지 않습니다.' });
+    }
+    return send(res, 200, { ok: true });
+  }
+
   if (!ready.serverMode) {
     return send(res, 503, { ok: false, error: 'server_mode_off', message: '회원 서버가 아직 준비되지 않았습니다.' });
   }

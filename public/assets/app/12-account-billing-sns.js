@@ -3,7 +3,6 @@
     // 카마스터 전용 모드 ↔ 본사 관리자 모드 분리 및 보안 인증
     // ============================================================================
     let isAdminMode = false;
-    const ADMIN_PASSWORD_HASH = 'admin7788!';
 
     function checkIsAdminRoute() {
       const p = (window.location.pathname || '').toLowerCase();
@@ -28,28 +27,42 @@
       if (m) m.classList.add('hidden');
     }
 
-    function submitAdminAuth(e) {
+    async function submitAdminAuth(e) {
       if (e) e.preventDefault();
       const inp = document.getElementById('adminAuthPasswordInput');
       const err = document.getElementById('adminAuthError');
       const pwd = inp ? inp.value.trim() : '';
+      if (!pwd) return;
 
-      if (pwd === ADMIN_PASSWORD_HASH || pwd === 'admin') {
-        isAdminMode = true;
-        try {
-          localStorage.setItem('autoreels_admin_authenticated', '1');
-          localStorage.setItem('autoreels_admin_mode', '1');
-        } catch (e) {}
-        closeAdminAuthModal();
-        applyRoleViewModeUI();
-        showMsg('본사 관리자 모드로 인증되었습니다.');
-      } else {
+      try {
+        const res = await fetch('/api/account?action=admin-verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: pwd })
+        });
+        const j = await res.json().catch(() => ({}));
+        if (res.ok && j.ok) {
+          isAdminMode = true;
+          try {
+            localStorage.setItem('autoreels_admin_authenticated', '1');
+            localStorage.setItem('autoreels_admin_mode', '1');
+          } catch (ex) {}
+          closeAdminAuthModal();
+          applyRoleViewModeUI();
+          showMsg('본사 관리자 모드로 인증되었습니다.');
+          return;
+        }
         if (err) {
-          err.textContent = '비밀번호가 올바르지 않습니다. (기본 암호: admin7788!)';
+          err.textContent = j.message || '관리자 키가 올바르지 않습니다.';
           err.classList.remove('hidden');
         }
-        if (inp) inp.focus();
+      } catch (ex) {
+        if (err) {
+          err.textContent = '관리자 인증 서버에 연결하지 못했습니다.';
+          err.classList.remove('hidden');
+        }
       }
+      if (inp) inp.focus();
     }
 
     function exitAdminMode() {
@@ -1168,6 +1181,27 @@
       const showLanding = sp.get('landing') === '1' || ((p === '/' || p === '') && localStorage.getItem('ar_visited_studio') !== '1');
       applyLandingRouteState(showLanding);
     });
+
+    function openArLegalModal(kind) {
+      const m = document.getElementById('arLegalModal');
+      const t = document.getElementById('arLegalModalTitle');
+      const b = document.getElementById('arLegalModalBody');
+      if (!m || !t || !b) return;
+      const docs = {
+        terms: ['이용약관', '<p>1. 본 서비스(AutoReels)는 업종별 릴스·쇼츠 영상 제작 및 SNS 발행 도구를 제공합니다.</p><p>2. 회원이 업로드한 사진·영상·문구에 대한 권리와 책임은 회원 본인에게 있습니다.</p><p>3. 유료 요금제(스탠다드 월 29,900원 / 프로 무제한 월 59,000원)는 매월 자동 결제되며 언제든 해지 예약이 가능합니다.</p>'],
+        privacy: ['개인정보처리방침', '<p>1. 수집 항목: 이름, 휴대폰 번호, 매장·지점 정보, 결제 및 서비스 이용 기록(다운로드·SNS 게시 횟수).</p><p>2. 이용 목적: 회원 식별, 정기구독 결제 처리, SNS 연동 발행, 고객 문의 응대.</p><p>3. 보유 기간: 회원 탈퇴 시까지(관계 법령에 따른 결제 기록 5년 보관).</p>'],
+        refund: ['환불·해지 규정', '<p>1. 정기구독 해지는 결제 관리창에서 언제든 예약할 수 있으며, 남은 기간까지 계속 이용 가능합니다.</p><p>2. 결제 후 7일 이내에 유료 내보내기(워터마크 제거 다운로드 및 SNS 게시)를 1회도 사용하지 않은 경우 전액 환불이 가능합니다.</p>'],
+        support: ['고객센터 안내', '<p>이메일: support@autoreels.kr</p><p>운영시간: 평일 10:00 ~ 18:00 (주말·공휴일 휴무)</p>']
+      };
+      const d = docs[kind] || docs.terms;
+      t.textContent = d[0];
+      b.innerHTML = d[1];
+      m.classList.remove('hidden');
+    }
+    function closeArLegalModal() {
+      const m = document.getElementById('arLegalModal');
+      if (m) m.classList.add('hidden');
+    }
 
     (function initLandingOrStudioBoot() {
       const showLanding = shouldShowLandingOnBoot();

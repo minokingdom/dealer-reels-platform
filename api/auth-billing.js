@@ -76,7 +76,7 @@ module.exports = async function handler(req, res) {
     }
 
     // action === 'checkout' (정기구독 결제 승인 및 정품 라이선스 즉시 발급)
-    const phone = String(body.phone || '010-4821-9032').trim();
+    const phone = String(body.phone || '010-0000-0000').trim();
     const plan = String(body.plan || 'pro_59000');
     const payMethod = String(body.payMethod || 'kakaopay');
 

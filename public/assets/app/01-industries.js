@@ -32,7 +32,7 @@
       auto: {
         key: 'auto', name: '자동차 영업', icon: '🚗', role: '카마스터', title: '수석 카마스터',
         product: '차종', deliver: '출고', cta: '견적', trial: '시승', place: '전시장',
-        branchLabel: '소속 전시장 · 대리점명', branchPlaceholder: '현대·기아 공식전시장',
+        branchLabel: '소속 전시장 · 대리점명', branchPlaceholder: 'OO자동차 공식전시장',
         promoLabel: '출고 고객 전담 서비스 문구', promoPlaceholder: '출고 고객 전원 썬팅 + 블랙박스 무상',
         promise: '끝까지 책임지고 출고해 드리겠습니다', vlogDone: '오늘도 출고 완료!', chatAsk: '견적 받아볼 수 있을까요?',
         hashtags: ['신차견적', '즉시출고', '카마스터', '장기렌트', '오토리스'],
@@ -658,7 +658,7 @@
       if (branchIn) branchIn.placeholder = IND.outroMode === 'store' ? (IND.storeLocation || IND.branchPlaceholder) : (IND.branchPlaceholder || '소속 지점');
       if (promoIn) promoIn.placeholder = IND.promoPlaceholder || '';
       const phoneIn = document.getElementById('dlrInputPhone');
-      if (phoneIn) phoneIn.placeholder = IND.key === 'auto' ? '010-4821-9032' : '예: 02-123-4567';      if (typeof syncPreviewPanel === 'function') { try { syncPreviewPanel(); } catch (e) {} }
+      if (phoneIn) phoneIn.placeholder = IND.key === 'auto' ? '010-0000-0000' : '예: 02-123-4567';      if (typeof syncPreviewPanel === 'function') { try { syncPreviewPanel(); } catch (e) {} }
     }
 
     // 업종별 10개 디폴트 장면 덱 (각 업장마다 10개의 서로 다른 테마·구도·배경의 기본 이미지를 생성)

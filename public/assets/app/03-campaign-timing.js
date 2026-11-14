@@ -139,67 +139,67 @@
     let dealers = [
       {
         id: 'dlr_1',
-        name: '김민준',
+        name: '홍길동',
         title: '수석 카마스터',
-        branch: '현대·기아 강남오토스퀘어',
-        phone: '010-4821-9032',
-        licensedPhone: '010-4821-9032',
+        branch: 'OO자동차 전시장',
+        phone: '010-0000-0000',
+        licensedPhone: '010-0000-0000',
         expiryYmd: 20261231,
-        licenseKey: formatWasmLicenseKey('010-4821-9032', 20261231),
-        igUsername: '@hyundai_minjun_official',
+        licenseKey: formatWasmLicenseKey('010-0000-0000', 20261231),
+        igUsername: '@sample_dealer_official',
         snsAccounts: {
-          ig: '@hyundai_minjun_official',
-          yt: '@minjun_car_tv',
-          tt: '@minjun_autoteam',
-          fb: '강남오토스퀘어 김민준 공식페이지'
+          ig: '@sample_dealer_official',
+          yt: '@sample_car_tv',
+          tt: '@sample_autoteam',
+          fb: 'OO자동차 홍길동 공식페이지'
         },
         igPwMasked: 'AES256:9f8a...c41b (암호화 보관)',
         accentColor: '#3b82f6',
         promoTag: '출고고객 전원 루마버텍스 썬팅 + 빌트인캠 무상지원',
-        token: 'tok_minjun',
+        token: 'tok_sample1',
         avatarImg: null,
         status: 'PENDING',
         variation: JSON.parse(JSON.stringify(VARIATION_RECIPES[0]))
       },
       {
         id: 'dlr_2',
-        name: '박서연',
+        name: '김영희',
         title: '공식인증 주임',
-        branch: '기아 오토큐브 서초전시장',
-        phone: '010-7734-1290',
-        licensedPhone: '010-7734-1290',
+        branch: 'OO모터스 서초전시장',
+        phone: '010-0000-0001',
+        licensedPhone: '010-0000-0001',
         expiryYmd: 20261231,
-        licenseKey: formatWasmLicenseKey('010-7734-1290', 20261231),
-        igUsername: '@kia_seoyeon_deal',
+        licenseKey: formatWasmLicenseKey('010-0000-0001', 20261231),
+        igUsername: '@sample_seoyeon_deal',
         snsAccounts: {
-          ig: '@kia_seoyeon_deal',
-          yt: '@seoyeon_kia_shorts',
-          tt: '@seoyeon_car_master',
-          fb: '서초전시장 박서연 주임'
+          ig: '@sample_seoyeon_deal',
+          yt: '@sample_shorts',
+          tt: '@sample_car_master',
+          fb: '서초전시장 김영희 주임'
         },
         igPwMasked: 'AES256:3d12...e890 (암호화 보관)',
         accentColor: '#10b981',
         promoTag: '11월 한정 추가할인 + 전국 무료 캐리어 탁송 지원',
-        token: 'tok_seoyeon',
+        token: 'tok_sample2',
         avatarImg: null,
         status: 'PENDING',
         variation: JSON.parse(JSON.stringify(VARIATION_RECIPES[1]))
       },
       {
         id: 'dlr_3',
-        name: '이도현',
+        name: '이철수',
         title: '대표 팀장',
-        branch: '현대·기아 법인특판 오토허브',
-        phone: '010-9102-5581',
-        licensedPhone: '010-9102-5581',
+        branch: 'OO자동차 법인특판 오토허브',
+        phone: '010-0000-0002',
+        licensedPhone: '010-0000-0002',
         expiryYmd: 20261231,
-        licenseKey: formatWasmLicenseKey('010-9102-5581', 20261231),
-        igUsername: '@dohyun_motors',
+        licenseKey: formatWasmLicenseKey('010-0000-0002', 20261231),
+        igUsername: '@sample_motors',
         snsAccounts: {
-          ig: '@dohyun_motors',
-          yt: '@dohyun_lease_tv',
-          tt: '@dohyun_fleet_korea',
-          fb: '법인특판 오토허브 이도현 팀장'
+          ig: '@sample_motors',
+          yt: '@sample_lease_tv',
+          tt: '@sample_fleet_korea',
+          fb: '법인특판 오토허브 이철수 팀장'
         },
         igPwMasked: 'Meta 공식 Graph API 연동됨',
         accentColor: '#f59e0b',
@@ -268,7 +268,7 @@
       '출고 고객 전원 썬팅 + 블랙박스 무상'
     ];
     // 견본 딜러 3명의 소속 (예시 값이면 대본에 쓰지 않음)
-    const AR_DEMO_BRANCHES = ['현대·기아 강남오토스퀘어', '기아 오토큐브 서초전시장', '현대·기아 법인특판 오토허브', '현대·기아 공식전시장', '현대자동차 도산대로점'];
+    const AR_DEMO_BRANCHES = ['OO자동차 전시장', 'OO모터스 서초전시장', 'OO자동차 법인특판 오토허브', 'OO자동차 공식전시장', 'OO모터스 도산대로점'];
     function arIsDemoPromo(v) { return AR_DEMO_PROMO_TAGS.includes(String(v || '').trim()); }
     // 영상 화면에 그릴 명함: 혜택이 견본 그대로면 비워서 🎁 혜택 장식이 나오지 않게 함 (원본 명함은 그대로 둠)
     function arDisplayDealer(d) {
