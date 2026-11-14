@@ -584,12 +584,19 @@
           <!-- 핵심 액션 컨트롤 -->
           <div class="space-y-2 pt-1">
             <!-- 영상 만들기는 완성본을 확인하는 발행 단계로 옮기고, 이 자리는 스타일 섞기 -->
-            <div class="flex items-center gap-1.5">
-              <button type="button" id="previewRandomDesignBtnMain" onclick="randomizePreviewDesignOnly()" class="btn-primary flex-1 h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer" title="현재 대본·업종은 그대로 두고 설정한 카테고리 안에서 디자인을 랜덤으로 섞습니다">
-                🎲 스타일 섞기
+            <button type="button" id="previewRandomDesignBtnMain" onclick="randomizePreviewDesignOnly()" class="btn-primary w-full h-10 px-4 text-[13px] flex items-center justify-center gap-2 cursor-pointer" title="현재 대본·업종은 그대로 두고 설정한 카테고리 안에서 디자인을 랜덤으로 섞습니다">
+              🎲 스타일 섞기
+            </button>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
+                <span id="soundDot" class="w-1.5 h-1.5 rounded-full bg-[#85858b]"></span>
+                <span id="soundToggleLabel">사운드 켜기</span>
               </button>
-              <button type="button" id="shuffleFilterBtn" onclick="toggleShuffleFilterPanel()" class="btn-secondary h-10 px-3 text-[12px] flex items-center justify-center gap-1 cursor-pointer shrink-0" title="스타일 섞기에 포함할 카테고리 설정">
-                ⚙️ <span id="shuffleFilterBadge" class="text-[11px] text-[#38bdf8]">전체</span>
+              <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-secondary h-9 px-2 text-[12px] cursor-pointer">
+                ⏸ 일시정지
+              </button>
+              <button type="button" id="shuffleFilterBtn" onclick="toggleShuffleFilterPanel()" class="btn-secondary h-9 px-2 text-[12px] flex items-center justify-center gap-1 cursor-pointer" title="스타일 섞기에 포함할 카테고리 및 제외 스타일 설정">
+                ⚙️ 설정
               </button>
             </div>
             <div id="shuffleFilterPanel" class="hidden rounded-[10px] bg-[#111318] border border-white/10 p-2.5 space-y-2">
@@ -609,15 +616,6 @@
                 </div>
                 <div id="shuffleExcludedChips" class="flex flex-wrap gap-1 text-[11px] text-[#71717a]"></div>
               </div>
-            </div>
-            <div class="grid grid-cols-2 gap-1.5">
-              <button type="button" id="soundToggleBtn" onclick="toggleAudioMaster()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer flex items-center justify-center gap-1.5">
-                <span id="soundDot" class="w-1.5 h-1.5 rounded-full bg-[#85858b]"></span>
-                <span id="soundToggleLabel">사운드 켜기</span>
-              </button>
-              <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-secondary h-9 px-2.5 text-[12px] cursor-pointer">
-                ⏸ 일시정지
-              </button>
             </div>
           </div>
 
