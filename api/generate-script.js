@@ -409,11 +409,12 @@ JSON으로만 출력: {"topics":[{"title":"","why":"","prompt":""}]}`;
   return res.status(200).json({ ok: false, error: 'ai_failed', tries, topics: [] });
 }
 
-async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+const { isSameSiteRequest } = require('../lib/server/usage');
 
+async function handler(req, res) {
+  if (!isSameSiteRequest(req)) {
+    return res.status(403).json({ ok: false, error: 'forbidden_origin' });
+  }
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }

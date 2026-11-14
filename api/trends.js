@@ -391,9 +391,12 @@ async function fetchTrendsForIndustry(indKey, customQ = '') {
   return { source, query: source.startsWith('instagram') ? igLabel : ytQuery, items, diag };
 }
 
+const { isSameSiteRequest, consume, refundUsage } = require('../lib/server/usage');
+
 async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  if (!isSameSiteRequest(req)) {
+    return res.status(403).json({ ok: false, error: 'forbidden_origin' });
+  }
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const indKey = String(req.query.industry || 'auto').trim();
@@ -402,6 +405,12 @@ async function handler(req, res) {
 
   try {
     if (req.query.cron === '1') {
+      const secret = process.env.CRON_SECRET || process.env.ADMIN_TOKEN || '';
+      const auth = String((req.headers && req.headers.authorization) || '').replace(/^Bearer\s+/i, '');
+      const tok = String((req.headers && req.headers['x-admin-token']) || '');
+      if (secret && auth !== secret && tok !== secret) {
+        return res.status(403).json({ ok: false, error: 'forbidden' });
+      }
       const keys = Object.keys(INDUSTRY_QUERIES);
       const summary = {};
       for (const k of keys) {
@@ -428,7 +437,14 @@ async function handler(req, res) {
       }
     }
 
+    const gate = await consume(req, 'trends', 1);
+    if (!gate.ok) {
+      res.setHeader('Cache-Control', 'no-store');
+      return res.status(gate.status).json(gate.body);
+    }
+
     const { source, query, items, diag } = await fetchTrendsForIndustry(indKey, customQ);
+    if (!items.length) await refundUsage(req, 'trends', 1);
     if (!customQ && items.length) {
       await writeTrendCache(indKey, source, query, items);
       res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=86400');
